@@ -22,13 +22,14 @@ NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.s
     
     if(order.columns) data <- NMorderColumns(data)
 ### save input data to be read by simulation control stream
-    ## fn.data is the file name, no path
-    fn.data <- paste0("NMsim_",fnExtension(fnAppend(basename(path.mod),suffix.sim),".csv"))
+    ## fn.data is the data file name, no path
+    fn.data <- paste0("NMsimData_",fnExtension(fnAppend(basename(path.mod),suffix.sim),".csv"))
     path.data <- file.path(dir.data,fn.data)
-    nmtext <- NMwriteData(data,file=path.data,nmdir.data=nmdir.data,script=script)
+##    nmtext <- NMwriteData(data,file=path.data,nmdir.data=nmdir.data,script=script)
+    nmtext <- NMwriteData(data,file=path.data,nmdir.data=nmdir.data)
     
     ## path.mod <- paste0("models/Final_Auto/run",run,".mod")
-    fn.sim <- sub("^run","sim",basename(path.mod))
+    fn.sim <- sub("^run","NMsim",basename(path.mod))
     fn.sim <- fnAppend(fn.sim,suffix.sim)
 
     ## we should be able to move the simulation mod into another dir.

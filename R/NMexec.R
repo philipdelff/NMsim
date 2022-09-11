@@ -36,18 +36,25 @@ NMexec <- function(file.mod,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=
         saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
     }
 
+    string.cmd <- paste0("cd ",rundir,"; execute -model_dir_name")
     if(sge){
         file.pnm <- file.path(rundir,"execsafe.pnm")
         pnm <- NMgenPNM(nc=nc,file=file.pnm)
-        ## execute nonmem
-        system(
-            paste0("cd ",rundir,"; execute -model_dir_name -run_on_sge -sge_prepend_flags=\"-pe orte ",nc," -V\" -parafile=",basename(pnm)," -nodes=",nc," ",basename(file.mod)," &")
-        )
-    } else {
-        string.cmd <- paste0("cd ",rundir,"; execute ",basename(file.mod))
-        if(!wait) string.cmd <- paste(string.cmd,"&")
-        system(string.cmd)
+        string.cmd <- paste0(string.cmd," -run_on_sge -sge_prepend_flags=\"-pe orte ",nc," -V\" -parafile=",basename(pnm)," -nodes=",nc)
     }
+
+    ## } else {
+    ##     string.cmd <- paste0("cd ",rundir,"; execute ",basename(file.mod))
+    ## }
+
+    string.cmd <- paste(string.cmd,basename(file.mod))
+    if(!wait) string.cmd <- paste(string.cmd,"&")
+    system(string.cmd)
+    return(invisible(NULL))
 }
 
 
+## execute nonmem
+## system(
+##     paste0("cd ",rundir,"; execute -model_dir_name -run_on_sge -sge_prepend_flags=\"-pe orte ",nc," -V\" -parafile=",basename(pnm)," -nodes=",nc," ",basename(file.mod)," &")
+## )
