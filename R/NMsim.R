@@ -48,11 +48,11 @@ NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.s
     ## checked that $OMEGA looks OK
     NMreadSection(path.sim,section="OMEGA")
 ### replace $ESTIMATION with $SIMULATION SIMONLY
-    NMwriteSection(files=path.sim,section="$ESTIMATION",newlines="$SIMULATION ONLYSIM (52256)")
-    NMwriteSection(files=path.sim,section="$COVARIANCE",newlines="")
+    NMwriteSection(files=path.sim,section="$ESTIMATION",newlines="$SIMULATION ONLYSIM (52256)",backup=FALSE)
+    NMwriteSection(files=path.sim,section="$COVARIANCE",newlines="",backup=FALSE)
 
 ### replace data file
-    NMwriteSection(files=path.sim,list.sections = nmtext)
+    NMwriteSection(files=path.sim,list.sections = nmtext,backup=FALSE)
 
     
     

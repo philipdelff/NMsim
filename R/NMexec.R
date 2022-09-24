@@ -12,8 +12,9 @@
 ## todo: add support for dir/pattern args
 ## lapply(list.files("models",pattern="\\.mod$",full.names=T),execsafe)
 
+### -nm_version=nm74_gf
 
-NMexec <- function(file.mod,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=FALSE){
+NMexec <- function(file.mod,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=FALSE,args.execute="-model_dir_name"){
     
     library(NMdata)
 
@@ -36,9 +37,9 @@ NMexec <- function(file.mod,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=
         saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
     }
 
-    string.cmd <- paste0("cd ",rundir,"; execute -model_dir_name")
+    string.cmd <- paste0("cd ",rundir,"; execute ",args.execute)
     if(sge){
-        file.pnm <- file.path(rundir,"execsafe.pnm")
+        file.pnm <- file.path(rundir,"NMexec.pnm")
         pnm <- NMgenPNM(nc=nc,file=file.pnm)
         string.cmd <- paste0(string.cmd," -run_on_sge -sge_prepend_flags=\"-pe orte ",nc," -V\" -parafile=",basename(pnm)," -nodes=",nc)
     }
