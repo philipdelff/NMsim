@@ -14,7 +14,8 @@
 ##' ## using cyclicDose to create a complex dosing regimen with rest days and rest weeks
 ##' dos1=cyclicDoses(c(0,12),cycles.days=list(c(4,3),c(21,7)),days.total=56,dose=400)
 ##' NMcreateDoses(TIME=dos1$TIME,AMT=dos1$AMT,CMT=2)
-##' 
+##'
+##' @export
 
 
 

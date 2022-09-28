@@ -1,5 +1,7 @@
 ##' @import data.table
 ##' @import NMdata
+##' @export 
+
 
 addEVID2 <- function(doses,time.sim,CMT){
 

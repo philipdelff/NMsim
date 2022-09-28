@@ -1,5 +1,6 @@
 ##' @param dir.data directory to store data in. Default is to save it
-## in dir.sim. See nmdir.data too.
+##'     in dir.sim. See nmdir.data too.
+##' @export
 
 ## import NMdata
 
@@ -64,7 +65,7 @@ NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.s
     close(con.newfile)
 
     ## run sim
-    NMexec(file.mod=path.sim,sge=FALSE,wait=TRUE)
+    NMexec(file.mod=path.sim,sge=FALSE,wait=TRUE,args.execute="-clean=5")
 
     
     

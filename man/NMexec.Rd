@@ -10,7 +10,8 @@ NMexec(
   file.data.archive,
   nc = 64,
   dir.data = NULL,
-  wait = FALSE
+  wait = FALSE,
+  args.execute
 )
 }
 \arguments{

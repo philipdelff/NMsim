@@ -14,7 +14,7 @@
 
 ### -nm_version=nm74_gf
 
-NMexec <- function(file.mod,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=FALSE,args.execute="-model_dir_name"){
+NMexec <- function(file.mod,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=FALSE,args.execute){
     
     library(NMdata)
 
@@ -24,6 +24,9 @@ NMexec <- function(file.mod,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=
             fn.input <- fnExtension(fn.input,".rds")
             fn.input
         }
+    }
+    if(missing(args.execute) || is.null(args.execute)){
+        args.execute <- "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi"
     }
 
     ## replace extension of fn.input based on path.input - prefer rds
