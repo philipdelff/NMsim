@@ -77,8 +77,7 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, II=NULL, CMT=1, EV
             return(DT)
         }
     })
-    
-    
+
 ### is it this simple?
     df.doses <- lapply(list.doses,as.data.frame)
     res <- Reduce(merge,df.doses)
@@ -146,40 +145,3 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, II=NULL, CMT=1, EV
 
 
 
-##### based on merge.data.frame. Much simpler.
-NMcreateDoses.df <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, II=NULL, CMT=1, EVID=1, addl,debug=FALSE){
-    
-    if(debug) browser()
-    
-    list.doses <- list(TIME=TIME, EVID=EVID, CMT=CMT, AMT=AMT, RATE=RATE, SS=SS, II=II)
-    ## disregard the ones that were not supplied
-    list.doses <- list.doses[!sapply(list.doses,is.null)]
-
-    ## convert to dt's
-    
-    names.doses <- names(list.doses)
-    list.doses <- lapply(names.doses,function(x){
-        if(is.data.table(list.doses[[x]])){
-            return(list.doses[[x]])
-        } else {
-            DT <- data.table(x1=list.doses[[x]])
-            setnames(DT,"x1",x)
-            return(DT)
-        }
-    })
-
-    
-    if(F){
-        Reduce(function(x,y){
-            bys <- intersect(colnames(x),colnames(y))
-            if(length(bys)==0) return(egdt(x,y))
-            merge(x,y,by=bys)
-        },list.doses)
-    }
-    
-### is it this simple?
-    df.doses <- lapply(list.doses,as.data.frame)
-    res <- Reduce(merge,df.doses)
-    as.data.table(res)
-
-}
