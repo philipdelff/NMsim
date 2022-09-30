@@ -1,7 +1,13 @@
-lsts.all <- fun.find.models()
-
-
+##' @export
+##' 
 findUpdated <- function(lsts){
-    checkTimes(file.lst,use.input,nminfo.input)
+    times.res <- sapply(lsts,function(lst){
+        file.mod <- fnExtension(lst,".mod")
+        checkTimes(lst,use.input=TRUE,file.mod=file.mod)$time.ok
+    })
+    
+    times.res
+    
+    lsts.updated <- lsts[times.res!="All OK"]
     lsts.updated
 }
