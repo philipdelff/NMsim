@@ -16,7 +16,7 @@
 
 ### -nm_version=nm74_gf
 
-NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=FALSE,args.execute){
+NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=FALSE,args.execute,update.only=FALSE){
     
     
     if(missing(file.data.archive)){
@@ -36,11 +36,17 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.d
     if(is.null(files) && is.null(file.pattern)) file.pattern <- ".+\\.mod"
     files.all <- NMdata:::getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=quiet)
 
-    files.updated <- findUpdated(files.all)
+    files.exec <- files.all
+    if(update.only){
+        files.exec <- findUpdated(files.all)
+    }
+
+    print(files.exec)
     
-    print(files.updated)
-    
-    for(file.mod in files.updated){    
+    for(file.mod in files.exec){    
+        message(file.mod)
+        cat(file.mod,"\n")
+
         ## replace extension of fn.input based on path.input - prefer rds
         rundir <- dirname(file.mod)
 

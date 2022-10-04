@@ -65,7 +65,7 @@ NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.s
     close(con.newfile)
 
     ## run sim
-    NMexec(file.mod=path.sim,sge=FALSE,wait=TRUE,args.execute="-clean=5")
+    NMexec(files=path.sim,sge=FALSE,wait=TRUE,args.execute="-clean=5")
 
     
     
