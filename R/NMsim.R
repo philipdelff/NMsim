@@ -19,8 +19,9 @@
 ### run to be called NMsim001.mod
 
 
-NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.sim,order.columns=TRUE,script=NULL,col.row,reuse.results=FALSE,seed,subproblems){
+NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.sim,order.columns=TRUE,script=NULL,reuse.results=FALSE,seed,subproblems){
 
+    
 #### Section start: Defining additional paths based on arguments ####
 
     if(missing(subproblems)|| is.null(subproblems)) subproblems <- 0
@@ -37,13 +38,14 @@ NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.s
 
 ###  Section end: Defining additional paths based on arguments
     
-    if(missing(col.row) || is.null(col.row) ) {
-        col.row <- tmpcol(data,base="ROW")
-        reuse.results <- FALSE
-    }
+    ## if(missing(col.row) || is.null(col.row) ) {
+    ##     col.row <- tmpcol(data,base="ROW")
+    ##     reuse.results <- FALSE
+    ## }
     
     if(reuse.results && file.exists(path.sim.lst)){
-        simres <- try(NMscanData(path.sim.lst,col.row=col.row))
+        ## simres <- try(NMscanData(path.sim.lst,col.row=col.row))
+        simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
         if(!inherits(simres,"try-error")){
             return(simres)
         } else {
@@ -53,7 +55,7 @@ NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.s
 
     data <- copy(as.data.table(data))
     
-    if(!col.row%in%colnames(data)) data[,(col.row):=.I]
+    ## if(!col.row%in%colnames(data)) data[,(col.row):=.I]
     
     if(order.columns) data <- NMorderColumns(data)
 ### save input data to be read by simulation control stream
@@ -98,7 +100,8 @@ NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.s
     ## run sim
     NMexec(files=path.sim,sge=FALSE,wait=TRUE,args.execute="-clean=5")
     
-
-    simres <- NMscanData(path.sim.lst,col.row=col.row)
+    
+    ## simres <- NMscanData(path.sim.lst,col.row=col.row)
+    simres <- NMscanData(path.sim.lst,merge.by.row=FALSE)
     simres
 }

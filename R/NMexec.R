@@ -9,10 +9,19 @@
 ##'     the nonmem results
 ##'     NMdataConf(file.data=function(x)fnExtension(fnAppend(x,"input"),".rds"))
 ##' @import NMdata
+##' @examples
+##' file.mod <- "run001.mod"
+##' ## run locally - not on cluster
+##' NMexec(file.mod,sge=FALSE)
+##' ## run on cluster with 16 cores. 64 cores is default
+##' NMexec(file.mod,nc=16)
+##' ## submit multiple models to cluster
+##' multiple.models <- c("run001.mod","run002.mod")
+##' NMexec(multiple.models,nc=16)
+##' ## run all models called run001.mod - run099.mod if updated. 64 cores to each.
+##' NMexec(file.pattern="run0..\\.mod",dir="models",nc=16,update.only=TRUE)
 ##' @export
 
-## todo: add support for dir/pattern args
-## lapply(list.files("models",pattern="\\.mod$",full.names=T),execsafe)
 
 ### -nm_version=nm74_gf
 

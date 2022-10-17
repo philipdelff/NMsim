@@ -30,7 +30,7 @@ addEVID2 <- function(doses,time.sim,CMT){
 
 #### not sure how to allow flexible sorting. For now, NB order is naive.
     setorder(dat.sim,ID,TIME,EVID)
-    dat.sim[,REC:=.I]
+    ## dat.sim[,REC:=.I]
     dat.sim[]
 }
 
