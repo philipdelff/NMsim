@@ -1,0 +1,105 @@
+setwd("/data/home/philipde/wdirs/NMexec/inst/examples/")
+
+library(ggplot2)
+
+library(devtools)
+
+script <-  "https://github.com/philipdelff/NMexec"
+
+load_all("~/wdirs/NMexec")
+library(NMdata)
+NMdataConf(as.fun="data.table")
+
+file.mod <- "nonmem/xgxr014.mod"
+file.lst <- fnExtension(file.mod,".lst")
+## sge=F to not submit to the cluster
+NMexec(file.mod,sge=F)
+res1 <- NMscanData(file.mod)
+
+### summarize data/fit
+res1[,.N,by=.(DOSE,AMT)]
+
+
+#### Section start: Simulate a couple of doses ####
+dt.amt <- data.table(AMT=c(100,200,400)*1000,DOSE=c(100,200,400))
+doses.sd <- NMcreateDoses(TIME=0,AMT=dt.amt)
+doses.sd[,dose:=paste(DOSE,"mg")]
+doses.sd[,regimen:="SD"]
+
+
+### multiple dose regimens are easily created with NMcreateDoses too
+## Specifying the time points explicitly
+dt.amt <- data.table(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
+doses.md.1 <- NMcreateDoses(TIME=seq(0,by=24,length.out=7),AMT=dt.amt)
+doses.md.1[,dose:=paste(DOSE,"mg")]
+doses.md.1[,regimen:="QD"]
+doses.md.1
+## or using ADDL+II
+dt.amt <- data.table(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
+doses.md.2 <- NMcreateDoses(TIME=c(0,24),AMT=dt.amt,addl=data.table(ADDL=c(0,5),II=c(0,24)))
+doses.md.2[,dose:=paste(DOSE,"mg")]
+doses.md.2[,regimen:="QD"]
+doses.md.2
+
+doses.all <- rbind(doses.sd,doses.md.2,fill=T)
+
+load_all("~/wdirs/NMexec")
+## sim just one subject per ID
+dat.sim.sd <- addEVID2(doses.sd,time.sim=0:24,CMT=2)
+dat.sim.md <- addEVID2(doses.md.2,time.sim=0:(24*7),CMT=2)
+dat.sim <- rbind(dat.sim.sd,dat.sim.md,fill=TRUE)
+dat.sim[,ID:=.GRP,by=.(regimen,ID,DOSE)]
+print(dat.sim,topn=5)
+
+dat.sim[,.N,by=.(regimen,DOSE)]
+
+dat.sim[,REC:=NULL]
+NMcheckData(dat.sim)
+
+
+sim1 <- NMsim(path.mod=file.mod,data=dat.sim,dir.sim="simulations",suffix.sim = "try1",seed=2342)
+
+ggplot(sim1,aes(TIME,PRED,colour=dose))+geom_line()+
+    labs(x="Hours",y="Concentration (ng/mL)")+
+    facet_wrap(~regimen,scales="free")
+
+###  Section end: Simulate a couple of doses
+
+##
+#### Section start: Sim multiple subjects by adding them to the dataset ####
+
+dat.sim2 <- egdt(
+    dat.sim[,!("ID")],
+    data.table(ID=1:100)
+)
+dat.sim2[,ID:=.GRP,by=.(ID,dose)]
+
+setorder(dat.sim2,ID,TIME,EVID)
+dat.sim2[,REC:=.I]
+
+sim2 <- NMsim(path.mod="models/run0155.mod",data=dat.sim2,dir.sim="simulations",suffix.sim = "try2",seed=80924)
+dims(sim1,sim2)
+
+
+p2.profs <- ggplot(sim2[EVID==2],aes(TIME,exp(IPRED),group=ID))+geom_line()+
+    facet_wrap(~dose)
+p2.profs
+
+dt.pi <- sim2[EVID==2,
+              setNames(as.list(quantile(exp(IPRED),probs=c(.5,.025,.975))),cc(median,lower,upper))
+             ,by=.(dose,DOSE,TIME)]
+
+p2.pi <- ggplot(dt.pi,aes(TIME,median,colour=dose,fill=dose))+geom_line()+
+    geom_ribbon(aes(ymin=lower,ymax=upper),alpha=.5)
+
+p2.pi
+
+library(pracma)
+exp.id <- sim2[EVID==2,.(AUC=trapz(TIME,exp(IPRED)),Cmax=max(exp(IPRED))),by=.(ID,DOSE,dose)] |>
+    melt(measure.vars=cc(AUC,Cmax))
+
+exp.pop <- exp.id[,.(median=median(value),ci=sprintf("(%s;%s)",signif(quantile(value,probs=.025),3),signif(quantile(value,probs=.975),3))),keyby=.(dose,variable)]
+library(flextable)
+ft.exp.pop <- flextable(exp.pop)
+
+###  Section end: Sim multiple subjects by adding them to the dataset

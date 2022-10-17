@@ -10,7 +10,7 @@ addEVID2 <- function(doses,time.sim,CMT){
     covs.doses <- findCovs(doses[,setdiff(colnames(doses),to.drop),with=FALSE],by="ID")
 
     dt.obs <- data.table(TIME=time.sim)
-    dt.obs <- egdt(dt.obs,covs.doses)
+    dt.obs <- egdt(dt.obs,covs.doses,quiet=TRUE)
     dt.obs[
        ,EVID:=2][
        ,DV:=NA_real_][

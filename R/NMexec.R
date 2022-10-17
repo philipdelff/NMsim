@@ -41,11 +41,11 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.d
         files.exec <- findUpdated(files.all)
     }
 
-    print(files.exec)
+    message(paste(files.exec,collapse=", "))
     
     for(file.mod in files.exec){    
         message(file.mod)
-        cat(file.mod,"\n")
+        ### cat(file.mod,"\n")
 
         ## replace extension of fn.input based on path.input - prefer rds
         rundir <- dirname(file.mod)
@@ -54,7 +54,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.d
             fn.input <- file.data.archive(file.mod)
 
             ## copy input data
-            dat.inp <- NMscanInput(file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data)
+            dat.inp <- NMscanInput(file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
 
