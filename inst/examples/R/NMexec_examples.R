@@ -1,80 +1,115 @@
-setwd("/data/home/philipde/wdirs/NMexec/inst/examples/")
+####### script outline
+#### Initialization
+#### Run estimation of model
+#### Create simulation data
+#### One simulation per subject
+#### Sim multiple subjects by adding them to the dataset
+#### Sim multiple subjects by Nonmem's $SUBPROBLEM option
+#### Comparisson of the two methods for simulation of multiple subjects
+#### Save plots and tables with stamps using tracee
 
+
+#### Section start: Initialization ####
+
+setwd("/data/home/philipde/wdirs/NMexec/inst/examples")
+
+library(data.table)
 library(ggplot2)
 library(devtools)
-library(data.table)
+library(NMdata)
+NMdataConf(as.fun="data.table")
+load_all("~/wdirs/NMexec",export_all=FALSE)
 
 script <-  "https://github.com/philipdelff/NMexec/tree/main/inst/examples/R/NMexec_examples.R"
 
-load_all("~/wdirs/NMexec")
-library(NMdata)
-NMdataConf(as.fun="data.table")
-
 file.mod <- "nonmem/xgxr014.mod"
 file.lst <- fnExtension(file.mod,".lst")
+
+###  Section end: Initialization
+
+
+#### Section start: Run estimation of model ####
+
 ## sge=F to not submit to the cluster
-NMexec(file.mod,sge=F)
+NMexec(file.mod,sge=F,wait=TRUE)
+## suppress iterations from console
+## NMexec(file.mod,sge=F,nmquiet=T)
+
 res1 <- NMscanData(file.mod)
 
+
 ### summarize data/fit
-res1[,.N,by=.(DOSE,AMT)]
+## SAD data, 30 subjects on each dose: 4, 10, 30,100, 300
+res1[,.(Nid=uniqueN(ID),Nobs=.N),by=.(trtact,EVID,AMT)]
 
+load_all("~/wdirs/NMgof")
+NMplotFit(res1,col.grp="trtact",col.nomtime="NOMTIME")+facet_wrap(~trtact,scales="free_y")
 
-#### Section start: Simulate a couple of doses ####
-dt.amt <- data.table(AMT=c(100,200,400)*1000,DOSE=c(100,200,400))
+###  Section end: Run estimation of model
+
+#### Section start: Create simulation data ####
+
+dt.amt <- data.table(DOSE=c(100,400))
+dt.amt[,AMT:=DOSE*1000]
+dt.amt
 doses.sd <- NMcreateDoses(TIME=0,AMT=dt.amt)
 doses.sd[,dose:=paste(DOSE,"mg")]
 doses.sd[,regimen:="SD"]
+doses.sd
 
-
-### multiple dose regimens are easily created with NMcreateDoses too
-## Specifying the time points explicitly
+### multiple dose regimens with loading are easily created with NMcreateDoses too
+## We use ADDL+II (either method easy)
 dt.amt <- data.table(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
-doses.md.1 <- NMcreateDoses(TIME=seq(0,by=24,length.out=7),AMT=dt.amt)
-doses.md.1[,dose:=paste(DOSE,"mg")]
-doses.md.1[,regimen:="QD"]
-doses.md.1
-## or using ADDL+II
-dt.amt <- data.table(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
-doses.md.2 <- NMcreateDoses(TIME=c(0,24),AMT=dt.amt,addl=data.table(ADDL=c(0,5),II=c(0,24)))
-doses.md.2[,dose:=paste(DOSE,"mg")]
-doses.md.2[,regimen:="QD"]
-doses.md.2
+doses.md <- NMcreateDoses(TIME=c(0,24),AMT=dt.amt,addl=data.table(ADDL=c(0,5),II=c(0,24)))
+doses.md[,dose:=paste(DOSE,"mg")]
+doses.md[,regimen:="QD"]
+doses.md
 
-doses.all <- rbind(doses.sd,doses.md.2,fill=T)
+## we will simulate with SD and QD
+doses.all <- rbind(doses.sd,doses.md,fill=T)
 
 
-## sim just one subject per ID
+## Add simulation records - longer for QD regimens
 dat.sim.sd <- addEVID2(doses.sd,time.sim=0:24,CMT=2)
-dat.sim.md <- addEVID2(doses.md.2,time.sim=0:(24*7),CMT=2)
+dat.sim.md <- addEVID2(doses.md,time.sim=0:(24*7),CMT=2)
+
+## Stack simulation data, reassign ID to be unique in combined dataset
 dat.sim1 <- rbind(dat.sim.sd,dat.sim.md,fill=TRUE)
 dat.sim1[,ID:=.GRP,by=.(regimen,ID,DOSE)]
+## quick look at top and bottom of sim data and a quick summary
 print(dat.sim1,topn=5)
+dat.sim1[,.N,by=.(regimen,DOSE,EVID)]
+## remember some of the dosing records represent multiple (6) doses
+NMexpandDoses(dat.sim1)[,.N,by=.(regimen,DOSE,EVID)]
 
-dat.sim1[,.N,by=.(regimen,DOSE)]
-
-
+### Check simulation data
 NMcheckData(dat.sim1)
 
+###  Section end: Create simulation data
+
+#### Section start: One simulation per subject ####
 
 ### Remember, if Nonmem needs a column somewhere in the control
 ### stream, we will need to provide it.
-sim1 <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "try1"
-             ,seed=2342)
+
+sim1 <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "singlesubj1"
+             ,seed=2342,script=script)
 ## in this case, it's just the row identifier, so we just create
 ## one. A typical example would have been a covariate.
 dat.sim1[,ROW:=.I]
-sim1 <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "try1"
+load_all("~/wdirs/NMexec")
+sim1 <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "singlesubj2"
              ,seed=2342)
-
 
 ggplot(sim1,aes(TIME,PRED,colour=dose))+geom_line()+
     labs(x="Hours",y="Concentration (ng/mL)")+
     facet_wrap(~regimen,scales="free")
 
+###  Section end: One simulation per subject
+
 
 ### NMsim can reuse sim results if found
-sim1.reused <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "try1"
+sim1.reused <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "singlesubj2"
              ,seed=2342
              ,reuse.results=TRUE)
 
@@ -92,7 +127,7 @@ dat.sim2[,ID:=.GRP,by=.(ID,regimen,dose)]
 
 setorder(dat.sim2,regimen,dose,ID,TIME,EVID)
 dat.sim2[,.N,by=.(regimen,dose,EVID)]
-dat.sim2[,.N,by=.(ID)]
+dat.sim2[,.N,by=.(ID)][,.(Nid=.N),by=.(N)]
 
 sim2 <- NMsim(path.mod=file.mod,data=dat.sim2,dir.sim="simulations",suffix.sim = "try2",seed=39119)
 dims(sim1,sim2)
@@ -128,8 +163,6 @@ p2.pi
 ### NMdata. Version 0.0.13 on CRAN+MPN will throw an error.
 load_all("~/wdirs/NMdata",export_all=FALSE)
 NMdataConf(as.fun="data.table")
-
-load_all("~/wdirs/NMexec",export_all=FALSE)
 
 sim3 <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "subproblems"
              ,subproblems=1000,seed=39119)
@@ -188,4 +221,5 @@ writeFlextab(ft.exp.pop,file="outputs/example_table_exposure.png",
              script=script,formats=cc(png, docx, pptx, html))
 
 ### Section end: Save plots and tables with stamps using tracee
+
 

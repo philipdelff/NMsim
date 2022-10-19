@@ -88,9 +88,14 @@ NMsim <- function(path.mod,data,dir.sim,
 ### save input data to be read by simulation control stream
     ## fn.data is the data file name, no path
     fn.data <- paste0("NMsimData_",fnExtension(fnAppend(basename(path.mod),suffix.sim),".csv"))
-    path.data <- file.path(dir.data,fn.data)
+    path.data <- file.path(dir.sim,fn.data)
+    
     ##    nmtext <- NMwriteData(data,file=path.data,nmdir.data=nmdir.data,script=script)
-    nmtext <- NMwriteData(data,file=path.data,quiet=TRUE)
+    if(is.null(script)){
+        nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."))
+    } else {
+        nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
+    }
     
     run.mod <- sub("\\.mod","",basename(path.mod))
     run.sim <- sub("\\.mod","",fn.sim)

@@ -49,9 +49,9 @@
 
 ### -nm_version=nm74_gf
 
-NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=FALSE,args.execute,update.only=FALSE){
+NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=FALSE,args.execute,update.only=FALSE,nmquiet=FALSE){
     
-    
+
     if(missing(file.data.archive)){
         file.data.archive <- function(file){
             fn.input <- fnAppend(file,"input")
@@ -103,10 +103,12 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.d
         ## }
 
         string.cmd <- paste(string.cmd,basename(file.mod))
+        if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null")
         if(!wait) string.cmd <- paste(string.cmd,"&")
-        system(string.cmd)
+
+        system(string.cmd,ignore.stdout=nmquiet)
     }
-    
+
     return(invisible(NULL))
 }
 
