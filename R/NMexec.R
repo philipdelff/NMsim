@@ -1,10 +1,34 @@
 ##' execute nonmem while also archiving input data
 
+##' @param files File paths to the models (control stream) to
+##'     edit. See file.pattern too.
+##' @param file.pattern Alternatively to files, you can supply a
+##'     regular expression which will be passed to list.files as the
+##'     pattern argument. If this is used, use dir argument as
+##'     well. Also see data.file to only process models that use a
+##'     specific data file.
+##' @param dir If file.pattern is used, dir is the directory to search
+##'     in.
 ##' @param sge Use the sge queing system. Default is TRUE. Disable for
 ##'     quick models not to wait.
 ##' @param file.data.archive A function of the model file path to
 ##'     generate the path in which to archive the input data as
 ##'     RDS. Set to NULL not to archive the data.
+##' @param nc Number of cores to use if sending to the cluster. Default
+##'     is 64.
+##' @param dir.data The directory in which the data file is
+##'     stored. This is normally not needed as data will be found
+##'     using the path in the control stream. This argument may be
+##'     removed in the future since it should not be needed.
+##' @param wait Wait for process to finish before making R console
+##'     available again? This is useful if calling NMexec from a
+##'     function that needs to wait for the output of the Nonmem run
+##'     to be available for further processing.
+##' @param args.execute A character string with arguments passed to
+##'     execute. Default is
+##'     "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi".
+##' @param update.only Only run model(s) if control stream or data
+##'     updated since last run?
 ##' @details Use this to read the archived input data when retrieving
 ##'     the nonmem results
 ##'     NMdataConf(file.data=function(x)fnExtension(fnAppend(x,"input"),".rds"))
@@ -43,7 +67,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.d
     if(missing(dir)) dir <- NULL
     if(missing(file.pattern)) file.pattern <- NULL
     if(is.null(files) && is.null(file.pattern)) file.pattern <- ".+\\.mod"
-    files.all <- NMdata:::getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=quiet)
+    files.all <- NMdata:::getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=TRUE)
 
     files.exec <- files.all
     if(update.only){

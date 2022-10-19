@@ -1,5 +1,5 @@
 ##' @import NMdata
-##' @internal
+##' @keywords internal
 
 checkTimes <- function(file.lst,use.input,nminfo.input=NULL,file.mod,tz.lst=NULL){
 

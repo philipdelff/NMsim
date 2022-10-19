@@ -1,22 +1,29 @@
-## AMT, RATE, SS, II, CMT are vectors of length 1 or longer. Those not of max
-## length 1 are repeated.  If TIME is longer than those, they are
-## extended to match length of TIME.
-
-##' @param TIME
-##' @param AMT
-##' @param addl is a list of ADDL and II that will be applied to last dose
-##' @param ID ID's to replicate for. Default is 1. Use NULL to omit.
+##' Easily generate dosing records
+##'
+##' Combinations of different columns can be generated. Columns will
+##' be extended by repeating last value of the column if needed in
+##' order to match length of other columns.
+##' @param TIME The time of the dosing events
+##' @param AMT vector or dataa.frame with amounts amount
+##' @param RATE Optional infusion rate
+##' @param SS Optional steady-state flag
+##' @param CMT Compartment number. Default is to dose into CMT=1.
+##' @param EVID The event ID to use for doses. Default is to use
+##'     EVID=1, but EVID might also be wanted.
+##' @param addl Optinal. A list of ADDL and II that will be applied to
+##'     last dose
 ##' @import data.table
 ##' @examples
 ##' NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1))
 ##' ## Make Nonmem repeat the last dose. This is a total of 20 dosing events.
 ##' NMcreateDoses(TIME=c(0,12),AMT=c(2,1),addl=list(ADDL=9*2,II=12))
-##' ## using cyclicDose to create a complex dosing regimen with rest days and rest weeks
-##' dos1=cyclicDoses(c(0,12),cycles.days=list(c(4,3),c(21,7)),days.total=56,dose=400)
-##' NMcreateDoses(TIME=dos1$TIME,AMT=dos1$AMT,CMT=2)
 ##'
 ##' @export
 
+
+## AMT, RATE, SS, II, CMT are vectors of length 1 or longer. Those not of max
+## length 1 are repeated.  If TIME is longer than those, they are
+## extended to match length of TIME.
 
 
 ### allowed combinations of AMT, RATE, SS, II here:
@@ -34,32 +41,9 @@
 ## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2))
 ## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2),CMT=1)
 
-
-
-
-## TODO: TIME must be full length
-
-## No NA's anywhere
-
-## MDV
-
-## addl
-
-## if a cov is found in multiple arguments, it must span same values
-
-## Should CMT have a default? Or be required?
-
-## avoid hard coding variable names
-
-## N is another arg. If ID not in covs, everything is replicated. It
-## can be a data.table too, meaning that we replicate within
-## covariates. Maybe we have to be able to use a known set of ID's and covs?
-
-
-
-NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, II=NULL, CMT=1, EVID=1, addl=NULL,debug=FALSE){
+NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, addl=NULL){
     
-    if(debug) browser()
+    ## if(debug) browser()
     
     list.doses <- list(TIME=TIME, EVID=EVID, CMT=CMT, AMT=AMT, RATE=RATE, SS=SS, II=addl$II,ADDL=addl$ADDL)
     ## disregard the ones that were not supplied

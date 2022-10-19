@@ -1,3 +1,17 @@
 * NMexec todo
 ** NMsim
 *** TODO Support multiple $TABLE blocks
+** NMcreateDoses
+*** TODO TIME must be full length
+*** TODO No NA's should be allowed anywhere? Or?
+*** TODO if a cov is found in multiple arguments, it must span same values
+
+*** TODO Should CMT have a default? Or be required?
+
+*** TODO avoid hard coding variable names
+
+*** TODO N is another arg 
+If ID not in covs, everything is replicated. It can be a data.table
+too, meaning that we replicate within covariates. Maybe we have to be
+able to use a known set of ID's and covs? Or use ID?
+@param ID ID's to replicate for. Default is 1. Use NULL to omit.

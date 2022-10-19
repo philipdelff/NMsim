@@ -1,5 +1,31 @@
-##' @param dir.data directory to store data in. Default is to save it
-##'     in dir.sim. See nmdir.data too.
+##' Run simulations from an estimated Nonmem model
+##'
+##' Supply a data set and an input control stream, and NMsim will
+##' create neccesary files, run the simulation and read the results.
+##'
+##' @param path.mod Path to the input control stream to run the
+##'     simulation on. The outpult control stream is for now assumed
+##'     to be stored next to the input control stream and ending in
+##'     .lst instead of .modl
+##' @param data The simulation data as a data.frame.
+##' @param dir.sim The directory in which NMsim will store all
+##'     generated files.
+##' @param suffix.sim Give all filenames related to the simulation a
+##'     suffix. A short string describing the sim is recommended like
+##'     "ph3_regimens".
+##' @param order.columns reorder columns by calling
+##'     NMdata::NMorderColumns before saving dataset and running
+##'     simulations? Default is TRUE.
+##' @param script The path to the script where this is run.For
+##'     stamping of dataset so results can be traced back to code.
+##' @param subproblems Number of subproblems to use as SUBPROBLEMS in
+##'     $SIMULATION block in Nonmem. The default is subproblem=0 which
+##'     means not to use SUBPROBLEMS.
+##' @param reuse.results If simulation results found on file, should
+##'     they be used? If TRUE and reading the results fail, the
+##'     simulations will still be rerun.
+##' @param seed Seed to pass to Nonmem
+
 ##' @export
 
 ## import NMdata
@@ -19,7 +45,8 @@
 ### run to be called NMsim001.mod
 
 
-NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.sim,order.columns=TRUE,script=NULL,reuse.results=FALSE,seed,subproblems){
+NMsim <- function(path.mod,data,dir.sim,
+                  suffix.sim,order.columns=TRUE,script=NULL,subproblems,reuse.results=FALSE,seed){
 
     
 #### Section start: Defining additional paths based on arguments ####
@@ -63,7 +90,7 @@ NMsim <- function(path.mod,data,dir.sim,dir.data=dir.sim,nmdir.data=".",suffix.s
     fn.data <- paste0("NMsimData_",fnExtension(fnAppend(basename(path.mod),suffix.sim),".csv"))
     path.data <- file.path(dir.data,fn.data)
     ##    nmtext <- NMwriteData(data,file=path.data,nmdir.data=nmdir.data,script=script)
-    nmtext <- NMwriteData(data,file=path.data,nmdir.data=nmdir.data,quiet=TRUE)
+    nmtext <- NMwriteData(data,file=path.data,quiet=TRUE)
     
     run.mod <- sub("\\.mod","",basename(path.mod))
     run.sim <- sub("\\.mod","",fn.sim)

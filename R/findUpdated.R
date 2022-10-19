@@ -1,5 +1,8 @@
-##' @export
-##' 
+##' Filter control streams to only those updated since last run
+##' @param lstsd list of (input or output) control streams to consider
+##' @keywords internal
+
+
 findUpdated <- function(lsts){
     times.res <- sapply(lsts,function(lst){
         file.mod <- fnExtension(lst,".mod")

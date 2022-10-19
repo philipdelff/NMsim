@@ -1,10 +1,20 @@
+##' Add simulation records to dosing records
+##'
+##' @param doses dosing records Nonmem style
+##' @param time.sim A numerical vector with simulation times
+##' @param CMT The compartment in which to insert the EVID=2 records
 ##' @import data.table
 ##' @import NMdata
 ##' @export 
 
 
 addEVID2 <- function(doses,time.sim,CMT){
-
+    if(is.data.table(doses)) {
+        doses <- copy(doses)
+    } else {
+        doses <- as.data.table(doses)
+    }
+    
 
     to.drop <- intersect(c("TIME","EVID","CMT","AMT","RATE","MDV","SS","II","ADDL"),colnames(doses))
     covs.doses <- findCovs(doses[,setdiff(colnames(doses),to.drop),with=FALSE],by="ID")

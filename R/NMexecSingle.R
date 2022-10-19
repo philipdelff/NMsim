@@ -16,7 +16,8 @@
 ### -nm_version=nm74_gf
 
 NMexecSingle <- function(file.mod,sge=TRUE,file.data.archive,nc=64,dir.data=NULL,wait=FALSE,args.execute){
-    
+
+    .Deprecated("NMexec")
     if(missing(file.data.archive)){
         file.data.archive <- function(file){
             fn.input <- fnAppend(file,"input")
