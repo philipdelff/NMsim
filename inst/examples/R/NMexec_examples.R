@@ -106,7 +106,7 @@ sim1 <- NMsim(path.mod=file.mod,data=dat.sim1,
 p1 <- ggplot(sim1,aes(TIME,PRED,colour=dose))+geom_line()+
     labs(x="Hours",y="Concentration (ng/mL)")+
     facet_wrap(~regimen,scales="free")
-
+p1
 ###  Section end: One simulation per subject
 
 
