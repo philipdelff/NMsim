@@ -97,11 +97,13 @@ sim1 <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim =
 ## in this case, it's just the row identifier, so we just create
 ## one. A typical example would have been a covariate.
 dat.sim1[,ROW:=.I]
-load_all("~/wdirs/NMexec")
-sim1 <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "singlesubj2"
-             ,seed=2342)
 
-ggplot(sim1,aes(TIME,PRED,colour=dose))+geom_line()+
+head(dat.sim1)
+sim1 <- NMsim(path.mod=file.mod,data=dat.sim1,
+              dir.sim="simulations",suffix.sim = "singlesubj2",
+              seed=2342,script=script)
+
+p1 <- ggplot(sim1,aes(TIME,PRED,colour=dose))+geom_line()+
     labs(x="Hours",y="Concentration (ng/mL)")+
     facet_wrap(~regimen,scales="free")
 
@@ -129,7 +131,8 @@ setorder(dat.sim2,regimen,dose,ID,TIME,EVID)
 dat.sim2[,.N,by=.(regimen,dose,EVID)]
 dat.sim2[,.N,by=.(ID)][,.(Nid=.N),by=.(N)]
 
-sim2 <- NMsim(path.mod=file.mod,data=dat.sim2,dir.sim="simulations",suffix.sim = "try2",seed=39119)
+sim2 <- NMsim(path.mod=file.mod,data=dat.sim2,dir.sim="simulations",suffix.sim = "try2",
+              seed=39119,script=script)
 dims(sim1,sim2)
 
 
@@ -205,6 +208,7 @@ install.packages("tracee",repos="https://cloud.r-project.org")
 
 
 library(tracee)
+ggwrite(p1,file="outputs/example_plot_sd.png",script=script,canvas="wide")
 ggwrite(p2.pi,file="outputs/example_plot_pi.png",script=script)
 
 library(pracma)
