@@ -124,12 +124,22 @@ NMsim <- function(path.mod,data,dir.sim,
     
     
     ## replace output table name
-    lines <- readLines(path.sim)
-### This should be done on the TABLE sections only
-    lines <- sub(paste0("FILE *= *[^ ]+"),replacement=paste0("FILE=",run.sim,".tab"),lines)
-    con.newfile <- file(path.sim,"wb")
-    writeLines(lines,con=con.newfile)
-    close(con.newfile)
+    lines.tables <- NMreadSection(path.sim,section="TABLE",asOne=FALSE)
+    if(length(lines.tables)==0){
+        stop("No TABLE statements found in control stream.")
+    } else if(length(lines.tables)==1){
+        lines.tables <- sub(paste0("FILE *= *[^ ]+"),replacement=paste0("FILE=",run.sim,".tab"),lines.tables)
+    } else {
+        lines.tables <- lapply(seq_along(lines.tables),function(n){
+            sub(paste0("FILE *= *[^ ]+"),replacement=fnAppend(paste0("FILE=",run.sim,".tab"),n),lines.tables[[n]])
+
+        }
+        )}
+
+    fun.paste <- function(...)paste(...,sep="\n")
+    lines.tables <- do.call(fun.paste,lines.tables)
+    NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim)
+
 
     ## run sim
     NMexec(files=path.sim,sge=FALSE,wait=TRUE,args.execute="-clean=5")
