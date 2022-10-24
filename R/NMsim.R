@@ -91,6 +91,8 @@ NMsim <- function(path.mod,data,dir.sim,
     path.data <- file.path(dir.sim,fn.data)
     
     ##    nmtext <- NMwriteData(data,file=path.data,nmdir.data=nmdir.data,script=script)
+### NMwriteData in NMdata 0.0.13 does not support script=NULL. Once
+### NMdata 0.0.14 is on MPN, this can be simplified.
     if(is.null(script)){
         nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."))
     } else {
