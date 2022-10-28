@@ -46,7 +46,8 @@
 
 
 NMsim <- function(path.mod,data,dir.sim,
-                  suffix.sim,order.columns=TRUE,script=NULL,subproblems,reuse.results=FALSE,seed){
+                  suffix.sim,order.columns=TRUE,script=NULL,subproblems,
+                  reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE){
 
     
 #### Section start: Defining additional paths based on arguments ####
@@ -104,19 +105,19 @@ NMsim <- function(path.mod,data,dir.sim,
 
     cmd.update <- sprintf("update_inits --output_model=%s --seed=%s %s",fn.sim,seed,path.mod)
     if(file.exists(path.sim)) unlink(path.sim)
-    system(cmd.update)
+    system(cmd.update,wait=TRUE)
 
     file.rename(path.sim.0,path.sim)
 
     ## checked that $OMEGA looks OK
-    NMreadSection(path.sim,section="OMEGA")
+    ## NMreadSection(path.sim,section="OMEGA")
 ### replace $ESTIMATION with $SIMULATION SIMONLY
     line.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
     if(subproblems>0){
         line.sim <- paste(line.sim,sprintf("SUBPROBLEMS=%s",subproblems))
     }
     NMwriteSection(files=path.sim,section="$ESTIMATION",newlines=line.sim,backup=FALSE,quiet=TRUE)
-    NMwriteSection(files=path.sim,section="$COVARIANCE",newlines="",backup=FALSE,quiet=TRUE)
+    try(NMwriteSection(files=path.sim,section="$COVARIANCE",newlines="",backup=FALSE,quiet=TRUE))
 
 ### replace data file
     NMwriteSection(files=path.sim,list.sections = nmtext,backup=FALSE,quiet=TRUE)
@@ -124,11 +125,11 @@ NMsim <- function(path.mod,data,dir.sim,
     
     
     ## replace output table name
-    lines.tables <- NMreadSection(path.sim,section="TABLE",asOne=FALSE)
+    lines.tables <- NMreadSection(path.sim,section="TABLE",asOne=FALSE,simplify=FALSE)
     if(length(lines.tables)==0){
         stop("No TABLE statements found in control stream.")
     } else if(length(lines.tables)==1){
-        lines.tables <- sub(paste0("FILE *= *[^ ]+"),replacement=paste0("FILE=",run.sim,".tab"),lines.tables)
+        lines.tables <- list(sub(paste0("FILE *= *[^ ]+"),replacement=paste0("FILE=",run.sim,".tab"),lines.tables[[1]]))
     } else {
         lines.tables <- lapply(seq_along(lines.tables),function(n){
             sub(paste0("FILE *= *[^ ]+"),replacement=fnAppend(paste0("FILE=",run.sim,".tab"),n),lines.tables[[n]])
@@ -138,11 +139,11 @@ NMsim <- function(path.mod,data,dir.sim,
 
     fun.paste <- function(...)paste(...,sep="\n")
     lines.tables <- do.call(fun.paste,lines.tables)
-    NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim)
+    NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE)
 
 
     ## run sim
-    NMexec(files=path.sim,sge=FALSE,wait=TRUE,args.execute="-clean=5")
+    NMexec(files=path.sim,sge=FALSE,wait=TRUE,args.execute=args.execute,nmquiet=nmquiet)
     
     
     ## simres <- NMscanData(path.sim.lst,col.row=col.row)
