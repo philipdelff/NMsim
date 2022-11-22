@@ -1,7 +1,7 @@
 Package: NMexec
 Type: Package
 Title: Start Nonmem jobs and run simulations from R
-Version: 0.0.0.9011
+Version: 0.0.0.9012
 Authors@R: person("Philip", "Delff", email = "philip@delff.dk",
                   role = c("aut", "cre"))
 Maintainer: Philip Delff <philip@delff.dk>

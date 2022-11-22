@@ -1,6 +1,8 @@
 * NMexec todo
 ** NMsim
-*** TODO Support multiple $TABLE blocks
+*** TODO Support abbreviations
+$COV $COVARIANCE $EST $ESTIMATION $SIM $SIMULATION
+*** DONE Support multiple $TABLE blocks
 ** NMcreateDoses
 *** TODO TIME must be full length
 *** TODO No NA's should be allowed anywhere? Or?
