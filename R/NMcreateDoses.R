@@ -82,7 +82,8 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
         }
     })
 
-### is it this simple?
+### make use of merge.data.frame to get outer merges where if no
+### common columns found.
     df.doses <- lapply(list.doses,as.data.frame)
     res <- Reduce(merge,df.doses)
     dt.doses1 <- as.data.table(res)
