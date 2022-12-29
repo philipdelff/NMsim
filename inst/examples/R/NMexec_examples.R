@@ -31,7 +31,9 @@ file.lst <- fnExtension(file.mod,".lst")
 #### Section start: Run estimation of model ####
 
 ## sge=F to not submit to the cluster
-NMexec(file.mod,sge=F,wait=TRUE)
+if(F){
+    NMexec(file.mod,sge=F,wait=TRUE)
+}
 ## suppress iterations from console
 ## NMexec(file.mod,sge=F,nmquiet=T)
 
@@ -89,11 +91,12 @@ NMcheckData(dat.sim1)
 
 #### Section start: One simulation per subject ####
 
+###### Example not intended to work #########
 ### Remember, if Nonmem needs a column somewhere in the control
 ### stream, we will need to provide it.
-
 sim1 <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "singlesubj1"
              ,seed=2342,script=script)
+
 ## in this case, it's just the row identifier, so we just create
 ## one. A typical example would have been a covariate.
 dat.sim1[,ROW:=.I]
@@ -131,8 +134,10 @@ setorder(dat.sim2,regimen,dose,ID,TIME,EVID)
 dat.sim2[,.N,by=.(regimen,dose,EVID)]
 dat.sim2[,.N,by=.(ID)][,.(Nid=.N),by=.(N)]
 
-sim2 <- NMsim(path.mod=file.mod,data=dat.sim2,dir.sim="simulations",suffix.sim = "try2",
+sim2 <- NMsim(path.mod=file.mod,data=dat.sim2,
+              dir.sim="simulations",suffix.sim = "try2",
               seed=39119,script=script)
+
 dims(sim1,sim2)
 
 
@@ -165,17 +170,20 @@ p2.pi
 ### In order for this to work, we need the development version of
 ### NMdata. Version 0.0.13 on CRAN+MPN will throw an error.
 load_all("~/wdirs/NMdata",export_all=FALSE)
+load_all("~/wdirs/NMexec",export_all=FALSE)
 NMdataConf(as.fun="data.table")
 
-sim3 <- NMsim(path.mod=file.mod,data=dat.sim1,dir.sim="simulations",suffix.sim = "subproblems"
-             ,subproblems=1000,seed=39119)
+sim3 <- NMsim(path.mod=file.mod,data=dat.sim1,
+              dir.sim="simulations",suffix.sim = "subproblems",
+              seed=39119,script=script,
+              subproblems=1000)
+sim3[,ID:=.GRP,by=.(NMREP,ID)]
 
 dt.pi <- sim3[EVID==2,
               setNames(as.list(quantile(IPRED,probs=c(.5,.025,.975))),cc(median,lower,upper))
              ,by=.(regimen,dose,DOSE,TIME)]
 
 p3.pi <- p2.pi %+% dt.pi
-
 
 
 ### section end: Sim multiple subjects by Nonmem's $SUBPROBLEM option

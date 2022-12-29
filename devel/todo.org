@@ -2,6 +2,12 @@
 ** NMsim
 *** TODO Support abbreviations
 $COV $COVARIANCE $EST $ESTIMATION $SIM $SIMULATION
+
+Maybe this should be done in NMwriteSection/NMreadSection instead.
+*** TODO Support using a ready-made sim model
+No modifications needed to control stream except $INPUT and $TABLE
+*** TODO Improve reuse.results to 
+method to compare all arguments to what's on file
 *** DONE Support multiple $TABLE blocks
 ** NMcreateDoses
 *** TODO TIME must be full length

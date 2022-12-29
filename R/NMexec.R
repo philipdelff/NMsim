@@ -87,7 +87,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.data.archive,nc=64,dir.d
             fn.input <- file.data.archive(file.mod)
 
             ## copy input data
-            dat.inp <- NMscanInput(file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
+            dat.inp <- NMscanInput(file.mod,file.mod=file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
 
