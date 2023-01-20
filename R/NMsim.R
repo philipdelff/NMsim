@@ -75,7 +75,6 @@ NMsim <- function(path.mod,data,dir.sim,
     path.sim.lst <- fnExtension(path.sim,".lst")
 
 ###  Section end: Defining additional paths based on arguments
-    
     if(reuse.results && file.exists(path.sim.lst)){
         ## simres <- try(NMscanData(path.sim.lst,col.row=col.row))
         simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
