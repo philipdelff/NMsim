@@ -26,7 +26,14 @@ With a simulation data (`simdat`) and an estimated Nonmem run (stored in `models
 
     simres <- NMsim("models/run1.mod",simdat,
 	dir.sim="simulations",suffix.sim="example",seed=123)
-	
+
+`NMsim` will then 
+- Save `simdat` 
+create a simulation Nonmem run based on `models/run1.mod`, store it in `simulations/NMsim_1_example.mod`,
+- Run Nonmem on the created 
+- Read output datasets from simulation run and merge them with simulation input data
+- Return the combined dataset
+
 `NMexec` includes functions to very easily create simulation datasets. 
 
 Please see see examples here:
@@ -41,11 +48,17 @@ Nonmem control streams. This ensures that output data can be merged
 with input data as it went into the model, even if the input data file
 should be modified or lost.
 
+- Saves input data with Nonmem model
+- Provides a simple R command for submission of Nonmem jobs
+- Optionally handles cluster configuration
+- Saves the xml file by default
+
 `NMexec` will submit model runs to a cluster by default. This can be
-switched off for running Nonmem locally.
+switched off for running Nonmem locally. Please notice the jobs are
+submitted to a cluster in a very specific way using `PSN`. If your
+setup is different, this is for now not supported. Please use
+`NMexec(sge=FALSE)` in that case (which may not be desirable). Notice
+that simulations are not done on a cluster so you may still want to
+`NMsim`.
 
 
-`NMsim` will then 
-- Save `simdat` 
-create a simulation Nonmem run based on `models/run1.mod`, store it in `simulations/NMsim_1_example.mod`,
-- Run Nonmem on the created 
