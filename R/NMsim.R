@@ -62,7 +62,8 @@ NMsim <- function(path.mod,data,dir.sim,
 
     
     ## fn.sim is the file name of the simulation control stream created by NMsim
-    fn.sim <- sub("^run","NMsim",basename(path.mod))
+    ## fn.sim <- sub("^run","NMsim",basename(path.mod))
+    fn.sim <- paste0("NMsim_",basename(path.mod))
     fn.sim <- fnAppend(fn.sim,suffix.sim)
 
     ## path.sim.0 is a temporary path to the sim control stream - it
@@ -98,11 +99,11 @@ NMsim <- function(path.mod,data,dir.sim,
     ##    nmtext <- NMwriteData(data,file=path.data,nmdir.data=nmdir.data,script=script)
 ### NMwriteData in NMdata 0.0.13 does not support script=NULL. Once
 ### NMdata 0.0.14 is on MPN, this can be simplified.
-    if(is.null(script)){
-        nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."))
-    } else {
+    ## if(is.null(script)){
+    ##     nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."))
+    ## } else {
         nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
-    }
+    ## }
     
     run.mod <- sub("\\.mod","",basename(path.mod))
     run.sim <- sub("\\.mod","",fn.sim)
