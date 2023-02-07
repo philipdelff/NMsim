@@ -36,7 +36,7 @@ create a simulation Nonmem run based on `models/run1.mod`, store it in `simulati
 
 `NMexec` includes functions to very easily create simulation datasets. 
 
-Please see see examples here:
+Please see examples here:
 https://github.com/philipdelff/NMexec/tree/main/inst/examples/R/NMexec_examples.R
 	
 ## Run Nonmem from R
@@ -60,5 +60,3 @@ setup is different, this is for now not supported. Please use
 `NMexec(sge=FALSE)` in that case (which may not be desirable). Notice
 that simulations are not done on a cluster so you may still want to
 `NMsim`.
-
-

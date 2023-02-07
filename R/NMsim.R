@@ -24,17 +24,25 @@
 ##' @param reuse.results If simulation results found on file, should
 ##'     they be used? If TRUE and reading the results fail, the
 ##'     simulations will still be rerun.
+##' @param transform A list defining transformations to be applied
+##'     after the Nonmem simulations and before plotting. For each
+##'     list element, its name refers to the name of the column to
+##'     transform, the contents must be the function to apply. See
+##'     examples.
 ##' @param seed Seed to pass to Nonmem
+##' @import NMdata
 
 ##' @export
 
-## import NMdata
+
 
 
 ### it would be useful not to have to do update_inits but just use
 ### copy. update_inits may go wrong.
 
 ### need to be able to just read results if sim was run already
+
+### read results if previously sent to cluster?
 
 ## ** NMsim
 ## *** save input to datafile in simulations folder
@@ -48,14 +56,35 @@
 NMsim <- function(path.mod,data,dir.sim,
                   suffix.sim,order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE,text.table,
-                  type.input="est"){
+                  type.input="est",execute=TRUE,sge=FALSE,transform=NULL){
 
+
+    warn.notransform <- function(transform){
+        if(is.null(transform)) return(invisible(NULL))
+        warning("`tranform` (argument) ignored since NMsim is not reading the simulation results.")
+    }
+
+    if(length(path.mod)>1){
+        allres.l <- lapply(path.mod,NMsim,data=data
+                          ,dir.sim=dir.sim,
+                           suffix.sim=suffix.sim,
+                           order.columns=order.columns,script=script,
+                           subproblems=subproblems,
+                           reuse.results=reuse.results,seed=seed,
+                           args.execute=args.execute,nmquiet=nmquiet,
+                           text.table=text.table,
+                           type.input=type.input,execute=execute,
+                           sge=sge)
+        return(rbindlist(allres.l))
+    }
     
 #### Section start: Defining additional paths based on arguments ####
 
     if(missing(subproblems)|| is.null(subproblems)) subproblems <- 0
     if(missing(text.table)) text.table <- NULL
-
+    if(!file.exists(path.mod)) stop("path.mod must be a path to an existing file.")
+    if(is.function(seed)) seed <- seed()
+    
     if(!type.input%in%cc(sim,est)){
         stop("type.input denotes whether supplied control stream is an estimation run or it is already a simulation run to be applied.")
     }
@@ -96,19 +125,14 @@ NMsim <- function(path.mod,data,dir.sim,
     fn.data <- paste0("NMsimData_",fnExtension(fnAppend(basename(path.mod),suffix.sim),".csv"))
     path.data <- file.path(dir.sim,fn.data)
     
-    ##    nmtext <- NMwriteData(data,file=path.data,nmdir.data=nmdir.data,script=script)
-### NMwriteData in NMdata 0.0.13 does not support script=NULL. Once
-### NMdata 0.0.14 is on MPN, this can be simplified.
-    ## if(is.null(script)){
-    ##     nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."))
-    ## } else {
-        nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
-    ## }
+    nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
+    
     
     run.mod <- sub("\\.mod","",basename(path.mod))
     run.sim <- sub("\\.mod","",fn.sim)
 
     if(file.exists(path.sim)) unlink(path.sim)
+    
     sections.mod <- NMreadSection(file=path.mod)
     names.sections <- names(sections.mod)
     line.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
@@ -171,17 +195,39 @@ NMsim <- function(path.mod,data,dir.sim,
         lines.tables <- list(paste("$TABLE",text.table,fn.tab.base))
     }
 
-    fun.paste <- function(...)paste(...,sep="\n")
+    fun.paste <- function(...) paste(...,sep="\n")
     lines.tables <- do.call(fun.paste,lines.tables)
-    NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE)
-
-
-    ## run sim
-    NMexec(files=path.sim,sge=FALSE,wait=TRUE,args.execute=args.execute,nmquiet=nmquiet)
+    ## if no $TABLE found already, just put it last
     
+    if(is.null(NMreadSection(file=path.sim,section="TABLE"))){
+        ## this will work with NMdata 0.0.16
+        
+        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,location="last")
+    } else {
+        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE)
+    }
     
-    
-    ## simres <- NMscanData(path.sim.lst,col.row=col.row)
-    simres <- NMscanData(path.sim.lst,merge.by.row=FALSE)
-    simres
+    if(execute){
+        ## run sim
+        wait <- !sge
+        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet)
+        
+        if(wait){
+            simres <- NMscanData(path.sim.lst,merge.by.row=FALSE)
+            ## optionally transform results like DV, IPRED, PRED
+            if(!is.null(transform)){
+                for(name in names(transform)){
+                    simres[,(name):=transform[[name]](get(name))]
+                }
+            }
+            warn.notransform(transform)
+            return(simres)
+        } else {
+            warn.notransform(transform)
+            return(invisible(NULL))
+        }
+    } else {
+        invisible(NULL)
+    }
 }
+

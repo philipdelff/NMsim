@@ -11,7 +11,7 @@ RoxygenNote: 7.2.1
 Roxygen: list(roclets=c("collate", "namespace", "rd", "vignette"))
 Depends: R (>= 3.5.0)
 Imports: data.table,
-         NMdata
+         NMdata (>= 0.0.14)
 Suggests: 
 Encoding: UTF-8
 LazyData: true
