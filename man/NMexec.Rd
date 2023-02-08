@@ -9,12 +9,13 @@ NMexec(
   file.pattern,
   dir,
   sge = TRUE,
-  file.data.archive,
+  file.archive,
   nc = 64,
   dir.data = NULL,
   wait = FALSE,
   args.execute,
-  update.only = FALSE
+  update.only = FALSE,
+  nmquiet = FALSE
 )
 }
 \arguments{
@@ -33,12 +34,12 @@ in.}
 \item{sge}{Use the sge queing system. Default is TRUE. Disable for
 quick models not to wait.}
 
-\item{file.data.archive}{A function of the model file path to
-generate the path in which to archive the input data as
-RDS. Set to NULL not to archive the data.}
+\item{file.archive}{A function of the model file path to generate
+the path in which to archive the input data as RDS. Set to
+NULL not to archive the data.}
 
-\item{nc}{Number of cores to use if sending to the cluster. Default
-is 64.}
+\item{nc}{Number of cores to use if sending to the
+cluster. Default is 64.}
 
 \item{dir.data}{The directory in which the data file is
 stored. This is normally not needed as data will be found
@@ -56,6 +57,9 @@ execute. Default is
 
 \item{update.only}{Only run model(s) if control stream or data
 updated since last run?}
+
+\item{nmquiet}{Suppress terminal output from `Nonmem`. This is
+likely to only work on linux/unix systems.}
 }
 \description{
 execute nonmem while also archiving input data

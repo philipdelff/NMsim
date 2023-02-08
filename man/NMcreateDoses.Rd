@@ -37,8 +37,31 @@ be extended by repeating last value of the column if needed in
 order to match length of other columns.
 }
 \examples{
-NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1))
+library(data.table)
+(doses1 <- NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1)))
+(doses2 <- NMcreateDoses(TIME=c(0,12,24),AMT=data.table(AMT=c(2,1,4,2),DOSE=c(1,2))))
 ## Make Nonmem repeat the last dose. This is a total of 20 dosing events.
 NMcreateDoses(TIME=c(0,12),AMT=c(2,1),addl=list(ADDL=9*2,II=12))
+dt.amt <- data.table(DOSE=c(100,400))
+dt.amt[,AMT:=DOSE*1000]
+dt.amt
+doses.sd <- NMcreateDoses(TIME=0,AMT=dt.amt)
+doses.sd[,dose:=paste(DOSE,"mg")]
+doses.sd[,regimen:="SD"]
+doses.sd
+
+### multiple dose regimens with loading are easily created with NMcreateDoses too
+## Specifying the time points explicitly
+dt.amt <- data.table(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
+doses.md.1 <- NMcreateDoses(TIME=seq(0,by=24,length.out=7),AMT=dt.amt)
+doses.md.1[,dose:=paste(DOSE,"mg")]
+doses.md.1[,regimen:="QD"]
+doses.md.1
+## or using ADDL+II
+dt.amt <- data.table(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
+doses.md.2 <- NMcreateDoses(TIME=c(0,24),AMT=dt.amt,addl=data.table(ADDL=c(0,5),II=c(0,24)))
+doses.md.2[,dose:=paste(DOSE,"mg")]
+doses.md.2[,regimen:="QD"]
+doses.md.2
 
 }
