@@ -1,5 +1,5 @@
-library(devtools)
-load_all("~/wdirs/NMexec",export_all=F)
+## library(devtools)
+## load_all("~/wdirs/NMexec",export_all=F)
 
 
 ## lsts.all <- fun.find.models()

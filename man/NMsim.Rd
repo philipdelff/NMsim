@@ -13,7 +13,14 @@ NMsim(
   script = NULL,
   subproblems,
   reuse.results = FALSE,
-  seed
+  seed,
+  args.execute = "-clean=5",
+  nmquiet = FALSE,
+  text.table,
+  type.input = "est",
+  execute = TRUE,
+  sge = FALSE,
+  transform = NULL
 )
 }
 \arguments{
@@ -48,9 +55,11 @@ simulations will still be rerun.}
 
 \item{seed}{Seed to pass to Nonmem}
 
-\item{nmdir.data}{If you use dir.data, you may have to provide the
-relative path for the created simulation control stream in
-dir.sim to dir.data for the simulation to run.}
+\item{transform}{A list defining transformations to be applied
+after the Nonmem simulations and before plotting. For each
+list element, its name refers to the name of the column to
+transform, the contents must be the function to apply. See
+examples.}
 }
 \description{
 Supply a data set and an input control stream, and NMsim will

@@ -11,11 +11,11 @@
 ##'     in.
 ##' @param sge Use the sge queing system. Default is TRUE. Disable for
 ##'     quick models not to wait.
-##' @param file.archive A function of the model file path to
-##'     generate the path in which to archive the input data as
-##'     RDS. Set to NULL not to archive the data.
-##' @param nc Number of cores to use if sending to the cluster. Default
-##'     is 64.
+##' @param file.archive A function of the model file path to generate
+##'     the path in which to archive the input data as RDS. Set to
+##'     NULL not to archive the data.
+##' @param nc Number of cores to use if sending to the
+##'     cluster. Default is 64.
 ##' @param dir.data The directory in which the data file is
 ##'     stored. This is normally not needed as data will be found
 ##'     using the path in the control stream. This argument may be
@@ -29,6 +29,8 @@
 ##'     "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi".
 ##' @param update.only Only run model(s) if control stream or data
 ##'     updated since last run?
+##' @param nmquiet Suppress terminal output from `Nonmem`. This is
+##'     likely to only work on linux/unix systems.
 ##' @details Use this to read the archived input data when retrieving
 ##'     the nonmem results
 ##'     NMdataConf(file.data=function(x)fnExtension(fnAppend(x,"input"),".rds"))
@@ -49,8 +51,19 @@
 
 ### -nm_version=nm74_gf
 
-NMexec <- function(files,file.pattern,dir,sge=TRUE,file.archive,nc=64,dir.data=NULL,wait=FALSE,args.execute,update.only=FALSE,nmquiet=FALSE){
+NMexec <- function(files,file.pattern,dir,sge=TRUE,file.archive,nc=64,dir.data=NULL,wait=FALSE,
+                   args.execute,update.only=FALSE,nmquiet=FALSE){
     
+
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    file.archive <- NULL
+    nid <- NULL
+    input <- NULL
+    result <- NULL
+    
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+
 
     if(missing(file.archive)||is.null(file.archive)){
         file.archive <- function(file){
@@ -84,8 +97,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.archive,nc=64,dir.data=N
         ## replace extension of fn.input based on path.input - prefer rds
         rundir <- dirname(file.mod)
 
-        if(!is.null(file.data.archive)){
-            fn.input <- file.data.archive(file.mod)
+        if(!is.null(file.archive)){
+            fn.input <- file.archive(file.mod)
 
             ## copy input data
             dat.inp <- NMscanInput(file.mod,file.mod=file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
