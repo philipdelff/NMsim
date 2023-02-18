@@ -11,7 +11,7 @@
 ##'     in.
 ##' @param sge Use the sge queing system. Default is TRUE. Disable for
 ##'     quick models not to wait.
-##' @param file.archive A function of the model file path to generate
+##' @param input.archive A function of the model file path to generate
 ##'     the path in which to archive the input data as RDS. Set to
 ##'     NULL not to archive the data.
 ##' @param nc Number of cores to use if sending to the
@@ -51,13 +51,13 @@
 
 ### -nm_version=nm74_gf
 
-NMexec <- function(files,file.pattern,dir,sge=TRUE,file.archive,nc=64,dir.data=NULL,wait=FALSE,
+NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=NULL,wait=FALSE,
                    args.execute,update.only=FALSE,nmquiet=FALSE){
     
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
-    file.archive <- NULL
+    input.archive <- NULL
     nid <- NULL
     input <- NULL
     result <- NULL
@@ -65,13 +65,17 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.archive,nc=64,dir.data=N
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
 
-    if(missing(file.archive)||is.null(file.archive)){
-        file.archive <- function(file){
-            fn.input <- fnAppend(file,"input")
-            fn.input <- fnExtension(fn.input,".rds")
-            fn.input
-        }
+    if(missing(input.archive)||is.null(input.archive)){
+        input.archive <- inputArchiveDefault
+        ## input.archive <- function(file){
+        ##     fn.input <- fnAppend(file,"input")
+        ##     fn.input <- fnExtension(fn.input,".rds")
+        ##     fn.input
+        ## }
     }
+    if(isFALSE(input.archive)){
+        input.archive <- function(file) FALSE
+        }
     
     if(missing(args.execute) || is.null(args.execute)){
         args.execute <- "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi"
@@ -97,8 +101,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.archive,nc=64,dir.data=N
         ## replace extension of fn.input based on path.input - prefer rds
         rundir <- dirname(file.mod)
 
-        if(!is.null(file.archive)){
-            fn.input <- file.archive(file.mod)
+        if(!isFALSE(input.archive(file))){
+            fn.input <- input.archive(file.mod)
 
             ## copy input data
             dat.inp <- NMscanInput(file.mod,file.mod=file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
@@ -114,10 +118,6 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,file.archive,nc=64,dir.data=N
                 string.cmd <- paste0(string.cmd," -sge_prepend_flags=\"-pe orte ",nc," -V\" -parafile=",basename(pnm)," -nodes=",nc)
             }
         }
-
-        ## } else {
-        ##     string.cmd <- paste0("cd ",rundir,"; execute ",basename(file.mod))
-        ## }
 
         string.cmd <- paste(string.cmd,basename(file.mod))
         if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null")
