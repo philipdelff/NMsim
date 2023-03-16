@@ -1,5 +1,10 @@
 * NMexec todo
 ** NMsim
+*** TODO Rename type.input to type.mod
+*** TODO Revise input data paths
+Currently, NMsimData... goes together with NMsim....  It would be
+better for svn if the first part of the filenames were aligned. Also,
+do we need to archive input data as _input as well in this case?
 *** TODO Test if control stream exists
 Currently, the error comes from NMextractDataFile which is not
 intuitive to the user.
