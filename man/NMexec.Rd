@@ -9,7 +9,7 @@ NMexec(
   file.pattern,
   dir,
   sge = TRUE,
-  file.archive,
+  input.archive,
   nc = 64,
   dir.data = NULL,
   wait = FALSE,
@@ -34,7 +34,7 @@ in.}
 \item{sge}{Use the sge queing system. Default is TRUE. Disable for
 quick models not to wait.}
 
-\item{file.archive}{A function of the model file path to generate
+\item{input.archive}{A function of the model file path to generate
 the path in which to archive the input data as RDS. Set to
 NULL not to archive the data.}
 

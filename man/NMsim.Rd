@@ -53,7 +53,39 @@ means not to use SUBPROBLEMS.}
 they be used? If TRUE and reading the results fail, the
 simulations will still be rerun.}
 
-\item{seed}{Seed to pass to Nonmem}
+\item{seed}{Seed to pass to Nonmem.}
+
+\item{args.execute}{A charachter string that will be passed as
+arguments PSN's `execute`.}
+
+\item{nmquiet}{Silent messages from Nonmem.}
+
+\item{text.table}{A character string including the variables to
+export from Nonmem. The default is to export the same tables
+as listed in the input control stream. But if many variables
+are exported, and much fewer are used, it can speed up NMsim
+significantly to only export what is needed (sometimes this is
+as little as "PRED IPRED"). Nonmem writes data slowly so
+reducing output data from say 100 columns to a handful makes a
+big difference.}
+
+\item{type.input}{The control stream "type". Default is "est"
+meaning that an $ESTIMATION block will be replaced by a
+"$SIMULATION" block, and parameter estimates should be taken
+from the estimation results. If the control stream has already
+been turned into a simulation control stream, and only $INPUT,
+$DATA, and $TABLE sections should be edited. This implies that
+in case type.input="sim", `subproblems` is
+ignored. `type.input` may be automated in the future.}
+
+\item{execute}{Execute the simulation or only prepare it?
+`execute=FALSE` can be useful if you want to do additional
+tweaks or simulate using other parameter estimates.}
+
+\item{sge}{Submit to cluster? Default is not to, but this is very
+useful if creating a large number of simulations,
+e.g. simulate with all parameter estimates from a bootstrap
+result.}
 
 \item{transform}{A list defining transformations to be applied
 after the Nonmem simulations and before plotting. For each

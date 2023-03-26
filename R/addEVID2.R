@@ -12,6 +12,18 @@
 
 
 addEVID2 <- function(doses,time.sim,CMT){
+
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    EVID <- NULL
+    DV <- NULL
+    MDV <- NULL
+    ID <- NULL
+    TIME <- NULL
+    
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+    
+
     if(is.data.table(doses)) {
         doses <- copy(doses)
     } else {

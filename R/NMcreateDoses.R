@@ -65,6 +65,20 @@
 NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, addl=NULL){
     
     ## if(debug) browser()
+
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    . <- NULL
+    ID <- NULL
+    Nna <- NULL
+    max.length <- NULL
+    variable <- NULL
+    ROW <- NULL
+    as.formula <- NULL
+    MDV <- NULL
+    
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+
     
     list.doses <- list(TIME=TIME, EVID=EVID, CMT=CMT, AMT=AMT, RATE=RATE, SS=SS, II=addl$II,ADDL=addl$ADDL)
     ## disregard the ones that were not supplied

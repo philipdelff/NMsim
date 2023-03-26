@@ -3,6 +3,14 @@
 
 checkTimes <- function(file.lst,use.input,nminfo.input=NULL,file.mod,tz.lst=NULL){
 
+
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    lstExtractTime <- NULL
+    
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+
+
     file <- file.lst
 
     file.info.mod <- NULL
