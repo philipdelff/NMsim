@@ -27,8 +27,7 @@
 ##' @param transform A list defining transformations to be applied
 ##'     after the Nonmem simulations and before plotting. For each
 ##'     list element, its name refers to the name of the column to
-##'     transform, the contents must be the function to apply. See
-##'     examples.
+##'     transform, the contents must be the function to apply.
 ##' @param seed Seed to pass to Nonmem.
 ##' @param args.execute A charachter string that will be passed as
 ##'     arguments PSN's `execute`.
@@ -40,14 +39,14 @@
 ##'     as little as "PRED IPRED"). Nonmem writes data slowly so
 ##'     reducing output data from say 100 columns to a handful makes a
 ##'     big difference.
-##' @param type.input The control stream "type". Default is "est"
+##' @param type.mod The control stream "type". Default is "est"
 ##'     meaning that an $ESTIMATION block will be replaced by a
 ##'     "$SIMULATION" block, and parameter estimates should be taken
 ##'     from the estimation results. If the control stream has already
 ##'     been turned into a simulation control stream, and only $INPUT,
 ##'     $DATA, and $TABLE sections should be edited. This implies that
-##'     in case type.input="sim", `subproblems` is
-##'     ignored. `type.input` may be automated in the future.
+##'     in case type.mod="sim", `subproblems` is
+##'     ignored. `type.mod` may be automated in the future.
 ##' @param execute Execute the simulation or only prepare it?
 ##'     `execute=FALSE` can be useful if you want to do additional
 ##'     tweaks or simulate using other parameter estimates.
@@ -56,6 +55,7 @@
 ##'     useful if creating a large number of simulations,
 ##'     e.g. simulate with all parameter estimates from a bootstrap
 ##'     result.
+##' @param type.input Deprecated. Use type.mod instead.
 ##' @import NMdata
 
 ##' @export
@@ -82,7 +82,8 @@
 NMsim <- function(path.mod,data,dir.sim,
                   suffix.sim,order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE,text.table,
-                  type.input="est",execute=TRUE,sge=FALSE,transform=NULL){
+                  type.mod,execute=TRUE,sge=FALSE,transform=NULL
+                  ,type.input){
 
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -93,12 +94,24 @@ NMsim <- function(path.mod,data,dir.sim,
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
+    if(!missing(type.input)){
+        if(!missing(type.mod)){
+            stop("type.mod and type.input supplied. Use type.mod and not the deprecated type.input. ")
+        }
+        message("type.input is deprecated. Use type.mod.")
+        type.mod <- type.input
+    }
+    
+    if(missing(type.mod)||is.null(type.mod)){
+        type.mod <- "est"
+    }
+    
 
     warn.notransform <- function(transform){
         if(is.null(transform)) return(invisible(NULL))
         warning("`tranform` (argument) ignored since NMsim is not reading the simulation results.")
     }
-
+    
     if(length(path.mod)>1){
         allres.l <- lapply(path.mod,NMsim,data=data
                           ,dir.sim=dir.sim,
@@ -108,7 +121,7 @@ NMsim <- function(path.mod,data,dir.sim,
                            reuse.results=reuse.results,seed=seed,
                            args.execute=args.execute,nmquiet=nmquiet,
                            text.table=text.table,
-                           type.input=type.input,execute=execute,
+                           type.mod=type.mod,execute=execute,
                            sge=sge)
         return(rbindlist(allres.l))
     }
@@ -120,8 +133,8 @@ NMsim <- function(path.mod,data,dir.sim,
     if(!file.exists(path.mod)) stop("path.mod must be a path to an existing file.")
     if(is.function(seed)) seed <- seed()
     
-    if(!type.input%in%cc(sim,est)){
-        stop("type.input denotes whether supplied control stream is an estimation run or it is already a simulation run to be applied.")
+    if(!type.mod%in%cc(sim,est)){
+        stop("type.mod denotes whether supplied control stream is an estimation run or it is already a simulation run to be applied.")
     }
 
     
@@ -172,7 +185,7 @@ NMsim <- function(path.mod,data,dir.sim,
     names.sections <- names(sections.mod)
     line.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
     
-    if(type.input=="est"){
+    if(type.mod=="est"){
         cmd.update <- sprintf("update_inits --output_model=%s --seed=%s %s",fn.sim,seed,path.mod)
         system(cmd.update,wait=TRUE)
 
@@ -202,7 +215,7 @@ NMsim <- function(path.mod,data,dir.sim,
         }
         
         try(NMwriteSection(files=path.sim,section="$COVARIANCE",newlines="",backup=FALSE,quiet=TRUE))
-    } else if(type.input=="sim"){
+    } else if(type.mod=="sim"){
         file.copy(path.mod,path.sim,overwrite=TRUE)
         str.sim <- names.sections[min(grep("^(SIM|SIMULATION)$",names.sections))]
         NMwriteSection(files=path.sim,section=str.sim,newlines=line.sim,backup=FALSE,quiet=TRUE)
