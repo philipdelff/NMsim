@@ -73,6 +73,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
         ##     fn.input
         ## }
     }
+    
     if(isFALSE(input.archive)){
         input.archive <- function(file) FALSE
         }
@@ -101,7 +102,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
         ## replace extension of fn.input based on path.input - prefer rds
         rundir <- dirname(file.mod)
 
-        if(!isFALSE(input.archive(file))){
+        if(!isFALSE(input.archive(file.mod))){
             fn.input <- input.archive(file.mod)
 
             ## copy input data
