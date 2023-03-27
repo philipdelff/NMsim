@@ -1,11 +1,11 @@
-* NMexec todo
+* NMsim todo
 ** NMsim
 *** TODO Test if control stream exists
 Currently, the error comes from NMextractDataFile which is not
 intuitive to the user.
 *** DONE support multiple models
 *** DONE arg for transformation of sim results
-*** TODO Arg to control whether simulation is run
+*** DONE Arg to control whether simulation is run
 sometimes one may want to do a different simulation than the
 standard - say with PSN sse. In that case one still want the sim to be
 configured but not run.
@@ -15,8 +15,8 @@ $COV $COVARIANCE $EST $ESTIMATION $SIM $SIMULATION
 Maybe this should be done in NMwriteSection/NMreadSection instead.
 *** DONE Support using a ready-made sim model
 No modifications needed to control stream except $INPUT and $TABLE
-*** TODO Improve reuse.results to 
-method to compare all arguments to what's on file
+*** TODO Improve reuse.results
+to method to compare all arguments to what's on file
 *** DONE Support multiple $TABLE blocks
 ** NMcreateDoses
 *** TODO TIME must be full length

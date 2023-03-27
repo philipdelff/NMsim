@@ -1,7 +1,7 @@
-Package: NMexec
+Package: NMsim
 Type: Package
 Title: Start Nonmem jobs and run simulations from R
-Version: 0.0.0.9021
+Version: 0.0.1
 Authors@R: person("Philip", "Delff", email = "philip@delff.dk",
                   role = c("aut", "cre"))
 Maintainer: Philip Delff <philip@delff.dk>
@@ -11,7 +11,7 @@ RoxygenNote: 7.2.3
 Roxygen: list(roclets=c("collate", "namespace", "rd", "vignette"))
 Depends: R (>= 3.5.0)
 Imports: data.table,
-         NMdata (>= 0.0.14)
+         NMdata (>= 0.0.16)
 Suggests: 
 Encoding: UTF-8
 LazyData: true
