@@ -47,6 +47,7 @@
 ##'     $DATA, and $TABLE sections should be edited. This implies that
 ##'     in case type.mod="sim", `subproblems` is
 ##'     ignored. `type.mod` may be automated in the future.
+##' @param type.sim 
 ##' @param execute Execute the simulation or only prepare it?
 ##'     `execute=FALSE` can be useful if you want to do additional
 ##'     tweaks or simulate using other parameter estimates.
@@ -82,8 +83,8 @@
 NMsim <- function(path.mod,data,dir.sim,
                   suffix.sim,order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE,text.table,
-                  type.mod,execute=TRUE,sge=FALSE,transform=NULL
-                  ,type.input){
+                  type.mod,type.sim,execute=TRUE,sge=FALSE,transform=NULL
+                 ,type.input){
 
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -101,7 +102,7 @@ NMsim <- function(path.mod,data,dir.sim,
         message("type.input is deprecated. Use type.mod.")
         type.mod <- type.input
     }
-    
+    if(missing(type.sim)) type.sim <- "default"
     if(missing(type.mod)||is.null(type.mod)){
         type.mod <- "est"
     }
@@ -220,7 +221,31 @@ NMsim <- function(path.mod,data,dir.sim,
         str.sim <- names.sections[min(grep("^(SIM|SIMULATION)$",names.sections))]
         NMwriteSection(files=path.sim,section=str.sim,newlines=line.sim,backup=FALSE,quiet=TRUE)
     }
+    if(type.sim=="typical"){
+        ## stop("type.sim==typical does not work yet")
+### TODO: must not affect BLOCK()
+        ## lines.omega <- NMreadSection(file=path.sim,section="OMEGA")
+        ## set all omegas to zero        
+        ## lines.omega
+        ## lines.omega <- gsub("\\.","",lines.omega)
+        ## lines.omega <- gsub("[0-9]*\\.{0,1}[0-9]*","0",lines.omega)
+        ## lines.omega <- gsub("(^BLOCK *\\( *)(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)(e-?(0|[1-9]\\d*))?","0",lines.omega,perl=TRUE)
+        ## this does not preserve BLOCK()
+        ## lines.omega <- gsub("(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)(e-?(0|[1-9]\\d*))?","0",lines.omega,perl=TRUE)
+### this replaces BLOCK(2) with BLOCK(20)
+        ## lines.omega <- gsub("(?<!BLOCK\\()(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)(e-?(0|[1-9]\\d*))?","0",lines.omega,perl=TRUE)
 
+        ## this works in simple cases but is not as robust as the attempts above are intending to be.
+        ## lines.omega <- gsub("(?<!BLOCK\\()(\\d*)?[\\.]?[0-9]+","0",lines.omega,perl=TRUE)
+        ## Nomegas <- length(diag(extload(path.mod)$omega))
+        extres <- NMreadExt(fnAppend(path.mod,"ext"))
+        Netas <- extres$pars[par.type=="OMEGA",max(i)]
+
+### creates a full block of zeros. Works but unnecessarily large.
+        ## lines.omega <- sprintf("$OMEGA BLOCK(%d)\n 0 FIX %s",Nomegas,paste(rep(0,(Nomegas**2-Nomegas)/2+Nomegas-1),collapse=" "))
+        lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
+        NMwriteSection(files=path.sim,section="omega",newlines=lines.omega)
+    }
     
 ### replace data file
     NMwriteSection(files=path.sim,list.sections = nmtext,backup=FALSE,quiet=TRUE)

@@ -18,6 +18,7 @@ NMsim(
   nmquiet = FALSE,
   text.table,
   type.mod,
+  type.sim,
   execute = TRUE,
   sge = FALSE,
   transform = NULL,

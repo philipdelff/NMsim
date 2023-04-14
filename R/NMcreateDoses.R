@@ -18,7 +18,7 @@
 ##' (doses1 <- NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1)))
 ##' (doses2 <- NMcreateDoses(TIME=c(0,12,24),AMT=data.table(AMT=c(2,1,4,2),DOSE=c(1,2))))
 ##' ## Make Nonmem repeat the last dose. This is a total of 20 dosing events.
-##' NMcreateDoses(TIME=c(0,12),AMT=c(2,1),addl=list(ADDL=9*2,II=12))
+##' NMcreateDoses(TIME=c(0,12),AMT=c(2,1),addl=list(ADDL=c(NA,9*2),II=c(NA,12)))
 ##' dt.amt <- data.table(DOSE=c(100,400))
 ##' dt.amt[,AMT:=DOSE*1000]
 ##' dt.amt

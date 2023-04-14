@@ -2,6 +2,7 @@
 
 export(NMcreateDoses)
 export(NMexec)
+export(NMreadExt)
 export(NMsim)
 export(addEVID2)
 export(inputArchiveDefault)
