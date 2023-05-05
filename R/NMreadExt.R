@@ -6,7 +6,7 @@
 
 NMreadExt <- function(file.ext){
 
-    res.NMdat <- NMreadTab(file.ext)
+    res.NMdat <- NMreadTab(file.ext,as.fun="data.table")
     ## compareCols(
     ##     res.NMdat
     ##    ,
@@ -37,7 +37,8 @@ NMreadExt <- function(file.ext){
     res.NMdat <- mergeCheck(res.NMdat,dt.codes,by=cc(ITERATION),all.x=T,quiet=TRUE)
     ## res.NMdat
 
-    pars <- res.NMdat[variable%in%dt.codes$variable,!("OBJ")]|>
+    
+    pars <- res.NMdat[variable%in%dt.codes$variable,setdiff(colnames(res.NMdat),"OBJ"),with=FALSE]|>
         melt(id.vars=cc(ITERATION,variable,NMREP),variable.name="parameter")|>
         dcast(NMREP+parameter~variable,value.var="value")
 

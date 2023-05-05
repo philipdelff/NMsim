@@ -89,16 +89,21 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     ## convert to dt's
     
     names.doses <- names(list.doses)
+    
     list.doses <- lapply(names.doses,function(x){
-        if(is.data.table(list.doses[[x]])){
-            return(list.doses[[x]])
+        dt <- list.doses[[x]]
+        if(is.data.frame(dt)){
+            if(!is.data.table(dt)){
+                dt <- as.data.table(dt)
+            }
+            return(dt)
         } else {
-            DT <- data.table(x1=list.doses[[x]])
+            DT <- data.table(x1=dt)
             setnames(DT,"x1",x)
             return(DT)
         }
     })
-
+    
 ### make use of merge.data.frame to get outer merges where if no
 ### common columns found.
     df.doses <- lapply(list.doses,as.data.frame)
@@ -112,16 +117,20 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
 
     ## identify covs
     covs <- setdiff(colnames(dt.doses1),names.doses)
+    if("ID" %in% covs) stop("ID is currently not allowed as a covariate. Please use a different name and adjust the result accordingly.")
     combs <- unique(dt.doses1[,covs,with=F])
+
     ## get rid of all combs that contain NA
-    combs[,ID:=.I]
-    combs[,Nna:=sum(is.na(.SD)),by=ID]
+    
+    col.row <- tmpcol(combs)
+    combs[,(col.row):=.I]
+    combs[,Nna:=sum(is.na(.SD)),by=col.row]
 
 ### trying to fix. Is this a bug?
     combs <- combs[Nna==0]
     ## combs <- combs[Nna<length(covs)]
 
-    combs[,ID:=NULL]
+    combs[,(col.row):=NULL]
     combs[,Nna:=NULL]
     ## expand all to include all combs
 ### the name (EVID, AMT, etc) col must be renamed to value. For dcast.
@@ -138,9 +147,13 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
             combs[,setdiff(names(combs),names(elem)),with=FALSE]
            ,quiet=T)
     })
-    dt.doses1 <- unique(rbindlist(list.doses.exp,fill=T))
+    ## dt.doses1 <- unique(rbindlist(list.doses.exp,fill=T))
+    dt.doses1 <- rbindlist(list.doses.exp,fill=T)
     ## assign ID counter
-    dt.doses1[,ID:=.GRP,by=covs]
+    col.id <- "ID"
+    if(!col.id%in%covs){
+        dt.doses1[,ID:=.GRP,by=covs]
+    }
     ## calc max length within ID
     dt.doses1[,max.length:=.N,by=.(ID,variable)]
     dt.doses1[,max.length:=max(max.length),by=.(ID)]

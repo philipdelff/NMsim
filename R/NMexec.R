@@ -52,7 +52,7 @@
 ### -nm_version=nm74_gf
 
 NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=NULL,wait=FALSE,
-                   args.execute,update.only=FALSE,nmquiet=FALSE){
+                   args.execute,update.only=FALSE,nmquiet=FALSE,method.execute="execute"){
     
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -64,19 +64,20 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
-
+    nonmem <- "/opt/NONMEM/nm75/run/nmfe75"
+    ## 
+    callNonmem <- function(file.mod){
+        bfile.mod <- basename(file.mod)
+        sprintf("cd %s; %s %s %s; cd -",dirname(file.mod),nonmem,bfile.mod,fnExtension(bfile.mod,".lst"))
+    }
+    
     if(missing(input.archive)||is.null(input.archive)){
         input.archive <- inputArchiveDefault
-        ## input.archive <- function(file){
-        ##     fn.input <- fnAppend(file,"input")
-        ##     fn.input <- fnExtension(fn.input,".rds")
-        ##     fn.input
-        ## }
     }
     
     if(isFALSE(input.archive)){
         input.archive <- function(file) FALSE
-        }
+    }
     
     if(missing(args.execute) || is.null(args.execute)){
         args.execute <- "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi"
@@ -110,17 +111,22 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
 
-        string.cmd <- paste0("cd ",rundir,"; execute ",args.execute)
-        if(sge){
-            string.cmd <- paste0(string.cmd," -run_on_sge")
-            if(nc>1){
-                file.pnm <- file.path(rundir,"NMexec.pnm")
-                pnm <- NMgenPNM(nc=nc,file=file.pnm)
-                string.cmd <- paste0(string.cmd," -sge_prepend_flags=\"-pe orte ",nc," -V\" -parafile=",basename(pnm)," -nodes=",nc)
+        if(method.execute=="execute"){
+            string.cmd <- paste0("cd ",rundir,"; execute ",args.execute)
+            if(sge){
+                string.cmd <- paste0(string.cmd," -run_on_sge")
+                if(nc>1){
+                    file.pnm <- file.path(rundir,"NMexec.pnm")
+                    pnm <- NMgenPNM(nc=nc,file=file.pnm)
+                    string.cmd <- paste0(string.cmd," -sge_prepend_flags=\"-pe orte ",nc," -V\" -parafile=",basename(pnm)," -nodes=",nc)
+                }
             }
+            string.cmd <- paste(string.cmd,basename(file.mod))
+        }
+        if(method.execute=="direct"){
+            string.cmd <- callNonmem(file.mod)
         }
 
-        string.cmd <- paste(string.cmd,basename(file.mod))
         if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null")
         if(!wait) string.cmd <- paste(string.cmd,"&")
 

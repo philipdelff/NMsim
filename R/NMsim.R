@@ -84,7 +84,7 @@ NMsim <- function(path.mod,data,dir.sim,
                   suffix.sim,order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE,text.table,
                   type.mod,type.sim,execute=TRUE,sge=FALSE,transform=NULL
-                 ,type.input){
+                 ,type.input,method.execute){
 
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -106,11 +106,22 @@ NMsim <- function(path.mod,data,dir.sim,
     if(missing(type.mod)||is.null(type.mod)){
         type.mod <- "est"
     }
+    if(type.sim=="known"&&type.mod!="est"){
+        stop("Currently, type.sim=known can only be used with type.mod=est.")
+    }
     
-
+    if(missing(method.execute)) method.execute <- NULL
+    if(is.null(method.execute)){
+        if(type.sim=="known") {
+            method.execute <- "direct"
+        } else {
+            method.execute <- "execute"
+        }
+    }
+    
     warn.notransform <- function(transform){
         if(is.null(transform)) return(invisible(NULL))
-        warning("`tranform` (argument) ignored since NMsim is not reading the simulation results.")
+        warning("`transform` (argument) ignored since NMsim is not reading the simulation results.")
     }
     
     if(length(path.mod)>1){
@@ -123,7 +134,8 @@ NMsim <- function(path.mod,data,dir.sim,
                            args.execute=args.execute,nmquiet=nmquiet,
                            text.table=text.table,
                            type.mod=type.mod,execute=execute,
-                           sge=sge)
+                           sge=sge
+                          ,transform=transform)
         return(rbindlist(allres.l))
     }
     
@@ -132,8 +144,9 @@ NMsim <- function(path.mod,data,dir.sim,
     if(missing(subproblems)|| is.null(subproblems)) subproblems <- 0
     if(missing(text.table)) text.table <- NULL
     if(!file.exists(path.mod)) stop("path.mod must be a path to an existing file.")
-    if(is.function(seed)) seed <- seed()
-    
+    if(type.sim!="known"){
+        if(is.function(seed)) seed <- seed()
+    }
     if(!type.mod%in%cc(sim,est)){
         stop("type.mod denotes whether supplied control stream is an estimation run or it is already a simulation run to be applied.")
     }
@@ -148,7 +161,7 @@ NMsim <- function(path.mod,data,dir.sim,
     ## will be moved to path.sim once created.
     path.sim.0 <- file.path(dirname(path.mod),fn.sim)
     ## path.sim: full path to simulation control stream
-    path.sim <- file.path(dir.sim,fn.sim)
+    path.sim <- NMdata:::filePathSimple(file.path(dir.sim,fn.sim))
 
     ## path.sim.lst is full path to final output control stream to be read by NMscanData.
     path.sim.lst <- fnExtension(path.sim,".lst")
@@ -184,7 +197,11 @@ NMsim <- function(path.mod,data,dir.sim,
     
     sections.mod <- NMreadSection(file=path.mod)
     names.sections <- names(sections.mod)
-    line.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
+    if(type.sim != "known"){
+        line.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
+    } else {
+        seed <- 1
+    }
     
     if(type.mod=="est"){
         cmd.update <- sprintf("update_inits --output_model=%s --seed=%s %s",fn.sim,seed,path.mod)
@@ -209,7 +226,7 @@ NMsim <- function(path.mod,data,dir.sim,
             NMwriteSection(files=path.sim,section="$ESTIMATION",newlines="",backup=FALSE,quiet=TRUE)
             str.sim <- names.sections[min(grepl("^(SIM|SIMULATION)$",names.sections))]
             NMwriteSection(files=path.sim,section=str.sim,newlines=line.sim,backup=FALSE,quiet=TRUE)
-        } else {
+        } else if(type.sim!="known") {
             ## inserting $SIM instead of $EST. But rather, it should be
             ## inserted before table, and $EST should be removed.
             NMwriteSection(files=path.sim,section="$ESTIMATION",newlines=line.sim,backup=FALSE,quiet=TRUE)
@@ -246,6 +263,60 @@ NMsim <- function(path.mod,data,dir.sim,
         lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
         NMwriteSection(files=path.sim,section="omega",newlines=lines.omega)
     }
+
+    if(type.sim=="known"){
+        
+###### todo
+        ## cant allow disjoint id's in data
+        ## fail if ID's are non-unique in phi
+        ## only one table in orig phi supported
+        ## only type.mod="est" allowed (phi is used)
+
+        ## phi file required
+### read phi file and select subjects to be simulated
+        path.phi <- fnExtension(path.mod,".phi")
+        phi <- NMreadTab(path.phi)
+
+        data[,rowtmp:=.I]
+        dt.id.order <- data[,.SD[1],by=.(ID=as.character(ID)),.SDcols=cc(rowtmp)]
+        
+        
+        ## phi <- mergeCheck(phi,dt.id.order,by="ID",all.x=TRUE)
+        ## phi <- phi[!is.na(rowtmp)]
+        ## setorder(phi,rowtmp)
+### save .phi file for simulation. Table number always 1.
+        ## fwrite(phi,file=path.phi.sim,sep=" ",quote=FALSE
+        ##       ,row.names= FALSE
+        ##       ,scipen=0)
+
+        
+        phi.lines <- data.table(text=readLines(path.phi))
+        phi.lines[,n:=.I]        
+        phi.lines[,is.data:=!grepl("[a-zABCDFGHIJKLMNOPQSTUVWXYZ]",x=text)]
+        phi.lines[is.data==TRUE,textmod:=gsub(" +"," ",text)]
+        phi.lines[is.data==TRUE,textmod:=gsub("^ +","",textmod)]
+        phi.lines[is.data==TRUE,ID:=strsplit(textmod,split=" ")[[1]][2],by=.(n)]
+        ## phi.lines
+        
+        phi.use <- mergeCheck(dt.id.order[,.(ID)],phi.lines[,.(ID,text)],by=cc(ID),all.x=TRUE)
+### Error if subjects in data are not found in phi
+        if(phi.use[,any(is.na(text))]){
+            message("IDs not found in nonmem results (phi file):", paste(phi.use[is.na(text),ID],collapse=", "))
+        }
+        phi.use <- rbind(phi.lines[is.data==FALSE,.(text)],phi.use,fill=TRUE)
+
+        path.phi.sim <- fnAppend(fnExtension(path.sim,".phi"),"input")
+        con.newphi <- file(path.phi.sim, "wb")
+        writeLines(phi.use[,text], con = con.newphi)
+        close(con.newphi)
+
+### prepare simulation control stream
+        ## get rid of any $ETAS sections
+        lines.new <- sprintf("$ETAS FILE=%s  FORMAT=s1pE15.8 TBLN=1
+$ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.sim))
+
+        NMwriteSectionTmp(files=path.sim,section="estimation",location="replace",newlines=lines.new)
+    }
     
 ### replace data file
     NMwriteSection(files=path.sim,list.sections = nmtext,backup=FALSE,quiet=TRUE)
@@ -273,7 +344,7 @@ NMsim <- function(path.mod,data,dir.sim,
     ## if no $TABLE found already, just put it last
     
     if(is.null(NMreadSection(file=path.sim,section="TABLE"))){
-        ## this will work with NMdata 0.0.16
+        ## this works starting from NMdata 0.0.16
         
         NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,location="last")
     } else {
@@ -283,17 +354,17 @@ NMsim <- function(path.mod,data,dir.sim,
     if(execute){
         ## run sim
         wait <- !sge
-        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet)
+        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet,method.execute=method.execute)
         
         if(wait){
-            simres <- NMscanData(path.sim.lst,merge.by.row=FALSE)
+            simres <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table")
             ## optionally transform results like DV, IPRED, PRED
             if(!is.null(transform)){
                 for(name in names(transform)){
                     simres[,(name):=transform[[name]](get(name))]
                 }
             }
-            warn.notransform(transform)
+            ## warn.notransform(transform)
             return(simres)
         } else {
             warn.notransform(transform)

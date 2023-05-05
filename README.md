@@ -6,7 +6,7 @@ estimation control stream. `NMsim` needs to be able to run `Nonmem`
 (and currently also `PSN`) to work.
 
 ## Install
-Easiest way to install `NMsim` is using the remotes package to install with R:
+Easiest way to install `NMsim` is using the `remotes` package to install with R:
 
     library(remotes)
     install_github("philipdelff/NMsim")
@@ -22,7 +22,8 @@ github too:
     library("NMsim")
 
 ## Simulate a Nonmem model from R
-With a simulation data (`simdat`) and an estimated Nonmem run (stored in `models/run1.mod`) at hand, it is this simple:
+With a simulation data set (`simdat`) and an estimated Nonmem run
+(stored in `models/run1.mod`) at hand, it is this simple:
 
     simres <- NMsim("models/run1.mod",simdat,
 	dir.sim="simulations",suffix.sim="example",seed=123)

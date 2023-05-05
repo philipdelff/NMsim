@@ -1,0 +1,7 @@
+# Post 0.0.1
+## New features
+
+* NMsim supports type.sim="typical" which means all OMEGAS will be
+  fixed to zero. This requires the ext file to be present.
+
+* Experimental support for simulation of estimated subjects using type.sim="known".
