@@ -18,5 +18,5 @@ Add simulation records to dosing records
 }
 \examples{
 (doses1 <- NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1)))
-addEVID2(doses1,time.sim=seq(0,48,by=1),CMT=2)
+addEVID2(doses1,time.sim=seq(0,28,by=4),CMT=2)
 }

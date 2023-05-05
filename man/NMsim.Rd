@@ -22,7 +22,8 @@ NMsim(
   execute = TRUE,
   sge = FALSE,
   transform = NULL,
-  type.input
+  type.input,
+  method.execute
 )
 }
 \arguments{
@@ -79,6 +80,8 @@ been turned into a simulation control stream, and only $INPUT,
 $DATA, and $TABLE sections should be edited. This implies that
 in case type.mod="sim", `subproblems` is
 ignored. `type.mod` may be automated in the future.}
+
+\item{type.sim}{}
 
 \item{execute}{Execute the simulation or only prepare it?
 `execute=FALSE` can be useful if you want to do additional

@@ -15,7 +15,8 @@ NMexec(
   wait = FALSE,
   args.execute,
   update.only = FALSE,
-  nmquiet = FALSE
+  nmquiet = FALSE,
+  method.execute = "execute"
 )
 }
 \arguments{

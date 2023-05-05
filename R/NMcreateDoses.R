@@ -13,6 +13,7 @@
 ##' @param addl Optinal. A list of ADDL and II that will be applied to
 ##'     last dose
 ##' @import data.table
+##' @import NMdata
 ##' @examples
 ##' library(data.table)
 ##' ## arguments are expanded - makes loading easy
@@ -64,7 +65,7 @@
 ## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2))
 ## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2),CMT=1)
 
-NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, addl=NULL){
+NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, addl=NULL, as.fun){
     
     ## if(debug) browser()
 
@@ -81,6 +82,8 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
+    if(missing(as.fun)) as.fun <- NULL
+    as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
     
     list.doses <- list(TIME=TIME, EVID=EVID, CMT=CMT, AMT=AMT, RATE=RATE, SS=SS, II=addl$II,ADDL=addl$ADDL)
     ## disregard the ones that were not supplied
@@ -175,7 +178,7 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     res <- NMorderColumns(res)
     
     ## done
-    res
+    as.fun(res)
 }
 
 

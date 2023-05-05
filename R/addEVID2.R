@@ -11,7 +11,7 @@
 ##' @export 
 
 
-addEVID2 <- function(doses,time.sim,CMT){
+addEVID2 <- function(doses,time.sim,CMT,as.fun){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -23,6 +23,9 @@ addEVID2 <- function(doses,time.sim,CMT){
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
+    if(missing(as.fun)) as.fun <- NULL
+    as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
+
 
     if(is.data.table(doses)) {
         doses <- copy(doses)
@@ -40,7 +43,7 @@ addEVID2 <- function(doses,time.sim,CMT){
        ,EVID:=2][
        ,DV:=NA_real_][
        ,MDV:=1]
-                     
+    
 
 ### add CMT
     if(!is.list(CMT) && length(CMT)== 1){
@@ -56,6 +59,7 @@ addEVID2 <- function(doses,time.sim,CMT){
 #### not sure how to allow flexible sorting. For now, NB order is naive.
     setorder(dat.sim,ID,TIME,EVID)
     ## dat.sim[,REC:=.I]
-    dat.sim[]
+    as.fun(dat.sim)
+    
 }
 

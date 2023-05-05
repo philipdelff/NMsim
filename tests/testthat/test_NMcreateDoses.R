@@ -43,6 +43,12 @@ test_that("Multiple output table formats",{
     NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2),CMT=2)
     NMcreateDoses(TIME=c(0),AMT=c(2,1),CMT=2)
 
+
+    ## as.fun
+    NMcreateDoses(TIME=0,AMT=10)
+    NMcreateDoses(TIME=0,AMT=10,as.fun=tibble::as_tibble)
+
+
 })
 
 
