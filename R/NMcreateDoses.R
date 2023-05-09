@@ -106,6 +106,13 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
             return(DT)
         }
     })
+
+#### check that TIME is long enough
+    dt.lengths <- data.table(name=names.doses,
+               length=sapply(list.doses,nrow))
+    if(dt.lengths[name=="TIME",length]!=dt.lengths[,max(length)]){
+        stop("Column(s) has/have been specified beyond TIME. This is not allowed - TIME has to be at least as long as other arguments.")
+        }
     
 ### make use of merge.data.frame to get outer merges where if no
 ### common columns found.
