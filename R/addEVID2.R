@@ -1,11 +1,35 @@
 ##' Add simulation records to dosing records
 ##'
+##' Performs the simple job of adding simulation events to all
+##' subjects in a data set. Copies over columns that are not varying
+##' at subject level (i.e. non-variying covariates).
+##' 
 ##' @param doses dosing records Nonmem style
 ##' @param time.sim A numerical vector with simulation times
-##' @param CMT The compartment in which to insert the EVID=2 records
+##' @param CMT The compartment in which to insert the EVID=2
+##'     records. If longer than one, the records will be repeated in
+##'     all the specified compartments. If a data.frame, covariates
+##'     can be specified. 
+##' @details The resulting data set is ordered by ID, TIME, and
+##'     EVID. You may have to reorder for your specific needs.
 ##' @examples
 ##' (doses1 <- NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1)))
 ##' addEVID2(doses1,time.sim=seq(0,28,by=4),CMT=2)
+##'
+##' ## two named compartments
+##' dt.doses <- NMcreateDoses(TIME=c(0,12),AMT=10,CMT=1)
+##' seq.time <- c(0,4,12,24)
+##' dt.cmt <- data.table(CMT=c(2,3),analyte=c("parent","metabolite"))
+##' res <- addEVID2(dt.doses,time.sim=seq.time,CMT=dt.cmt)
+##' 
+##' ## Separate sampling schemes depending on covariate values
+##' dt.doses <- NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1)
+##'
+##' seq.time.sd <- data.table(regimen="SD",TIME=seq(0,6))
+##' seq.time.md <- data.table(regimen="MD",TIME=c(0,4,12,24))
+##' seq.time <- rbind(seq.time.sd,seq.time.md)
+##' 
+##' addEVID2(dt.doses,time.sim=seq.time,CMT=2)
 ##' @import data.table
 ##' @import NMdata
 ##' @export 
@@ -33,12 +57,17 @@ addEVID2 <- function(doses,time.sim,CMT,as.fun){
         doses <- as.data.table(doses)
     }
     
+    
+    to.use <- setdiff(colnames(doses),c("TIME","EVID","CMT","AMT","RATE","MDV","SS","II","ADDL","DV"))
+    covs.doses <- findCovs(doses[,to.use,with=FALSE],by="ID")
 
-    to.drop <- intersect(c("TIME","EVID","CMT","AMT","RATE","MDV","SS","II","ADDL"),colnames(doses))
-    covs.doses <- findCovs(doses[,setdiff(colnames(doses),to.drop),with=FALSE],by="ID")
-
-    dt.obs <- data.table(TIME=time.sim)
-    dt.obs <- egdt(dt.obs,covs.doses,quiet=TRUE)
+    if(!is.data.frame(time.sim)){
+        dt.obs <- data.table(TIME=time.sim)
+        dt.obs <- egdt(dt.obs,covs.doses,quiet=TRUE)
+    } else {
+        if(!"TIME"%in%colnames(time.sim)) stop("When time.sim is a data.frame, it must contain a column called TIME.")
+        dt.obs <- merge(time.sim,covs.doses,all.x=TRUE,allow.cartesian = TRUE)
+    }
     dt.obs[
        ,EVID:=2][
        ,DV:=NA_real_][
@@ -46,12 +75,16 @@ addEVID2 <- function(doses,time.sim,CMT,as.fun){
     
 
 ### add CMT
-    if(!is.list(CMT) && length(CMT)== 1){
-        dt.obs[,CMT:=CMT]
-    } else if (is.data.frame(CMT)){
+    if (!is.data.frame(CMT)){
+        CMT <- data.table(CMT=CMT)
+        
+    } else if (!is.data.table(CMT)){
         CMT <- as.data.table(CMT)
-        dt.obs <- egdt(dt.obs,CMT)
     }
+    
+    
+    dt.obs <- egdt(dt.obs,CMT,quiet=TRUE)
+    
     
     ## dat.sim <- egdt(typsubj[,!(c("ID"))],doses.ref)
     dat.sim <- rbind(doses,dt.obs,fill=T)
