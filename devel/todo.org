@@ -39,3 +39,7 @@ If ID not in covs, everything is replicated. It can be a data.table
 too, meaning that we replicate within covariates. Maybe we have to be
 able to use a known set of ID's and covs? Or use ID?
 @param ID ID's to replicate for. Default is 1. Use NULL to omit.
+
+** addEVID2
+*** TODO Order the same way as NMdata::addTAPD?
+currently, addEVID2 does not order rows after adding simulation records
