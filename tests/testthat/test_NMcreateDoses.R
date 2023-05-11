@@ -21,17 +21,43 @@ test_that("custom CMT value",{
     expect_equal(res1,res2)
 })
 
+test_that("Expand columns",{
+    fileRef <- "testReference/NMcreateDoses_02.rds"
+    res <- NMcreateDoses(TIME=c(0,12),AMT=10,CMT=2)
 
-## expand columns
-NMcreateDoses(TIME=c(0,12),AMT=10,CMT=2)
-## makes no sense to expand TIME
-NMcreateDoses(TIME=c(0),AMT=c(0,10),CMT=2)
+    expect_equal_to_reference(res,fileRef)
+
+}
+
+test_that("makes no sense to expand TIME",{
+    expect_error(NMcreateDoses(TIME=c(0),AMT=c(0,10),CMT=2))
+}
 
 ## II/ADDL should only be applied to last event. addl.lastonly
 ## argument?
 NMcreateDoses(TIME=c(0,12),AMT=10,addl=list(II=12,ADDL=3),CMT=2)
 
-### covariates 
+
+### covariates
+res <- NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1)
+res
+
+
+### covariates not spanning same covariate values. Should not be supported for now.
+res <- NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1,addl=list(II=12,ADDL=3,regimen="MD"))
+res
+
+## covariates not spanning same covariate values. Should not be supported for now.
+res <- NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1,addl=data.table(II=12,ADDL=3,regimen="MD"))
+res
+
+## This looks OK.
+NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1,addl=data.table(II=c(0,0,0,12),ADDL=c(0,0,0,3),regimen=c("SD",rep("MD",3))))
+
+
+NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=data.table(AMT=c(10,5),regimen=c("SD","MD")),CMT=1)
+
+
 NMcreateDoses(TIME=c(0),AMT=data.table(DOSE=c(10,50),AMT=c(10,50)))
 
 ## ID as covariate - not supported

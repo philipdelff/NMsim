@@ -26,11 +26,14 @@ No modifications needed to control stream except $INPUT and $TABLE
 to method to compare all arguments to what's on file
 *** DONE Support multiple $TABLE blocks
 ** NMcreateDoses
-*** TODO TIME must be full length
+*** TODO II/ADDL should only be applied to last event.
+addl.lastonly argument?
+*** DONE TIME must be full length
 *** TODO No NA's should be allowed anywhere? Or?
 *** TODO if a cov is found in multiple arguments, it must span same values
 
-*** TODO Should CMT have a default? Or be required?
+*** DONE Should CMT have a default? Or be required?
+For now, required
 
 *** TODO avoid hard coding variable names
 

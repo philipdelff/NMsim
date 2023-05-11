@@ -85,7 +85,16 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
     
-    list.doses <- list(TIME=TIME, EVID=EVID, CMT=CMT, AMT=AMT, RATE=RATE, SS=SS, II=addl$II,ADDL=addl$ADDL)
+    ## list.doses <- list(TIME=TIME, EVID=EVID, CMT=CMT, AMT=AMT, RATE=RATE, SS=SS, II=addl$II,ADDL=addl$ADDL)
+    ## list.doses <- list(TIME=TIME, EVID=EVID, CMT=CMT, AMT=AMT, RATE=RATE, SS=SS, ADDL=addl)
+    list.doses <- list(TIME=TIME, EVID=EVID, CMT=CMT, AMT=AMT, RATE=RATE, SS=SS 
+                       )
+    if(!is.null(addl)){
+        addl <- as.data.table(addl)
+        list.doses$ADDL <- addl[,setdiff(colnames(addl),"II"),with=FALSE]
+        list.doses$II <- addl[,setdiff(colnames(addl),"ADDL"),with=FALSE]
+    }
+    
     ## disregard the ones that were not supplied
     list.doses <- list.doses[!sapply(list.doses,is.null)]
 
@@ -109,10 +118,13 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
 
 #### check that TIME is long enough
     dt.lengths <- data.table(name=names.doses,
-               length=sapply(list.doses,nrow))
-    if(dt.lengths[name=="TIME",length]!=dt.lengths[,max(length)]){
-        stop("Column(s) has/have been specified beyond TIME. This is not allowed - TIME has to be at least as long as other arguments.")
-        }
+                             length=sapply(list.doses,nrow))
+    ## if(dt.lengths[name=="TIME",length]!=dt.lengths[,max(length)]){
+    ##     stop("Column(s) has/have been specified beyond TIME. This is not allowed - TIME has to be at least as long as other arguments.")
+    ## }
+
+    ## list.doses[[6]][,TIME:=12]
+    ## list.doses[[5]][,TIME:=12]
     
 ### make use of merge.data.frame to get outer merges where if no
 ### common columns found.
@@ -126,7 +138,8 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     ##  dt.doses1 <- rbindlist(list.doses,fill=T)
 
     ## identify covs
-    covs <- setdiff(colnames(dt.doses1),names.doses)
+    ##     covs <- setdiff(colnames(dt.doses1),c(names.doses,"II","ADDL"))
+    covs <- setdiff(colnames(dt.doses1),c(names.doses))
     if("ID" %in% covs) stop("ID is currently not allowed as a covariate. Please use a different name and adjust the result accordingly.")
     combs <- unique(dt.doses1[,covs,with=F])
 
@@ -135,7 +148,7 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     col.row <- tmpcol(combs)
     combs[,(col.row):=.I]
     combs[,Nna:=sum(is.na(.SD)),by=col.row]
-
+    
 ### trying to fix. Is this a bug?
     combs <- combs[Nna==0]
     ## combs <- combs[Nna<length(covs)]
@@ -180,8 +193,13 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     res <- dcast(dt.doses2,as.formula(paste(paste0(c("ID","ROW",covs),collapse="+"),"~variable")),value.var="value")
     res[,ROW:=NULL]
     res[,MDV:=1]
-    ## order rows and columns. We should order rows by CMT too.
-    setorderv(res,c("ID","TIME"))
+
+    ## because covariates can be a mix of types/classes, at least the
+    ## value column may be a list at this point. Recoding that.
+    res <- lapply(res,unlist)
+    res <- as.data.table(res)
+    ## order rows and columns. 
+    setorderv(res,c("ID","TIME","CMT"))
     res <- NMorderColumns(res)
     
     ## done
