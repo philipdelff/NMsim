@@ -84,9 +84,9 @@ NMsim <- function(path.mod,data,dir.sim,
                   suffix.sim,order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE,text.table,
                   type.mod,type.sim,execute=TRUE,sge=FALSE,transform=NULL
-                 ,type.input,method.execute){
+                 ,type.input,method.execute,as.fun){
 
-
+    
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     sim <- NULL
@@ -118,6 +118,14 @@ NMsim <- function(path.mod,data,dir.sim,
             method.execute <- "execute"
         }
     }
+
+    if(!dir.exists(dir.sim)){
+        stop("dir.sim does not point to an existing directory.")
+    }
+
+    if(missing(as.fun)) as.fun <- NULL
+    as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
+
     
     warn.notransform <- function(transform){
         if(is.null(transform)) return(invisible(NULL))
@@ -255,13 +263,13 @@ NMsim <- function(path.mod,data,dir.sim,
         ## this works in simple cases but is not as robust as the attempts above are intending to be.
         ## lines.omega <- gsub("(?<!BLOCK\\()(\\d*)?[\\.]?[0-9]+","0",lines.omega,perl=TRUE)
         ## Nomegas <- length(diag(extload(path.mod)$omega))
-        extres <- NMreadExt(fnAppend(path.mod,"ext"))
+        extres <- NMreadExt(fnExtension(path.mod,"ext"))
         Netas <- extres$pars[par.type=="OMEGA",max(i)]
 
 ### creates a full block of zeros. Works but unnecessarily large.
         ## lines.omega <- sprintf("$OMEGA BLOCK(%d)\n 0 FIX %s",Nomegas,paste(rep(0,(Nomegas**2-Nomegas)/2+Nomegas-1),collapse=" "))
         lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
-        NMwriteSection(files=path.sim,section="omega",newlines=lines.omega)
+        NMwriteSection(files=path.sim,section="omega",newlines=lines.omega,backup=FALSE,quiet=TRUE)
     }
 
     if(type.sim=="known"){
@@ -315,7 +323,8 @@ NMsim <- function(path.mod,data,dir.sim,
         lines.new <- sprintf("$ETAS FILE=%s  FORMAT=s1pE15.8 TBLN=1
 $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.sim))
 
-        NMwriteSectionTmp(files=path.sim,section="estimation",location="replace",newlines=lines.new)
+        NMwriteSection(files=path.sim,section="estimation",location="replace",
+                          newlines=lines.new,backup=FALSE,quiet=TRUE)
     }
     
 ### replace data file
@@ -342,13 +351,14 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     fun.paste <- function(...) paste(...,sep="\n")
     lines.tables <- do.call(fun.paste,lines.tables)
     ## if no $TABLE found already, just put it last
+
     
     if(is.null(NMreadSection(file=path.sim,section="TABLE"))){
         ## this works starting from NMdata 0.0.16
         
-        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,location="last")
+        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,location="last",quiet=TRUE)
     } else {
-        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE)
+        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,quiet=TRUE)
     }
     
     if(execute){
@@ -365,7 +375,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
                 }
             }
             ## warn.notransform(transform)
-            return(simres)
+            return(as.fun(simres))
         } else {
             warn.notransform(transform)
             return(invisible(NULL))

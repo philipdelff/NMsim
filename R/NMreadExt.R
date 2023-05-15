@@ -5,7 +5,7 @@
 
 
 NMreadExt <- function(file.ext){
-
+    
     res.NMdat <- NMreadTab(file.ext,as.fun="data.table")
     ## compareCols(
     ##     res.NMdat

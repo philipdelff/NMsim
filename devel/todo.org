@@ -1,5 +1,8 @@
 * NMsim todo
 ** NMsim
+*** TODO [#A] Create simulations dir if create.dir=TRUE
+If not await user input to create or not. Unless
+quiet=T&&create.dir==FALSE in which case to exit with error.
 *** TODO [#A] Support non-data.table workflows
 **** TODO [#A] use NMdata's as.fun
 *** TODO Rename type.input to type.mod

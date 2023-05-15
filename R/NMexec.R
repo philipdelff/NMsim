@@ -54,7 +54,7 @@
 NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=NULL,wait=FALSE,
                    args.execute,update.only=FALSE,nmquiet=FALSE,method.execute="execute"){
     
-
+    
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     input.archive <- NULL
@@ -127,7 +127,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
             string.cmd <- callNonmem(file.mod)
         }
 
-        if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null")
+        if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
         if(!wait) string.cmd <- paste(string.cmd,"&")
 
         system(string.cmd,ignore.stdout=nmquiet)
