@@ -2,17 +2,16 @@
 
 ** general
 
-*** TODO Setting for paths to executables
+*** DONE Setting for paths to executables
 Path to nonmem, psn, other ways to exec.
 
-*** TODO Fork NMwriteSection from NMdata
+*** DONE Fork NMwriteSection from NMdata
 ** NMsim
-*** TODO [#A] Create simulations dir if create.dir=TRUE
-If not await user input to create or not. Unless
-quiet=T&&create.dir==FALSE in which case to exit with error.
-*** TODO [#A] Support non-data.table workflows
-**** TODO [#A] use NMdata's as.fun
-*** TODO Rename type.input to type.mod
+*** DONE Create simulations dir if create.dir=TRUE
+If not, throw error if dir.sim does not exist
+*** DONE Support non-data.table workflows
+**** DONE use NMdata's as.fun
+*** DONE Rename type.input to type.mod
 *** TODO Revise input data paths
 Currently, NMsimData... goes together with NMsim....  It would be
 better for svn if the first part of the filenames were aligned. Also,

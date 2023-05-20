@@ -84,7 +84,7 @@ NMsim <- function(path.mod,data,dir.sim,
                   suffix.sim,order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE,text.table,
                   type.mod,type.sim,execute=TRUE,sge=FALSE,transform=NULL
-                 ,type.input,method.execute,dir.psn,as.fun){
+                 ,type.input,method.execute,create.dir=TRUE,dir.psn,as.fun){
 
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -120,7 +120,10 @@ NMsim <- function(path.mod,data,dir.sim,
     }
 
     if(!dir.exists(dir.sim)){
-        stop("dir.sim does not point to an existing directory.")
+        if(!create.dir){
+            stop(paste("dir.sim does not point to an existing directory. dir.sim is\n",NMdata:::filePathSimple(dir.sim)))
+        }
+        dir.create(dir.sim)
     }
 
     ## if(missing(dir.psn)) dir.psn <- "/usr/local/bin"
@@ -255,22 +258,7 @@ NMsim <- function(path.mod,data,dir.sim,
         NMwriteSection(files=path.sim,section=str.sim,newlines=line.sim,backup=FALSE,quiet=TRUE)
     }
     if(type.sim=="typical"){
-        ## stop("type.sim==typical does not work yet")
-### TODO: must not affect BLOCK()
-        ## lines.omega <- NMreadSection(file=path.sim,section="OMEGA")
-        ## set all omegas to zero        
-        ## lines.omega
-        ## lines.omega <- gsub("\\.","",lines.omega)
-        ## lines.omega <- gsub("[0-9]*\\.{0,1}[0-9]*","0",lines.omega)
-        ## lines.omega <- gsub("(^BLOCK *\\( *)(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)(e-?(0|[1-9]\\d*))?","0",lines.omega,perl=TRUE)
-        ## this does not preserve BLOCK()
-        ## lines.omega <- gsub("(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)(e-?(0|[1-9]\\d*))?","0",lines.omega,perl=TRUE)
-### this replaces BLOCK(2) with BLOCK(20)
-        ## lines.omega <- gsub("(?<!BLOCK\\()(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)(e-?(0|[1-9]\\d*))?","0",lines.omega,perl=TRUE)
 
-        ## this works in simple cases but is not as robust as the attempts above are intending to be.
-        ## lines.omega <- gsub("(?<!BLOCK\\()(\\d*)?[\\.]?[0-9]+","0",lines.omega,perl=TRUE)
-        ## Nomegas <- length(diag(extload(path.mod)$omega))
         extres <- NMreadExt(fnExtension(path.mod,"ext"))
         Netas <- extres$pars[par.type=="OMEGA",max(i)]
 

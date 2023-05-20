@@ -81,7 +81,7 @@ NMcheckData(dat.sim1)
 
 
 #### Simulations
-reuse.results <- TRUE
+reuse.results <- FALSE
 Nsubjects <- 50
 Nmods <- 50
 

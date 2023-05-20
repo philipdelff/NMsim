@@ -23,7 +23,9 @@ NMsim(
   sge = FALSE,
   transform = NULL,
   type.input,
-  method.execute
+  method.execute,
+  dir.psn,
+  as.fun
 )
 }
 \arguments{
