@@ -52,7 +52,7 @@
 ### -nm_version=nm74_gf
 
 NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=NULL,wait=FALSE,
-                   args.execute,update.only=FALSE,nmquiet=FALSE,method.execute="execute"){
+                   args.execute,update.only=FALSE,nmquiet=FALSE,method.execute="execute",dir.psn,path.nonmem){
     
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -64,11 +64,20 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
-    nonmem <- "/opt/NONMEM/nm75/run/nmfe75"
+    ## if(missing(dir.psn)) dir.psn <- "/usr/local/bin"
+    if(missing(dir.psn)) dir.psn <- ""
+    file.psn <- function(dir.psn,file.psn){
+        if(dir.psn=="")return(file.psn)
+        file.path(dir.psn,file.psn)
+    }
+    cmd.execute <- file.psn(dir.psn,"execute")
+
+
+    if(missing(path.nonmem)) path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75"
     ## 
     callNonmem <- function(file.mod){
         bfile.mod <- basename(file.mod)
-        sprintf("cd %s; %s %s %s; cd -",dirname(file.mod),nonmem,bfile.mod,fnExtension(bfile.mod,".lst"))
+        sprintf("cd %s; %s %s %s; cd -",dirname(file.mod),path.nonmem,bfile.mod,fnExtension(bfile.mod,".lst"))
     }
     
     if(missing(input.archive)||is.null(input.archive)){
@@ -112,7 +121,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
         }
 
         if(method.execute=="execute"){
-            string.cmd <- paste0("cd ",rundir,"; execute ",args.execute)
+            ## string.cmd <- paste0("cd ",rundir,"; ",cmd.execute ,args.execute)
+            string.cmd <- sprintf("cd %s; %s %s",rundir,cmd.execute ,args.execute)
             if(sge){
                 string.cmd <- paste0(string.cmd," -run_on_sge")
                 if(nc>1){
@@ -136,8 +146,3 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
     return(invisible(NULL))
 }
 
-
-## execute nonmem
-## system(
-##     paste0("cd ",rundir,"; execute -model_dir_name -run_on_sge -sge_prepend_flags=\"-pe orte ",nc," -V\" -parafile=",basename(pnm)," -nodes=",nc," ",basename(file.mod)," &")
-## )

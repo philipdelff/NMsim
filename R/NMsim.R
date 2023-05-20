@@ -84,7 +84,7 @@ NMsim <- function(path.mod,data,dir.sim,
                   suffix.sim,order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE,text.table,
                   type.mod,type.sim,execute=TRUE,sge=FALSE,transform=NULL
-                 ,type.input,method.execute,as.fun){
+                 ,type.input,method.execute,dir.psn,as.fun){
 
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -122,6 +122,14 @@ NMsim <- function(path.mod,data,dir.sim,
     if(!dir.exists(dir.sim)){
         stop("dir.sim does not point to an existing directory.")
     }
+
+    ## if(missing(dir.psn)) dir.psn <- "/usr/local/bin"
+    if(missing(dir.psn)) dir.psn <- ""
+    file.psn <- function(dir.psn,file.psn){
+        if(dir.psn=="")return(file.psn)
+        file.path(dir.psn,file.psn)
+    }
+    cmd.update.inits <- file.psn(dir.psn,"update_inits")
 
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
@@ -212,7 +220,7 @@ NMsim <- function(path.mod,data,dir.sim,
     }
     
     if(type.mod=="est"){
-        cmd.update <- sprintf("update_inits --output_model=%s --seed=%s %s",fn.sim,seed,path.mod)
+        cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim,seed,path.mod)
         system(cmd.update,wait=TRUE)
 
         file.rename(path.sim.0,path.sim)

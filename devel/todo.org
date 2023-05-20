@@ -1,4 +1,11 @@
 * NMsim todo
+
+** general
+
+*** TODO Setting for paths to executables
+Path to nonmem, psn, other ways to exec.
+
+*** TODO Fork NMwriteSection from NMdata
 ** NMsim
 *** TODO [#A] Create simulations dir if create.dir=TRUE
 If not await user input to create or not. Unless
