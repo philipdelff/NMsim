@@ -105,8 +105,12 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
 
     message(paste(files.exec,collapse=", "))
     
-    for(file.mod in files.exec){    
+    for(file.mod in files.exec){
+        file.mod <- NMdata:::filePathSimple(file.mod)
         message(file.mod)
+        if(file.exists(file.mod)){
+            stop(paste("Could not find file:",file.mod))
+        }
 ### cat(file.mod,"\n")
 
         ## replace extension of fn.input based on path.input - prefer rds
