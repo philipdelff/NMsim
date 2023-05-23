@@ -26,21 +26,31 @@ test_that("Expand columns",{
     res <- NMcreateDoses(TIME=c(0,12),AMT=10,CMT=2)
 
     expect_equal_to_reference(res,fileRef)
-
-}
+})
 
 test_that("makes no sense to expand TIME",{
-    expect_error(NMcreateDoses(TIME=c(0),AMT=c(0,10),CMT=2))
-}
+    expect_error(
+        NMcreateDoses(TIME=c(0),AMT=c(0,10),CMT=2)
+    )
+})
 
 ## II/ADDL should only be applied to last event. addl.lastonly
 ## argument?
-NMcreateDoses(TIME=c(0,12),AMT=10,addl=list(II=12,ADDL=3),CMT=2)
+test_that("II/ADDL",{
+    fileRef <- "testReference/NMcreateDoses_03.rds"
+    res <- NMcreateDoses(TIME=c(0,12),AMT=10,addl=list(II=12,ADDL=3),CMT=2)
 
+    expect_equal_to_reference(res,fileRef)
+})
 
 ### covariates
-res <- NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1)
-res
+test_that("covariates basics",{
+    fileRef <- "testReference/NMcreateDoses_04.rds"
+    res <- NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1)
+
+    expect_equal_to_reference(res,fileRef)
+})
+
 
 
 ### covariates not spanning same covariate values. Should not be supported for now.
@@ -61,13 +71,17 @@ NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=data
 NMcreateDoses(TIME=c(0),AMT=data.table(DOSE=c(10,50),AMT=c(10,50)))
 
 ## ID as covariate - not supported
-expect_error(NMcreateDoses(TIME=c(0),AMT=data.table(ID=c(10,50),AMT=c(10,50))))
+expect_error(
+    NMcreateDoses(TIME=c(0),AMT=data.table(ID=c(10,50),AMT=c(10,50)))
+)
 
 ## not sure what extra this example is showing
 ## NMcreateDoses(TIME=data.table(ID=c(1,1,2,2,2),TIME=c(0,1,0,1,4)),AMT=data.table(ID=c(1,1,2,2),AMT=c(2,1,4,2)))
 
 ## not ok - stop necessary
-expect_error(NMcreateDoses(TIME=c(0,1,4),AMT=data.table(AMT=c(2,1,4,2))))
+expect_error(
+    NMcreateDoses(TIME=c(0,1,4),AMT=data.table(AMT=c(2,1,4,2)))
+)
 
 ## ok
 NMcreateDoses(TIME=c(0,1,4),AMT=data.table(DOSELEVEL=c(1,1,2,2),AMT=c(2,1,4,2)))

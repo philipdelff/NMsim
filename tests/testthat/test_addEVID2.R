@@ -69,7 +69,7 @@ test_that("data.frame CMT",{
 })
 
 
-test_that("time with covariates with covariates",{
+test_that("time with covariates",{
     fileRef <- "testReference/addEVID2_05.rds"
 
     dt.doses <- NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1)
@@ -80,9 +80,8 @@ test_that("time with covariates with covariates",{
     
     res <- addEVID2(dt.doses,time.sim=seq.time,CMT=2)
 
-    dt.doses
-    dt.cmt
-    res
+    ## dt.doses
+    ## res
     
     expect_equal_to_reference(res,fileRef)
 
