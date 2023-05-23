@@ -16,7 +16,9 @@ NMexec(
   args.execute,
   update.only = FALSE,
   nmquiet = FALSE,
-  method.execute = "execute"
+  method.execute = "execute",
+  dir.psn,
+  path.nonmem
 )
 }
 \arguments{

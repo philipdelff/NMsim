@@ -62,25 +62,27 @@
 ##'               file.pattern="^run.*\\.mod",
 ##'               list.sections=text.nm["INPUT"])
 ##' }
-##' @export
+##' 
+## NB. Borrowed from NMdata. Don't export, and make sure to implement
+## changes in NMdata.
 
 
-NMwriteSectionTmp <- function(files,file.pattern,dir,section,newlines,
+NMwriteSection <- function(files,file.pattern,dir,section,newlines,
                            list.sections,location="replace",newfile,
                            backup=TRUE,blank.append=TRUE,data.file,
                            write=TRUE,quiet,simplify=TRUE){
 
-
+    
     
 #### Section start: handle arguments ####
-    if(missing(quiet)) quiet <- FALSE ## NULL
-    ## quiet <- NMdataDecideOption("quiet",quiet)
+    if(missing(quiet)) quiet <- NULL
+    quiet <- NMdataDecideOption("quiet",quiet)
 
     if(missing(files)) files <- NULL
     if(missing(dir)) dir <- NULL
     if(missing(file.pattern)) file.pattern <- NULL
     
-    all.files <- NMdata:::getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=quiet)
+    all.files <- getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=quiet)
 
     if(length(all.files)==0){
         message("No existing files matched. Nothing to do.")
@@ -106,7 +108,7 @@ NMwriteSectionTmp <- function(files,file.pattern,dir,section,newlines,
         names(list.sections) <- section
     } else {
         if(location!="replace"){
-            NMdata:::messageWrap("Only location=replace is supported in combination with list.sections.",fun.msg=stop)
+            messageWrap("Only location=replace is supported in combination with list.sections.",fun.msg=stop)
         }
     }
     
@@ -120,12 +122,12 @@ NMwriteSectionTmp <- function(files,file.pattern,dir,section,newlines,
         before <- NULL
         mad.dl <- NULL
         
-        file0 <- NMdata:::filePathSimple(file0)
+        file0 <- filePathSimple(file0)
         stopifnot(file.exists(file0))
 
         if(missing(newfile)) newfile <- file0
         if(!is.null(newfile)){
-            newfile <- NMdata:::filePathSimple(newfile)
+            newfile <- filePathSimple(newfile)
         }
 
         ## see below why we need to read the lines for now
@@ -149,7 +151,7 @@ NMwriteSectionTmp <- function(files,file.pattern,dir,section,newlines,
                                         cleanSpaces=FALSE)
 
             if(length(idx.dlines)==0&location%in%cc(replace,before,after)) {
-                message("section not found. Nothing to be done.")
+                if(!quiet) message("Section not found. Nothing to be done.")
                 return(lines)
             }
             
@@ -157,13 +159,15 @@ NMwriteSectionTmp <- function(files,file.pattern,dir,section,newlines,
                 ## if th
                 stopifnot(max(diff(idx.dlines))==1)
             }
-            if(location%in%cc(replace,before,after))
+            
+            if(location%in%cc(replace,before,after)){
                 min.dl <- min(idx.dlines)
-            max.dl <- max(idx.dlines)
+                max.dl <- max(idx.dlines)
 
 ### these two cases need to be handled slightly differently so not supported for now
-            stopifnot(min.dl>1)
-
+                
+                stopifnot(min.dl>1)
+            }
             nlines <- length(lines)
             
             if(location=="replace"){
@@ -215,7 +219,7 @@ NMwriteSectionTmp <- function(files,file.pattern,dir,section,newlines,
         if(file0==newfile && backup ) {
             dir.backup <- file.path(dirname(file0),"NMdata_backup")
             ## make sure backup dir exists
-            if(file.exists(dir.backup)&&!dir.exists(dir.backup)) NMdata:::messageWrap("Something called NMdata_backup is found and it is not a directory. Please remove or use backup=FALSE.",fun.msg=stop)
+            if(file.exists(dir.backup)&&!dir.exists(dir.backup)) messageWrap("Something called NMdata_backup is found and it is not a directory. Please remove or use backup=FALSE.",fun.msg=stop)
             if(!dir.exists(dir.backup)) dir.create(dir.backup)
             ## file.copy (file0,
             ##            sub("(.+/)([^/].+$)","\\1backup_\\2",x=file0)

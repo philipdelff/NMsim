@@ -1,15 +1,24 @@
 * NMsim todo
+
+** general
+
+*** DONE Setting for paths to executables
+Path to nonmem, psn, other ways to exec.
+
+*** DONE Fork NMwriteSection from NMdata
 ** NMsim
-*** TODO [#A] Support non-data.table workflows
-**** TODO [#A] use NMdata's as.fun
-*** TODO Rename type.input to type.mod
+*** DONE Create simulations dir if create.dir=TRUE
+If not, throw error if dir.sim does not exist
+*** DONE Support non-data.table workflows
+**** DONE use NMdata's as.fun
+*** DONE Rename type.input to type.mod
 *** TODO Revise input data paths
 Currently, NMsimData... goes together with NMsim....  It would be
 better for svn if the first part of the filenames were aligned. Also,
 do we need to archive input data as _input as well in this case?
-*** TODO Test if control stream exists
-Currently, the error comes from NMextractDataFile which is not
-intuitive to the user.
+*** DONE Test if control stream exists
+The error used to come from NMextractDataFile which is not intuitive
+to the user. Now a check is included in both NMexec and NMsim.
 *** DONE support multiple models
 *** DONE arg for transformation of sim results
 *** DONE Arg to control whether simulation is run
@@ -22,8 +31,12 @@ $COV $COVARIANCE $EST $ESTIMATION $SIM $SIMULATION
 Maybe this should be done in NMwriteSection/NMreadSection instead.
 *** DONE Support using a ready-made sim model
 No modifications needed to control stream except $INPUT and $TABLE
-*** TODO Improve reuse.results
+*** DONE Improve reuse.results
 to method to compare all arguments to what's on file
+
+The implementation compares all explicitly given arguments. E.g. if
+a=1 by default and it was explicitly given in previous run but not in
+the new one, it will be a difference.
 *** DONE Support multiple $TABLE blocks
 ** NMcreateDoses
 *** TODO II/ADDL should only be applied to last event.
@@ -46,3 +59,6 @@ able to use a known set of ID's and covs? Or use ID?
 ** addEVID2
 *** TODO Order the same way as NMdata::addTAPD?
 currently, addEVID2 does not order rows after adding simulation records
+** plain nonmem run
+*** Create dir, Copy files into it
+**** Update .mod to use local copy of input data

@@ -84,9 +84,9 @@ NMsim <- function(path.mod,data,dir.sim,
                   suffix.sim,order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE,text.table,
                   type.mod,type.sim,execute=TRUE,sge=FALSE,transform=NULL
-                 ,type.input,method.execute){
+                 ,type.input,method.execute,create.dir=TRUE,dir.psn,as.fun){
 
-
+    
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     sim <- NULL
@@ -118,6 +118,25 @@ NMsim <- function(path.mod,data,dir.sim,
             method.execute <- "execute"
         }
     }
+
+    if(!dir.exists(dir.sim)){
+        if(!create.dir){
+            stop(paste("dir.sim does not point to an existing directory. dir.sim is\n",NMdata:::filePathSimple(dir.sim)))
+        }
+        dir.create(dir.sim)
+    }
+
+    ## if(missing(dir.psn)) dir.psn <- "/usr/local/bin"
+    if(missing(dir.psn)) dir.psn <- ""
+    file.psn <- function(dir.psn,file.psn){
+        if(dir.psn=="")return(file.psn)
+        file.path(dir.psn,file.psn)
+    }
+    cmd.update.inits <- file.psn(dir.psn,"update_inits")
+
+    if(missing(as.fun)) as.fun <- NULL
+    as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
+
     
     warn.notransform <- function(transform){
         if(is.null(transform)) return(invisible(NULL))
@@ -165,17 +184,24 @@ NMsim <- function(path.mod,data,dir.sim,
 
     ## path.sim.lst is full path to final output control stream to be read by NMscanData.
     path.sim.lst <- fnExtension(path.sim,".lst")
-
+    ## where to store checksums 
+    path.digests <- fnExtension(fnAppend(path.sim.lst,"digests"),"rds")
 ###  Section end: Defining additional paths based on arguments
-    if(reuse.results && file.exists(path.sim.lst)){
-        ## simres <- try(NMscanData(path.sim.lst,col.row=col.row))
-        simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
-        if(!inherits(simres,"try-error")){
-            return(simres)
-        } else {
-            message("Tried to reuse results but failed to find/read any. Going to do the simulation.")
+
+    
+    run.fun <- needRun(path.sim.lst, path.digests)
+    ## if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
+    ##if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
+        if(!run.fun$needRun){
+            simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
+            if(!inherits(simres,"try-error")){
+                message("Found results from identical previous run (and reuse.results is TRUE). Not re-running simulation.")
+                return(simres)
+            } else {
+                message("Tried to reuse results but failed to find/read any. Going to do the simulation.")
+            }
         }
-    }
+    ##}
 
     data <- copy(as.data.table(data))
     
@@ -204,7 +230,7 @@ NMsim <- function(path.mod,data,dir.sim,
     }
     
     if(type.mod=="est"){
-        cmd.update <- sprintf("update_inits --output_model=%s --seed=%s %s",fn.sim,seed,path.mod)
+        cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim,seed,path.mod)
         system(cmd.update,wait=TRUE)
 
         file.rename(path.sim.0,path.sim)
@@ -239,29 +265,14 @@ NMsim <- function(path.mod,data,dir.sim,
         NMwriteSection(files=path.sim,section=str.sim,newlines=line.sim,backup=FALSE,quiet=TRUE)
     }
     if(type.sim=="typical"){
-        ## stop("type.sim==typical does not work yet")
-### TODO: must not affect BLOCK()
-        ## lines.omega <- NMreadSection(file=path.sim,section="OMEGA")
-        ## set all omegas to zero        
-        ## lines.omega
-        ## lines.omega <- gsub("\\.","",lines.omega)
-        ## lines.omega <- gsub("[0-9]*\\.{0,1}[0-9]*","0",lines.omega)
-        ## lines.omega <- gsub("(^BLOCK *\\( *)(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)(e-?(0|[1-9]\\d*))?","0",lines.omega,perl=TRUE)
-        ## this does not preserve BLOCK()
-        ## lines.omega <- gsub("(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)(e-?(0|[1-9]\\d*))?","0",lines.omega,perl=TRUE)
-### this replaces BLOCK(2) with BLOCK(20)
-        ## lines.omega <- gsub("(?<!BLOCK\\()(0|[1-9]\\d*)?(\\.\\d+)?(?<=\\d)(e-?(0|[1-9]\\d*))?","0",lines.omega,perl=TRUE)
 
-        ## this works in simple cases but is not as robust as the attempts above are intending to be.
-        ## lines.omega <- gsub("(?<!BLOCK\\()(\\d*)?[\\.]?[0-9]+","0",lines.omega,perl=TRUE)
-        ## Nomegas <- length(diag(extload(path.mod)$omega))
-        extres <- NMreadExt(fnAppend(path.mod,"ext"))
+        extres <- NMreadExt(fnExtension(path.mod,"ext"))
         Netas <- extres$pars[par.type=="OMEGA",max(i)]
 
 ### creates a full block of zeros. Works but unnecessarily large.
         ## lines.omega <- sprintf("$OMEGA BLOCK(%d)\n 0 FIX %s",Nomegas,paste(rep(0,(Nomegas**2-Nomegas)/2+Nomegas-1),collapse=" "))
         lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
-        NMwriteSection(files=path.sim,section="omega",newlines=lines.omega)
+        NMwriteSection(files=path.sim,section="omega",newlines=lines.omega,backup=FALSE,quiet=TRUE)
     }
 
     if(type.sim=="known"){
@@ -315,7 +326,8 @@ NMsim <- function(path.mod,data,dir.sim,
         lines.new <- sprintf("$ETAS FILE=%s  FORMAT=s1pE15.8 TBLN=1
 $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.sim))
 
-        NMwriteSectionTmp(files=path.sim,section="estimation",location="replace",newlines=lines.new)
+        NMwriteSection(files=path.sim,section="estimation",location="replace",
+                       newlines=lines.new,backup=FALSE,quiet=TRUE)
     }
     
 ### replace data file
@@ -342,18 +354,20 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     fun.paste <- function(...) paste(...,sep="\n")
     lines.tables <- do.call(fun.paste,lines.tables)
     ## if no $TABLE found already, just put it last
+
     
     if(is.null(NMreadSection(file=path.sim,section="TABLE"))){
-        ## this works starting from NMdata 0.0.16
-        
-        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,location="last")
+        ## this works starting from NMdata 0.0.16   
+        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,location="last",quiet=TRUE)
     } else {
-        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE)
+        NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,quiet=TRUE)
     }
     
     if(execute){
+        
         ## run sim
         wait <- !sge
+        
         NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet,method.execute=method.execute)
         
         if(wait){
@@ -365,13 +379,18 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
                 }
             }
             ## warn.notransform(transform)
-            return(simres)
+            simres <- as.fun(simres)
         } else {
             warn.notransform(transform)
-            return(invisible(NULL))
+            simres <- NULL
         }
     } else {
-        invisible(NULL)
+        simres <- NULL
     }
+
+    saveRDS(run.fun$digest.new,file=path.digests)
+
+    simres
+    
 }
 

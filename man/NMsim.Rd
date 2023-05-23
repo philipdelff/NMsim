@@ -23,7 +23,10 @@ NMsim(
   sge = FALSE,
   transform = NULL,
   type.input,
-  method.execute
+  method.execute,
+  create.dir = TRUE,
+  dir.psn,
+  as.fun
 )
 }
 \arguments{
