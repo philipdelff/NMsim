@@ -56,7 +56,7 @@ dat.sim1 <- as_tibble(dat.sim1)
 ##     mutate(ID=)
 ## quick look at top and bottom of sim data and a quick summary
 print(dat.sim1,topn=5)
-dat.sim1[,.N,by=.(regimen,DOSE,EVID)]
+## as.data.table(dat.sim1)[,.N,by=.(regimen,DOSE,EVID)]
 dat.sim1 %>%
     group_by(regimen,DOSE,EVID) %>%
     summarize(length(EVID)) 
@@ -81,7 +81,7 @@ NMcheckData(dat.sim1)
 
 
 #### Simulations
-reuse.results <- FALSE
+reuse.results <- TRUE
 Nsubjects <- 50
 Nmods <- 50
 

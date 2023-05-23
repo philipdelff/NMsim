@@ -24,6 +24,7 @@ NMsim(
   transform = NULL,
   type.input,
   method.execute,
+  create.dir = TRUE,
   dir.psn,
   as.fun
 )

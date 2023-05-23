@@ -31,8 +31,12 @@ $COV $COVARIANCE $EST $ESTIMATION $SIM $SIMULATION
 Maybe this should be done in NMwriteSection/NMreadSection instead.
 *** DONE Support using a ready-made sim model
 No modifications needed to control stream except $INPUT and $TABLE
-*** TODO Improve reuse.results
+*** DONE Improve reuse.results
 to method to compare all arguments to what's on file
+
+The implementation compares all explicitly given arguments. E.g. if
+a=1 by default and it was explicitly given in previous run but not in
+the new one, it will be a difference.
 *** DONE Support multiple $TABLE blocks
 ** NMcreateDoses
 *** TODO II/ADDL should only be applied to last event.

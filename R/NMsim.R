@@ -184,17 +184,24 @@ NMsim <- function(path.mod,data,dir.sim,
 
     ## path.sim.lst is full path to final output control stream to be read by NMscanData.
     path.sim.lst <- fnExtension(path.sim,".lst")
-
+    ## where to store checksums 
+    path.digests <- fnExtension(fnAppend(path.sim.lst,"digests"),"rds")
 ###  Section end: Defining additional paths based on arguments
-    if(reuse.results && file.exists(path.sim.lst)){
-        ## simres <- try(NMscanData(path.sim.lst,col.row=col.row))
-        simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
-        if(!inherits(simres,"try-error")){
-            return(simres)
-        } else {
-            message("Tried to reuse results but failed to find/read any. Going to do the simulation.")
+
+    
+    run.fun <- needRun(path.sim.lst, path.digests)
+    ## if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
+    ##if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
+        if(!run.fun$needRun){
+            simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
+            if(!inherits(simres,"try-error")){
+                message("Found results from identical previous run (and reuse.results is TRUE). Not re-running simulation.")
+                return(simres)
+            } else {
+                message("Tried to reuse results but failed to find/read any. Going to do the simulation.")
+            }
         }
-    }
+    ##}
 
     data <- copy(as.data.table(data))
     
@@ -320,7 +327,7 @@ NMsim <- function(path.mod,data,dir.sim,
 $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.sim))
 
         NMwriteSection(files=path.sim,section="estimation",location="replace",
-                          newlines=lines.new,backup=FALSE,quiet=TRUE)
+                       newlines=lines.new,backup=FALSE,quiet=TRUE)
     }
     
 ### replace data file
@@ -350,16 +357,17 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
 
     
     if(is.null(NMreadSection(file=path.sim,section="TABLE"))){
-        ## this works starting from NMdata 0.0.16
-        
+        ## this works starting from NMdata 0.0.16   
         NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,location="last",quiet=TRUE)
     } else {
         NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,quiet=TRUE)
     }
     
     if(execute){
+        
         ## run sim
         wait <- !sge
+        
         NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet,method.execute=method.execute)
         
         if(wait){
@@ -371,13 +379,18 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
                 }
             }
             ## warn.notransform(transform)
-            return(as.fun(simres))
+            simres <- as.fun(simres)
         } else {
             warn.notransform(transform)
-            return(invisible(NULL))
+            simres <- NULL
         }
     } else {
-        invisible(NULL)
+        simres <- NULL
     }
+
+    saveRDS(run.fun$digest.new,file=path.digests)
+
+    simres
+    
 }
 
