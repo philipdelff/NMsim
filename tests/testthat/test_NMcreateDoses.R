@@ -34,6 +34,8 @@ test_that("makes no sense to expand TIME",{
     )
 })
 
+## II/ADDL simple example missing
+
 ## II/ADDL should only be applied to last event. addl.lastonly
 ## argument?
 test_that("II/ADDL",{
