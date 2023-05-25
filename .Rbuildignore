@@ -39,4 +39,5 @@ input.shk
 INTER
 LINK.LNK
 ^inst/examples/simulations/.+$
-
+^inst/examples/nonmem/bs1_014_N1000/
+.*_dir.*

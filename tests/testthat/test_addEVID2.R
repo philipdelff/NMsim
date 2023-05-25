@@ -25,9 +25,9 @@ test_that("Multiple compartments",{
 
     res <- addEVID2(dt.doses,time.sim=seq.time,CMT=c(2,3))
 
-    dt.doses
-    res
-    readRDS(fileRef)
+    ## dt.doses
+    ## res
+    ## readRDS(fileRef)
     expect_equal_to_reference(res,fileRef)
 
 })

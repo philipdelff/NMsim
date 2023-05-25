@@ -189,7 +189,7 @@ NMsim <- function(path.mod,data,dir.sim,
 ###  Section end: Defining additional paths based on arguments
 
     
-    run.fun <- needRun(path.sim.lst, path.digests)
+    run.fun <- needRun(path.sim.lst, path.digests, args=list(path.mod=readLines))
     ## if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
     ##if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
         if(!run.fun$needRun){

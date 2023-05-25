@@ -1,8 +1,9 @@
-### need a digests of argument values, including their contents.
-
-### More than that, additionally digest of a list of contents derived
-### from arguments, like contents of a file which path is an arg.
-
+##' get arguments passed to a function
+##'
+##' @param which The number of environment levels to move. Default is
+##'     1 because that means the result is concerns the
+##'     function/environment in which callArgs() is executed.
+##' @return List of arguments
 
 callArgs <- function(which=-1){
 
@@ -21,42 +22,38 @@ callArgs <- function(which=-1){
 }
 
 
-## generally applicable but still too early to export
-dtapply <- function(...){
-    res.list <- lapply(...)
-    dt1 <- data.table(name=names(res.list),res=unlist(res.list))
-    dt1
-}
-
-
-## NMsim: get digest of path.mod
-
-##' @param args
+##' Get digest checksum of object elements
+##' 
+##' @param obj An object with elements to run digest on.
+##' @param funs Named list of functions to be applied to elements (matched on names) in `obj`. Optional.
+##' @return A data.table with hashes/checksums.
 ##' @importFrom digest digest
-## args is a list. Element names correspond to arg names. Content
-## is a function that returns digest.
+## Made for needRun. Don't export.
+digestElements <- function(obj,funs){
 
-addCallRes <- function(obj,args){
-
-    if(missing(args)) args <- NULL
-    nms.args <- names(args)
+    if(missing(funs)) funs <- NULL
+    nms.funs <- names(funs)
     ## modify the elements in obj that have associated functions in
-    ## args
-    for(na in nms.args){
+    ## funs
+    for(na in nms.funs){
         if(is.null(obj[[na]])){
             obj[[na]] <- NULL
         } else {
-            obj[[na]] <- args[[na]](obj[[na]])
+            obj[[na]] <- funs[[na]](obj[[na]])
         }
     }
     obj
     dtapply(obj,digest)
 }
 
+### need a digests of argument values, including their contents.
+
+### More than that, additionally digest of a list of contents derived
+### from arguments, like contents of a file which path is an arg.
 
 ##' @export
 ##' 
-needRun <- function(path.res,path.digest){
+needRun <- function(path.res,path.digest,funs){
 
     run.fun <- TRUE
     digest.old <- NULL
@@ -66,7 +63,7 @@ needRun <- function(path.res,path.digest){
     digest.new <- NULL
     if(file.exists(path.res)){
         obj.fun <- callArgs(which = -2)
-        digest.new <- addCallRes(obj.fun,args=list(file=readLines))
+        digest.new <- digestElements(obj.fun,funs=funs)
     }
     digest.all <- NULL
     if(!is.null(digest.old)&&!is.null(digest.new)){
