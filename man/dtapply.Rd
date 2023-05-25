@@ -15,5 +15,5 @@ representing the input values and a column with results. This is
 still experimental and will not work for many input structures.
 }
 \examples{
-dtapply(setNames(1:4,letters[1:4]),sqrt)
+NMsim:::dtapply(setNames(1:4,letters[1:4]),sqrt)
 }

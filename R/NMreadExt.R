@@ -1,10 +1,22 @@
-##' @export
 
 ## Netas <- pars[par.type=="OMEGA",max(i)]
 ## Nomega.diag <- pars[par.type=="OMEGA",.N]
 
 
 NMreadExt <- function(file.ext){
+
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    ITERATION <- NULL
+    variable <- NULL
+    NMREP <- NULL
+    par.type <- NULL
+    parameter <- NULL
+    i <- NULL
+    j <- NULL
+    
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+
     
     res.NMdat <- NMreadTab(file.ext,as.fun="data.table")
     ## compareCols(

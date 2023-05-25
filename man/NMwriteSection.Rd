@@ -91,16 +91,4 @@ Just give the section name, the new lines and the file path, and the
 The new file will be written with unix-style line
     endings.
 }
-\examples{
-newlines <- "$EST POSTHOC INTERACTION METHOD=1 NOABORT PRINT=5 MAXEVAL=9999 SIG=3"
-NMwriteSection(files=system.file("examples/nonmem/xgxr001.mod", package = "NMdata"),
-section="EST", newlines=newlines,newfile=NULL)
-\dontrun{
-text.nm <- NMwriteData(data)
-NMwriteSection(dir="nonmem",
-              file.pattern="^run.*\\\\.mod",
-              list.sections=text.nm["INPUT"])
-}
-
-}
 \concept{Nonmem}

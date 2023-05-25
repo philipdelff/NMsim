@@ -10,8 +10,8 @@ callArgs <- function(which=-1){
 ### args in call.
     ## no args are needed for this
     args.call <- as.list( match.call(
-        def = sys.function( which ),
-        call = sys.call(which)
+        definition = sys.function(which=which),
+        call = sys.call(which=which)
     ) )[-1]
     
 
@@ -51,7 +51,11 @@ digestElements <- function(obj,funs){
 ### More than that, additionally digest of a list of contents derived
 ### from arguments, like contents of a file which path is an arg.
 
-##' @export
+##' Determine whether re-run is necessary
+##'
+##' Compares arguments against stored checksums
+##'
+##' @param path.res Path to function results output file
 ##' 
 needRun <- function(path.res,path.digest,funs){
 

@@ -15,6 +15,12 @@ addEVID2(doses, time.sim, CMT, as.fun)
 records. If longer than one, the records will be repeated in
 all the specified compartments. If a data.frame, covariates
 can be specified.}
+
+\item{as.fun}{The default is to return data as a data.frame. Pass
+a function (say tibble::as_tibble) in as.fun to convert to
+something else. If data.tables are wanted, use
+as.fun="data.table". The default can be configured using
+NMdataConf.}
 }
 \description{
 Performs the simple job of adding simulation events to all
@@ -26,6 +32,7 @@ The resulting data set is ordered by ID, TIME, and
     EVID. You may have to reorder for your specific needs.
 }
 \examples{
+library(data.table)
 (doses1 <- NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1)))
 addEVID2(doses1,time.sim=seq(0,28,by=4),CMT=2)
 

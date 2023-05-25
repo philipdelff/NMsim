@@ -7,7 +7,7 @@
 ##' @param ... arguments passed to lapply
 ##' @import data.table 
 ##' @examples
-##' dtapply(setNames(1:4,letters[1:4]),sqrt)
+##' NMsim:::dtapply(setNames(1:4,letters[1:4]),sqrt)
 ## generally applicable but still too early to export
 dtapply <- function(X,FUN,...){
     res.list <- lapply(X,FUN,...)

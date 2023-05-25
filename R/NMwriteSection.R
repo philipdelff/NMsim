@@ -51,17 +51,8 @@
 ##' @return The new section text is returned. If write=TRUE, this is
 ##'     done invisibly.
 ##' @family Nonmem
+##' @import NMdata
 ##' 
-##' @examples
-##' newlines <- "$EST POSTHOC INTERACTION METHOD=1 NOABORT PRINT=5 MAXEVAL=9999 SIG=3"
-##' NMwriteSection(files=system.file("examples/nonmem/xgxr001.mod", package = "NMdata"),
-##' section="EST", newlines=newlines,newfile=NULL)
-##' \dontrun{
-##' text.nm <- NMwriteData(data)
-##' NMwriteSection(dir="nonmem",
-##'               file.pattern="^run.*\\.mod",
-##'               list.sections=text.nm["INPUT"])
-##' }
 ##' 
 ## NB. Borrowed from NMdata. Don't export, and make sure to implement
 ## changes in NMdata.
@@ -76,13 +67,13 @@ NMwriteSection <- function(files,file.pattern,dir,section,newlines,
     
 #### Section start: handle arguments ####
     if(missing(quiet)) quiet <- NULL
-    quiet <- NMdataDecideOption("quiet",quiet)
+    quiet <- NMdata:::NMdataDecideOption("quiet",quiet)
 
     if(missing(files)) files <- NULL
     if(missing(dir)) dir <- NULL
     if(missing(file.pattern)) file.pattern <- NULL
     
-    all.files <- getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=quiet)
+    all.files <- NMdata:::getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=quiet)
 
     if(length(all.files)==0){
         message("No existing files matched. Nothing to do.")
@@ -108,7 +99,7 @@ NMwriteSection <- function(files,file.pattern,dir,section,newlines,
         names(list.sections) <- section
     } else {
         if(location!="replace"){
-            messageWrap("Only location=replace is supported in combination with list.sections.",fun.msg=stop)
+            NMdata:::messageWrap("Only location=replace is supported in combination with list.sections.",fun.msg=stop)
         }
     }
     

@@ -81,10 +81,12 @@ meaning that an $ESTIMATION block will be replaced by a
 from the estimation results. If the control stream has already
 been turned into a simulation control stream, and only $INPUT,
 $DATA, and $TABLE sections should be edited. This implies that
-in case type.mod="sim", `subproblems` is
-ignored. `type.mod` may be automated in the future.}
+in case type.mod="sim", `subproblems` is ignored. `type.mod`
+may be automated in the future.}
 
-\item{type.sim}{}
+\item{type.sim}{One of "Default" (new simulation), "typical"
+(typical subject, ETAs = 0), or "known" (ID's observed in
+model estimation).}
 
 \item{execute}{Execute the simulation or only prepare it?
 `execute=FALSE` can be useful if you want to do additional
@@ -101,6 +103,12 @@ list element, its name refers to the name of the column to
 transform, the contents must be the function to apply.}
 
 \item{type.input}{Deprecated. Use type.mod instead.}
+
+\item{as.fun}{The default is to return data as a data.frame. Pass
+a function (say tibble::as_tibble) in as.fun to convert to
+something else. If data.tables are wanted, use
+as.fun="data.table". The default can be configured using
+NMdataConf.}
 }
 \description{
 Supply a data set and an input control stream, and NMsim will

@@ -45,9 +45,11 @@
 ##'     from the estimation results. If the control stream has already
 ##'     been turned into a simulation control stream, and only $INPUT,
 ##'     $DATA, and $TABLE sections should be edited. This implies that
-##'     in case type.mod="sim", `subproblems` is
-##'     ignored. `type.mod` may be automated in the future.
-##' @param type.sim 
+##'     in case type.mod="sim", `subproblems` is ignored. `type.mod`
+##'     may be automated in the future.
+##' @param type.sim One of "Default" (new simulation), "typical"
+##'     (typical subject, ETAs = 0), or "known" (ID's observed in
+##'     model estimation).
 ##' @param execute Execute the simulation or only prepare it?
 ##'     `execute=FALSE` can be useful if you want to do additional
 ##'     tweaks or simulate using other parameter estimates.
@@ -57,6 +59,11 @@
 ##'     e.g. simulate with all parameter estimates from a bootstrap
 ##'     result.
 ##' @param type.input Deprecated. Use type.mod instead.
+##' @param as.fun The default is to return data as a data.frame. Pass
+##'     a function (say tibble::as_tibble) in as.fun to convert to
+##'     something else. If data.tables are wanted, use
+##'     as.fun="data.table". The default can be configured using
+##'     NMdataConf.
 ##' @import NMdata
 
 ##' @export
@@ -80,11 +87,12 @@
 ### run to be called NMsim001.mod
 
 
-NMsim <- function(path.mod,data,dir.sim,
-                  suffix.sim,order.columns=TRUE,script=NULL,subproblems,
-                  reuse.results=FALSE,seed,args.execute="-clean=5",nmquiet=FALSE,text.table,
-                  type.mod,type.sim,execute=TRUE,sge=FALSE,transform=NULL
-                 ,type.input,method.execute,create.dir=TRUE,dir.psn,as.fun){
+NMsim <- function(path.mod,data,dir.sim, suffix.sim,
+                  order.columns=TRUE,script=NULL,subproblems,
+                  reuse.results=FALSE,seed,args.execute="-clean=5",
+                  nmquiet=FALSE,text.table, type.mod,type.sim,
+                  execute=TRUE,sge=FALSE,transform=NULL ,type.input,
+                  method.execute,create.dir=TRUE,dir.psn,as.fun){
 
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -92,6 +100,15 @@ NMsim <- function(path.mod,data,dir.sim,
     sim <- NULL
     est <- NULL
     fn <- NULL
+    par.type <- NULL
+    i <- NULL
+    rowtmp <- NULL
+    . <- NULL
+    ID <- NULL
+    n <- n
+    is.data <- NULL
+    text <- NULL
+    textmod <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
@@ -189,7 +206,7 @@ NMsim <- function(path.mod,data,dir.sim,
 ###  Section end: Defining additional paths based on arguments
 
     
-    run.fun <- needRun(path.sim.lst, path.digests, args=list(path.mod=readLines))
+    run.fun <- needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines))
     ## if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
     ##if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
         if(!run.fun$needRun){
