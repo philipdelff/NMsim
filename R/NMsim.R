@@ -92,7 +92,7 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
                   reuse.results=FALSE,seed,args.execute="-clean=5",
                   nmquiet=FALSE,text.table, type.mod,type.sim,
                   execute=TRUE,sge=FALSE,transform=NULL ,type.input,
-                  method.execute,create.dir=TRUE,dir.psn,as.fun){
+                  method.execute,create.dir=TRUE,dir.psn,path.nonmem=NULL,as.fun){
 
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -105,7 +105,7 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
     rowtmp <- NULL
     . <- NULL
     ID <- NULL
-    n <- n
+    n <- NULL
     is.data <- NULL
     text <- NULL
     textmod <- NULL
@@ -385,7 +385,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
         ## run sim
         wait <- !sge
         
-        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet,method.execute=method.execute)
+        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem)
         
         if(wait){
             simres <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table")

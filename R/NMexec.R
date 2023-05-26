@@ -86,7 +86,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     cmd.execute <- file.psn(dir.psn,"execute")
 
 
-    if(missing(path.nonmem)) path.nonmem <- "nmfe75"
+    if(missing(path.nonmem)||is.null(path.nonmem)) path.nonmem <- "nmfe75"
     ## 
     callNonmem <- function(file.mod){
         bfile.mod <- basename(file.mod)
