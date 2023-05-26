@@ -113,12 +113,12 @@ NMwriteSection <- function(files,file.pattern,dir,section,newlines,
         before <- NULL
         mad.dl <- NULL
         
-        file0 <- filePathSimple(file0)
+        file0 <- NMdata:::filePathSimple(file0)
         stopifnot(file.exists(file0))
 
         if(missing(newfile)) newfile <- file0
         if(!is.null(newfile)){
-            newfile <- filePathSimple(newfile)
+            newfile <- NMdata:::filePathSimple(newfile)
         }
 
         ## see below why we need to read the lines for now
@@ -210,7 +210,7 @@ NMwriteSection <- function(files,file.pattern,dir,section,newlines,
         if(file0==newfile && backup ) {
             dir.backup <- file.path(dirname(file0),"NMdata_backup")
             ## make sure backup dir exists
-            if(file.exists(dir.backup)&&!dir.exists(dir.backup)) messageWrap("Something called NMdata_backup is found and it is not a directory. Please remove or use backup=FALSE.",fun.msg=stop)
+            if(file.exists(dir.backup)&&!dir.exists(dir.backup)) NMdata:::messageWrap("Something called NMdata_backup is found and it is not a directory. Please remove or use backup=FALSE.",fun.msg=stop)
             if(!dir.exists(dir.backup)) dir.create(dir.backup)
             ## file.copy (file0,
             ##            sub("(.+/)([^/].+$)","\\1backup_\\2",x=file0)

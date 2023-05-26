@@ -59,6 +59,17 @@ digestElements <- function(obj,funs){
 ##' 
 needRun <- function(path.res,path.digest,funs){
 
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    res.new <- NULL
+    res.old <- NULL
+    . <- NULL
+    name <- NULL
+    V1 <- NULL
+    
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+
+    
     run.fun <- TRUE
     digest.old <- NULL
     if(file.exists(path.digest)){

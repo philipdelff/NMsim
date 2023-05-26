@@ -63,6 +63,18 @@ updated since last run?}
 
 \item{nmquiet}{Suppress terminal output from `Nonmem`. This is
 likely to only work on linux/unix systems.}
+
+\item{dir.psn}{The directory in which to find PSN
+executables. This is only needed if these are not searchable
+in the system path, or if the user should want to be explicit
+about where to find them (i.e. want to use a specific
+installed version of PSN).}
+
+\item{path.nonmem}{The path to the nonmem executable. Only used if
+method.execute="direct" (which is not default). If this
+argument is not supplied, NMexec will try to run nmfe75,
+i.e. this has to be available in the path of the underlying
+shell.}
 }
 \description{
 execute nonmem while also archiving input data

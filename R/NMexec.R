@@ -31,6 +31,17 @@
 ##'     updated since last run?
 ##' @param nmquiet Suppress terminal output from `Nonmem`. This is
 ##'     likely to only work on linux/unix systems.
+##' @param method.execute How 
+##' @param dir.psn The directory in which to find PSN
+##'     executables. This is only needed if these are not searchable
+##'     in the system path, or if the user should want to be explicit
+##'     about where to find them (i.e. want to use a specific
+##'     installed version of PSN).
+##' @param path.nonmem The path to the nonmem executable. Only used if
+##'     method.execute="direct" (which is not default). If this
+##'     argument is not supplied, NMexec will try to run nmfe75,
+##'     i.e. this has to be available in the path of the underlying
+##'     shell.
 ##' @details Use this to read the archived input data when retrieving
 ##'     the nonmem results
 ##'     NMdataConf(file.data=function(x)fnExtension(fnAppend(x,"input"),".rds"))
@@ -51,8 +62,10 @@
 
 ### -nm_version=nm74_gf
 
-NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=NULL,wait=FALSE,
-                   args.execute,update.only=FALSE,nmquiet=FALSE,method.execute="execute",dir.psn,path.nonmem){
+NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
+                   nc=64,dir.data=NULL,wait=FALSE, args.execute,
+                   update.only=FALSE,nmquiet=FALSE,
+                   method.execute="execute",dir.psn,path.nonmem){
     
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -73,7 +86,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,nc=64,dir.data=
     cmd.execute <- file.psn(dir.psn,"execute")
 
 
-    if(missing(path.nonmem)) path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75"
+    if(missing(path.nonmem)) path.nonmem <- "nmfe75"
     ## 
     callNonmem <- function(file.mod){
         bfile.mod <- basename(file.mod)
