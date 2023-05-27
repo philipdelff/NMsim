@@ -70,30 +70,13 @@
 
 
 
-
-### it would be useful not to have to do update_inits but just use
-### copy. update_inits may go wrong.
-
-### need to be able to just read results if sim was run already
-
-### read results if previously sent to cluster?
-
-## ** NMsim
-## *** save input to datafile in simulations folder
-## *** NMexec archives
-
-
-### input data to be named NMsimData001.csv
-### run to be called NMsim001.mod
-
-
 NMsim <- function(path.mod,data,dir.sim, suffix.sim,
                   order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",
                   nmquiet=FALSE,text.table, type.mod,type.sim,
                   execute=TRUE,sge=FALSE,transform=NULL ,type.input,
-                  method.execute,create.dir=TRUE,dir.psn,path.nonmem=NULL,as.fun){
-
+                  method.execute,create.dir=TRUE,dir.psn,
+                  path.nonmem=NULL,as.fun){
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -206,18 +189,29 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
 ###  Section end: Defining additional paths based on arguments
 
     
-    run.fun <- needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines))
+    run.fun <- try(needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines)))
+    if(inherits(run.fun,"try-error")){
+        run.fun <- list(needRun=TRUE
+                       ,digest.new=paste(Sys.time(),"unsuccesful")
+                        )
+    }
     ## if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
     ##if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
-        if(!run.fun$needRun){
-            simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
-            if(!inherits(simres,"try-error")){
-                message("Found results from identical previous run (and reuse.results is TRUE). Not re-running simulation.")
-                return(simres)
-            } else {
-                message("Tried to reuse results but failed to find/read any. Going to do the simulation.")
+    if(reuse.results && !run.fun$needRun){
+        simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
+        if(!inherits(simres,"try-error")){
+            message("Found results from identical previous run (and reuse.results is TRUE). Not re-running simulation.")
+            if(!is.null(transform)){
+                
+                for(name in names(transform)){
+                    simres[,(name):=transform[[name]](get(name))]
+                }
             }
+            return(simres)
+        } else {
+            message("Tried to reuse results but failed to find/read any. Going to do the simulation.")
         }
+    }
     ##}
 
     data <- copy(as.data.table(data))
@@ -391,6 +385,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
             simres <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table")
             ## optionally transform results like DV, IPRED, PRED
             if(!is.null(transform)){
+                
                 for(name in names(transform)){
                     simres[,(name):=transform[[name]](get(name))]
                 }

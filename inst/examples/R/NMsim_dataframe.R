@@ -154,7 +154,7 @@ NMsim(allmods.bs,
      ,sge=TRUE
      ,seed=function()sample(1:1e8,size=1),
       text.table="PRED IPRED"
-     ,reuse.results=reuse.results
+     ,reuse.results=!reuse.results
       )
 
 
@@ -256,3 +256,4 @@ p.known.check <- ggplot(res.check,aes(valuemodel,valuesim))+
     facet_wrap(~variable,scales="free")
 
 ggwrite(p.known.check,file="../outputs/exdf_known_check.png",script=this.script,save=writeOutput)
+

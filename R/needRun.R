@@ -6,16 +6,18 @@
 ##' @return List of arguments
 
 callArgs <- function(which=-1){
-
+    
 ### args in call.
     ## no args are needed for this
-    args.call <- as.list( match.call(
-        definition = sys.function(which=which),
-        call = sys.call(which=which)
-    ) )[-1]
+    args.call <- as.list(
+        match.call(
+            definition = sys.function(which=which),
+            call = sys.call(which=which)
+        )
+    )[-1]
     
-
-    argsconts <- lapply(args.call, eval, envir = parent.frame())
+    ### should this be envir=parent.frame(-which) ?
+    argsconts <- lapply(args.call, eval, envir = parent.frame(n=1))
     ##    digest(argsconts)
 
     argsconts
@@ -58,7 +60,7 @@ digestElements <- function(obj,funs){
 ##' @param path.res Path to function results output file
 ##' 
 needRun <- function(path.res,path.digest,funs){
-
+    
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     res.new <- NULL
@@ -77,6 +79,7 @@ needRun <- function(path.res,path.digest,funs){
     }
     digest.new <- NULL
     if(file.exists(path.res)){
+        
         obj.fun <- callArgs(which = -2)
         digest.new <- digestElements(obj.fun,funs=funs)
     }
