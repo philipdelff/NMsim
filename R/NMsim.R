@@ -47,7 +47,7 @@
 ##'     $DATA, and $TABLE sections should be edited. This implies that
 ##'     in case type.mod="sim", `subproblems` is ignored. `type.mod`
 ##'     may be automated in the future.
-##' @param type.sim One of "Default" (new simulation), "typical"
+##' @param type.sim One of "default" (new simulation), "typical"
 ##'     (typical subject, ETAs = 0), or "known" (ID's observed in
 ##'     model estimation).
 ##' @param execute Execute the simulation or only prepare it?
@@ -76,7 +76,9 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
                   nmquiet=FALSE,text.table, type.mod,type.sim,
                   execute=TRUE,sge=FALSE,transform=NULL ,type.input,
                   method.execute,create.dir=TRUE,dir.psn,
-                  path.nonmem=NULL,as.fun){
+                  path.nonmem=NULL,as.fun
+                  ## ,obj.checksums
+                  ){
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -142,6 +144,8 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
         if(is.null(transform)) return(invisible(NULL))
         warning("`transform` (argument) ignored since NMsim is not reading the simulation results.")
     }
+
+
     
     if(length(path.mod)>1){
         allres.l <- lapply(path.mod,NMsim,data=data
@@ -154,7 +158,9 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
                            text.table=text.table,
                            type.mod=type.mod,execute=execute,
                            sge=sge
-                          ,transform=transform)
+                          ,transform=transform
+                           ## ,obj.checksums=run.fun
+                           )
         return(rbindlist(allres.l))
     }
     
@@ -188,8 +194,14 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
     path.digests <- fnExtension(fnAppend(path.sim.lst,"digests"),"rds")
 ###  Section end: Defining additional paths based on arguments
 
+    ## if(missing(obj.checksums)){
     
-    run.fun <- try(needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines)))
+    ## run.fun <- needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines))
+    run.fun <- try(needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines)),silent=TRUE)
+    ## } else {
+    ##     run.fun <- obj.checksums
+    ## }
+    
     if(inherits(run.fun,"try-error")){
         run.fun <- list(needRun=TRUE
                        ,digest.new=paste(Sys.time(),"unsuccesful")

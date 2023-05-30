@@ -7,6 +7,7 @@ Path to nonmem, psn, other ways to exec.
 
 *** DONE Fork NMwriteSection from NMdata
 ** NMsim
+*** TODO Reduce number of needed arguments
 *** DONE Create simulations dir if create.dir=TRUE
 If not, throw error if dir.sim does not exist
 *** DONE Support non-data.table workflows
@@ -60,5 +61,6 @@ able to use a known set of ID's and covs? Or use ID?
 *** TODO Order the same way as NMdata::addTAPD?
 currently, addEVID2 does not order rows after adding simulation records
 ** plain nonmem run
-*** Create dir, Copy files into it
+*** TODO Create dir, Copy files into it
 **** Update .mod to use local copy of input data
+Or not? Copy input data around so it is available for Nonmem and for reading after.

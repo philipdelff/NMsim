@@ -22,8 +22,13 @@ github too:
     library("NMsim")
 
 ## Simulate a Nonmem model from R
+Three types of simulations are currently supported:
+- Simulation of new subjects (default or explicitly with type.sim="default")
+- Simulation of a typical subject (ETAs equal 0, type.sim="typical")
+- Simulation of subjects already estimated in Nonmem model (type.sim="known")
+
 With a simulation data set (`simdat`) and an estimated Nonmem run
-(stored in `models/run1.mod`) at hand, it is this simple:
+(stored in `models/run1.mod`) at hand, it is this simple to simulate new subjects:
 
     simres <- NMsim("models/run1.mod",simdat,
 	dir.sim="simulations",suffix.sim="example",seed=123)

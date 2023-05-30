@@ -93,6 +93,7 @@ simres <- NMsim(path.mod=file.mod,
                 seed=40,
                 subproblems=Nsubjects
                ,reuse.results=reuse.results)
+
 simres <- as.data.table(simres)[,ID:=.GRP,by=.(NMREP,ID)]
 
 
@@ -101,7 +102,7 @@ simres.typ <- NMsim(path.mod=file.mod,
                     data=dat.sim1,
                     type.sim="typical",
                     dir.sim="../simulations",suffix.sim = "df1.typ",
-                    seed=40
+                    seed=334
                    ,reuse.results=reuse.results)
 simres.typ$type <- "typical"
 
@@ -154,7 +155,7 @@ NMsim(allmods.bs,
      ,sge=TRUE
      ,seed=function()sample(1:1e8,size=1),
       text.table="PRED IPRED"
-     ,reuse.results=!reuse.results
+     ,reuse.results=reuse.results
       )
 
 
@@ -173,6 +174,7 @@ if(F){ ## individual lines
     ggplot(allres[EVID==2],aes(TIME,IPRED,group=interaction(model,dose),colour=dose))+geom_line(alpha=.3)+
         facet_wrap(~regimen)
 }
+
 allresl <- melt(allres[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
 
 sum.res.model <- allresl[,
