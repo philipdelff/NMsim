@@ -8,6 +8,7 @@
 ##' @import data.table 
 ##' @examples
 ##' NMsim:::dtapply(setNames(1:4,letters[1:4]),sqrt)
+##' @internal
 ## generally applicable but still too early to export
 dtapply <- function(X,FUN,...){
     res.list <- lapply(X,FUN,...)

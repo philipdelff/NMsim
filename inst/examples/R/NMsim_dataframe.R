@@ -81,7 +81,7 @@ NMcheckData(dat.sim1)
 
 
 #### Simulations
-reuse.results <- TRUE
+reuse.results <- FALSE
 Nsubjects <- 50
 Nmods <- 50
 
@@ -141,11 +141,6 @@ allmods.bs <- dt.mods.bs[modnum<=Nmods,path]
 #### of SIGMAS onto IPRED and PRED, beyond what's already simulated in
 #### the nonmem model.
 
-## unloadNamespace("NMsim")
-## unloadNamespace("NMdata")
-## load_all("~/wdirs/NMdata")
-## load_all("~/wdirs/NMsim")
-
 
 NMsim(allmods.bs,
       data=dat.sim1,
@@ -167,7 +162,7 @@ allres <- NMscanMultiple(files=file.path("../simulations/xgxr014_bs1",lsts.sim),
 ## Now derive confidence intervals using quantiles of PRED, IPRED, EXTRAVAR by time or derived metrics by ID and model first.
 
 setDT(allres)
-if(F){ ## individual lines
+if(F) { ## individual lines
     ggplot(allres[EVID==2],aes(TIME,PRED,group=interaction(model,dose),colour=dose))+geom_line(alpha=.3)+
         facet_wrap(~regimen)
 
@@ -231,8 +226,9 @@ res.known <- NMsim(file.mod,
                    suffix.sim="known1",
                    text.table="PRED IPRED CL V KA"
                   ,type.sim="known"
-                  ,nmquiet=TRUE
+                  ,nmquiet=FALSE
                   ,reuse.results=reuse.results
+                  ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                    )
 
 p.known.time.ipred <-

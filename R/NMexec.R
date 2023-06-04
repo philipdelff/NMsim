@@ -31,7 +31,8 @@
 ##'     updated since last run?
 ##' @param nmquiet Suppress terminal output from `Nonmem`. This is
 ##'     likely to only work on linux/unix systems.
-##' @param method.execute How 
+##' @param method.execute How to run nonmem. Must be one of
+##'     'psn-execute', 'direct', or 'directory'.
 ##' @param dir.psn The directory in which to find PSN
 ##'     executables. This is only needed if these are not searchable
 ##'     in the system path, or if the user should want to be explicit
@@ -65,7 +66,8 @@
 NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                    nc=64,dir.data=NULL,wait=FALSE, args.execute,
                    update.only=FALSE,nmquiet=FALSE,
-                   method.execute="execute",dir.psn,path.nonmem){
+                   method.execute="psn-execute",dir.psn,path.nonmem,
+                   files.needed){
     
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -137,7 +139,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
 
-        if(method.execute=="execute"){
+        if(method.execute=="psn-execute"){
             ## string.cmd <- paste0("cd ",rundir,"; ",cmd.execute ,args.execute)
             string.cmd <- sprintf("cd %s; %s %s",rundir,cmd.execute ,args.execute)
             if(sge){
@@ -153,10 +155,14 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         if(method.execute=="direct"){
             string.cmd <- callNonmem(file.mod)
         }
-
+        if(method.execute=="directory"){
+            string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed)
+        }
+        
         if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
-        if(!wait) string.cmd <- paste(string.cmd,"&")
-
+        
+    if(!wait) string.cmd <- paste(string.cmd,"&")
+        
         system(string.cmd,ignore.stdout=nmquiet)
     }
 

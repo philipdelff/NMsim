@@ -115,9 +115,9 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
     if(missing(method.execute)) method.execute <- NULL
     if(is.null(method.execute)){
         if(type.sim=="known") {
-            method.execute <- "direct"
+            method.execute <- "directory"
         } else {
-            method.execute <- "execute"
+            method.execute <- "psn-execute"
         }
     }
 
@@ -127,6 +127,8 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
         }
         dir.create(dir.sim)
     }
+
+    files.needed <- NULL
 
     ## if(missing(dir.psn)) dir.psn <- "/usr/local/bin"
     if(missing(dir.psn)) dir.psn <- ""
@@ -239,8 +241,10 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
     nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
     
     
-    run.mod <- sub("\\.mod","",basename(path.mod))
-    run.sim <- sub("\\.mod","",fn.sim)
+    ## run.mod <- sub("\\.mod","",basename(path.mod))
+    run.mod <- fnExtension(basename(path.mod),"")
+    ## run.sim <- sub("\\.mod","",fn.sim)
+    run.sim <- fnExtension(basename(fn.sim),"")
 
     if(file.exists(path.sim)) unlink(path.sim)
     
@@ -343,6 +347,7 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
         con.newphi <- file(path.phi.sim, "wb")
         writeLines(phi.use[,text], con = con.newphi)
         close(con.newphi)
+        files.needed <- c(files.needed,path.phi.sim)
 
 ### prepare simulation control stream
         ## get rid of any $ETAS sections
@@ -391,7 +396,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
         ## run sim
         wait <- !sge
         
-        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem)
+        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed)
         
         if(wait){
             simres <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table")
