@@ -89,6 +89,11 @@ Nmods <- 50
 file.mod <- "../nonmem/xgxr014.mod"
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1,
+##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                 )
+
+simres <- NMsim(path.mod=file.mod,
+                data=dat.sim1,
                 dir.sim="../simulations"
                ,name.sim = "df1",
                 seed=41,
@@ -99,6 +104,8 @@ simres <- NMsim(path.mod=file.mod,
                 )
 
 simres <- as.data.table(simres)[,ID:=.GRP,by=.(NMREP,ID)]
+
+
 
 
 ## typical subject

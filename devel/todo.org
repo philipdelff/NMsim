@@ -7,6 +7,7 @@ Path to nonmem, psn, other ways to exec.
 
 *** DONE Fork NMwriteSection from NMdata
 ** NMsim
+*** TODO If path.nonmem is not supplied, use psn?
 *** TODO Fix broken reuse.results
 *** DONE Reduce number of needed arguments
 **** DONE seed
@@ -68,6 +69,6 @@ currently, addEVID2 does not order rows after adding simulation records
 ** plain nonmem run
 *** DONE Create dir, Copy files into it
 Called NMexecDirectory
-** TODO NMupdateInitsFix
+** DONE NMupdateInitsFix
 New function that fixes THETA, OMEGA, SIGMA based on ext.
 With this, there is no dependency on PSN 

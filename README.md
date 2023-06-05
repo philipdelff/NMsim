@@ -1,9 +1,8 @@
 # NMsim
-`NMsim` is an R package that can start Nonmem jobs from within
-R. Most notably, it can simulate Nonmem models (using the `NMsim`
-function) based on just a simulation data set and a path to a
-estimation control stream. `NMsim` needs to be able to run `Nonmem`
-(and currently also `PSN`) to work.
+`NMsim` is an R package that can modify and start Nonmem jobs from
+within R. Most notably, it can simulate Nonmem models (using the
+`NMsim` function) based on just a simulation data set and a path to a
+estimation control stream. It will also retrive and combine output tables with input data once Nonmem has finished and return the results to R. 
 
 ## Install
 Easiest way to install `NMsim` is using the `remotes` package to install with R:
@@ -13,15 +12,19 @@ Easiest way to install `NMsim` is using the `remotes` package to install with R:
 
 `NMsim` makes extensive use of functionality provided by the `NMdata`
 package. For most recent features of `NMsim` to work, make sure to at
-least keep `NMdata` updated to latest CRAN or MPN realease. In case
-you need a very recent feature, you may need to install `NMdata` from
-github too:
-
-    install_github("philipdelff/NMdata")
-    install_github("philipdelff/NMsim")
-    library("NMsim")
+least keep `NMdata` updated to latest CRAN or MPN realease. 
 
 ## Simulate a Nonmem model from R
+In its simplest use, a simulation of the model stored in "path/to/file.mod" using the simulation input data set stored in the variable `dat.sim` this way:
+
+```{r}
+simres <- NMsim(path.mod=file.mod,
+                data=dat.sim1)
+```
+
+## How NMsim works
+
+## Available types of simulations
 Three types of simulations are currently supported:
 - Simulation of new subjects (default or explicitly with type.sim="default")
 - Simulation of a typical subject (ETAs equal 0, type.sim="typical")

@@ -8,7 +8,7 @@
 ##'     well. Also see data.file to only process models that use a
 ##'     specific data file.
 ##' @param dir If file.pattern is used, dir is the directory to search
-##'     in.
+##'     for control streams in.
 ##' @param sge Use the sge queing system. Default is TRUE. Disable for
 ##'     quick models not to wait.
 ##' @param input.archive A function of the model file path to generate
@@ -31,8 +31,8 @@
 ##'     updated since last run?
 ##' @param nmquiet Suppress terminal output from `Nonmem`. This is
 ##'     likely to only work on linux/unix systems.
-##' @param method.execute How to run nonmem. Must be one of
-##'     'psn', 'direct', or 'directory'.
+##' @param method.execute How to run nonmem. Must be one of 'psn',
+##'     'direct', or 'directory'.
 ##' @param dir.psn The directory in which to find PSN
 ##'     executables. This is only needed if these are not searchable
 ##'     in the system path, or if the user should want to be explicit
