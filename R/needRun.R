@@ -17,7 +17,7 @@ callArgs <- function(which=-1){
     )[-1]
     
     ### should this be envir=parent.frame(-which) ?
-    argsconts <- lapply(args.call, eval, envir = parent.frame(n=1))
+    argsconts <- lapply(args.call, eval, envir = parent.frame(n=-which))
     ##    digest(argsconts)
 
     argsconts
@@ -59,7 +59,7 @@ digestElements <- function(obj,funs){
 ##'
 ##' @param path.res Path to function results output file
 ##' 
-needRun <- function(path.res,path.digest,funs){
+needRun <- function(path.res,path.digest,funs,which=-2){
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -80,7 +80,7 @@ needRun <- function(path.res,path.digest,funs){
     digest.new <- NULL
     if(file.exists(path.res)){
         
-        obj.fun <- callArgs(which = -2)
+        obj.fun <- callArgs(which = which)
         digest.new <- digestElements(obj.fun,funs=funs)
     }
     digest.all <- NULL

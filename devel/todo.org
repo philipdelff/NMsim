@@ -7,11 +7,12 @@ Path to nonmem, psn, other ways to exec.
 
 *** DONE Fork NMwriteSection from NMdata
 ** NMsim
+*** TODO Fix broken reuse.results
 *** DONE Reduce number of needed arguments
 **** DONE seed
 **** DONE suffix.sim
-*** TODO Use NMdataConf for dir.psn and path.nonmem
-*** TODO reuse.results should not depend on itself
+*** DONE Use NMdataConf for dir.psn and path.nonmem
+*** DONE reuse.results should not depend on itself
 *** DONE Create simulations dir if create.dir=TRUE
 If not, throw error if dir.sim does not exist
 *** DONE Support non-data.table workflows

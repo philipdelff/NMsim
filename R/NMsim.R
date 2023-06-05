@@ -101,16 +101,17 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
 
 #### Section start: Checking aguments ####
     simpleCharArg <- function(name.arg,val.arg,default,accepted,lower=TRUE) {
+        
         ## set default if missing
         if(is.null(val.arg)) {
             val.arg <- default
         }
         ## check for compliant format
         if(length(val.arg)!=1||(!is.character(val.arg)&&!is.factor(val.arg))){
-            stop("type.sim must be a single character string.")
+            stop(paste(name.arg,"must be a single character string."))
         }
         ## simplify
-        val.arg <- sub(" *([a-z]+) *","\\1",as.character(val.arg))
+        val.arg <- gsub(" ","",as.character(val.arg))
         if(lower) val.arg <- tolower(val.arg)
         ## check against allowed
         if(!is.null(accepted) && !val.arg %in% accepted){
@@ -216,7 +217,9 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
                            type.mod=type.mod,execute=execute,
                            sge=sge
                           ,transform=transform
-                          ,suffix.sim
+                          ,type.sim=type.sim
+                          ,path.nonmem=path.nonmem
+                          ,dir.psn=dir.psn
                            )
         return(rbindlist(allres.l))
     }
@@ -276,18 +279,16 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     ## if(missing(obj.checksums)){
 
     ## run.fun <- needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines))
-    run.fun <- try(needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines)),silent=TRUE)
-    ## } else {
-    ##     run.fun <- obj.checksums
-    ## }
-
+    
+    run.fun <- try(
+        needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines,reuse.results=function(x)NULL),which=-2)
+    ,silent=TRUE)
+    
     if(inherits(run.fun,"try-error")){
         run.fun <- list(needRun=TRUE
                        ,digest.new=paste(Sys.time(),"unsuccesful")
                         )
     }
-    ## if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
-    ##if(reuse.results && file.exists(path.sim.lst) && file.exists(path.digests)){
     if(reuse.results && !run.fun$needRun){
         simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
         if(!inherits(simres,"try-error")){

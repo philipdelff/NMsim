@@ -81,7 +81,7 @@ NMcheckData(dat.sim1)
 
 
 #### Simulations
-reuse.results <- FALSE
+reuse.results <- TRUE
 Nsubjects <- 50
 Nmods <- 50
 
@@ -91,7 +91,7 @@ simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1,
                 dir.sim="../simulations"
                ,name.sim = "df1",
-                seed=40,
+                seed=41,
                 subproblems=Nsubjects
                ,reuse.results=reuse.results
                 ## ,method.execute="psn-execute"
@@ -107,6 +107,7 @@ simres.typ <- NMsim(path.mod=file.mod,
                     type.sim="typical",
                     dir.sim="../simulations",suffix.sim = "df1.typ",
                     seed=334
+                    ,method.execute="psn-execute"
                    ,reuse.results=reuse.results)
 simres.typ$type <- "typical"
 
@@ -154,7 +155,9 @@ NMsim(allmods.bs,
      ,sge=TRUE
      ,seed=function()sample(1:1e8,size=1),
       text.table="PRED IPRED"
+      ,method.execute="psn-execute"
      ,reuse.results=reuse.results
+     ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
       )
 
 
