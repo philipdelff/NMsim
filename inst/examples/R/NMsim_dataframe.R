@@ -89,10 +89,14 @@ Nmods <- 50
 file.mod <- "../nonmem/xgxr014.mod"
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1,
-                dir.sim="../simulations",suffix.sim = "df1",
+                dir.sim="../simulations"
+               ,name.sim = "df1",
                 seed=40,
                 subproblems=Nsubjects
-               ,reuse.results=reuse.results)
+               ,reuse.results=reuse.results
+                ## ,method.execute="psn-execute"
+               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                )
 
 simres <- as.data.table(simres)[,ID:=.GRP,by=.(NMREP,ID)]
 

@@ -26,6 +26,7 @@ NMsim(
   method.execute,
   create.dir = TRUE,
   dir.psn,
+  path.nonmem = NULL,
   as.fun
 )
 }
@@ -84,7 +85,7 @@ $DATA, and $TABLE sections should be edited. This implies that
 in case type.mod="sim", `subproblems` is ignored. `type.mod`
 may be automated in the future.}
 
-\item{type.sim}{One of "Default" (new simulation), "typical"
+\item{type.sim}{One of "default" (new simulation), "typical"
 (typical subject, ETAs = 0), or "known" (ID's observed in
 model estimation).}
 

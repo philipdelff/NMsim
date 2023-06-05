@@ -7,7 +7,11 @@ Path to nonmem, psn, other ways to exec.
 
 *** DONE Fork NMwriteSection from NMdata
 ** NMsim
-*** TODO Reduce number of needed arguments
+*** DONE Reduce number of needed arguments
+**** DONE seed
+**** DONE suffix.sim
+*** TODO Use NMdataConf for dir.psn and path.nonmem
+*** TODO reuse.results should not depend on itself
 *** DONE Create simulations dir if create.dir=TRUE
 If not, throw error if dir.sim does not exist
 *** DONE Support non-data.table workflows
@@ -61,6 +65,8 @@ able to use a known set of ID's and covs? Or use ID?
 *** TODO Order the same way as NMdata::addTAPD?
 currently, addEVID2 does not order rows after adding simulation records
 ** plain nonmem run
-*** TODO Create dir, Copy files into it
-**** Update .mod to use local copy of input data
-Or not? Copy input data around so it is available for Nonmem and for reading after.
+*** DONE Create dir, Copy files into it
+Called NMexecDirectory
+** TODO NMupdateInitsFix
+New function that fixes THETA, OMEGA, SIGMA based on ext.
+With this, there is no dependency on PSN 

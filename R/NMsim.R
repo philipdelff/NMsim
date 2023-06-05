@@ -10,7 +10,7 @@
 ##' @param data The simulation data as a data.frame.
 ##' @param dir.sim The directory in which NMsim will store all
 ##'     generated files.
-##' @param suffix.sim Give all filenames related to the simulation a
+##' @param name.sim Give all filenames related to the simulation a
 ##'     suffix. A short string describing the sim is recommended like
 ##'     "ph3_regimens".
 ##' @param order.columns reorder columns by calling
@@ -28,7 +28,9 @@
 ##'     after the Nonmem simulations and before plotting. For each
 ##'     list element, its name refers to the name of the column to
 ##'     transform, the contents must be the function to apply.
-##' @param seed Seed to pass to Nonmem.
+##' @param seed Seed to pass to Nonmem. Default is to draw one like
+##'     `sample(1:1e8,size=1)` for each simulation. In case
+##'     type.sim=known, seed is not used and will be set to 1.
 ##' @param args.execute A charachter string that will be passed as
 ##'     arguments PSN's `execute`.
 ##' @param text.table A character string including the variables to
@@ -70,14 +72,14 @@
 
 
 
-NMsim <- function(path.mod,data,dir.sim, suffix.sim,
+NMsim <- function(path.mod,data,dir.sim, name.sim,
                   order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.execute="-clean=5",
                   nmquiet=FALSE,text.table, type.mod,type.sim,
                   execute=TRUE,sge=FALSE,transform=NULL ,type.input,
                   method.execute,create.dir=TRUE,dir.psn,
                   path.nonmem=NULL,as.fun
-                  ## ,obj.checksums
+                 ,suffix.sim
                   ){
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -97,6 +99,67 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
+#### Section start: Checking aguments ####
+    simpleCharArg <- function(name.arg,val.arg,default,accepted,lower=TRUE) {
+        ## set default if missing
+        if(is.null(val.arg)) {
+            val.arg <- default
+        }
+        ## check for compliant format
+        if(length(val.arg)!=1||(!is.character(val.arg)&&!is.factor(val.arg))){
+            stop("type.sim must be a single character string.")
+        }
+        ## simplify
+        val.arg <- sub(" *([a-z]+) *","\\1",as.character(val.arg))
+        if(lower) val.arg <- tolower(val.arg)
+        ## check against allowed
+        if(!is.null(accepted) && !val.arg %in% accepted){
+            stop(sprintf("%s must be one of %s.",name.arg,paste(types.sim.avail,collapse=", ")))
+        }
+        val.arg
+    }
+
+    ## type.sim
+    if(missing(type.sim)) type.sim <- NULL
+    type.sim <- simpleCharArg("type.sim",type.sim,"default",cc(default,known,typical))
+
+    ## dir.psn - should use NMdataConf setup
+    if(missing(dir.psn)) dir.psn <- NULL
+    dir.psn <- try(NMdata:::NMdataDecideOption("dir.psn",dir.psn))
+    if(inherits(dir.psn,"try-error")){
+        dir.psn <- NULL
+        dir.psn <- simpleCharArg("dir.psn",dir.psn,"",accepted=NULL,lower=FALSE)
+    }
+    file.psn <- function(dir.psn,file.psn){
+        if(dir.psn=="") return(file.psn)
+        file.path(dir.psn,file.psn)
+    }
+    
+    cmd.update.inits <- file.psn(dir.psn,"update_inits")
+
+    ## path.nonmem - should use NMdataConf setup
+    if(missing(path.nonmem)) path.nonmem <- NULL
+    path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem))
+    if(inherits(path.nonmem,"try-error")){
+        path.nonmem <- NULL
+        path.nonmem <- simpleCharArg("path.nonmem",path.nonmem,"",accepted=NULL,lower=FALSE)
+    }
+
+
+
+    
+    ## method.execute
+    if(missing(method.execute)) method.execute <- NULL
+    ## if path.nonmem is provided, default method.execute is directory. If not, it is psn-execute
+    method.execute <- simpleCharArg("method.execute",method.execute,"directory",cc("psn-execute",direct,directory))
+    if(type.sim=="known"&&method.execute=="psn-execute"){
+        stop("when type.sim==known, method.execute=psn-execute is not supported.")
+    }
+    if(method.execute%in%cc(direct,directory) && path.nonmem==""){
+        stop("When method.execute is direct or directory, path.nonmem must be provided.")
+    }
+    
+    ## type.mod
     if(!missing(type.input)){
         if(!missing(type.mod)){
             stop("type.mod and type.input supplied. Use type.mod and not the deprecated type.input. ")
@@ -104,42 +167,34 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
         message("type.input is deprecated. Use type.mod.")
         type.mod <- type.input
     }
-    if(missing(type.sim)) type.sim <- "default"
-    if(missing(type.mod)||is.null(type.mod)){
-        type.mod <- "est"
-    }
+    if(missing(type.mod)) type.mod <- NULL
+    type.mod <- simpleCharArg("type.mod",type.mod,"est",accepted=cc(est,sim))
+
     if(type.sim=="known"&&type.mod!="est"){
         stop("Currently, type.sim=known can only be used with type.mod=est.")
     }
-    
-    if(missing(method.execute)) method.execute <- NULL
-    if(is.null(method.execute)){
-        if(type.sim=="known") {
-            method.execute <- "directory"
-        } else {
-            method.execute <- "psn-execute"
-        }
-    }
+    ## seed - will handle again after handling length(path.mod)>1
+    if(missing(seed)) seed <- NULL
 
-    if(!dir.exists(dir.sim)){
-        if(!create.dir){
-            stop(paste("dir.sim does not point to an existing directory. dir.sim is\n",NMdata:::filePathSimple(dir.sim)))
+    ## name.sim
+    if(!missing(suffix.sim)){
+        if(!missing(name.sim)){
+            stop("name.sim and suffix.sim supplied. Use name.sim and not the deprecated suffix.sim. ")
         }
-        dir.create(dir.sim)
+        message("suffix.sim is deprecated. Use name.sim.")
+        name.sim <- suffix.sim
     }
+    if(missing(name.sim)) name.sim <- NULL
+    name.sim <- simpleCharArg("name.sim",name.sim,"noname",accepted=NULL,lower=FALSE)
+
+    
+    ## as.fun
+    if(missing(as.fun)) as.fun <- NULL
+    as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
 
     files.needed <- NULL
 
-    ## if(missing(dir.psn)) dir.psn <- "/usr/local/bin"
-    if(missing(dir.psn)) dir.psn <- ""
-    file.psn <- function(dir.psn,file.psn){
-        if(dir.psn=="")return(file.psn)
-        file.path(dir.psn,file.psn)
-    }
-    cmd.update.inits <- file.psn(dir.psn,"update_inits")
-
-    if(missing(as.fun)) as.fun <- NULL
-    as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
+###  Section end: Checking aguments
 
     
     warn.notransform <- function(transform){
@@ -152,7 +207,7 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
     if(length(path.mod)>1){
         allres.l <- lapply(path.mod,NMsim,data=data
                           ,dir.sim=dir.sim,
-                           suffix.sim=suffix.sim,
+                           name.sim=name.sim,
                            order.columns=order.columns,script=script,
                            subproblems=subproblems,
                            reuse.results=reuse.results,seed=seed,
@@ -161,28 +216,50 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
                            type.mod=type.mod,execute=execute,
                            sge=sge
                           ,transform=transform
-                           ## ,obj.checksums=run.fun
+                          ,suffix.sim
                            )
         return(rbindlist(allres.l))
     }
+
+
+
     
 #### Section start: Defining additional paths based on arguments ####
+
+    ## dir.sim
+    if(missing(dir.sim)) dir.sim <- NULL
+    dir.sim <- simpleCharArg("dir.sim",dir.sim,file.path(dirname(file.mod),"NMsim"),accepted=NULL,lower=FALSE)
+    
+    if(!dir.exists(dir.sim)){
+        if(!create.dir){
+            stop(paste("dir.sim does not point to an existing directory. dir.sim is\n",NMdata:::filePathSimple(dir.sim)))
+        }
+        dir.create(dir.sim)
+    }
+
+    ## seed
+    if( type.sim=="known" && !is.null(seed) && seed!=1 ){
+        warning("seed is specified even though type.sim=known. seed will not be used.")
+    }
+    if(is.null(seed)){
+        seed <- function()sample(1:1e8,size=1)
+    } 
+    if(type.sim=="known"){
+        seed <- 1
+    }
+    if(is.function(seed)) seed <- seed()
+
+    
 
     if(missing(subproblems)|| is.null(subproblems)) subproblems <- 0
     if(missing(text.table)) text.table <- NULL
     if(!file.exists(path.mod)) stop("path.mod must be a path to an existing file.")
-    if(type.sim!="known"){
-        if(is.function(seed)) seed <- seed()
-    }
-    if(!type.mod%in%cc(sim,est)){
-        stop("type.mod denotes whether supplied control stream is an estimation run or it is already a simulation run to be applied.")
-    }
 
-    
+
     ## fn.sim is the file name of the simulation control stream created by NMsim
     ## fn.sim <- sub("^run","NMsim",basename(path.mod))
     fn.sim <- paste0("NMsim_",basename(path.mod))
-    fn.sim <- fnAppend(fn.sim,suffix.sim)
+    fn.sim <- fnAppend(fn.sim,name.sim)
 
     ## path.sim.0 is a temporary path to the sim control stream - it
     ## will be moved to path.sim once created.
@@ -197,13 +274,13 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
 ###  Section end: Defining additional paths based on arguments
 
     ## if(missing(obj.checksums)){
-    
+
     ## run.fun <- needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines))
     run.fun <- try(needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines)),silent=TRUE)
     ## } else {
     ##     run.fun <- obj.checksums
     ## }
-    
+
     if(inherits(run.fun,"try-error")){
         run.fun <- list(needRun=TRUE
                        ,digest.new=paste(Sys.time(),"unsuccesful")
@@ -229,33 +306,31 @@ NMsim <- function(path.mod,data,dir.sim, suffix.sim,
     ##}
 
     data <- copy(as.data.table(data))
-    
+
     ## if(!col.row%in%colnames(data)) data[,(col.row):=.I]
-    
+
     if(order.columns) data <- NMorderColumns(data)
 ### save input data to be read by simulation control stream
     ## fn.data is the data file name, no path
-    fn.data <- paste0("NMsimData_",fnExtension(fnAppend(basename(path.mod),suffix.sim),".csv"))
+    fn.data <- paste0("NMsimData_",fnExtension(fnAppend(basename(path.mod),name.sim),".csv"))
     path.data <- file.path(dir.sim,fn.data)
-    
+
     nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
-    
-    
+
+
     ## run.mod <- sub("\\.mod","",basename(path.mod))
     run.mod <- fnExtension(basename(path.mod),"")
     ## run.sim <- sub("\\.mod","",fn.sim)
     run.sim <- fnExtension(basename(fn.sim),"")
 
     if(file.exists(path.sim)) unlink(path.sim)
-    
+
     sections.mod <- NMreadSection(file=path.mod)
     names.sections <- names(sections.mod)
     if(type.sim != "known"){
         line.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
-    } else {
-        seed <- 1
     }
-    
+
     if(type.mod=="est"){
         cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim,seed,path.mod)
         system(cmd.update,wait=TRUE)
@@ -357,7 +432,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
         NMwriteSection(files=path.sim,section="estimation",location="replace",
                        newlines=lines.new,backup=FALSE,quiet=TRUE)
     }
-    
+
 ### replace data file
     NMwriteSection(files=path.sim,list.sections = nmtext,backup=FALSE,quiet=TRUE)
 
@@ -383,14 +458,14 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     lines.tables <- do.call(fun.paste,lines.tables)
     ## if no $TABLE found already, just put it last
 
-    
+
     if(is.null(NMreadSection(file=path.sim,section="TABLE"))){
         ## this works starting from NMdata 0.0.16   
         NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,location="last",quiet=TRUE)
     } else {
         NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,quiet=TRUE)
     }
-    
+
     if(execute){
         
         ## run sim
@@ -420,6 +495,6 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     saveRDS(run.fun$digest.new,file=path.digests)
 
     simres
-    
+
 }
 

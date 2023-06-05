@@ -16,9 +16,10 @@ NMexec(
   args.execute,
   update.only = FALSE,
   nmquiet = FALSE,
-  method.execute = "execute",
+  method.execute = "psn-execute",
   dir.psn,
-  path.nonmem
+  path.nonmem,
+  files.needed
 )
 }
 \arguments{
@@ -63,6 +64,9 @@ updated since last run?}
 
 \item{nmquiet}{Suppress terminal output from `Nonmem`. This is
 likely to only work on linux/unix systems.}
+
+\item{method.execute}{How to run nonmem. Must be one of
+'psn-execute', 'direct', or 'directory'.}
 
 \item{dir.psn}{The directory in which to find PSN
 executables. This is only needed if these are not searchable
