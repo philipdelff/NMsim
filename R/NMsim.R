@@ -77,7 +77,7 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
                   reuse.results=FALSE,seed,args.execute="-clean=5",
                   nmquiet=FALSE,text.table, type.mod,type.sim,
                   execute=TRUE,sge=FALSE,transform=NULL ,type.input,
-                  method.execute,create.dir=TRUE,dir.psn,
+                  method.execute,method.update.inits,create.dir=TRUE,dir.psn,
                   path.nonmem=NULL,as.fun
                  ,suffix.sim
                   ){
@@ -100,25 +100,6 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
 #### Section start: Checking aguments ####
-    simpleCharArg <- function(name.arg,val.arg,default,accepted,lower=TRUE) {
-        
-        ## set default if missing
-        if(is.null(val.arg)) {
-            val.arg <- default
-        }
-        ## check for compliant format
-        if(length(val.arg)!=1||(!is.character(val.arg)&&!is.factor(val.arg))){
-            stop(paste(name.arg,"must be a single character string."))
-        }
-        ## simplify
-        val.arg <- gsub(" ","",as.character(val.arg))
-        if(lower) val.arg <- tolower(val.arg)
-        ## check against allowed
-        if(!is.null(accepted) && !val.arg %in% accepted){
-            stop(sprintf("%s must be one of %s.",name.arg,paste(types.sim.avail,collapse=", ")))
-        }
-        val.arg
-    }
 
     ## type.sim
     if(missing(type.sim)) type.sim <- NULL
@@ -151,14 +132,20 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL
-    ## if path.nonmem is provided, default method.execute is directory. If not, it is psn-execute
-    method.execute <- simpleCharArg("method.execute",method.execute,"directory",cc("psn-execute",direct,directory))
-    if(type.sim=="known"&&method.execute=="psn-execute"){
-        stop("when type.sim==known, method.execute=psn-execute is not supported.")
+    ## if path.nonmem is provided, default method.execute is directory. If not, it is psn
+    method.execute <- simpleCharArg("method.execute",method.execute,"directory",cc(psn,direct,directory))
+    if(type.sim=="known"&&method.execute=="psn"){
+        stop("when type.sim==known, method.execute=psn is not supported.")
     }
     if(method.execute%in%cc(direct,directory) && path.nonmem==""){
         stop("When method.execute is direct or directory, path.nonmem must be provided.")
     }
+
+    ## method.update.inits
+    if(missing(method.update.inits)) method.update.inits <- NULL
+    ## if method.execute is psn, default is psn. If not, it is NMsim.
+    if(is.null(method.update.inits) && method.execute=="psn") method.update.inits <- "psn"
+    method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim))
     
     ## type.mod
     if(!missing(type.input)){
@@ -282,7 +269,7 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     
     run.fun <- try(
         needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines,reuse.results=function(x)NULL),which=-2)
-    ,silent=TRUE)
+       ,silent=TRUE)
     
     if(inherits(run.fun,"try-error")){
         run.fun <- list(needRun=TRUE
@@ -333,11 +320,17 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     }
 
     if(type.mod=="est"){
-        cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim,seed,path.mod)
-        system(cmd.update,wait=TRUE)
+        if(method.update.inits=="psn"){
+            cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim,seed,path.mod)
+            system(cmd.update,wait=TRUE)
 
-        file.rename(path.sim.0,path.sim)
-
+            file.rename(path.sim.0,path.sim)
+        }
+        if(method.update.inits=="nmsim"){
+            NMupdateInitsFix(file.mod=path.mod,new.mod=path.sim)
+        }
+        
+        
         ## checked that $OMEGA looks OK
         ## NMreadSection(path.sim,section="OMEGA")
 ### replace $ESTIMATION with $SIMULATION SIMONLY
@@ -459,7 +452,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     lines.tables <- do.call(fun.paste,lines.tables)
     ## if no $TABLE found already, just put it last
 
-
+    
     if(is.null(NMreadSection(file=path.sim,section="TABLE"))){
         ## this works starting from NMdata 0.0.16   
         NMwriteSection(newlines=lines.tables,section="TABLE",files=path.sim,backup=FALSE,location="last",quiet=TRUE)

@@ -16,7 +16,7 @@ NMexec(
   args.execute,
   update.only = FALSE,
   nmquiet = FALSE,
-  method.execute = "psn-execute",
+  method.execute = "psn",
   dir.psn,
   path.nonmem,
   files.needed
@@ -66,7 +66,7 @@ updated since last run?}
 likely to only work on linux/unix systems.}
 
 \item{method.execute}{How to run nonmem. Must be one of
-'psn-execute', 'direct', or 'directory'.}
+'psn', 'direct', or 'directory'.}
 
 \item{dir.psn}{The directory in which to find PSN
 executables. This is only needed if these are not searchable

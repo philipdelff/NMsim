@@ -32,7 +32,7 @@
 ##' @param nmquiet Suppress terminal output from `Nonmem`. This is
 ##'     likely to only work on linux/unix systems.
 ##' @param method.execute How to run nonmem. Must be one of
-##'     'psn-execute', 'direct', or 'directory'.
+##'     'psn', 'direct', or 'directory'.
 ##' @param dir.psn The directory in which to find PSN
 ##'     executables. This is only needed if these are not searchable
 ##'     in the system path, or if the user should want to be explicit
@@ -66,7 +66,7 @@
 NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                    nc=64,dir.data=NULL,wait=FALSE, args.execute,
                    update.only=FALSE,nmquiet=FALSE,
-                   method.execute="psn-execute",dir.psn,path.nonmem,
+                   method.execute="psn",dir.psn,path.nonmem,
                    files.needed){
     
     
@@ -139,7 +139,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
 
-        if(method.execute=="psn-execute"){
+        if(method.execute=="psn"){
             ## string.cmd <- paste0("cd ",rundir,"; ",cmd.execute ,args.execute)
             string.cmd <- sprintf("cd %s; %s %s",rundir,cmd.execute ,args.execute)
             if(sge){

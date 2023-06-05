@@ -8,7 +8,7 @@ NMsim(
   path.mod,
   data,
   dir.sim,
-  suffix.sim,
+  name.sim,
   order.columns = TRUE,
   script = NULL,
   subproblems,
@@ -27,7 +27,8 @@ NMsim(
   create.dir = TRUE,
   dir.psn,
   path.nonmem = NULL,
-  as.fun
+  as.fun,
+  suffix.sim
 )
 }
 \arguments{
@@ -41,7 +42,7 @@ to be stored next to the input control stream and ending in
 \item{dir.sim}{The directory in which NMsim will store all
 generated files.}
 
-\item{suffix.sim}{Give all filenames related to the simulation a
+\item{name.sim}{Give all filenames related to the simulation a
 suffix. A short string describing the sim is recommended like
 "ph3_regimens".}
 
@@ -60,7 +61,9 @@ means not to use SUBPROBLEMS.}
 they be used? If TRUE and reading the results fail, the
 simulations will still be rerun.}
 
-\item{seed}{Seed to pass to Nonmem.}
+\item{seed}{Seed to pass to Nonmem. Default is to draw one like
+`sample(1:1e8,size=1)` for each simulation. In case
+type.sim=known, seed is not used and will be set to 1.}
 
 \item{args.execute}{A charachter string that will be passed as
 arguments PSN's `execute`.}

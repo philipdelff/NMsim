@@ -1,5 +1,5 @@
 ##' @import NMdata 
-##' @internal 
+##' @keywords internal 
 
 ### like execute but in R.
 ## copy necessary files into temporary

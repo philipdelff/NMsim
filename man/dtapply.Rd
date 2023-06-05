@@ -17,3 +17,4 @@ still experimental and will not work for many input structures.
 \examples{
 NMsim:::dtapply(setNames(1:4,letters[1:4]),sqrt)
 }
+\keyword{internal}
