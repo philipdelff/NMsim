@@ -24,7 +24,7 @@
 ##'     available again? This is useful if calling NMexec from a
 ##'     function that needs to wait for the output of the Nonmem run
 ##'     to be available for further processing.
-##' @param args.execute A character string with arguments passed to
+##' @param args.psn.execute A character string with arguments passed to
 ##'     execute. Default is
 ##'     "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi".
 ##' @param update.only Only run model(s) if control stream or data
@@ -64,7 +64,7 @@
 ### -nm_version=nm74_gf
 
 NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
-                   nc=64,dir.data=NULL,wait=FALSE, args.execute,
+                   nc=64,dir.data=NULL,wait=FALSE, args.psn.execute,
                    update.only=FALSE,nmquiet=FALSE,
                    method.execute="psn",dir.psn,path.nonmem,
                    files.needed){
@@ -78,7 +78,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     result <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
-
+    
     ## if(missing(dir.psn)) dir.psn <- "/usr/local/bin"
     if(missing(dir.psn)) dir.psn <- ""
     file.psn <- function(dir.psn,file.psn){
@@ -103,8 +103,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         input.archive <- function(file) FALSE
     }
     
-    if(missing(args.execute) || is.null(args.execute)){
-        args.execute <- "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi"
+    if(missing(args.psn.execute) || is.null(args.psn.execute)){
+        args.psn.execute <- "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi"
     }
 
     if(missing(files)) files <- NULL
@@ -141,7 +141,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 
         if(method.execute=="psn"){
             ## string.cmd <- paste0("cd ",rundir,"; ",cmd.execute ,args.execute)
-            string.cmd <- sprintf("cd %s; %s %s",rundir,cmd.execute ,args.execute)
+            string.cmd <- sprintf("cd %s; %s %s",rundir,cmd.execute ,args.psn.execute)
             if(sge){
                 string.cmd <- paste0(string.cmd," -run_on_sge")
                 if(nc>1){
@@ -161,7 +161,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         
         if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
         
-    if(!wait) string.cmd <- paste(string.cmd,"&")
+        if(!wait) string.cmd <- paste(string.cmd,"&")
         
         system(string.cmd,ignore.stdout=nmquiet)
     }

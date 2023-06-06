@@ -31,7 +31,7 @@
 ##' @param seed Seed to pass to Nonmem. Default is to draw one like
 ##'     `sample(1:1e8,size=1)` for each simulation. In case
 ##'     type.sim=known, seed is not used and will be set to 1.
-##' @param args.execute A charachter string that will be passed as
+##' @param args.psn.execute A charachter string that will be passed as
 ##'     arguments PSN's `execute`.
 ##' @param text.table A character string including the variables to
 ##'     export from Nonmem. The default is to export the same tables
@@ -74,7 +74,7 @@
 
 NMsim <- function(path.mod,data,dir.sim, name.sim,
                   order.columns=TRUE,script=NULL,subproblems,
-                  reuse.results=FALSE,seed,args.execute="-clean=5",
+                  reuse.results=FALSE,seed,args.psn.execute,
                   nmquiet=FALSE,text.table, type.mod,type.sim,
                   execute=TRUE,sge=FALSE,transform=NULL ,type.input,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
@@ -120,27 +120,39 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     cmd.update.inits <- file.psn(dir.psn,"update_inits")
 
     ## path.nonmem - should use NMdataConf setup
+    
     if(missing(path.nonmem)) path.nonmem <- NULL
     path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem))
     if(inherits(path.nonmem,"try-error")){
         path.nonmem <- NULL
-        path.nonmem <- simpleCharArg("path.nonmem",path.nonmem,"",accepted=NULL,lower=FALSE)
+        path.nonmem <- simpleCharArg("path.nonmem",path.nonmem,NULL,accepted=NULL,lower=FALSE)
     }
-
-
-
     
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL
     ## if path.nonmem is provided, default method.execute is directory. If not, it is psn
-    method.execute <- simpleCharArg("method.execute",method.execute,"directory",cc(psn,direct,directory))
+    if(is.null(path.nonmem)) {
+        method.execute.def <- "psn"
+    } else {
+        method.execute.def <- "directory"
+    }
+    method.execute <- simpleCharArg("method.execute",method.execute,method.execute.def,cc(psn,direct,directory))
     if(type.sim=="known"&&method.execute=="psn"){
         stop("when type.sim==known, method.execute=psn is not supported.")
     }
-    if(method.execute%in%cc(direct,directory) && path.nonmem==""){
+    if(method.execute%in%cc(direct,directory) && is.null(path.nonmem)){
         stop("When method.execute is direct or directory, path.nonmem must be provided.")
     }
 
+    ## args.psn.execute
+    if(missing(args.psn.execute)) args.psn.execute <- NULL
+    args.psn.execute <- simpleCharArg("args.psn.execute"
+                                     ,args.psn.execute
+                                     ,default="-clean=5 -model_dir_name -nm_output=xml,ext,cov,cor,coi,phi"
+                                     ,accepted=NULL
+                                     ,clean=FALSE
+                                     ,lower=FALSE)
+    
     ## method.update.inits
     if(missing(method.update.inits)) method.update.inits <- NULL
     ## if method.execute is psn, default is psn. If not, it is NMsim.
@@ -199,7 +211,8 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
                            order.columns=order.columns,script=script,
                            subproblems=subproblems,
                            reuse.results=reuse.results,seed=seed,
-                           args.execute=args.execute,nmquiet=nmquiet,
+                           args.psn.execute=args.psn.execute
+                          ,nmquiet=nmquiet,
                            text.table=text.table,
                            type.mod=type.mod,execute=execute,
                            sge=sge
@@ -465,7 +478,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
         ## run sim
         wait <- !sge
         
-        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.execute=args.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed)
+        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed)
         
         if(wait){
             simres <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table")
