@@ -88,7 +88,7 @@ Nmods <- 50
 ## new subjects
 file.mod <- "../nonmem/xgxr014.mod"
 simres <- NMsim(path.mod=file.mod,
-                data=dat.sim1,
+                data=dat.sim1
 ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                  )
 

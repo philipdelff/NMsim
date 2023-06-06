@@ -15,14 +15,40 @@ package. For most recent features of `NMsim` to work, make sure to at
 least keep `NMdata` updated to latest CRAN or MPN realease. 
 
 ## Simulate a Nonmem model from R
-In its simplest use, a simulation of the model stored in "path/to/file.mod" using the simulation input data set stored in the variable `dat.sim` this way:
+In its simplest use, a simulation of the model stored in
+"path/to/file.mod" using the simulation input data set stored in the
+variable `data.sim` this way:
 
 ```{r}
-simres <- NMsim(path.mod=file.mod,
-                data=dat.sim1)
+simres <- NMsim(path.mod=/path/to/file.mod,
+                data=data.sim)
 ```
+`NMsim` will then do the following:
+* Create a simulation input control stream based on `file.mod` 
+  ($SIMULATE instead of $ESTIMATION) 
+* Update and fix initial values based on estimate (from `file.ext`)
+* Modify the control stream to use the simulation dataset `data.sim`
+  as input control stream (replace `$INPUT` and `$DATA`)
+* Run Nonmem on the generated simulation control stream
+* Collect output data tables, combine them, and merge with the input
+  data (`data.sim`)
+* Return the collected data
 
-## How NMsim works
+## How NMsim works and what is required
+The strength of `NMsim` is that it does not simulate, translate or
+otherwise interpret the model. Instead, it automates the simulation
+workflow with Nonmem and wraps it all into one R function. This
+eliminates the need for re-implementation of a model. On the other
+hand, this also means that `NMsim` can't work without Nonmem.
+
+`NMsim` can use Nonmem directly or via `PSN`. If `NMsim` is run where
+Nonmem can't be executed, `NMsim` can still prepare the simulation
+control stream and datafile.
+
+`NMsim` is in itself a small R package. It makes extensive use of
+functionality to handle Nonmem data and control streams provided by
+the R package
+[`NMdata`](https://cran.r-project.org/web/packages/NMdata/index.html).
 
 ## Available types of simulations
 Three types of simulations are currently supported:
@@ -31,10 +57,12 @@ Three types of simulations are currently supported:
 - Simulation of subjects already estimated in Nonmem model (type.sim="known")
 
 With a simulation data set (`simdat`) and an estimated Nonmem run
-(stored in `models/run1.mod`) at hand, it is this simple to simulate new subjects:
+(input control stream stored in `models/run1.mod`) at hand, it is this simple to simulate new subjects:
 
-    simres <- NMsim("models/run1.mod",simdat,
-	dir.sim="simulations",suffix.sim="example",seed=123)
+```{r}
+simres <- NMsim("models/run1.mod",simdat,
+                dir.sim="simulations",suffix.sim="example",seed=123)
+```
 
 `NMsim` will then 
 - Save `simdat` 
