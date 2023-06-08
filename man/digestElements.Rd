@@ -2,7 +2,7 @@
 % Please edit documentation in R/needRun.R
 \name{digestElements}
 \alias{digestElements}
-\title{Get digest checksum of object elements}
+\title{Derive digests of argument values or their contents}
 \usage{
 digestElements(obj, funs)
 }
@@ -15,5 +15,7 @@ digestElements(obj, funs)
 A data.table with hashes/checksums.
 }
 \description{
-Get digest checksum of object elements
+Get digests of argument values. Optionally, functions can be run
+on some arguments before calculating digests. An example would be
+reading contents of a file where the file path is an argument.
 }

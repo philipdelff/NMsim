@@ -1,4 +1,11 @@
+##' @keywords internal
+
 NMupdateInitsFix <- function(file.mod,new.mod){
+    
+    par.type <- NULL
+    i <- NULL
+    est <- NULL
+    j <- NULL
     
     ext <- NMreadExt(fnExtension(file.mod,"ext"))
     
@@ -6,8 +13,8 @@ NMupdateInitsFix <- function(file.mod,new.mod){
     thetas <- ext$pars[par.type=="THETA"]
     setorder(thetas,i)
     lines.theta <- c("$THETA",
-                      paste(thetas[,est],"FIX")
-                      )
+                     paste(thetas[,est],"FIX")
+                     )
     ## create OMEGA section
     
     omegas <- ext$pars[par.type=="OMEGA"]

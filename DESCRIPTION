@@ -1,7 +1,7 @@
 Package: NMsim
 Type: Package
 Title: Start Nonmem jobs and run Nonmem simulations from R
-Version: 0.0.1.907
+Version: 0.0.1.908
 Authors@R: person("Philip", "Delff", email = "philip@delff.dk",
                   role = c("aut", "cre"))
 Maintainer: Philip Delff <philip@delff.dk>
@@ -9,10 +9,19 @@ Description: Tools allowing for turning Nonmem control streams into simulation c
 License: MIT + file LICENSE
 RoxygenNote: 7.2.3
 Roxygen: list(roclets=c("collate", "namespace", "rd", "vignette"))
+VignetteBuilder: knitr
 Depends: R (>= 3.5.0)
 Imports: data.table,
          NMdata (>= 0.0.15),
-	 digest
+         digest,
+         knitr,
+         rmarkdown,
+         dplyr,
+         ggplot2,
+         patchwork,
+         tibble,
+         tracee,
+         tidyr
 Suggests: 
 Encoding: UTF-8
 LazyData: true

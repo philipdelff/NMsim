@@ -13,7 +13,7 @@ NMexec(
   nc = 64,
   dir.data = NULL,
   wait = FALSE,
-  args.execute,
+  args.psn.execute,
   update.only = FALSE,
   nmquiet = FALSE,
   method.execute = "psn",
@@ -33,7 +33,7 @@ well. Also see data.file to only process models that use a
 specific data file.}
 
 \item{dir}{If file.pattern is used, dir is the directory to search
-in.}
+for control streams in.}
 
 \item{sge}{Use the sge queing system. Default is TRUE. Disable for
 quick models not to wait.}
@@ -55,8 +55,8 @@ available again? This is useful if calling NMexec from a
 function that needs to wait for the output of the Nonmem run
 to be available for further processing.}
 
-\item{args.execute}{A character string with arguments passed to
-execute. Default is
+\item{args.psn.execute}{A character string with arguments passed
+to execute. Default is
 "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi".}
 
 \item{update.only}{Only run model(s) if control stream or data
@@ -65,8 +65,8 @@ updated since last run?}
 \item{nmquiet}{Suppress terminal output from `Nonmem`. This is
 likely to only work on linux/unix systems.}
 
-\item{method.execute}{How to run nonmem. Must be one of
-'psn', 'direct', or 'directory'.}
+\item{method.execute}{How to run nonmem. Must be one of 'psn',
+'direct', or 'directory'.}
 
 \item{dir.psn}{The directory in which to find PSN
 executables. This is only needed if these are not searchable
@@ -79,6 +79,11 @@ method.execute="direct" (which is not default). If this
 argument is not supplied, NMexec will try to run nmfe75,
 i.e. this has to be available in the path of the underlying
 shell.}
+
+\item{files.needed}{In case method.execute="directory", this
+argument specifies files to be copied into the temporary
+directory before Nonmem is run. Input control stream and
+simulation input data does not need to be specified.}
 }
 \description{
 execute nonmem while also archiving input data
@@ -89,6 +94,7 @@ Use this to read the archived input data when retrieving
     NMdataConf(file.data=function(x)fnExtension(fnAppend(x,"input"),".rds"))
 }
 \examples{
+\dontrun{
 file.mod <- "run001.mod"
 ## run locally - not on cluster
 NMexec(file.mod,sge=FALSE)
@@ -99,4 +105,5 @@ multiple.models <- c("run001.mod","run002.mod")
 NMexec(multiple.models,nc=16)
 ## run all models called run001.mod - run099.mod if updated. 64 cores to each.
 NMexec(file.pattern="run0..\\\\.mod",dir="models",nc=16,update.only=TRUE)
+}
 }

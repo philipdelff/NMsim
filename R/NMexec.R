@@ -24,8 +24,8 @@
 ##'     available again? This is useful if calling NMexec from a
 ##'     function that needs to wait for the output of the Nonmem run
 ##'     to be available for further processing.
-##' @param args.psn.execute A character string with arguments passed to
-##'     execute. Default is
+##' @param args.psn.execute A character string with arguments passed
+##'     to execute. Default is
 ##'     "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi".
 ##' @param update.only Only run model(s) if control stream or data
 ##'     updated since last run?
@@ -43,11 +43,16 @@
 ##'     argument is not supplied, NMexec will try to run nmfe75,
 ##'     i.e. this has to be available in the path of the underlying
 ##'     shell.
+##' @param files.needed In case method.execute="directory", this
+##'     argument specifies files to be copied into the temporary
+##'     directory before Nonmem is run. Input control stream and
+##'     simulation input data does not need to be specified.
 ##' @details Use this to read the archived input data when retrieving
 ##'     the nonmem results
 ##'     NMdataConf(file.data=function(x)fnExtension(fnAppend(x,"input"),".rds"))
 ##' @import NMdata
 ##' @examples
+##' \dontrun{
 ##' file.mod <- "run001.mod"
 ##' ## run locally - not on cluster
 ##' NMexec(file.mod,sge=FALSE)
@@ -58,6 +63,7 @@
 ##' NMexec(multiple.models,nc=16)
 ##' ## run all models called run001.mod - run099.mod if updated. 64 cores to each.
 ##' NMexec(file.pattern="run0..\\.mod",dir="models",nc=16,update.only=TRUE)
+##' }
 ##' @export
 
 
@@ -79,37 +85,63 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
-    ## if(missing(dir.psn)) dir.psn <- "/usr/local/bin"
-    if(missing(dir.psn)) dir.psn <- ""
+    ## dir.psn
+    if(missing(dir.psn)) dir.psn <- NULL
+    dir.psn <- try(NMdata:::NMdataDecideOption("dir.psn",dir.psn))
+    if(inherits(dir.psn,"try-error")){
+        dir.psn <- NULL
+        dir.psn <- simpleCharArg("dir.psn",dir.psn,"",accepted=NULL,lower=FALSE)
+    }
     file.psn <- function(dir.psn,file.psn){
-        if(dir.psn=="")return(file.psn)
+        if(dir.psn=="") return(file.psn)
         file.path(dir.psn,file.psn)
     }
     cmd.execute <- file.psn(dir.psn,"execute")
 
 
-    if(missing(path.nonmem)||is.null(path.nonmem)) path.nonmem <- "nmfe75"
-    ## 
-    callNonmem <- function(file.mod){
-        bfile.mod <- basename(file.mod)
-        sprintf("cd %s; %s %s %s; cd -",dirname(file.mod),path.nonmem,bfile.mod,fnExtension(bfile.mod,".lst"))
+    ## path.nonmem
+    ## if(missing(path.nonmem)||is.null(path.nonmem)) path.nonmem <- "nmfe75"
+    if(missing(path.nonmem)) path.nonmem <- NULL
+    path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem))
+    if(inherits(path.nonmem,"try-error")){
+        path.nonmem <- NULL
+        path.nonmem <- simpleCharArg("path.nonmem",path.nonmem,NULL,accepted=NULL,lower=FALSE)
     }
-    
+
+
     if(missing(input.archive)||is.null(input.archive)){
         input.archive <- inputArchiveDefault
-    }
-    
+    }    
     if(isFALSE(input.archive)){
         input.archive <- function(file) FALSE
     }
-    
-    if(missing(args.psn.execute) || is.null(args.psn.execute)){
-        args.psn.execute <- "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi"
-    }
+
+    ## args.psn.execute
+    if(missing(args.psn.execute)) args.psn.execute <- NULL
+    args.psn.execute <- simpleCharArg("args.psn.execute"
+                                     ,args.psn.execute
+                                     ,default="-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi"
+                                     ,accepted=NULL
+                                     ,clean=FALSE
+                                     ,lower=FALSE)
 
     if(missing(files)) files <- NULL
     if(missing(dir)) dir <- NULL
+    dir <- simpleCharArg("dir"
+                        ,dir
+                        ,default=NULL
+                        ,accepted=NULL
+                        ,clean=FALSE
+                        ,lower=FALSE)
+
     if(missing(file.pattern)) file.pattern <- NULL
+    file.pattern <- simpleCharArg("file.pattern"
+                                 ,file.pattern
+                                 ,default=NULL
+                                 ,accepted=NULL
+                                 ,clean=FALSE
+                                 ,lower=FALSE)
+
     if(is.null(files) && is.null(file.pattern)) file.pattern <- ".+\\.mod"
     files.all <- NMdata:::getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=TRUE)
 
@@ -153,7 +185,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             string.cmd <- paste(string.cmd,basename(file.mod))
         }
         if(method.execute=="direct"){
-            string.cmd <- callNonmem(file.mod)
+            string.cmd <- callNonmemDirect(file.mod,path.nonmem)
         }
         if(method.execute=="directory"){
             string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed)

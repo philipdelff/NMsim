@@ -15,5 +15,12 @@ function/environment in which callArgs() is executed.}
 List of arguments
 }
 \description{
-get arguments passed to a function
+Within a function, run callArgs to get a list of all arguments
+passed to the function.
+}
+\examples{
+funfoo <- function(a,b){
+  NMsim:::callArgs()
+}
+funfoo(a=1)
 }

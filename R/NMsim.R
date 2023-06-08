@@ -16,7 +16,7 @@
 ##' @param order.columns reorder columns by calling
 ##'     NMdata::NMorderColumns before saving dataset and running
 ##'     simulations? Default is TRUE.
-##' @param script The path to the script where this is run.For
+##' @param script The path to the script where this is run. For
 ##'     stamping of dataset so results can be traced back to code.
 ##' @param subproblems Number of subproblems to use as SUBPROBLEMS in
 ##'     $SIMULATION block in Nonmem. The default is subproblem=0 which
@@ -60,12 +60,48 @@
 ##'     useful if creating a large number of simulations,
 ##'     e.g. simulate with all parameter estimates from a bootstrap
 ##'     result.
-##' @param type.input Deprecated. Use type.mod instead.
+##' @param method.execute Specify how to call Nonmem. Options are
+##'     "psn" (PSN's execute), "directory" (an internal method similar
+##'     to PSN's execute), and "direct" (just run Nonmem directly and
+##'     dump all the temporary files). "directory" has advantages over
+##'     "psn" that makes it the only supported method when
+##'     type.sim="known". "psn" has the simple advantage that the path
+##'     to nonmem does not have to be specified if "execute" is in the
+##'     system search path. So as long as you know where your Nonmem
+##'     executable is, "directory" is recommended. The default is
+##'     "directory" if path.nonmem is specified, and "psn" if not.
+##' @param method.update.inits The initial estimates must be updated
+##'     from the estimated model before running the simulation. NMsim
+##'     supports two ways of doing this: "psn" which uses PSN's
+##'     "update_inits", and "nmsim" which uses a simple internal
+##'     method. The advantage of "psn" is it keeps comments in the
+##'     control stream and is a method known to many. The advantages
+##'     of "nmsim" are it does not require PSN, and that it is very
+##'     robust. "nmsim" fixes the whole OMEGA and SIGMA matrices as
+##'     single blocks making the $OMEGA and $SIGMA sections of the
+##'     control streams less easy to read. On the other hand, this
+##'     method is robust because it avoids any interpretation of BLOCK
+##'     structure or other code in the control streams.
+##' @param dir.psn The directory in which to find PSN's executables
+##'     ('execute' and 'update_inits'). The default is to rely on the
+##'     system's search path. So if you can run 'execute' and
+##'     'update_inits' by just typing that in a terminal, you don't
+##'     need to specify this unless you want to explicitly use a
+##'     specific installation of PSN on your system.
+##' @param path.nonmem The path to the Nonmem executable to use. The
+##'     could be something like "/usr/local/NONMEM/run/nmfe75" (which
+##'     is a made up example). No default is available. You should be
+##'     able to figure this out through how you normally execute
+##'     Nonmem, or ask a colleague.
+##' @param create.dir If the directory specified in dir.sim does not
+##'     exists, should it be created? Default is TRUE.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say tibble::as_tibble) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use
 ##'     as.fun="data.table". The default can be configured using
 ##'     NMdataConf.
+##' @param suffix.sim Deprecated. Use name.sim instead.
+##' @param type.input Deprecated. Use type.mod instead.
 ##' @import NMdata
 
 ##' @export
@@ -96,6 +132,14 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     is.data <- NULL
     text <- NULL
     textmod <- NULL
+    default <- NULL
+    known <- NULL
+    typical <- NULL
+    psn <- NULL
+    direct <- NULL
+    directory <- NULL
+    nmsim <- NULL
+    file.mod <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
@@ -193,7 +237,8 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
 
     files.needed <- NULL
-
+    input.archive <- inputArchiveDefault
+    
 ###  Section end: Checking aguments
 
     
@@ -290,7 +335,7 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
                         )
     }
     if(reuse.results && !run.fun$needRun){
-        simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE))
+        simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,file.data=input.archive))
         if(!inherits(simres,"try-error")){
             message("Found results from identical previous run (and reuse.results is TRUE). Not re-running simulation.")
             if(!is.null(transform)){
@@ -478,10 +523,10 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
         ## run sim
         wait <- !sge
         
-        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed)
+        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed,input.archive=input.archive)
         
         if(wait){
-            simres <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table")
+            simres <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive)
             ## optionally transform results like DV, IPRED, PRED
             if(!is.null(transform)){
                 

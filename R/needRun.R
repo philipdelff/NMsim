@@ -1,9 +1,16 @@
 ##' get arguments passed to a function
 ##'
+##' Within a function, run callArgs to get a list of all arguments
+##' passed to the function.
 ##' @param which The number of environment levels to move. Default is
 ##'     1 because that means the result is concerns the
 ##'     function/environment in which callArgs() is executed.
 ##' @return List of arguments
+##' @examples
+##' funfoo <- function(a,b){
+##'   NMsim:::callArgs()
+##' }
+##' funfoo(a=1)
 
 callArgs <- function(which=-1){
     
@@ -24,7 +31,11 @@ callArgs <- function(which=-1){
 }
 
 
-##' Get digest checksum of object elements
+##' Derive digests of argument values or their contents
+##' 
+##' Get digests of argument values. Optionally, functions can be run
+##' on some arguments before calculating digests. An example would be
+##' reading contents of a file where the file path is an argument.
 ##' 
 ##' @param obj An object with elements to run digest on.
 ##' @param funs Named list of functions to be applied to elements (matched on names) in `obj`. Optional.
@@ -48,16 +59,18 @@ digestElements <- function(obj,funs){
     dtapply(obj,digest)
 }
 
-### need a digests of argument values, including their contents.
 
-### More than that, additionally digest of a list of contents derived
-### from arguments, like contents of a file which path is an arg.
-
-##' Determine whether re-run is necessary
+##' Determine whether re-run of a function is necessary
 ##'
-##' Compares arguments against stored checksums
+##' Compares arguments against stored checksums or output of functions
+##' of them. If changes found, the function should be re-run.
 ##'
 ##' @param path.res Path to function results output file
+##' @param path.digest Path to the file containing digests to compare
+##'     to.
+##' @param funs Named list of functions to apply to arguments
+##' @param which Number of environment levels to jump to evaluate the
+##'     arguments
 ##' 
 needRun <- function(path.res,path.digest,funs,which=-2){
     

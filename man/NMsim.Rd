@@ -14,7 +14,7 @@ NMsim(
   subproblems,
   reuse.results = FALSE,
   seed,
-  args.execute = "-clean=5",
+  args.psn.execute,
   nmquiet = FALSE,
   text.table,
   type.mod,
@@ -24,6 +24,7 @@ NMsim(
   transform = NULL,
   type.input,
   method.execute,
+  method.update.inits,
   create.dir = TRUE,
   dir.psn,
   path.nonmem = NULL,
@@ -50,7 +51,7 @@ suffix. A short string describing the sim is recommended like
 NMdata::NMorderColumns before saving dataset and running
 simulations? Default is TRUE.}
 
-\item{script}{The path to the script where this is run.For
+\item{script}{The path to the script where this is run. For
 stamping of dataset so results can be traced back to code.}
 
 \item{subproblems}{Number of subproblems to use as SUBPROBLEMS in
@@ -65,7 +66,7 @@ simulations will still be rerun.}
 `sample(1:1e8,size=1)` for each simulation. In case
 type.sim=known, seed is not used and will be set to 1.}
 
-\item{args.execute}{A charachter string that will be passed as
+\item{args.psn.execute}{A charachter string that will be passed as
 arguments PSN's `execute`.}
 
 \item{nmquiet}{Silent messages from Nonmem.}
@@ -108,11 +109,53 @@ transform, the contents must be the function to apply.}
 
 \item{type.input}{Deprecated. Use type.mod instead.}
 
+\item{method.execute}{Specify how to call Nonmem. Options are
+"psn" (PSN's execute), "directory" (an internal method similar
+to PSN's execute), and "direct" (just run Nonmem directly and
+dump all the temporary files). "directory" has advantages over
+"psn" that makes it the only supported method when
+type.sim="known". "psn" has the simple advantage that the path
+to nonmem does not have to be specified if "execute" is in the
+system search path. So as long as you know where your Nonmem
+executable is, "directory" is recommended. The default is
+"directory" if path.nonmem is specified, and "psn" if not.}
+
+\item{method.update.inits}{The initial estimates must be updated
+from the estimated model before running the simulation. NMsim
+supports two ways of doing this: "psn" which uses PSN's
+"update_inits", and "nmsim" which uses a simple internal
+method. The advantage of "psn" is it keeps comments in the
+control stream and is a method known to many. The advantages
+of "nmsim" are it does not require PSN, and that it is very
+robust. "nmsim" fixes the whole OMEGA and SIGMA matrices as
+single blocks making the $OMEGA and $SIGMA sections of the
+control streams less easy to read. On the other hand, this
+method is robust because it avoids any interpretation of BLOCK
+structure or other code in the control streams.}
+
+\item{create.dir}{If the directory specified in dir.sim does not
+exists, should it be created? Default is TRUE.}
+
+\item{dir.psn}{The directory in which to find PSN's executables
+('execute' and 'update_inits'). The default is to rely on the
+system's search path. So if you can run 'execute' and
+'update_inits' by just typing that in a terminal, you don't
+need to specify this unless you want to explicitly use a
+specific installation of PSN on your system.}
+
+\item{path.nonmem}{The path to the Nonmem executable to use. The
+could be something like "/usr/local/NONMEM/run/nmfe75" (which
+is a made up example). No default is available. You should be
+able to figure this out through how you normally execute
+Nonmem, or ask a colleague.}
+
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say tibble::as_tibble) in as.fun to convert to
 something else. If data.tables are wanted, use
 as.fun="data.table". The default can be configured using
 NMdataConf.}
+
+\item{suffix.sim}{Deprecated. Use name.sim instead.}
 }
 \description{
 Supply a data set and an input control stream, and NMsim will

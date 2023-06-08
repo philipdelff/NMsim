@@ -65,14 +65,15 @@ dat.sim1 %>%
 ## remember some of the dosing records represent multiple (6) doses
 ## NMexpandDoses(dat.sim1)[,.N,by=.(regimen,DOSE,EVID)]
 NMexpandDoses(dat.sim1) %>%
-    group_by(regimen,DOSE,EVID) %>%
-    summarize(length(EVID)) 
+    group_by(ID,regimen,DOSE,EVID) %>%
+    summarize(N=length(EVID)) %>%
+    tidyr::spread(EVID,N)
 
 dat.sim1 <- as.data.table(dat.sim1)
 setorder(dat.sim1,ID,TIME,EVID)
 dat.sim1$ROW <- 1:nrow(dat.sim1)
 
-NMorderColumns(dat.sim1)
+dat.sim1 <- NMorderColumns(dat.sim1)
 
 
 ### Check simulation data
@@ -104,7 +105,11 @@ simres <- NMsim(path.mod=file.mod,
                 )
 
 simres <- as.data.table(simres)[,ID:=.GRP,by=.(NMREP,ID)]
-
+head(simres,n=3)
+ggplot(simres,aes(TIME,PRED,colour=dose))+
+    geom_line()+
+    labs(x="Hours",y="Concentration (ng/mL)")+
+    facet_wrap(~regimen,scales="free")
 
 
 
