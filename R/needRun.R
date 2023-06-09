@@ -11,6 +11,7 @@
 ##'   NMsim:::callArgs()
 ##' }
 ##' funfoo(a=1)
+##' @keywords internal
 
 callArgs <- function(which=-1){
     
@@ -41,6 +42,7 @@ callArgs <- function(which=-1){
 ##' @param funs Named list of functions to be applied to elements (matched on names) in `obj`. Optional.
 ##' @return A data.table with hashes/checksums.
 ##' @importFrom digest digest
+##' @keywords internal
 ## Made for needRun. Don't export.
 digestElements <- function(obj,funs){
 
@@ -71,7 +73,7 @@ digestElements <- function(obj,funs){
 ##' @param funs Named list of functions to apply to arguments
 ##' @param which Number of environment levels to jump to evaluate the
 ##'     arguments
-##' 
+##' @keywords internal
 needRun <- function(path.res,path.digest,funs,which=-2){
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####

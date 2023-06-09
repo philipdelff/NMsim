@@ -19,3 +19,4 @@ Get digests of argument values. Optionally, functions can be run
 on some arguments before calculating digests. An example would be
 reading contents of a file where the file path is an argument.
 }
+\keyword{internal}

@@ -24,3 +24,4 @@ funfoo <- function(a,b){
 }
 funfoo(a=1)
 }
+\keyword{internal}

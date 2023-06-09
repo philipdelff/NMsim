@@ -21,3 +21,4 @@ arguments}
 Compares arguments against stored checksums or output of functions
 of them. If changes found, the function should be re-run.
 }
+\keyword{internal}
