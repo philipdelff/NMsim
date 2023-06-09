@@ -15,7 +15,7 @@ Imports: data.table,
          NMdata (>= 0.0.15),
          digest,
          MASS
-Suggests: 	 
+Suggests: 
          knitr,
          rmarkdown,
          dplyr,
@@ -28,3 +28,4 @@ Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/philipdelff/NMsim/issues
 Language: en-US
+URL: https://philipdelff.github.io/NMsim/
