@@ -23,8 +23,8 @@ NMexec(
 )
 }
 \arguments{
-\item{files}{File paths to the models (control stream) to
-edit. See file.pattern too.}
+\item{files}{File paths to the models (control streams) to run
+nonmem on. See file.pattern too.}
 
 \item{file.pattern}{Alternatively to files, you can supply a
 regular expression which will be passed to list.files as the

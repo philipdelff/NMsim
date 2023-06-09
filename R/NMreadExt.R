@@ -3,7 +3,7 @@
 ## Nomega.diag <- pars[par.type=="OMEGA",.N]
 
 
-NMreadExt <- function(file.ext){
+NMreadExt <- function(path.ext){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -18,11 +18,11 @@ NMreadExt <- function(file.ext){
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
     
-    res.NMdat <- NMreadTab(file.ext,as.fun="data.table")
+    res.NMdat <- NMreadTab(path.ext,as.fun="data.table")
     ## compareCols(
     ##     res.NMdat
     ##    ,
-    ##           fread(file.ext)
+    ##           fread(path.ext)
     ##           )
     ## res.NMdat
     ## res.NMdat[,sprintf("%d",ITERATION)]

@@ -1,0 +1,212 @@
+---
+title: "NMsim basics"
+output:
+rmarkdown::html_vignette:
+    toc: true
+Suggests: markdown
+VignetteBuilder: knitr
+vignette: >
+  %\VignetteIndexEntry{NMsim basics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+header-includes:
+- \usepackage{ae}
+---
+
+```{r, include = FALSE}
+##knitr::opts_chunk$set(dev = "cairo_pdf")
+knitr::opts_chunk$set(
+                      collapse = TRUE
+                     ,comment = "#>"
+                     ,fig.width=7
+                     ,cache=FALSE
+                  )
+
+## this changes data.table syntax. I think we can do without.
+## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+```
+
+```{r,setup,include=T}
+## library(devtools)
+## load_all("../../../../NMdata")
+## load_all()
+library(NMsim)
+library(data.table)
+library(NMdata)
+library(dplyr)
+library(tibble)
+library(ggplot2)
+library(patchwork)
+library(tracee)
+library(tidyr)
+
+theme_set(theme_bw())
+this.script <- "NMsim_basics.Rmd"
+writeOutput <- TRUE
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)",full.names=TRUE)
+unlink(found.files)
+```
+
+
+Built `r Sys.Date()` using NMsim `r packageVersion("NMsim")`.
+
+
+## Objectives
+This vignettes aims at enabling you to
+
+* Use `NMsim` to simulate Nonmem models with a given input data set
+
+* Distinguish between and perform three different types of simulations: new subjects (default), typical subjects, and known subjects
+
+* Configure `NMsim` to use `PSN` or methods provided by `NMsim` to update Nonmem control stream initial values and to run Nonmem
+
+* Understand pros and cons of using `PSN` vs. methods provided by `NMsim`.
+
+<!-- * Configure `NMsim` to use `PSN`'s `update_inits` or an alternative simple method provided by `NMsim` -->
+
+## Estimation, then simulation
+The situation is like this: We collected PK and PD data on a drug
+candidate. A PK model was estimated using Nonmem. We have on file
+model input and output control streams (here with extensions `.mod`
+and `.lst` respetively), parameter estimates (`.ext`) and estimated
+random effects (`.phi`) are available.
+
+We want predict exposure in a few dosing regimens that we are
+particularly interested in. These are regimens that we have not
+studied in clinical trials so far, and we have decided to use
+population PK simulations for this purpose. 
+
+The pop PK model is estimated using an ADVAN subroutine with
+extravascular dosing in compartment 1 andthe central compartment is
+compartment 2. 
+
+
+```{r,dsCreateSim,include=FALSE}
+dt.amt <- data.frame(DOSE=c(100,400))
+dt.amt <- within(dt.amt,{AMT=DOSE*1000})
+dt.amt
+doses.sd <- NMcreateDoses(TIME=0,AMT=dt.amt)
+doses.sd <- within(doses.sd,{
+    dose=paste(DOSE,"mg")
+    regimen="SD"
+})
+doses.sd
+
+
+### multiple dose regimens with loading are easily created with NMcreateDoses too
+## We use ADDL+II (either method easy)
+dt.amt <- data.frame(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
+doses.md <- NMcreateDoses(TIME=c(0,24),AMT=dt.amt,addl=data.frame(ADDL=c(0,5),II=c(0,24)))
+doses.md <- within(doses.md,{
+    dose=paste(DOSE,"mg")
+    regimen="QD"
+})
+doses.md
+## doses.md$ID <- max(doses.sd$ID)+doses.md$ID
+
+
+## we will simulate with SD and QD
+doses.all <- bind_rows(doses.sd,doses.md)
+
+
+
+
+## Add simulation records - longer for QD regimens
+dat.sim.sd <- addEVID2(doses.sd,time.sim=0:24,CMT=2)
+dat.sim.md <- addEVID2(doses.md,time.sim=0:(24*7),CMT=2)
+
+## Stack simulation data, reassign ID to be unique in combined dataset
+dat.sim1 <- bind_rows(dat.sim.sd,dat.sim.md)
+dat.sim1 <- as.data.table(dat.sim1)[,ID:=.GRP,by=.(regimen,ID,DOSE)]
+setorder(dat.sim1,ID,TIME,EVID)
+dat.sim1$ROW <- 1:nrow(dat.sim1)
+
+dat.sim1 <- NMorderColumns(dat.sim1)
+
+
+dat.sim1 <- as_tibble(dat.sim1)
+```
+
+```{r}
+NMexpandDoses(dat.sim1) %>%
+    group_by(ID,regimen,DOSE,EVID,AMT) %>%
+    summarize(N=length(EVID)) %>%
+    spread(EVID,N)
+
+print(as.data.table(dat.sim1),topn=5)
+```
+
+We have put together a simulation data set. We used the
+`NMcreateDoses` and `addEVID2` functions from `NMsim` to do so, but
+that is not the topic of this vignette. We simulate two different doses (100 mg and 400 mg) as single dose, and then the same dose levels as QD with a double loading dose.
+
+
+## Simulation of new subjects
+This is the first time we are using `NMsim`, and we just want to try
+the simplest thing we can think of.
+
+
+```{r,sim-simplest,eval=FALSE}
+## file.mod <- "../nonmem/xgxr014.mod"
+file.mod <- file.project("nonmem/xgxr014.mod")
+simres <- NMsim(path.mod=file.mod,
+                data=dat.sim1
+                 )
+```
+<!-- That did not go well. As the error shows, `$TABLE` refers to a `ROW` column. Nonmem needs this to run the control stream as is. Since this does not happen until `$TABLE`, we have two options to fix it -->
+<!-- - Add `ROW` to the input data set -->
+<!-- - Modify `$TABLE` (using the `text.table`, demonstrated later) -->
+
+
+
+
+<!-- subproblems vs repetition of input data -->
+
+### More subjects
+
+## Simulation of multiple models
+
+### Simulation from a bootstrap
+
+## Simulation of a typical subject
+```{r,eval=FALSE}
+simres.typ <- NMsim(path.mod=file.mod,
+                    data=dat.sim1,
+                    type.sim="typical")
+
+```
+
+## Simulation of known subjects
+```{r,eval=FALSE}
+base.sim.known <- dat.sim.md[dat.sim.md$DOSE==400,]
+
+res.mod <- NMscanData(file.mod)
+idvars <- findCovs(res.mod,by="ID")
+
+
+dat.sim1.known <- merge(ids,
+                        base.sim.known[,setdiff(colnames(base.sim.known),c("ID"))]
+                        )
+setorder(dat.sim1.known,ID,TIME,EVID)
+
+res.known <- NMsim(file.mod,
+                   data=dat.sim1.known,
+                   suffix.sim="known1",
+                   text.table="PRED IPRED CL V KA"
+                  ,type.sim="known"
+                  ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                   )
+```
+
+Show a plot of the individual parameters in estimate and in sim
+
+### Impute simulation times for building a PK/PD dataset
+
+## Add residual variability
+
+## Configuration of how to execute Nonmem
+
+## Other important arguments to `NMsim`
+
+<!-- simres.typ$type <- "typical" -->

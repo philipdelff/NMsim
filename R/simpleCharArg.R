@@ -6,9 +6,13 @@ simpleCharArg <- function(name.arg,val.arg,default,accepted,lower=TRUE,clean=TRU
     if(is.null(val.arg)) {
         val.arg <- default
     }
+    
     ## check for compliant format
-    if(length(val.arg)!=1||(!is.character(val.arg)&&!is.factor(val.arg))){
-        stop(paste(name.arg,"must be a single character string."),call.=FALSE)
+    if( !(is.null(default) && is.null(val.arg))){
+        if(length(val.arg)!=1 ||
+           (!is.character(val.arg)&&!is.factor(val.arg))){
+            stop(paste(name.arg,"must be a single character string."),call.=FALSE)
+        }
     }
     ## clean
     if(clean) val.arg <- gsub(" ","",as.character(val.arg))

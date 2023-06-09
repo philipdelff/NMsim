@@ -139,7 +139,6 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     direct <- NULL
     directory <- NULL
     nmsim <- NULL
-    file.mod <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
@@ -151,7 +150,7 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
 
     ## dir.psn - should use NMdataConf setup
     if(missing(dir.psn)) dir.psn <- NULL
-    dir.psn <- try(NMdata:::NMdataDecideOption("dir.psn",dir.psn))
+    dir.psn <- try(NMdata:::NMdataDecideOption("dir.psn",dir.psn),silent=TRUE)
     if(inherits(dir.psn,"try-error")){
         dir.psn <- NULL
         dir.psn <- simpleCharArg("dir.psn",dir.psn,"",accepted=NULL,lower=FALSE)
@@ -166,10 +165,11 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     ## path.nonmem - should use NMdataConf setup
     
     if(missing(path.nonmem)) path.nonmem <- NULL
-    path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem))
+    path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem),silent=TRUE)
     if(inherits(path.nonmem,"try-error")){
         path.nonmem <- NULL
-        path.nonmem <- simpleCharArg("path.nonmem",path.nonmem,NULL,accepted=NULL,lower=FALSE)
+        
+        path.nonmem <- simpleCharArg("path.nonmem",path.nonmem,default=NULL,accepted=NULL,lower=FALSE)
     }
     
     ## method.execute
@@ -275,6 +275,7 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
 #### Section start: Defining additional paths based on arguments ####
 
     ## dir.sim
+    
     if(missing(dir.sim)) dir.sim <- NULL
     dir.sim <- simpleCharArg("dir.sim",dir.sim,file.path(dirname(file.mod),"NMsim"),accepted=NULL,lower=FALSE)
     

@@ -1,7 +1,7 @@
 ##' execute nonmem while also archiving input data
 
-##' @param files File paths to the models (control stream) to
-##'     edit. See file.pattern too.
+##' @param files File paths to the models (control streams) to run
+##'     nonmem on. See file.pattern too.
 ##' @param file.pattern Alternatively to files, you can supply a
 ##'     regular expression which will be passed to list.files as the
 ##'     pattern argument. If this is used, use dir argument as
