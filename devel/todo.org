@@ -14,6 +14,9 @@ Path to nonmem, psn, other ways to exec.
 *** TODO Move existing results files to backup before running nonmem
 ** NMsim
 *** TODO Modularize simulation methods
+**** TODO Handle seed and subproblems outside modules
+**** TODO How to handle replace.sim?
+Should that only be available for the default method?
 *** TODO Support simulation of new models from covariance step
 *** TODO path.mod should be file.mod
 Or files?

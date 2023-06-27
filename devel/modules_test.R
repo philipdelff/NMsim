@@ -57,6 +57,11 @@ load_all()
 
 
 file.mod <- "inst/examples/nonmem/xgxr014.mod"
+
+NMsim_default$fun.mod(file.mod,seed=1)
+NMsim_typical$fun.mod(file.mod,seed=1)
+NMsim_known$fun.mod(file.mod,seed=1)
+
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1
                 ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"

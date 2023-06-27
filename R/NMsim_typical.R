@@ -1,14 +1,19 @@
-if(F){
+NMsim_typical <- list(
 
-    if(type.sim=="typical"){
+    fun.mod=function(path.sim,seed){
 
-        extres <- NMreadExt(fnExtension(path.mod,"ext"))
+        lines.sim <- NMsim_default$fun.mod(path.sim,seed=seed)
+
+        extres <- NMreadExt(fnExtension(path.sim,"ext"))
         Netas <- extres$pars[par.type=="OMEGA",max(i)]
 
-### creates a full block of zeros. Works but unnecessarily large.
-        ## lines.omega <- sprintf("$OMEGA BLOCK(%d)\n 0 FIX %s",Nomegas,paste(rep(0,(Nomegas**2-Nomegas)/2+Nomegas-1),collapse=" "))
         lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
-        NMwriteSection(files=path.sim,section="omega",newlines=lines.omega,backup=FALSE,quiet=TRUE)
+        lines.sim <- NMwriteSectionOne(lines=lines.sim,section="omega",newlines=lines.omega,backup=FALSE,quiet=TRUE)
+
+
+        lines.sim
     }
 
-    }
+    
+
+)

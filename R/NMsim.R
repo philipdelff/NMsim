@@ -402,8 +402,8 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
 
 #### run the specified method to modify control stream
     ## lines.mod <- readLines(con=path.mod)
-    lines.sim <- readLines(con=path.sim)
-    lines.sim <- method.sim$fun.mod(lines.sim,seed=seed)
+    ## lines.sim <- readLines(con=path.sim)
+    lines.sim <- method.sim$fun.mod(path.sim=path.sim,seed=seed)
     
     sections.mod <- NMreadSection(file=path.mod)
     names.sections <- names(sections.mod)
