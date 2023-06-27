@@ -2,7 +2,7 @@
 
 ** general
 
-*** TODO pkgdown
+*** pkgdown
 
 *** TODO goathunter
 *** DONE Setting for paths to executables
@@ -13,7 +13,10 @@ Path to nonmem, psn, other ways to exec.
 ** NMexec
 *** TODO Move existing results files to backup before running nonmem
 ** NMsim
+*** TODO Modularize simulation methods
+*** TODO Support simulation of new models from covariance step
 *** TODO path.mod should be file.mod
+Or files?
 To align with argument naming in NMdata
 *** DONE If path.nonmem is not supplied, use psn?
 *** TODO Fix broken reuse.results
