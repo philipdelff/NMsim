@@ -1,25 +1,30 @@
-NMsim_known <- list(
+NMsim_known <- function(path.sim,path.mod,data.sim,return.text=FALSE){
 
-    fun.mod=function(path.sim,seed){
+    
+    
+    path.phi.sim <- fnAppend(fnExtension(path.sim,".phi"),"input")
+    files.needed.def <- NMsim_default(path.sim=path.sim,path.mod=path.mod,data.sim=data.sim)
 
-        lines.sim <- NMsim_default$fun.mod(path.sim=path.sim,seed=seed)
-        path.phi.sim <- fnAppend(fnExtension(path.sim,".phi"),"input")
-        
+    lines.sim <- readLines(path.sim)
+    
 ### prepare simulation control stream
-        ## get rid of any $ETAS sections
-        lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="$ETAS",newlines="",backup=FALSE,quiet=TRUE)
-        
-        lines.new <- sprintf("$ETAS FILE=%s  FORMAT=s1pE15.8 TBLN=1
+    ## get rid of any $ETAS sections
+    lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="$ETAS",newlines="",backup=FALSE,quiet=TRUE)
+    
+    lines.new <- sprintf("$ETAS FILE=%s  FORMAT=s1pE15.8 TBLN=1
 $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.sim))
-        
-        lines.sim <- NMwriteSectionOne(lines=lines.sim,section="TABLE",location="before",
-                                       newlines=lines.new,backup=FALSE,quiet=TRUE)
+    
+    lines.sim <- NMwriteSectionOne(lines=lines.sim,section="TABLE",location="before",
+                                   newlines=lines.new,backup=FALSE,quiet=TRUE)
 
-        lines.sim
-    }
-,
+    
+#### .mod done
+    ##         lines.sim
 
-fun.phi = function(path.sim,path.mod,data.sim){
+    ##     }
+    ## ,
+
+    ## fun.phi = function(path.sim,path.mod,data.sim){
 
     ## simulation data is needed 
     
@@ -49,15 +54,23 @@ fun.phi = function(path.sim,path.mod,data.sim){
 ### Error if subjects in data are not found in phi
     if(phi.use[,any(is.na(text))]){
         message("IDs not found in nonmem results (phi file):", paste(phi.use[is.na(text),ID],collapse=", "))
+        phi.use <- phi.use[!is.na(text)]
     }
     phi.use <- rbind(phi.lines[is.data==FALSE,.(text)],phi.use,fill=TRUE)
 
+    lines.phi <- phi.use[,text]
     path.phi.sim <- fnAppend(fnExtension(path.sim,".phi"),"input")
-    con.newphi <- file(path.phi.sim, "wb")
-    writeLines(phi.use[,text], con = con.newphi)
-    close(con.newphi)
-    files.needed <- c(files.needed,path.phi.sim)
 
+    if(return.text){
+        return(list(mod=lines.sim,
+                    phi=lines.phi))
+    }
+    
+    writeTextFile(lines=lines.sim,file=path.sim)
+    
+    writeTextFile(lines.phi,path.phi.sim)
+
+    files.needed <- c(path.sim,path.phi.sim)
+    files.needed
 }
 
-)

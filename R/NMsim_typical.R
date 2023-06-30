@@ -1,19 +1,19 @@
-NMsim_typical <- list(
+NMsim_typical <- function(path.sim,path.mod,data.sim,return.text=FALSE){
 
-    fun.mod=function(path.sim,seed){
+    files.needed.def <- NMsim_default(path.sim=path.sim,path.mod,data.sim)
+    lines.sim <- readLines(path.sim)
 
-        lines.sim <- NMsim_default$fun.mod(path.sim,seed=seed)
+    extres <- NMreadExt(fnExtension(path.sim,"ext"))
+    Netas <- extres$pars[par.type=="OMEGA",max(i)]
 
-        extres <- NMreadExt(fnExtension(path.sim,"ext"))
-        Netas <- extres$pars[par.type=="OMEGA",max(i)]
+    lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
+    lines.sim <- NMwriteSectionOne(lines=lines.sim,section="omega",newlines=lines.omega,backup=FALSE,quiet=TRUE)
 
-        lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
-        lines.sim <- NMwriteSectionOne(lines=lines.sim,section="omega",newlines=lines.omega,backup=FALSE,quiet=TRUE)
-
-
-        lines.sim
+    if(return.text){
+        return(lines.sim)            
     }
 
-    
+    writeTextFile(lines=lines.sim,file=path.sim)
 
-)
+    return(path.sim)
+}

@@ -40,11 +40,11 @@ NMupdateInitsFix <- function(file.mod,new.mod){
                          ,OMEGA=lines.omega
                          ,SIGMA=lines.sigma)
     
-    NMwriteSection(file.mod
+    res <- NMwriteSection(file.mod
                   ,newfile=new.mod
                   ,list.sections=list.sections
                   ,backup=FALSE
                   ,quiet=TRUE)
 
-    invisible(list.sections)
+    invisible(res)
 }
