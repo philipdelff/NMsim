@@ -8,7 +8,7 @@
 ##'     to be stored next to the input control stream and ending in
 ##'     .lst instead of .modl
 ##' @param data The simulation data as a data.frame.
-##' @param dir.sim The directory in which NMsim will store all
+##' @param dir.sims The directory in which NMsim will store all
 ##'     generated files.
 ##' @param name.sim Give all filenames related to the simulation a
 ##'     suffix. A short string describing the sim is recommended like
@@ -93,7 +93,7 @@
 ##'     is a made up example). No default is available. You should be
 ##'     able to figure this out through how you normally execute
 ##'     Nonmem, or ask a colleague.
-##' @param create.dir If the directory specified in dir.sim does not
+##' @param create.dir If the directory specified in dir.sims does not
 ##'     exists, should it be created? Default is TRUE.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say tibble::as_tibble) in as.fun to convert to
@@ -108,7 +108,7 @@
 
 
 
-NMsim <- function(path.mod,data,dir.sim, name.sim,
+NMsim <- function(path.mod,data,dir.sims, name.sim,
                   order.columns=TRUE,script=NULL,subproblems,
                   reuse.results=FALSE,seed,args.psn.execute,
                   nmquiet=FALSE,text.table, type.mod,method.sim=NMsim_default,
@@ -203,23 +203,6 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     if(is.null(method.update.inits) && method.execute=="psn") method.update.inits <- "psn"
     method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim,none))
     
-    ## type.mod
-    ## if(!missing(type.input)){
-    ##     if(!missing(type.mod)){
-    ##         stop("type.mod and type.input supplied. Use type.mod and not the deprecated type.input. ")
-    ##     }
-    ##     message("type.input is deprecated. Use type.mod.")
-    ##     type.mod <- type.input
-    ## }
-
-    
-    ## if(missing(type.mod)) type.mod <- NULL
-    ## type.mod <- simpleCharArg("type.mod",type.mod,"est",accepted=cc(est,sim))
-
-    ## if(type.sim=="known"&&type.mod!="est"){
-    ##     stop("Currently, type.sim=known can only be used with type.mod=est.")
-    ## }
-    ## seed - will handle again after handling length(path.mod)>1
     if(missing(seed)) seed <- NULL
 
     ## name.sim
@@ -254,7 +237,7 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     ## if(F){
     if(length(path.mod)>1){
         allres.l <- lapply(path.mod,NMsim,data=data
-                          ,dir.sim=dir.sim,
+                          ,dir.sims=dir.sims,
                            name.sim=name.sim,
                            order.columns=order.columns,script=script,
                            subproblems=subproblems,
@@ -280,30 +263,23 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
 
     ## dir.sim
     
-    if(missing(dir.sim)) dir.sim <- NULL
-    dir.sim <- simpleCharArg("dir.sim",dir.sim,file.path(dirname(file.mod),"NMsim"),accepted=NULL,lower=FALSE)
+    if(missing(dir.sims)) dir.sims <- NULL
+    dir.sims <- simpleCharArg("dir.sims",dir.sims,file.path(dirname(file.mod),"NMsim"),accepted=NULL,lower=FALSE)
     
-    if(!dir.exists(dir.sim)){
+    if(!dir.exists(dir.sims)){
         if(!create.dir){
-            stop(paste("dir.sim does not point to an existing directory. dir.sim is\n",NMdata:::filePathSimple(dir.sim)))
+            stop(paste("dir.sims does not point to an existing directory. dir.sims is\n",NMdata:::filePathSimple(dir.sims)))
         }
-        dir.create(dir.sim)
+        dir.create(dir.sims)
     }
+
 
     
     
     ## seed
-    ## if( type.sim=="known" && !is.null(seed) && seed!=1 ){
-    ##     ### how to handle this with modules?
-    ##     warning("seed is specified even though type.sim=known. seed will not be used.")
-    ## }
     if(is.null(seed)){
         seed <- function()sample(1:1e8,size=1)
     } 
-    ## if(type.sim=="known"){
-    ##     seed <- 1
-    ## }
-    if(is.function(seed)) seed <- seed()
 
     if(missing(subproblems)|| is.null(subproblems)) subproblems <- 0
 
@@ -318,12 +294,24 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
 
     ## fn.sim is the file name of the simulation control stream created by NMsim
     ## fn.sim <- sub("^run","NMsim",basename(path.mod))
-    dt.models[,fn.sim:=paste0("NMsim_",basename(path.mod))]
+    dt.models[,fn.mod:=basename(path.mod)]
+    dt.models[,fn.sim:=paste0("NMsim_",fn.mod)]
     dt.models[,fn.sim:=fnAppend(fn.sim,name.sim)]
+
+
+    ## run.mod <- sub("\\.mod","",basename(path.mod))
+    dt.models[,run.mod:=fnExtension(basename(path.mod),"")]
+    ## run.sim <- sub("\\.mod","",fn.sim)
+    dt.models[,run.sim:=fnExtension(basename(fn.sim),"")]
+
+
+    ## dir.sim is the model-individual directory in which the model will be run
+    dt.models[,
+              dir.sim:=file.path(dir.sims,paste(run.mod,name.sim,sep="_"))]
 
     ## path.sim.0 is a temporary path to the sim control stream - it
     ## will be moved to path.sim once created.
-    dt.models[,path.sim.0:=file.path(dirname(path.mod),fn.sim)]
+    dt.models[,fn.sim.tmp:=fnAppend(fn.sim,"tmp")]
     ## path.sim: full path to simulation control stream
     dt.models[,path.sim:=NMdata:::filePathSimple(file.path(dir.sim,fn.sim))]
 
@@ -374,27 +362,25 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     dt.models[,fn.data:=paste0("NMsimData_",fnExtension(fnAppend(basename(path.mod),name.sim),".csv"))]
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
 
-
-    ## run.mod <- sub("\\.mod","",basename(path.mod))
-    dt.models[,run.mod:=fnExtension(basename(path.mod),"")]
-    ## run.sim <- sub("\\.mod","",fn.sim)
-    dt.models[,run.sim:=fnExtension(basename(fn.sim),"")]
-
     dt.models[,if(file.exists(path.sim)) unlink(path.sim),by=.(ROWMODEL)]
 
-    
+    dt.models[,{if(!dir.exists(dir.sim)){
+                    dir.create(dir.sim)}
+    },by=.(ROWMODEL)
+    ]
 
 
-########## this should be used to generate the first version of file.sim
+
+########## this is used to generate the first version of file.sim. It would not need to, but beware PSN's update_inits needs to create a new file - don't try to overwrite an existing one.
     if(method.update.inits=="none"){
         dt.models[,file.copy(path.mod,path.sim),by=ROWMODEL]
     }
     if(method.update.inits=="psn"){
         dt.models[,{
-            cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim,seed,path.mod)
+            cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim.tmp,seed,path.mod)
             system(cmd.update,wait=TRUE)
 
-            file.rename(path.sim.0,path.sim)
+            file.rename(fn.sim.tmp,path.sim)
         },by=ROWMODEL]
     }
     if(method.update.inits=="nmsim"){
@@ -402,7 +388,7 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
         dt.models[,NMupdateInitsFix(file.mod=path.mod,new.mod=path.sim),by=.(ROWMODEL)]
     }
 
-    
+
 ### save data and replace $input and $data
 #### multiple todo: save for each path.data
     dt.models[,{
@@ -448,8 +434,8 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
 ### save file.sim
         writeTextFile(lines=lines.sim,file=path.sim)
     },by=.(ROWMODEL)]
-    
-    
+
+
 ###  Section end: Output tables
 
 
@@ -457,8 +443,9 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     dt.models[,
               files.needed:=paste(method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data),collapse=":")
              ,by=.(ROWMODEL)]
-    
-    
+
+    dt.models [,seed:={if(is.function(seed))  seed() else seed},by=.(ROWMODEL)]
+
 ### seed and subproblems
     if(!is.null(seed) || subproblems>0){
         dt.models[,{
@@ -489,10 +476,12 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
         },by=.(ROWMODEL)]
     }
 
-    
+
+##:ess-bp-start::conditional@:##
+browser(expr={TRUE})##:ess-bp-end:##
     
 #### Section start: Execute ####
-    
+
 ### files needed can vary, so NMexec must be run for one model at a time
     simres <- NULL
     if(execute){

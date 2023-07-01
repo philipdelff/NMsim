@@ -22,7 +22,7 @@ callNonmemDirect <- function(file.mod,path.nonmem){
 
 ## do not export. NMexec will call this.
 
-NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=NULL){
+NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
 
     ## if(missing(method)||is.null(method)) method <- "directory"
     ## if(!(is.characther(method) && length(method)==1)||!method%in%cc(directory,direct)){
