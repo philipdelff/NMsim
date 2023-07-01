@@ -4,8 +4,14 @@ callNonmemDirect <- function(file.mod,path.nonmem){
     sprintf("cd %s; %s %s %s; cd -",dirname(file.mod),path.nonmem,bfile.mod,fnExtension(bfile.mod,".lst"))
 }
 
-##' @import NMdata 
-##' @keywords internal 
+##' @param dir.data If NULL, data will be copied into the temporary
+##'     directory, and Nonmem will read it from there. If not NULL,
+##'     dir.data must be the relative path from where Nonmem is run to
+##'     where the input data file is stored. This would be ".." if the
+##'     run directory is created in a directory where the data is
+##'     stored.
+##' @import NMdata
+##' @keywords internal
 
 ### like execute but in R.
 ## copy necessary files into temporary
@@ -16,13 +22,17 @@ callNonmemDirect <- function(file.mod,path.nonmem){
 
 ## do not export. NMexec will call this.
 
-NMexecDirectory <- function(file.mod,path.nonmem,files.needed){
+NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=NULL){
 
     ## if(missing(method)||is.null(method)) method <- "directory"
     ## if(!(is.characther(method) && length(method)==1)||!method%in%cc(directory,direct)){
     ##     stop("method must be one of 'directory' and 'direct' - and only a single string.")
     ## }
-    
+
+    copy.data <- FALSE
+    if(is.null(dir.data)){
+        copy.data <- TRUE
+    }     
     if(missing(files.needed)) files.needed <- NULL
     extr.data <- NMextractDataFile(file.mod)
     
@@ -44,11 +54,15 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed){
     file.mod.tmp <- file.path(dir.tmp,fn.mod)
     
 ### copy input data to temp dir. 
-    file.copy(extr.data$path,dir.tmp)
-    
+    if(copy.data){
+        file.copy(extr.data$path,dir.tmp)
 ### modify .mod to use local copy of input data. Notice the newfile
 ### arg to NMwriteSection creating file.mod.tmp.
-    sec.data.new <- paste("$DATA",sub(extr.data$string,basename(extr.data$path),extr.data$DATA,fixed=TRUE))
+        sec.data.new <- paste("$DATA",sub(extr.data$string,basename(extr.data$path),extr.data$DATA,fixed=TRUE))
+    } else {
+        sec.data.new <- paste("$DATA",sub(extr.data$string,file.path(dir.data,basename(extr.data$path)),extr.data$DATA,fixed=TRUE))
+    }
+    
     NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp)
 
 ### copy .phi if found

@@ -251,28 +251,28 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     }
 
 
-    if(F){
-        if(length(path.mod)>1){
-            allres.l <- lapply(path.mod,NMsim,data=data
-                              ,dir.sim=dir.sim,
-                               name.sim=name.sim,
-                               order.columns=order.columns,script=script,
-                               subproblems=subproblems,
-                               reuse.results=reuse.results,seed=seed,
-                               args.psn.execute=args.psn.execute
-                              ,nmquiet=nmquiet,
-                               text.table=text.table,
-                               type.mod=type.mod,execute=execute,
-                               sge=sge
-                              ,transform=transform
-                               ##,type.sim=type.sim
-                              ,method.sim=method.sim
-                              ,path.nonmem=path.nonmem
-                              ,dir.psn=dir.psn
-                               )
-            return(rbindlist(allres.l))
-        }
+    ## if(F){
+    if(length(path.mod)>1){
+        allres.l <- lapply(path.mod,NMsim,data=data
+                          ,dir.sim=dir.sim,
+                           name.sim=name.sim,
+                           order.columns=order.columns,script=script,
+                           subproblems=subproblems,
+                           reuse.results=reuse.results,seed=seed,
+                           args.psn.execute=args.psn.execute
+                          ,nmquiet=nmquiet,
+                           text.table=text.table,
+                           type.mod=type.mod,execute=execute,
+                           sge=sge
+                          ,transform=transform
+                           ##,type.sim=type.sim
+                          ,method.sim=method.sim
+                          ,path.nonmem=path.nonmem
+                          ,dir.psn=dir.psn
+                           )
+        return(rbindlist(allres.l))
     }
+    ## }
 
 
     
@@ -411,43 +411,8 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     }]
 
 
-    ## fun simulation method
-    dt.models[,
-              files.needed:=paste(method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data),collapse=":")
-              ,by=.(ROWMODEL)]
-    
-    
-### seed and subproblems
-    if(!is.null(seed) || subproblems>0){
-        dt.models[,{
-            lines.sim <- readLines(path.sim)
-            all.sections.sim <- NMreadSection(lines=lines.sim)
-            names.sections <- names(all.sections.sim)
-            n.sim.sections <- sum(grepl("^(SIM|SIMULATION)$",names.sections))
-            if(n.sim.sections == 0){
-                warning("No simulation section found. Subproblems and seed will not be applied.")
-            }
-            if(n.sim.sections > 1 ){
-                warning("More than one simulation section found. Subproblems and seed will not be applied.")
-            }
-            if(n.sim.sections == 1 ){
-                name.sim <- names.sections[grepl("^(SIM|SIMULATION)$",names.sections)]
-                section.sim <- all.sections.sim[[name.sim]]
-                if(subproblems>0){
-                    section.sim <- gsub("SUBPROBLEMS *= *[0-9]*"," ",section.sim)
-                    section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
-                }
-                if(!is.null(seed)){
-                    section.sim <- gsub("\\([0-9]+\\)","",section.sim)
-                    section.sim <- paste(section.sim,sprintf("(%s)",seed))
-                }
-                lines.sim <- NMwriteSectionOne(lines=lines.sim,section="simulation",newlines=section.sim,quiet=TRUE)
-                writeTextFile(lines.sim,path.sim)
-            }
-        },by=.(ROWMODEL)]
-    }
+#### Section start: Output tables ####
 
-#### this is messed up. save using replace? When?
     dt.models[,{
         fn.tab.base <- paste0("FILE=",run.sim,".tab")
         lines.sim <- readLines(path.sim)
@@ -485,37 +450,83 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     },by=.(ROWMODEL)]
     
     
+###  Section end: Output tables
+
+
+    ## fun simulation method
+    dt.models[,
+              files.needed:=paste(method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data),collapse=":")
+             ,by=.(ROWMODEL)]
+    
+    
+### seed and subproblems
+    if(!is.null(seed) || subproblems>0){
+        dt.models[,{
+            lines.sim <- readLines(path.sim)
+            all.sections.sim <- NMreadSection(lines=lines.sim)
+            names.sections <- names(all.sections.sim)
+            n.sim.sections <- sum(grepl("^(SIM|SIMULATION)$",names.sections))
+            if(n.sim.sections == 0){
+                warning("No simulation section found. Subproblems and seed will not be applied.")
+            }
+            if(n.sim.sections > 1 ){
+                warning("More than one simulation section found. Subproblems and seed will not be applied.")
+            }
+            if(n.sim.sections == 1 ){
+                name.sim <- names.sections[grepl("^(SIM|SIMULATION)$",names.sections)]
+                section.sim <- all.sections.sim[[name.sim]]
+                if(subproblems>0){
+                    section.sim <- gsub("SUBPROBLEMS *= *[0-9]*"," ",section.sim)
+                    section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
+                }
+                if(!is.null(seed)){
+                    section.sim <- gsub("\\([0-9]+\\)","",section.sim)
+                    section.sim <- paste(section.sim,sprintf("(%s)",seed))
+                }
+                lines.sim <- NMwriteSectionOne(lines=lines.sim,section="simulation",newlines=section.sim,quiet=TRUE)
+                writeTextFile(lines.sim,path.sim)
+            }
+        },by=.(ROWMODEL)]
+    }
+
+    
+    
+#### Section start: Execute ####
     
 ### files needed can vary, so NMexec must be run for one model at a time
+    simres <- NULL
     if(execute){
         
         ## run sim
         wait <- !sge
-        
-        NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed,input.archive=input.archive)
-        
-        if(wait){
-            simres <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive)
-            ## optionally transform results like DV, IPRED, PRED
-            if(!is.null(transform)){
-                
-                for(name in names(transform)){
-                    simres[,(name):=transform[[name]](get(name))]
+
+        simres <- dt.models[,{
+            simres.n <- NULL
+            files.needed.n <- strsplit(files.needed,":")[[1]]
+            NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed.n,input.archive=input.archive)
+            
+            if(wait){
+                simres.n <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive)
+                ## optionally transform results like DV, IPRED, PRED
+                if(!is.null(transform)){
+                    for(name in names(transform)){
+                        simres.n[,(name):=transform[[name]](get(name))]
+                    }
                 }
+                ## warn.notransform(transform)
+                simres.n <- as.fun(simres.n)
+            } else {
+                warn.notransform(transform)
+                simres.n <- NULL
             }
-            ## warn.notransform(transform)
-            simres <- as.fun(simres)
-        } else {
-            warn.notransform(transform)
-            simres <- NULL
-        }
-    } else {
-        simres <- NULL
+            simres.n
+        },by=.(RUNMODEL)]
     }
 
-    saveRDS(run.fun$digest.new,file=path.digests)
+###  Section end: Execute
+
+    ## saveRDS(run.fun$digest.new,file=path.digests)
 
     simres
 
 }
-

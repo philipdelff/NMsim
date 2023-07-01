@@ -13,6 +13,8 @@ Path to nonmem, psn, other ways to exec.
 ** NMexec
 *** TODO Move existing results files to backup before running nonmem
 ** NMsim
+*** TODO Use dt list elements for multiple files.needed
+*** TODO Use meaningful by in execute part
 *** TODO Modularize simulation methods
 **** TODO Handle seed and subproblems outside modules
 **** TODO How to handle replace.sim?
