@@ -48,24 +48,36 @@ Nmods <- 50
 ## new subjects
 setwd("~/wdirs/NMsim")
 
+
+file.mod <- "inst/examples/nonmem/xgxr014.mod"
+
+NMsim_default(file.mod,return.text=T)
+NMsim_typical(file.mod,return.text=T)
+if(FALSE){
+    ## needs data, a phi file and distinct mod and sim
+    afile <- tempfile() |> fnExtension("mod")
+    NMsim_known(path.mod=file.mod,path.sim=afile,data.sim=dat.sim1,return.text=T)
+}
+
+## default
+simres <- NMsim(path.mod=file.mod,
+                data=dat.sim1
+                ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+               ,method.update.inits="nmsim"
+                )
+
+
+## known
 unloadNamespace("NMsim")
 unloadNamespace("NMdata")
 load_all("~/wdirs/NMdata")
 load_all()
 
-
-
-
-file.mod <- "inst/examples/nonmem/xgxr014.mod"
-
-NMsim_default$fun.mod(file.mod,seed=1)
-NMsim_typical$fun.mod(file.mod,seed=1)
-NMsim_known$fun.mod(file.mod,seed=1)
-
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1
                 ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                ,method.update.inits="nmsim"
+               ,method.sim=NMsim_known
                 )
 
 

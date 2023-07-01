@@ -520,7 +520,7 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
                 simres.n <- NULL
             }
             simres.n
-        },by=.(RUNMODEL)]
+        },by=.(ROWMODEL)]
     }
 
 ###  Section end: Execute
