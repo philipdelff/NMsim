@@ -70,7 +70,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     
     writeTextFile(lines.phi,path.phi.sim)
 
-    files.needed <- c(path.sim,path.phi.sim)
+    files.needed <- data.table(path.sim=path.sim,files.needed=path.phi.sim)
     files.needed
 }
 

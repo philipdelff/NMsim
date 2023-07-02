@@ -181,9 +181,6 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
         method.execute.def <- "directory"
     }
     method.execute <- simpleCharArg("method.execute",method.execute,method.execute.def,cc(psn,direct,directory))
-    ## if(type.sim=="known"&&method.execute=="psn"){
-    ##     stop("when type.sim==known, method.execute=psn is not supported.")
-    ## }
     if(method.execute%in%cc(direct,directory) && is.null(path.nonmem)){
         stop("When method.execute is direct or directory, path.nonmem must be provided.")
     }
@@ -200,7 +197,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     ## method.update.inits
     if(missing(method.update.inits)) method.update.inits <- NULL
     ## if method.execute is psn, default is psn. If not, it is NMsim.
-    if(is.null(method.update.inits) && method.execute=="psn") method.update.inits <- "psn"
+    if(is.null(method.update.inits)) method.update.inits <- "psn"
     method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim,none))
     
     if(missing(seed)) seed <- NULL
@@ -222,8 +219,6 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
 
     input.archive <- inputArchiveDefault
-### this should be redundant with modules
-    files.needed <- NULL
     
 ###  Section end: Checking aguments
 
@@ -315,17 +310,16 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     ## path.sim: full path to simulation control stream
     dt.models[,path.sim:=NMdata:::filePathSimple(file.path(dir.sim,fn.sim))]
 
-    ## path.sim.lst is full path to final output control stream to be read by NMscanData.
-    dt.models[,path.sim.lst:=fnExtension(path.sim,".lst")]
-    ## where to store checksums 
-    dt.models[,path.digests:=fnExtension(fnAppend(path.sim.lst,"digests"),"rds")]
+    if(F){
+        ## where to store checksums 
+        dt.models[,path.digests:=fnExtension(fnAppend(path.sim.lst,"digests"),"rds")]
 ###  Section end: Defining additional paths based on arguments
 
-    ## if(missing(obj.checksums)){
+        ## if(missing(obj.checksums)){
 
-    ## run.fun <- needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines))
+        ## run.fun <- needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines))
 
-    if(F){
+
         run.fun <- try(
             needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines,reuse.results=function(x)NULL),which=-2)
            ,silent=TRUE)
@@ -440,15 +434,50 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
 
     ## fun simulation method
-    dt.models[,
-              files.needed:=paste(method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data),collapse=":")
-             ,by=.(ROWMODEL)]
+    ## dt.models[,
+    ##           files.needed:=paste(method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data),collapse=":")
+    ##          ,by=.(ROWMODEL)]
 
+    
+    dt.models.gen <- dt.models[,
+                               method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data)
+                              ,by=.(ROWMODEL)]
+
+    if(ncol(dt.models.gen)==2 && all(colnames(dt.models.gen)%in%c("ROWMODEL","V1"))){
+        setnames(dt.models.gen,"V1","path.sim")
+    }
+
+    ## we need the new
+### path.sim and files.needed
+    cnames.gen <- colnames(dt.models.gen)
+    if(!"path.sim"%in%cnames.gen) stop("path.sim must be in returned data.table")
+    ## TODO: check that all path.sim have been generated
+
+    ## TODO: if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
+
+    setnames(dt.models,"path.sim","path.sim.main")
+    
+    dt.models <- mergeCheck(
+        dt.models.gen[,intersect(c("ROWMODEL","path.sim","files.needed"),cnames.gen),with=FALSE],
+        dt.models,
+        by="ROWMODEL")
+
+    ## path.sim.lst is full path to final output control stream to be
+    ## read by NMscanData. This must be derived after method.sim may
+    ## have spawned more runs.
+    dt.models[,path.sim.lst:=fnExtension(path.sim,".lst")]
+    
     dt.models [,seed:={if(is.function(seed))  seed() else seed},by=.(ROWMODEL)]
+    dt.models[,ROWMODEL2:=.I]
 
+##:ess-bp-start::conditional@:##
+browser(expr={TRUE})##:ess-bp-end:##
+    
+    
 ### seed and subproblems
     if(!is.null(seed) || subproblems>0){
         dt.models[,{
+            
             lines.sim <- readLines(path.sim)
             all.sections.sim <- NMreadSection(lines=lines.sim)
             names.sections <- names(all.sections.sim)
@@ -473,15 +502,13 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
                 lines.sim <- NMwriteSectionOne(lines=lines.sim,section="simulation",newlines=section.sim,quiet=TRUE)
                 writeTextFile(lines.sim,path.sim)
             }
-        },by=.(ROWMODEL)]
+        },by=.(ROWMODEL2)]
     }
 
 
-##:ess-bp-start::conditional@:##
-browser(expr={TRUE})##:ess-bp-end:##
-    
+        
 #### Section start: Execute ####
-
+    
 ### files needed can vary, so NMexec must be run for one model at a time
     simres <- NULL
     if(execute){
@@ -491,7 +518,8 @@ browser(expr={TRUE})##:ess-bp-end:##
 
         simres <- dt.models[,{
             simres.n <- NULL
-            files.needed.n <- strsplit(files.needed,":")[[1]]
+            files.needed.n <- try(strsplit(files.needed,":")[[1]],silent=TRUE)
+            if(inherits(files.needed.n,"try-error")) files.needed.n <- NULL
             NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed.n,input.archive=input.archive)
             
             if(wait){
@@ -509,7 +537,7 @@ browser(expr={TRUE})##:ess-bp-end:##
                 simres.n <- NULL
             }
             simres.n
-        },by=.(ROWMODEL)]
+        },by=.(ROWMODEL2)]
     }
 
 ###  Section end: Execute
