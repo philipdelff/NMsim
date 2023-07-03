@@ -453,8 +453,14 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     if(!"path.sim"%in%cnames.gen) stop("path.sim must be in returned data.table")
     ## TODO: check that all path.sim have been generated
 
+    ## TODO: if files.needed, psn execute cannot be used.
+
+    ## TODO: if multiple models spwned, direct is not allowed
+
     ## TODO: if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
 
+
+    
     setnames(dt.models,"path.sim","path.sim.main")
     
     dt.models <- mergeCheck(

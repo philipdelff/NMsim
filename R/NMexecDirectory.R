@@ -36,11 +36,17 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     if(missing(files.needed)) files.needed <- NULL
     extr.data <- NMextractDataFile(file.mod)
     
+    if(is.null(extr.data$path.csv) && !is.null(extr.data$path)){
+        extr.data$path.csv <- extr.data$path
+    }
+    if(is.null(extr.data$exists.file.csv) && !is.null(extr.data$exists.file)){
+        extr.data$exists.file.csv <- extr.data$exists.file
+    }
 
 
 ### checks
     if(!file.exists(file.mod)) stop("file.mod must point to an existing file")
-    if(!extr.data$exists.file) stop("Input data file not found")
+    if(!extr.data$exists.file.csv) stop("Input data file not found")
 
     dir.mod <- dirname(file.mod)
     fn.mod <- basename(file.mod)
@@ -55,12 +61,12 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     
 ### copy input data to temp dir. 
     if(copy.data){
-        file.copy(extr.data$path,dir.tmp)
+        file.copy(extr.data$path.csv,dir.tmp)
 ### modify .mod to use local copy of input data. Notice the newfile
 ### arg to NMwriteSection creating file.mod.tmp.
-        sec.data.new <- paste("$DATA",sub(extr.data$string,basename(extr.data$path),extr.data$DATA,fixed=TRUE))
+        sec.data.new <- paste("$DATA",sub(extr.data$string,basename(extr.data$path.csv),extr.data$DATA,fixed=TRUE))
     } else {
-        sec.data.new <- paste("$DATA",sub(extr.data$string,file.path(dir.data,basename(extr.data$path)),extr.data$DATA,fixed=TRUE))
+        sec.data.new <- paste("$DATA",sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE))
     }
     
     NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp)
