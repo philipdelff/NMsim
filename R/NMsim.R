@@ -470,8 +470,6 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     dt.models [,seed:={if(is.function(seed))  seed() else seed},by=.(ROWMODEL)]
     dt.models[,ROWMODEL2:=.I]
 
-##:ess-bp-start::conditional@:##
-browser(expr={TRUE})##:ess-bp-end:##
     
     
 ### seed and subproblems

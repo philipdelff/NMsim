@@ -1,3 +1,8 @@
+library(devtools)
+load_all("~/wdirs/NMdata")
+load_all()
+
+
 library(dplyr)
 
 dt.amt <- data.frame(DOSE=c(100,400))
@@ -89,9 +94,10 @@ simres <- NMsim(path.mod=file.mod,
                 ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                ,method.update.inits="nmsim"
                ,method.sim=NMsim_testTwoSims
-                ,dir.sims="~/NMsim_test"
+               ,dir.sims="~/NMsim_test"
                 )
 
-
+dims(simres)
+simres[,.N,by=.(model)]
 
 NMsim()
