@@ -81,11 +81,18 @@ unloadNamespace("NMdata")
 load_all("~/wdirs/NMdata")
 load_all()
 
+NMscanData(file.mod,as.fun="data.table")[,.N,by=.(ID)]
+dat.sim1.known <- dat.sim1[ID%in%c(1,2)]
+dat.sim1.known[ID==1,ID:=31]
+dat.sim1.known[ID==2,ID:=32]
+
 simres <- NMsim(path.mod=file.mod,
-                data=dat.sim1
-                ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                data=dat.sim1.known
+               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                ,method.update.inits="nmsim"
                ,method.sim=NMsim_known
+               ,dir.sims="devel/modules_test"
+                ,name.sim="known"
                 )
 
 
