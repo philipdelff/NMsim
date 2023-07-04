@@ -13,10 +13,14 @@ Path to nonmem, psn, other ways to exec.
 ** NMexec
 *** TODO Move existing results files to backup before running nonmem
 ** NMsim
-*** TODO Go through selection of execution method
+*** DONE Support additional args to methods
+For now, ellipses used
+*** TODO Support submitting jobs to queue system
+*** TODO [#A] Go through selection of execution method
 *** TODO Define a more flexible structure to return
 Currently the sim methods return just files.needed. We need to be able to return 
-*** TODO Use dt list elements for multiple files.needed
+**** DONE all columns which names start by file.needed used
+*** CANCELED Use dt list elements for multiple files.needed
 *** TODO Use meaningful by in execute part
 *** TODO Modularize simulation methods
 **** DONE Handle seed and subproblems outside modules

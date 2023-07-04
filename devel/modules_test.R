@@ -75,6 +75,12 @@ simres <- NMsim(path.mod=file.mod,
 
 
 ## known
+
+unloadNamespace("NMsim")
+unloadNamespace("NMdata")
+load_all("~/wdirs/NMdata")
+load_all()
+
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1
                 ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
@@ -83,10 +89,6 @@ simres <- NMsim(path.mod=file.mod,
                 )
 
 
-unloadNamespace("NMsim")
-unloadNamespace("NMdata")
-load_all("~/wdirs/NMdata")
-load_all()
 
 ## multiple sims spawned
 simres <- NMsim(path.mod=file.mod,
@@ -95,6 +97,7 @@ simres <- NMsim(path.mod=file.mod,
                ,method.update.inits="nmsim"
                ,method.sim=NMsim_testTwoSims
                ,dir.sims="~/NMsim_test"
+               ,nsims=4
                 )
 
 dims(simres)

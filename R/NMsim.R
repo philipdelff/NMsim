@@ -116,6 +116,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
                   path.nonmem=NULL,as.fun
                  ,suffix.sim
+                  ,...
                   ){
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -231,7 +232,8 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
     ## if(F){
     if(length(path.mod)>1){
-        allres.l <- lapply(path.mod,NMsim,data=data
+        allres.l <- lapply(path.mod,NMsim
+                          ,data=data
                           ,dir.sims=dir.sims,
                            name.sim=name.sim,
                            order.columns=order.columns,script=script,
@@ -247,6 +249,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
                           ,method.sim=method.sim
                           ,path.nonmem=path.nonmem
                           ,dir.psn=dir.psn
+                          ,...
                            )
         return(rbindlist(allres.l))
     }
@@ -440,27 +443,39 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
     
     dt.models.gen <- dt.models[,
-                               method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data)
+                               method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data,...)
                               ,by=.(ROWMODEL)]
 
     if(ncol(dt.models.gen)==2 && all(colnames(dt.models.gen)%in%c("ROWMODEL","V1"))){
         setnames(dt.models.gen,"V1","path.sim")
     }
 
-    ## we need the new
-### path.sim and files.needed
+    ## we need the new path.sim and files.needed
     cnames.gen <- colnames(dt.models.gen)
     if(!"path.sim"%in%cnames.gen) stop("path.sim must be in returned data.table")
-    ## TODO: check that all path.sim have been generated
-
-    ## TODO: if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
-
-    setnames(dt.models,"path.sim","path.sim.main")
     
+    ## TODO: if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
+    
+    setnames(dt.models,"path.sim","path.sim.main")
+    cols.fneed <- cnames.gen[grepl("^files.needed",cnames.gen)]
+
+    ## check that all path.sim and files.needed have been generated
+    dt.files <- melt(dt.models.gen,measure.vars=c("path.sim",cols.fneed),value.name="file")
+    dt.files[,missing:=!file.exists(file)]
+    if(dt.files[,sum(missing)]){
+        print(dt.files[,.("No. of files missing"=sum(missing)),by=.(column=variable)])
+        stop("All needed files must be available after running simulation method.")
+    }
+
+    if(length(cols.fneed)){
+        dt.models.gen[,ROW:=.I]
+        dt.models.gen[,files.needed:=do.call(paste,cols.fneed),with=FALSE,by=.(ROW)]
+    }
     dt.models <- mergeCheck(
         dt.models.gen[,intersect(c("ROWMODEL","path.sim","files.needed"),cnames.gen),with=FALSE],
         dt.models,
-        by="ROWMODEL")
+        by="ROWMODEL"
+       ,quiet=TRUE)
 
     ## path.sim.lst is full path to final output control stream to be
     ## read by NMscanData. This must be derived after method.sim may
@@ -470,6 +485,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     dt.models [,seed:={if(is.function(seed))  seed() else seed},by=.(ROWMODEL)]
     dt.models[,ROWMODEL2:=.I]
 
+    
     
     
 ### seed and subproblems
@@ -504,7 +520,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     }
 
 
-        
+    
 #### Section start: Execute ####
     
 ### files needed can vary, so NMexec must be run for one model at a time
