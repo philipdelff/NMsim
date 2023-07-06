@@ -76,11 +76,6 @@ simres <- NMsim(path.mod=file.mod,
 
 ## known
 
-unloadNamespace("NMsim")
-unloadNamespace("NMdata")
-load_all("~/wdirs/NMdata")
-load_all()
-
 NMscanData(file.mod,as.fun="data.table")[,.N,by=.(ID)]
 dat.sim1.known <- dat.sim1[ID%in%c(1,2)]
 dat.sim1.known[ID==1,ID:=31]
@@ -110,4 +105,20 @@ simres <- NMsim(path.mod=file.mod,
 dims(simres)
 simres[,.N,by=.(model)]
 
-NMsim()
+
+## With uncertainty based on covariance step
+unloadNamespace("NMsim")
+unloadNamespace("NMdata")
+load_all("~/wdirs/NMdata")
+load_all()
+
+file.mod.cov <- "inst/examples/nonmem/xgxr114.mod"
+simres <- NMsim(path.mod=file.mod.cov,
+                data=dat.sim1
+                ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+               ,method.update.inits="nmsim"
+               ,method.sim=NMsim_VarCov
+                ,name.sim="VarCov"
+               ,dir.sims="~/NMsim_test"
+               ,nsims=4
+                )

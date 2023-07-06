@@ -382,7 +382,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     }
     if(method.update.inits=="nmsim"){
         
-        dt.models[,NMupdateInitsFix(file.mod=path.mod,new.mod=path.sim),by=.(ROWMODEL)]
+        dt.models[,NMupdateInits(file.mod=path.mod,newfile=path.sim,fix=TRUE),by=.(ROWMODEL)]
     }
 
 

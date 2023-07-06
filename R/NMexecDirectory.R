@@ -1,9 +1,12 @@
+##' Generate system command to call Nonmem directly
 ##' @keywords internal
 callNonmemDirect <- function(file.mod,path.nonmem){
     bfile.mod <- basename(file.mod)
     sprintf("cd %s; %s %s %s; cd -",dirname(file.mod),path.nonmem,bfile.mod,fnExtension(bfile.mod,".lst"))
 }
 
+##' Execute Nonmem inside a dedicated directory
+##' 
 ##' @param dir.data If NULL, data will be copied into the temporary
 ##'     directory, and Nonmem will read it from there. If not NULL,
 ##'     dir.data must be the relative path from where Nonmem is run to
@@ -11,6 +14,7 @@ callNonmemDirect <- function(file.mod,path.nonmem){
 ##'     run directory is created in a directory where the data is
 ##'     stored.
 ##' @import NMdata
+##' @return A bash shell script for execution of Nonmem
 ##' @keywords internal
 
 ### like execute but in R.

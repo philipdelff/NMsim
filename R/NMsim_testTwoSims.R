@@ -1,7 +1,7 @@
 ## Spawn two models in a subfolder
 
-NMsim_testTwoSims <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.text=FALSE,dir.run){
-    nsims <- 2
+NMsim_testTwoSims <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.text=FALSE,dir.run,    nsims = 2){
+
 
     run.sim.0 <- fnExtension(basename(path.sim),"")
     

@@ -7,7 +7,7 @@
 NMsim(
   path.mod,
   data,
-  dir.sim,
+  dir.sims,
   name.sim,
   order.columns = TRUE,
   script = NULL,
@@ -18,7 +18,7 @@ NMsim(
   nmquiet = FALSE,
   text.table,
   type.mod,
-  type.sim,
+  method.sim = NMsim_default,
   execute = TRUE,
   sge = FALSE,
   transform = NULL,
@@ -29,7 +29,8 @@ NMsim(
   dir.psn,
   path.nonmem = NULL,
   as.fun,
-  suffix.sim
+  suffix.sim,
+  ...
 )
 }
 \arguments{
@@ -40,7 +41,7 @@ to be stored next to the input control stream and ending in
 
 \item{data}{The simulation data as a data.frame.}
 
-\item{dir.sim}{The directory in which NMsim will store all
+\item{dir.sims}{The directory in which NMsim will store all
 generated files.}
 
 \item{name.sim}{Give all filenames related to the simulation a
@@ -89,10 +90,6 @@ $DATA, and $TABLE sections should be edited. This implies that
 in case type.mod="sim", `subproblems` is ignored. `type.mod`
 may be automated in the future.}
 
-\item{type.sim}{One of "default" (new simulation), "typical"
-(typical subject, ETAs = 0), or "known" (ID's observed in
-model estimation).}
-
 \item{execute}{Execute the simulation or only prepare it?
 `execute=FALSE` can be useful if you want to do additional
 tweaks or simulate using other parameter estimates.}
@@ -133,7 +130,7 @@ control streams less easy to read. On the other hand, this
 method is robust because it avoids any interpretation of BLOCK
 structure or other code in the control streams.}
 
-\item{create.dir}{If the directory specified in dir.sim does not
+\item{create.dir}{If the directory specified in dir.sims does not
 exists, should it be created? Default is TRUE.}
 
 \item{dir.psn}{The directory in which to find PSN's executables
@@ -156,6 +153,10 @@ as.fun="data.table". The default can be configured using
 NMdataConf.}
 
 \item{suffix.sim}{Deprecated. Use name.sim instead.}
+
+\item{type.sim}{One of "default" (new simulation), "typical"
+(typical subject, ETAs = 0), or "known" (ID's observed in
+model estimation).}
 }
 \description{
 Supply a data set and an input control stream, and NMsim will

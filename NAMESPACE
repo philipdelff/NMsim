@@ -2,6 +2,7 @@
 
 export(NMcreateDoses)
 export(NMexec)
+export(NMreadTabCov)
 export(NMsim)
 export(addEVID2)
 export(addResVar)
