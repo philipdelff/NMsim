@@ -95,7 +95,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
        ,
         sprintf("cd %s;" ,dir.tmp)
        ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-       ,"cd $WD0"
+       ## ,"cd $WD0"
        ,sprintf("cp %s/*.+(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo) %s",dir.tmp,dir.mod)
        ,sprintf("cp %s %s",paste(meta.tables[,file],collapse=" "),dir.mod)
        ,""

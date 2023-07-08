@@ -1,8 +1,23 @@
 NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
 
-    ## load_all()
-    ## load_all("~/wdirs/nonmem2rx")
-    ## source("~/wdirs/nonmem2rx/R/readCov.R")
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks #### ####
+
+    submodel <- NULL
+    SUBMODEL <- NULL
+    . <- NULL
+    fn.sim <- NULL
+    run.sim <- NULL
+    NMREP <- NULL
+    parameter <- NULL
+    par.type <- NULL
+    i <- NULL
+    j <- NULL
+    est <- NULL
+
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+
+    
     
     files.needed.def <- NMsim_default(path.sim=path.sim,path.mod,data.sim)
 
@@ -55,9 +70,9 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
                   ,by="SUBMODEL"]
     
 
-    ### output tables.
-## gsub the sim name string with a new subsetted simname string.
-   sec.0 <- NMreadSection(file=path.sim.0,section="TABLE")
+### output tables.
+    ## gsub the sim name string with a new subsetted simname string.
+    sec.0 <- NMreadSection(file=path.sim.0,section="TABLE")
     dt.sims[,{
         sec.new <- gsub(run.sim.0,run.sim,x=sec.0)
         NMwriteSection(files=path.sim,section="TABLE",newlines=sec.new)

@@ -130,6 +130,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     . <- NULL
     ID <- NULL
     n <- NULL
+    none <- NULL
     is.data <- NULL
     text <- NULL
     textmod <- NULL
