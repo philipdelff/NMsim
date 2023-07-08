@@ -496,9 +496,8 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     ## have spawned more runs.
     dt.models[,path.sim.lst:=fnExtension(path.sim,".lst")]
     
-    dt.models [,seed:={if(is.function(seed))  seed() else seed},by=.(ROWMODEL)]
     dt.models[,ROWMODEL2:=.I]
-
+    dt.models [,seed:={if(is.function(seed))  seed() else seed},by=.(ROWMODEL2)]
     
     
     
@@ -548,12 +547,27 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
             simres.n <- NULL
             files.needed.n <- try(strsplit(files.needed,":")[[1]],silent=TRUE)
             if(inherits(files.needed.n,"try-error")) files.needed.n <- NULL
+            ## if the output control stream exists, delete it. If not, we risk reading old results in case Nonmem fails
+### this is an important assumption. Removing everyting in format run.extension. run_input.extension kept. Impo
+            ## files.unwanted <- list.files(
+            if(file.exists(path.sim.lst)){
+                message("Existing output control stream found. Removing.")
+                dt.outtabs <- NMscanTables(path.sim.lst,meta.only=TRUE,as.fun="data.table")
+                if(nrow(dt.outtabs)){
+                    file.remove(dt.outtabs[,file])    
+                }
+                unlink(path.sim.lst)
+
+            }
             NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed.n,input.archive=input.archive)
             
             if(wait){
-                simres.n <- NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive)
-                ## optionally transform results like DV, IPRED, PRED
-                if(!is.null(transform)){
+                simres.n <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive))
+                if(inherits(simres.n,"try-error")){
+                    message("Results could not be read.")
+                    simres.n <- NULL
+                } else if(!is.null(transform)){
+                    ## optionally transform results like DV, IPRED, PRED
                     for(name in names(transform)){
                         simres.n[,(name):=transform[[name]](get(name))]
                     }

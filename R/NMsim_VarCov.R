@@ -16,21 +16,21 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
     ## define new files
 ### we generate two sims
     path.sim.0 <- path.sim
+    run.sim.0 <- fnExtension(basename(path.sim.0),"")
     rm(path.sim)
     dt.sims <- data.table(SUBMODEL=1:nsims)
-    length.num.char <- ceiling(log10(nsims))
+    length.num.char <- ceiling(log10(nsims+1))
     dt.sims[,submodel:=sprintf(fmt=paste0("%0",length.num.char,"d"),SUBMODEL)]
     dt.sims[,path.sim:=fnAppend(path.sim.0,submodel),by=.(SUBMODEL)]
     dt.sims[,fn.sim:=basename(path.sim),by=.(SUBMODEL)]
     dt.sims[,run.sim:=fnExtension(fn.sim,""),by=.(SUBMODEL)]
-
+    
     
     ## nonmem2rx::nmcov(path.cov)
     covmat <- NMreadCov(path.cov)
     ests <- NMreadExt(path.ext)$pars[NMREP==1,.(parameter,par.type,i,j,est)]
     ests <- ests[match(ests$parameter,colnames(covmat))]
 
-    
     
     newpars <- mvrnorm(n=nsims,Sigma=covmat,mu=ests$est)
     newpars <- as.data.table(newpars)
@@ -55,6 +55,14 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
                   ,by="SUBMODEL"]
     
 
+    ### output tables.
+## gsub the sim name string with a new subsetted simname string.
+   sec.0 <- NMreadSection(file=path.sim.0,section="TABLE")
+    dt.sims[,{
+        sec.new <- gsub(run.sim.0,run.sim,x=sec.0)
+        NMwriteSection(files=path.sim,section="TABLE",newlines=sec.new)
+    },by=.(SUBMODEL)]
 
+    
     invisible(unique(newpars$path.sim))
 }

@@ -136,7 +136,6 @@ library(ggplot2)
 ggplot(simres,aes(TIME,PRED,group=model))+geom_line()+
     facet_wrap(~DOSE)
 
-## todo: when a model doesn't work, the previous must not be reused
 findCovs(simres,by=cc(model))
 
-## todo: model names must be of format _01 instead of _1 in this case
+## todo: double-check seeds
