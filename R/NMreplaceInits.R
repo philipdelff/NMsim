@@ -25,6 +25,7 @@ NMreplaceInits <- function(inits,fix=FALSE,...){
     
     ## create OMEGA section
     omegas <- inits[par.type=="OMEGA"]
+    omegas[value==0,value:=1e-30]
     Netas <- omegas[,max(i)]
     setorder(omegas,i,j)
     dt.diag <- dcast(omegas,j~i,value.var="value")

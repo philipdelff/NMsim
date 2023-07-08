@@ -69,27 +69,33 @@ if(FALSE){
 ## default
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1
-                ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                ,method.update.inits="nmsim"
+               ,dir.sims="~/NMsim_test"
                 )
 
 
 ## known
-
 NMscanData(file.mod,as.fun="data.table")[,.N,by=.(ID)]
 dat.sim1.known <- dat.sim1[ID%in%c(1,2)]
 dat.sim1.known[ID==1,ID:=31]
 dat.sim1.known[ID==2,ID:=32]
+
+unloadNamespace("NMsim")
+unloadNamespace("NMdata")
+load_all("~/wdirs/NMdata")
+load_all()
 
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1.known
                ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                ,method.update.inits="nmsim"
                ,method.sim=NMsim_known
-               ,dir.sims="devel/modules_test"
-                ,name.sim="known"
+               ,dir.sims="~/NMsim_test"
+               ,name.sim="known"
                 )
 
+ggplot(simres,aes(TIME,IPRED,group=ID))+geom_line()
 
 
 ## multiple sims spawned
@@ -112,13 +118,25 @@ unloadNamespace("NMdata")
 load_all("~/wdirs/NMdata")
 load_all()
 
+## todo: truncate diagnoal omega and sigmas at 0
+
 file.mod.cov <- "inst/examples/nonmem/xgxr114.mod"
 simres <- NMsim(path.mod=file.mod.cov,
                 data=dat.sim1
-                ##               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+               ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                ,method.update.inits="nmsim"
                ,method.sim=NMsim_VarCov
-                ,name.sim="VarCov"
+               ,name.sim="VarCov"
                ,dir.sims="~/NMsim_test"
-               ,nsims=4
+               ,nsims=10
+                ## ,method.execute="directory"
                 )
+
+library(ggplot2)
+ggplot(simres,aes(TIME,PRED,group=model))+geom_line()+
+    facet_wrap(~DOSE)
+
+## todo: when a model doesn't work, the previous must not be reused
+findCovs(simres,by=cc(model))
+
+## todo: model names must be of format _01 instead of _1 in this case

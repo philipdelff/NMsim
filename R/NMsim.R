@@ -116,7 +116,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
                   path.nonmem=NULL,as.fun
                  ,suffix.sim
-                  ,...
+                 ,...
                   ){
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -445,7 +445,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     dt.models.gen <- dt.models[,
                                method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data,...)
                               ,by=.(ROWMODEL)]
-
+    
     if(ncol(dt.models.gen)==2 && all(colnames(dt.models.gen)%in%c("ROWMODEL","V1"))){
         setnames(dt.models.gen,"V1","path.sim")
     }
@@ -479,7 +479,11 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
     if(length(cols.fneed)){
         dt.models.gen[,ROW:=.I]
-        dt.models.gen[,files.needed:=do.call(paste,cols.fneed),with=FALSE,by=.(ROW)]
+        ## by ROW, paste contents of columns named as described in cols.fneed
+        ## dt.models.gen[,files.needed:=do.call(paste,as.list(c(get(cols.fneed),sep=":"))),by=.(ROW)]
+        pastetmp <- function(...)paste(...,sep=":")
+        dt.models.gen[,files.needed:=do.call(pastetmp,.SD),by=.(ROW),.SDcols=cols.fneed]
+
     }
     dt.models <- mergeCheck(
         dt.models.gen[,intersect(c("ROWMODEL","path.sim","files.needed"),cnames.gen),with=FALSE],

@@ -30,8 +30,6 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
     ests <- NMreadExt(path.ext)$pars[NMREP==1,.(parameter,par.type,i,j,est)]
     ests <- ests[match(ests$parameter,colnames(covmat))]
 
-    ##:ess-bp-start::conditional@:##
-browser(expr={TRUE})##:ess-bp-end:##
     
     
     newpars <- mvrnorm(n=nsims,Sigma=covmat,mu=ests$est)
@@ -52,7 +50,7 @@ browser(expr={TRUE})##:ess-bp-end:##
     res <- newpars[,
                    NMreplaceInits(files=unique(path.sim.0)
                                  ,newfile=unique(path.sim)
-                                 ,fix=FALSE
+                                 ,fix=TRUE
                                  ,inits=.SD)
                   ,by="SUBMODEL"]
     
