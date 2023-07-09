@@ -7,6 +7,8 @@
 NMreadCov(file, ...)
 }
 \arguments{
+\item{file}{The .cov covariance Nonmem matrix file to read}
+
 \item{...}{Passed to fread}
 }
 \value{
@@ -21,3 +23,4 @@ This function is taken from nonmem2rx::nmcov.
 \author{
 Philip Delff and Matthew L. Fidler
 }
+\keyword{internal}

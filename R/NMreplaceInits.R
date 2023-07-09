@@ -4,12 +4,21 @@
 ##' @param ... Passed to NMdata::NMwriteSection
 
 NMreplaceInits <- function(inits,fix=FALSE,...){
-    
-    ## par.type <- NULL
-    ## i <- NULL
-    ## est <- NULL
-    ## j <- NULL
-    
+
+
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    par.type <- NULL
+    i <- NULL
+    value <- NULL
+    j <- NULL
+
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+
+
+
+    if(!isFALSE(fix)){stop("fix must be TRUE. Not fixing the parameters is not supported for now.")}
+
     if(fix) {
         str.fix <- "FIX"
     } else {
@@ -50,7 +59,7 @@ NMreplaceInits <- function(inits,fix=FALSE,...){
 
     
     res <- NMwriteSection(list.sections=list.sections
-                          ,...
+                         ,...
                           )
 
     invisible(res)

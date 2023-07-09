@@ -49,9 +49,11 @@
 ##'     $DATA, and $TABLE sections should be edited. This implies that
 ##'     in case type.mod="sim", `subproblems` is ignored. `type.mod`
 ##'     may be automated in the future.
-##' @param type.sim One of "default" (new simulation), "typical"
-##'     (typical subject, ETAs = 0), or "known" (ID's observed in
-##'     model estimation).
+##' @param method.sim A function that creates the simulation control
+##'     stream and other necessary files for a simulation based on the
+##'     estimation control stream, the data, etc. Four methods are
+##'     included: NMsim_default, NMsim_typical, NMsim_known, and
+##'     NMsim_VarCov. See examples and vignettes on how to use these.
 ##' @param execute Execute the simulation or only prepare it?
 ##'     `execute=FALSE` can be useful if you want to do additional
 ##'     tweaks or simulate using other parameter estimates.
@@ -102,6 +104,7 @@
 ##'     NMdataConf.
 ##' @param suffix.sim Deprecated. Use name.sim instead.
 ##' @param type.input Deprecated. Use type.mod instead.
+##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @import NMdata
 
 ##' @export
@@ -141,6 +144,23 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     direct <- NULL
     directory <- NULL
     nmsim <- NULL
+    file.mod <- NULL
+    ROWMODEL <- NULL
+    fn.mod <- NULL
+    fn.sim <- NULL
+    run.mod <- NULL
+    run.sim <- NULL
+    dir.sim <- NULL
+    fn.sim.tmp <- NULL
+    path.sim <- NULL
+    path.digests <- NULL
+    path.sim.lst <- NULL
+    fn.data <- NULL
+    path.data <- NULL
+    variable <- NULL
+    ROW <- NULL
+    files.needed <- NULL
+    ROWMODEL2 <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
@@ -391,7 +411,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 #### multiple todo: save for each path.data
     dt.models[,{
         nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
-        NMwriteSectionOne(file0=path.sim,list.sections = nmtext,backup=FALSE,quiet=TRUE)
+        NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext,backup=FALSE,quiet=TRUE)
     }]
 
 
@@ -427,7 +447,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
         } else {
             location <- "last"
         }
-        lines.sim <- NMwriteSectionOne(lines=lines.sim,newlines=lines.tables.new,section="TABLE",backup=FALSE,location=location,quiet=TRUE)
+        lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,newlines=lines.tables.new,section="TABLE",backup=FALSE,location=location,quiet=TRUE)
 
 ### save file.sim
         writeTextFile(lines=lines.sim,file=path.sim)
@@ -527,7 +547,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
                     section.sim <- gsub("\\([0-9]+\\)","",section.sim)
                     section.sim <- paste(section.sim,sprintf("(%s)",seed))
                 }
-                lines.sim <- NMwriteSectionOne(lines=lines.sim,section="simulation",newlines=section.sim,quiet=TRUE)
+                lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="simulation",newlines=section.sim,quiet=TRUE)
                 writeTextFile(lines.sim,path.sim)
             }
         },by=.(ROWMODEL2)]

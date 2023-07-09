@@ -1,3 +1,5 @@
+##' @import NMdata
+
 NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.text=FALSE){
     
     
@@ -20,17 +22,17 @@ NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.tex
         ## section.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
         section.sim <- "$SIMULATION"
         
-        lines.sim <- NMwriteSectionOne(lines=lines.sim,section="$SIMULATION",
+        lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="$SIMULATION",
                                        newlines="",backup=FALSE,quiet=TRUE)
         
         tab.section.exists <- any(grepl("^(TABLE)$",names.sections))
         if(tab.section.exists){
-            lines.sim <- NMwriteSectionOne(lines=lines.sim,
+            lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,
                                            section="TABLE",
                                            newlines=section.sim,
                                            location="before",backup=FALSE,quiet=TRUE)
         } else {
-            lines.sim <- NMwriteSectionOne(lines=lines.sim,section="SIMULATION",
+            lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="SIMULATION",
                                            newlines=section.sim,location="last",
                                            backup=FALSE,quiet=TRUE)
         }

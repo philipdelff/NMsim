@@ -12,7 +12,7 @@ Easiest way to install `NMsim` is using the `remotes` package to install with R:
 
 `NMsim` makes extensive use of functionality provided by the `NMdata`
 package. For most recent features of `NMsim` to work, make sure to at
-least keep `NMdata` updated to latest CRAN or MPN realease. 
+least keep `NMdata` updated to latest CRAN or MPN release. 
 
 ## Simulate a Nonmem model from R
 In its simplest use, a simulation of the model stored in
@@ -53,10 +53,10 @@ the R package
 
 ## Supported types of simulations
 Three types of simulations are currently supported:
-- Simulation of new subjects (default or explicitly with type.sim="default")
-- Simulation of a typical subject (ETAs equal 0, type.sim="typical")
-- Simulation of subjects already estimated in Nonmem model
-(type.sim="known") 
+- Simulation of new subjects (default or explicitly with `method.sim=NMsim_default`)
+- Simulation of a typical subject (ETAs equal 0, `method.sim=NMsim_typical`)
+- Simulation of subjects already estimated in Nonmem model (`method.sim=NMsim_known`) 
+- Simulation with parameter uncertain based on a Nonmem covariance step (`method.sim=NMsim_VarCov`).
 
 In addition, `NMsim` can simulate multiple models at a time. If a
 bootstrap run of a model is available, NMsim can run the simulation

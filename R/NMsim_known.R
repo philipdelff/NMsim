@@ -1,6 +1,16 @@
 NMsim_known <- function(path.sim,path.mod,data.sim,return.text=FALSE){
 
-    
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    . <- NULL
+    rowtmp <- NULL
+    ID <- NULL
+    n <- NULL
+    is.data <- NULL
+    text <- NULL
+    textmod <- NULL    
+
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
     path.phi.sim <- fnAppend(fnExtension(path.sim,".phi"),"input")
     files.needed.def <- NMsim_default(path.sim=path.sim,path.mod=path.mod,data.sim=data.sim)
@@ -14,7 +24,7 @@ NMsim_known <- function(path.sim,path.mod,data.sim,return.text=FALSE){
     lines.new <- sprintf("$ETAS FILE=%s  FORMAT=s1pE15.8 TBLN=1
 $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.sim))
     
-    lines.sim <- NMwriteSectionOne(lines=lines.sim,section="TABLE",location="before",
+    lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="TABLE",location="before",
                                    newlines=lines.new,backup=FALSE,quiet=TRUE)
 
     

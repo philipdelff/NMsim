@@ -13,6 +13,7 @@ Path to nonmem, psn, other ways to exec.
 ** NMexec
 *** TODO Move existing results files to backup before running nonmem
 ** NMsim
+*** TODO Support method.sim=NULL for doing nothing to the control stream.
 *** DONE Support additional args to methods
 For now, ellipses used
 *** TODO Support submitting jobs to queue system

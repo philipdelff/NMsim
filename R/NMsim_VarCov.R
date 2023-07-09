@@ -1,6 +1,6 @@
 NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
 
-#### Section start: Dummy variables, only not to get NOTE's in pacakge checks #### ####
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     submodel <- NULL
     SUBMODEL <- NULL
@@ -14,7 +14,7 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
     j <- NULL
     est <- NULL
 
-### Section end: Dummy variables, only not to get NOTE's in pacakge checks ####
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks 
 
 
     

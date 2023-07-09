@@ -90,6 +90,12 @@ $DATA, and $TABLE sections should be edited. This implies that
 in case type.mod="sim", `subproblems` is ignored. `type.mod`
 may be automated in the future.}
 
+\item{method.sim}{A function that creates the simulation control
+stream and other necessary files for a simulation based on the
+estimation control stream, the data, etc. Four methods are
+included: NMsim_default, NMsim_typical, NMsim_known, and
+NMsim_VarCov. See examples and vignettes on how to use these.}
+
 \item{execute}{Execute the simulation or only prepare it?
 `execute=FALSE` can be useful if you want to do additional
 tweaks or simulate using other parameter estimates.}
@@ -154,9 +160,7 @@ NMdataConf.}
 
 \item{suffix.sim}{Deprecated. Use name.sim instead.}
 
-\item{type.sim}{One of "default" (new simulation), "typical"
-(typical subject, ETAs = 0), or "known" (ID's observed in
-model estimation).}
+\item{...}{Additional arguments passed to \code{method.sim}.}
 }
 \description{
 Supply a data set and an input control stream, and NMsim will

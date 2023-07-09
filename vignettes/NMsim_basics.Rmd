@@ -173,7 +173,7 @@ simres <- NMsim(path.mod=file.mod,
 ```{r,eval=FALSE}
 simres.typ <- NMsim(path.mod=file.mod,
                     data=dat.sim1,
-                    type.sim="typical")
+                    method.sim="NMsim_typical")
 
 ```
 
@@ -194,7 +194,7 @@ res.known <- NMsim(file.mod,
                    data=dat.sim1.known,
                    suffix.sim="known1",
                    text.table="PRED IPRED CL V KA"
-                  ,type.sim="known"
+                  ,method.sim="NMsim_known"
                   ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                    )
 ```
