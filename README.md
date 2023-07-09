@@ -26,6 +26,7 @@ simres <- NMsim(path.mod=/path/to/file.mod,
                 data=data.sim)
 ```
 `NMsim` will then do the following:
+
 * Create a simulation input control stream based on `file.mod` 
   ($SIMULATE instead of $ESTIMATION) 
 * Update and fix initial values based on estimate (from `file.ext`)
@@ -55,6 +56,7 @@ the R package
 
 ## Supported types of simulations
 Three types of simulations are currently supported:
+
 - Simulation of new subjects (default or explicitly with `method.sim=NMsim_default`)
 - Simulation of a typical subject (ETAs equal 0, `method.sim=NMsim_typical`)
 - Simulation of subjects already estimated in Nonmem model (`method.sim=NMsim_known`) 
