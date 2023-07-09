@@ -7,12 +7,14 @@ estimation control stream. It will also retrive and combine output tables with i
 ## Install
 Easiest way to install `NMsim` is using the `remotes` package to install with R:
 
-    library(remotes)
-    install_github("philipdelff/NMsim")
+```{r}
+library(remotes)
+install_github("philipdelff/NMsim")
+```
 
 `NMsim` makes extensive use of functionality provided by the `NMdata`
 package. For most recent features of `NMsim` to work, make sure to at
-least keep `NMdata` updated to latest CRAN or MPN realease. 
+least keep `NMdata` updated to latest CRAN or MPN release. 
 
 ## Simulate a Nonmem model from R
 In its simplest use, a simulation of the model stored in
@@ -53,10 +55,10 @@ the R package
 
 ## Supported types of simulations
 Three types of simulations are currently supported:
-- Simulation of new subjects (default or explicitly with type.sim="default")
-- Simulation of a typical subject (ETAs equal 0, type.sim="typical")
-- Simulation of subjects already estimated in Nonmem model
-(type.sim="known") 
+- Simulation of new subjects (default or explicitly with `method.sim=NMsim_default`)
+- Simulation of a typical subject (ETAs equal 0, `method.sim=NMsim_typical`)
+- Simulation of subjects already estimated in Nonmem model (`method.sim=NMsim_known`) 
+- Simulation with parameter uncertain based on a Nonmem covariance step (`method.sim=NMsim_VarCov`).
 
 In addition, `NMsim` can simulate multiple models at a time. If a
 bootstrap run of a model is available, NMsim can run the simulation
@@ -104,7 +106,9 @@ account for 90% or more of the time Nonmem spends). `NMsim` provides a
 simple way to get around this. The argument `text.table` can be used
 to define only the columns needed in the simulation output (which may
 be as little as `PRED`, `IPRED`, and a couple more - remember the
-input data is merged back automatically). As a result, `NMsim` may still be slower than a re-implementation in a different framework. But it's extremely easy to do.
+input data is merged back automatically). As a result, `NMsim` may
+still be slower than a re-implementation in a different framework. But
+it's extremely easy to do.
 
 ## Requirements
 Currently, `NMsim` can only run Nonmem on Unix/Linux systems. It
