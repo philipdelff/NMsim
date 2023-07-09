@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.909</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.920</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,7 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://philipdelff.github.io/NMsim/">NMsim</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://philipdelff.github.io/NMdata/" class="external-link">NMdata</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Welcome to NMdata 0.0.17. Best place to browse NMdata documentation is</span></span>
+<span><span class="co">#&gt; NMdata 0.1.0. Browse NMdata documentation at</span></span>
 <span><span class="co">#&gt; https://philipdelff.github.io/NMdata/</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -110,7 +110,7 @@
 <span><span class="va">file.project</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span>,<span class="va">...</span><span class="op">)</span></span>
 <span><span class="va">found.files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/NMsim"</span><span class="op">)</span>,pattern<span class="op">=</span><span class="st">"noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)"</span>,full.names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">found.files</span><span class="op">)</span></span></code></pre></div>
-<p>Built 2023-06-09 using NMsim 0.0.1.909.</p>
+<p>Built 2023-07-09 using NMsim 0.0.1.920.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -220,7 +220,7 @@ want to try the simplest thing we can think of.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simres.typ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                    data<span class="op">=</span><span class="va">dat.sim1</span>,</span>
-<span>                    type.sim<span class="op">=</span><span class="st">"typical"</span><span class="op">)</span></span></code></pre></div>
+<span>                    method.sim<span class="op">=</span><span class="st">"NMsim_typical"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="simulation-of-known-subjects">Simulation of known subjects<a class="anchor" aria-label="anchor" href="#simulation-of-known-subjects"></a>
@@ -241,7 +241,7 @@ want to try the simplest thing we can think of.</p>
 <span>                   data<span class="op">=</span><span class="va">dat.sim1.known</span>,</span>
 <span>                   suffix.sim<span class="op">=</span><span class="st">"known1"</span>,</span>
 <span>                   text.table<span class="op">=</span><span class="st">"PRED IPRED CL V KA"</span></span>
-<span>                  ,type.sim<span class="op">=</span><span class="st">"known"</span></span>
+<span>                  ,method.sim<span class="op">=</span><span class="st">"NMsim_known"</span></span>
 <span>                  ,path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe75"</span></span>
 <span>                   <span class="op">)</span></span></code></pre></div>
 <p>Show a plot of the individual parameters in estimate and in sim</p>
