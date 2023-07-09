@@ -81,7 +81,15 @@
 <p>In its simplest use, a simulation of the model stored in “path/to/file.mod” using the simulation input data set stored in the variable <code>data.sim</code> this way:</p>
 <pre class="{r}"><code>simres &lt;- NMsim(path.mod=/path/to/file.mod,
                 data=data.sim)</code></pre>
-<p><code>NMsim</code> will then do the following: * Create a simulation input control stream based on <code>file.mod</code> ($SIMULATE instead of <span class="math inline">$ESTIMATION) * Update and fix initial values based on estimate (from `file.ext`) * Modify the control stream to use the simulation dataset `data.sim`  as input control stream (replace `$</span>INPUT<code>and</code>$DATA<code>) * Run Nonmem on the generated simulation control stream * Collect output data tables, combine them, and merge with the input   data (</code>data.sim`) * Return the collected data</p>
+<p><code>NMsim</code> will then do the following:</p>
+<ul>
+<li>Create a simulation input control stream based on <code>file.mod</code> ($SIMULATE instead of $ESTIMATION)</li>
+<li>Update and fix initial values based on estimate (from <code>file.ext</code>)</li>
+<li>Modify the control stream to use the simulation dataset <code>data.sim</code> as input control stream (replace <code>$INPUT</code> and <code>$DATA</code>)</li>
+<li>Run Nonmem on the generated simulation control stream</li>
+<li>Collect output data tables, combine them, and merge with the input data (<code>data.sim</code>)</li>
+<li>Return the collected data</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="how-nmsim-works">How NMsim works<a class="anchor" aria-label="anchor" href="#how-nmsim-works"></a>
@@ -93,7 +101,13 @@
 <div class="section level2">
 <h2 id="supported-types-of-simulations">Supported types of simulations<a class="anchor" aria-label="anchor" href="#supported-types-of-simulations"></a>
 </h2>
-<p>Three types of simulations are currently supported: - Simulation of new subjects (default or explicitly with <code>method.sim=NMsim_default</code>) - Simulation of a typical subject (ETAs equal 0, <code>method.sim=NMsim_typical</code>) - Simulation of subjects already estimated in Nonmem model (<code>method.sim=NMsim_known</code>) - Simulation with parameter uncertain based on a Nonmem covariance step (<code>method.sim=NMsim_VarCov</code>).</p>
+<p>Three types of simulations are currently supported:</p>
+<ul>
+<li>Simulation of new subjects (default or explicitly with <code>method.sim=NMsim_default</code>)</li>
+<li>Simulation of a typical subject (ETAs equal 0, <code>method.sim=NMsim_typical</code>)</li>
+<li>Simulation of subjects already estimated in Nonmem model (<code>method.sim=NMsim_known</code>)</li>
+<li>Simulation with parameter uncertain based on a Nonmem covariance step (<code>method.sim=NMsim_VarCov</code>).</li>
+</ul>
 <p>In addition, <code>NMsim</code> can simulate multiple models at a time. If a bootstrap run of a model is available, NMsim can run the simulation with each of the bootstrap models and collect all the results in one dataset. This provides a robust and easy way to simulate a Nonmem model with uncertainty.</p>
 <p>Many features are available. Prominent ones are: - Can use submit jobs to clusters (so running the simulation on say 1,000 model estimates from a bootstrap is actually not that hard). - Simulation replicates using Nonmem <code>SUBPROBLEMS</code> feature avaible through the <code>subproblems</code> argument - Simulations of models on transformed observations can be automatically transformed back using the <code>transform</code> argument.</p>
 <p>Since <code>NMsim</code> does not change the model code (like $PRED, $PK, $ERROR), it cannot add residual variability to the simulation if this is not simulated in the model code already. If you want to discuss how to add this as generally as possible, please reach out on <a href="https://github.com/philipdelff/NMsim/issues" class="external-link">github</a>.</p>
