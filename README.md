@@ -7,8 +7,10 @@ estimation control stream. It will also retrive and combine output tables with i
 ## Install
 Easiest way to install `NMsim` is using the `remotes` package to install with R:
 
-    library(remotes)
-    install_github("philipdelff/NMsim")
+```{r}
+library(remotes)
+install_github("philipdelff/NMsim")
+```
 
 `NMsim` makes extensive use of functionality provided by the `NMdata`
 package. For most recent features of `NMsim` to work, make sure to at
@@ -104,7 +106,9 @@ account for 90% or more of the time Nonmem spends). `NMsim` provides a
 simple way to get around this. The argument `text.table` can be used
 to define only the columns needed in the simulation output (which may
 be as little as `PRED`, `IPRED`, and a couple more - remember the
-input data is merged back automatically). As a result, `NMsim` may still be slower than a re-implementation in a different framework. But it's extremely easy to do.
+input data is merged back automatically). As a result, `NMsim` may
+still be slower than a re-implementation in a different framework. But
+it's extremely easy to do.
 
 ## Requirements
 Currently, `NMsim` can only run Nonmem on Unix/Linux systems. It
