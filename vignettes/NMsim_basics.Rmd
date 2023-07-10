@@ -57,7 +57,7 @@ This vignettes aims at enabling you to
 
 * Use `NMsim` to simulate Nonmem models with a given input data set
 
-* Distinguish between and perform three different types of simulations: new subjects (default), typical subjects, and known subjects
+* Distinguish between and perform the most common types of simulations: new subjects (default), typical subjects, known subjects, and simulation with parameter uncertainty
 
 * Configure `NMsim` to use `PSN` or methods provided by `NMsim` to update Nonmem control stream initial values and to run Nonmem
 
@@ -152,20 +152,41 @@ the simplest thing we can think of.
 file.mod <- file.project("nonmem/xgxr014.mod")
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1
-                 )
+                )
 ```
 <!-- That did not go well. As the error shows, `$TABLE` refers to a `ROW` column. Nonmem needs this to run the control stream as is. Since this does not happen until `$TABLE`, we have two options to fix it -->
 <!-- - Add `ROW` to the input data set -->
 <!-- - Modify `$TABLE` (using the `text.table`, demonstrated later) -->
 
+Before we continue with that model, we want to compare a simulation based on this model to another model we are considering. `NMsim` can do this and collect the data into one object:
 
+```{r,sim-twomodels,eval=FALSE}
+## file.mod <- "../nonmem/xgxr014.mod"
+file.mod <- file.project(c("nonmem/xgxr014.mod","nonmem/xgxr114.mod"))
+simres <- NMsim(path.mod=file.mod,
+                data=dat.sim1
+                )
+```
 
+In case multiple models are provided, `NMsim` simply loops over them. For simplicitym, we shall show the rest of the examples for just one model. Any of them could be run on multiple models the same way as shown above.
 
 <!-- subproblems vs repetition of input data -->
 
 ### More subjects
+To create a prediction interval based on the selected model, we need
+to simulate multiple new subjects. There are two ways to easily obtain that. One is to repeat (`rbind`) the simulation input dataset, one repetetion per new subject, and then update the `ID` column to get distinct subjects. The follwing shows how one could generate 1000 subjects using `data.table`. (I use `data.table` a lot, if you can provide a good way to do this with tidyverse packages, I am happy to include that instead).
 
-## Simulation of multiple models
+```{r}
+dat.sim.1000 <- NMdata::egdt(
+    dat.sim1[,!("ID")]
+   ,
+    data.table(ID=1:1000)
+)
+dat.sim.1000[,ID:=.GRP,by=.(ID,regimen,dose)]
+
+setorder(dat.sim.1000,regimen,dose,ID,TIME,EVID)
+```
+
 
 ### Simulation from a bootstrap
 
