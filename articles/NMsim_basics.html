@@ -110,7 +110,7 @@
 <span><span class="va">file.project</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span>,<span class="va">...</span><span class="op">)</span></span>
 <span><span class="va">found.files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/NMsim"</span><span class="op">)</span>,pattern<span class="op">=</span><span class="st">"noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)"</span>,full.names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">found.files</span><span class="op">)</span></span></code></pre></div>
-<p>Built 2023-07-09 using NMsim 0.0.1.920.</p>
+<p>Built 2023-07-10 using NMsim 0.0.1.920.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -118,9 +118,9 @@
 <ul>
 <li><p>Use <code>NMsim</code> to simulate Nonmem models with a given
 input data set</p></li>
-<li><p>Distinguish between and perform three different types of
-simulations: new subjects (default), typical subjects, and known
-subjects</p></li>
+<li><p>Distinguish between and perform the most common types of
+simulations: new subjects (default), typical subjects, known subjects,
+and simulation with parameter uncertainty</p></li>
 <li><p>Configure <code>NMsim</code> to use <code>PSN</code> or methods
 provided by <code>NMsim</code> to update Nonmem control stream initial
 values and to run Nonmem</p></li>
@@ -196,28 +196,71 @@ want to try the simplest thing we can think of.</p>
 <span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr014.mod"</span><span class="op">)</span></span>
 <span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                data<span class="op">=</span><span class="va">dat.sim1</span></span>
-<span>                 <span class="op">)</span></span></code></pre></div>
+<span>                <span class="op">)</span></span></code></pre></div>
 <!-- That did not go well. As the error shows, `$TABLE` refers to a `ROW` column. Nonmem needs this to run the control stream as is. Since this does not happen until `$TABLE`, we have two options to fix it -->
 <!-- - Add `ROW` to the input data set -->
 <!-- - Modify `$TABLE` (using the `text.table`, demonstrated later) -->
+<p>Before we continue with that model, we want to compare a simulation
+based on this model to another model we are considering.
+<code>NMsim</code> can do this and collect the data into one object:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## file.mod &lt;- "../nonmem/xgxr014.mod"</span></span>
+<span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nonmem/xgxr014.mod"</span>,<span class="st">"nonmem/xgxr114.mod"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
+<span>                data<span class="op">=</span><span class="va">dat.sim1</span></span>
+<span>                <span class="op">)</span></span></code></pre></div>
+<p>In case multiple models are provided, <code>NMsim</code> simply loops
+over them. For simplicitym, we shall show the rest of the examples for
+just one model. Any of them could be run on multiple models the same way
+as shown above.</p>
 <!-- subproblems vs repetition of input data -->
 <div class="section level3">
 <h3 id="more-subjects">More subjects<a class="anchor" aria-label="anchor" href="#more-subjects"></a>
 </h3>
-</div>
-</div>
-<div class="section level2">
-<h2 id="simulation-of-multiple-models">Simulation of multiple models<a class="anchor" aria-label="anchor" href="#simulation-of-multiple-models"></a>
-</h2>
-<div class="section level3">
-<h3 id="simulation-from-a-bootstrap">Simulation from a bootstrap<a class="anchor" aria-label="anchor" href="#simulation-from-a-bootstrap"></a>
-</h3>
+<p>To create a prediction interval based on the selected model, we need
+to simulate multiple new subjects. There are two ways to easily obtain
+that. One is to repeat (<code>rbind</code>) the simulation input
+dataset, one repetetion per new subject, and then update the
+<code>ID</code> column to get distinct subjects. The follwing shows how
+one could generate 1000 subjects using <code>data.table</code>. (I use
+<code>data.table</code> a lot, if you can provide a good way to do this
+with tidyverse packages, I am happy to include that instead).</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat.sim.1000</span> <span class="op">&lt;-</span> <span class="fu">NMdata</span><span class="fu">::</span><span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/egdt.html" class="external-link">egdt</a></span><span class="op">(</span></span>
+<span>                            <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">dat.sim1</span><span class="op">)</span><span class="op">[</span>,<span class="op">!</span><span class="op">(</span><span class="st">"ID"</span><span class="op">)</span><span class="op">]</span></span>
+<span>                           ,</span>
+<span>                            <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>ID<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span><span class="op">)</span></span>
+<span>                        <span class="op">)</span></span>
+<span><span class="va">dat.sim.1000</span><span class="op">[</span>,<span class="va">ID</span><span class="op">:=</span><span class="va">.GRP</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">ID</span>,<span class="va">regimen</span>,<span class="va">dose</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">dat.sim.1000</span>,<span class="va">regimen</span>,<span class="va">dose</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span></code></pre></div>
+<p>We now simulate 1000 subjects by plugging in this data object:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr014.mod"</span><span class="op">)</span></span>
+<span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
+<span>                data<span class="op">=</span><span class="va">dat.sim.1000</span></span>
+<span>                <span class="op">)</span></span></code></pre></div>
+<p>The other way to do this is making use of Nonmem’s
+<code>SUBPROBLEMS</code> simulation feature which makes Nonmem rerun the
+simulation the specified number of times. Notice that to do this, we use
+the <code>dat.sim1</code> data without the 1000 replications. We then
+make use of the NMREP column generated by
+<code><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMdata::NMscanData</a></code> to redefine the <code>ID</code>
+column:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## file.mod &lt;- "../nonmem/xgxr014.mod"</span></span>
+<span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr014.mod"</span><span class="op">)</span></span>
+<span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
+<span>                data<span class="op">=</span><span class="va">dat.sim1</span>,</span>
+<span>                subproblems<span class="op">=</span><span class="fl">1000</span></span>
+<span>                <span class="op">)</span></span>
+<span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">simres</span><span class="op">)</span><span class="op">[</span>,<span class="va">ID</span><span class="op">:=</span><span class="va">.GRP</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">NMREP</span>,<span class="va">ID</span>,<span class="va">regimen</span>,<span class="va">dose</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="simulation-of-a-typical-subject">Simulation of a typical subject<a class="anchor" aria-label="anchor" href="#simulation-of-a-typical-subject"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simres.typ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                    data<span class="op">=</span><span class="va">dat.sim1</span>,</span>
 <span>                    method.sim<span class="op">=</span><span class="st">"NMsim_typical"</span><span class="op">)</span></span></code></pre></div>
@@ -225,7 +268,7 @@ want to try the simplest thing we can think of.</p>
 <div class="section level2">
 <h2 id="simulation-of-known-subjects">Simulation of known subjects<a class="anchor" aria-label="anchor" href="#simulation-of-known-subjects"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base.sim.known</span> <span class="op">&lt;-</span> <span class="va">dat.sim.md</span><span class="op">[</span><span class="va">dat.sim.md</span><span class="op">$</span><span class="va">DOSE</span><span class="op">==</span><span class="fl">400</span>,<span class="op">]</span></span>
 <span></span>
 <span><span class="va">res.mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMscanData</a></span><span class="op">(</span><span class="va">file.mod</span><span class="op">)</span></span>
@@ -247,6 +290,18 @@ want to try the simplest thing we can think of.</p>
 <p>Show a plot of the individual parameters in estimate and in sim</p>
 <div class="section level3">
 <h3 id="impute-simulation-times-for-building-a-pkpd-dataset">Impute simulation times for building a PK/PD dataset<a class="anchor" aria-label="anchor" href="#impute-simulation-times-for-building-a-pkpd-dataset"></a>
+</h3>
+</div>
+</div>
+<div class="section level2">
+<h2 id="simulation-of-parameter-uncertainty">Simulation of parameter uncertainty<a class="anchor" aria-label="anchor" href="#simulation-of-parameter-uncertainty"></a>
+</h2>
+<div class="section level3">
+<h3 id="simulation-of-parameter-uncertainty-based-on-a-covariance-step">Simulation of parameter uncertainty based on a covariance step<a class="anchor" aria-label="anchor" href="#simulation-of-parameter-uncertainty-based-on-a-covariance-step"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 id="simulation-from-a-bootstrap">Simulation from a bootstrap<a class="anchor" aria-label="anchor" href="#simulation-from-a-bootstrap"></a>
 </h3>
 </div>
 </div>
