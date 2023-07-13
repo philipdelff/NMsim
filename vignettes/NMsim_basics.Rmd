@@ -208,21 +208,25 @@ simres <- NMsim(path.mod=file.mod,
 simres <- as.data.table(simres)[,ID:=.GRP,by=.(NMREP,ID,regimen,dose)]
 ```
 
+The two approaches are computationally about equally fast, the most significant different probably being in Nonmem reading a smaller or larger simulation input data file. It is merely a question of preference of the modeler which one to use. In a general case where the simulated patients need different dosing or sample schedules, the manual repetition of the data is needed.
 
 ## Simulation of a typical subject
+A typical subject is here understood as a subject without random effects, i.e. all ETA's equal zero. It is important to realize that "typical" does not have to do with covariates which the user will still need to control in the model, in the simulation input data, or by a combination of these. Getting `NMsim` to run with all ETA's equaling zero is this easy:
+
 ```{r,eval=FALSE}
 simres.typ <- NMsim(path.mod=file.mod,
                     data=dat.sim1,
-                    method.sim="NMsim_typical")
+                    method.sim=NMsim_typical)
 
 ```
 
 ## Simulation of known subjects
+We sometimes want to simulate the already observed subjects. This means we want to reuse the estimated random effects (ETA's) given the subject ID's. `NMsim` has a method for this. The restriction is that all subjects (values of `ID`) in the simulation input data must have been used in the estimation input data.
 ```{r,eval=FALSE}
 base.sim.known <- dat.sim.md[dat.sim.md$DOSE==400,]
 
 res.mod <- NMscanData(file.mod)
-idvars <- findCovs(res.mod,by="ID")
+ids <- res.mod[,.(ID=unique(ID))]
 
 
 dat.sim1.known <- merge(ids,
@@ -234,16 +238,31 @@ res.known <- NMsim(file.mod,
                    data=dat.sim1.known,
                    suffix.sim="known1",
                    text.table="PRED IPRED CL V KA"
-                  ,method.sim="NMsim_known"
+                  ,method.sim=NMsim_known
                   ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                    )
 ```
 
-Show a plot of the individual parameters in estimate and in sim
+<!-- Show a plot of the individual parameters in estimate and in sim -->
 
 ### Impute simulation times for building a PK/PD dataset
+We also connected some PK data. We want to plot the PD data angainst PK. However, PD was sampled differnetly than PK, and we want to evaluate the individual predictions of the PK model at the individual PD samplng times.
+
+Currently, there is no PD data in the example data used to build this vignette. For a PK model without time-varying covariates, the steps to to generate the data for the simulation are:
+
+* Take dose records from PK model estimation input data (`pkdos`). Just keep necessary columns like `ID`, `TIME`, `EVID`, `CMT`, `AMT`, `ADDL`, `II`, and any necessary covariates
+* Take PD data observation records (`pdsamples`). Just keep `ID`, `TIME`, and set `EVID=2`.
+* Add a unique row identifier to `pdsamples` (an integer row counter, like `1:nrow(pdsamples)`)
+* Stack (`rbind` for data.tables or `bind_rows` in tidyverse) `pkdos` and `pdsamples` to one data set (`pdsim`)
+* In `pdsim`, set `DV=NA`
+* Sort `pdsim` at least by `ID`, `TIME` and `EVID`. There could be more depending on trial design
+
+In case of time-varying covariates
+
+
 
 ## Simulation of parameter uncertainty
+
 
 ### Simulation of parameter uncertainty based on a covariance step
 
