@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 ## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
-```{r,setup,include=T}
+```{r,setup,include=F}
 ## library(devtools)
 ## load_all("../../../../NMdata")
 ## load_all()
