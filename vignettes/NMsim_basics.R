@@ -10,7 +10,7 @@ knitr::opts_chunk$set(
 ## this changes data.table syntax. I think we can do without.
 ## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
 
-## ----setup,include=T----------------------------------------------------------
+## ----setup,include=F----------------------------------------------------------
 ## library(devtools)
 ## load_all("../../../../NMdata")
 ## load_all()
@@ -148,4 +148,62 @@ print(as.data.table(dat.sim1),topn=5)
 #                    ,method.sim=NMsim_known
 #                    ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
 #                     )
+
+## ----known-pkpd,eval=FALSE----------------------------------------------------
+#  res.pksim <- NMsim(file.mod,
+#                     data=pdsim,
+#                     suffix.sim="pkpd",
+#                    ,method.sim=NMsim_known
+#                    ,text.table="ROW IPRED"
+#                    ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+#                     )
+#  
+
+## ----VarCov,eval=FALSE--------------------------------------------------------
+#  file.mod.cov <- "inst/examples/nonmem/xgxr114.mod"
+#  NMsim(
+#      path.mod=file.mod.cov,
+#      data=dat.sim1
+#     ,method.sim=NMsim_VarCov ## Var-Cov parameter sampling
+#     ,name.sim="VarCov"       ## a recognizable directory name
+#     ,nsims=500               ## sampling 500 models
+#     ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
+#     ,sge=TRUE                ## run simulations in parallel please
+#  )
+
+## ----VarCov-collect,eval=FALSE------------------------------------------------
+#  simres.VarCov <- NMscanMultiple(dir=
+#                          ,file.pattern=".+\\.lst$"
+#                          ,merge.by.row=FALSE,quiet=T
+#                          ,as.fun="data.table")
+#  
+
+## ----VarCov-summarize,eval=FALSE----------------------------------------------
+#  ci.VarCov <- simres.VarCov[,by=.(TIME,dose,regimen)]
+
+## ----bootstrap-execute,eval=FALSE---------------------------------------------
+#  ## generate a vector with paths to all the input control streams
+#  mods.bootstrap <- list.files(path="../nonmem/bs1_014_N1000/m1",pattern=".+\\.mod$",full.names = T)
+#  
+#  NMsim(
+#      path.mod=mods.bootstrap,
+#      data=dat.sim1
+#     ,method.sim=NMsim_default ## a single simulation with each sampled model
+#     ,name.sim="bootstrap"       ## a recognizable directory name
+#     ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
+#     ,sge=TRUE                ## run simulations in parallel please
+#  )
+
+## ----bootstrap-collect,eval=FALSE---------------------------------------------
+#  simres.bootstrap <- NMscanMultiple(dir=
+#                          ,file.pattern=".+\\.lst$"
+#                          ,merge.by.row=FALSE,quiet=T
+#                          ,as.fun="data.table")
+#  
+
+## ----bootstrap-summarize,eval=FALSE-------------------------------------------
+#  ci.bootstrap <- simres.bootstrap[,by=.(TIME,dose,regimen)]
+
+## ----eval=FALSE---------------------------------------------------------------
+#  addResVar(simres,path.ext=fnExtension(file.mod,"ext"))
 

@@ -263,7 +263,7 @@ Then run `NMsim` like this. We include `text.table="ROW IPRED"`
 because we need the row identifier for merging, and the individual
 predictions are what we are running this for.
 
-```{r,known-pkpd}
+```{r,known-pkpd,eval=FALSE}
 res.pksim <- NMsim(file.mod,
                    data=pdsim,
                    suffix.sim="pkpd",
@@ -350,15 +350,70 @@ simres.VarCov <- NMscanMultiple(dir=
 ci.VarCov <- simres.VarCov[,by=.(TIME,dose,regimen)]
 ```
 
-
-
-
 ### Simulation from a bootstrap
+The other approach to simulation with parameter uncertainty currently
+provided by `NMsim` is simulation from a bootstrap. Again, `NMsim`
+does not run a bootstrap, it simply runs a simulation using each of
+the sampled models from a bootstrap. In fact this means we don't even
+need a dedicated method to achieve this, we simply run a simulation
+with multiple Nonmem models as described in the begging of this
+vignette. We used `PSN`'s bootstrap. We can run the simulation on all the models this way:
+
+
+```{r,bootstrap-execute,eval=FALSE}
+## generate a vector with paths to all the input control streams
+mods.bootstrap <- list.files(path="../nonmem/bs1_014_N1000/m1",pattern=".+\\.mod$",full.names = T)
+
+NMsim(
+    path.mod=mods.bootstrap,
+    data=dat.sim1
+   ,method.sim=NMsim_default ## a single simulation with each sampled model
+   ,name.sim="bootstrap"       ## a recognizable directory name
+   ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
+   ,sge=TRUE                ## run simulations in parallel please
+)
+```
+
+Reading and post-processing the results is similar to the same steps
+above when we used the covariance step.
+
+```{r,bootstrap-collect,eval=FALSE}
+simres.bootstrap <- NMscanMultiple(dir=
+                        ,file.pattern=".+\\.lst$"
+                        ,merge.by.row=FALSE,quiet=T
+                        ,as.fun="data.table")
+
+```
+
+```{r,bootstrap-summarize,eval=FALSE}
+ci.bootstrap <- simres.bootstrap[,by=.(TIME,dose,regimen)]
+```
+
 
 
 ## Add residual variability
+`NMsim` currently does not provide any way to add simulation of
+residual variability with Nonmem. It does however provide a method to
+simulate residual variability in R, based on the Nonmem parameter
+estimates. The function is called `addResVar()` and supports additive,
+proportional, and combined (additive and proportional) error
+models. It can also add the residual error on log scale (exponential
+error model).
+
+`NMresVar` supports both estimation using `$SIGMA` and `$THETA` (in Nonmem). The user has to specify which of the two methods were used in the Nonmem model using the `par.type` argument. The other thing that must be specified is the parameter numbers for the standard deviations or variances. The model simulated in this vignette has this combined error model estimated using the `$SIGMA` matrix:
+
+```
+  Y=F+F*ERR(1)+ERR(2)
+```
+
+We now specify for `addResVar` to find the variance for the proportional component in `$SIGMA[1,1]` and the one for the additive component in `$SIGMA[2,2]`. In this case where `SIGMA` is used, the off-diagonal (covariance) elements of the `$SIGMA` matrix are also used for the simulation. 
+
+```{r,eval=FALSE}
+simres.with.resvar <- addResVar(simres,path.ext=fnExtension(file.mod,"ext"),par.type="SIGMA",prop=1,add=2)
+```
 
 ## Configuration of how to execute Nonmem
+`NMsim` supports two ways
 
 ## Other important arguments to `NMsim`
 
