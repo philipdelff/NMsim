@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   NMsim_basics: NMsim_basics.html
-last_built: 2023-07-26T02:18Z
+last_built: 2023-07-26T02:31Z
 urls:
   reference: https://philipdelff.github.io/NMsim/reference
   article: https://philipdelff.github.io/NMsim/articles

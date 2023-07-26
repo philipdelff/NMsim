@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.909</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.920</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,40 +77,7 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## library(devtools)</span></span>
-<span><span class="co">## load_all("../../../../NMdata")</span></span>
-<span><span class="co">## load_all()</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://philipdelff.github.io/NMsim/">NMsim</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://philipdelff.github.io/NMdata/" class="external-link">NMdata</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; NMdata 0.1.0. Browse NMdata documentation at</span></span>
-<span><span class="co">#&gt; https://philipdelff.github.io/NMdata/</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:data.table':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     between, first, last</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter, lag</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">tracee</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">this.script</span> <span class="op">&lt;-</span> <span class="st">"NMsim_basics.Rmd"</span></span>
-<span><span class="va">writeOutput</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
-<span><span class="va">file.project</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span>,<span class="va">...</span><span class="op">)</span></span>
-<span><span class="va">found.files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/NMsim"</span><span class="op">)</span>,pattern<span class="op">=</span><span class="st">"noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)"</span>,full.names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">found.files</span><span class="op">)</span></span></code></pre></div>
-<p>Built 2023-07-26 using NMsim 0.0.1.909.</p>
+<p>Built 2023-07-26 using NMsim 0.0.1.920.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -118,9 +85,9 @@
 <ul>
 <li><p>Use <code>NMsim</code> to simulate Nonmem models with a given
 input data set</p></li>
-<li><p>Distinguish between and perform three different types of
-simulations: new subjects (default), typical subjects, and known
-subjects</p></li>
+<li><p>Distinguish between and perform the most common types of
+simulations: new subjects (default), typical subjects, known subjects,
+and simulation with parameter uncertainty</p></li>
 <li><p>Configure <code>NMsim</code> to use <code>PSN</code> or methods
 provided by <code>NMsim</code> to update Nonmem control stream initial
 values and to run Nonmem</p></li>
@@ -145,11 +112,11 @@ simulations for this purpose.</p>
 <p>The pop PK model is estimated using an ADVAN subroutine with
 extravascular dosing in compartment 1 andthe central compartment is
 compartment 2.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMexpandDoses.html" class="external-link">NMexpandDoses</a></span><span class="op">(</span><span class="va">dat.sim1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ID</span>,<span class="va">regimen</span>,<span class="va">DOSE</span>,<span class="va">EVID</span>,<span class="va">AMT</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>N<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">EVID</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/spread.html" class="external-link">spread</a></span><span class="op">(</span><span class="va">EVID</span>,<span class="va">N</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">NMexpandDoses</span><span class="op">(</span><span class="va">dat.sim1</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">group_by</span><span class="op">(</span><span class="va">ID</span>,<span class="va">regimen</span>,<span class="va">DOSE</span>,<span class="va">EVID</span>,<span class="va">AMT</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">summarize</span><span class="op">(</span>N<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">EVID</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">spread</span><span class="op">(</span><span class="va">EVID</span>,<span class="va">N</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'ID', 'regimen', 'DOSE', 'EVID'. You can</span></span>
 <span><span class="co">#&gt; override using the `.groups` argument.</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
@@ -191,49 +158,109 @@ then the same dose levels as QD with a double loading dose.</p>
 </h2>
 <p>This is the first time we are using <code>NMsim</code>, and we just
 want to try the simplest thing we can think of.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## file.mod &lt;- "../nonmem/xgxr014.mod"</span></span>
 <span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr014.mod"</span><span class="op">)</span></span>
 <span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                data<span class="op">=</span><span class="va">dat.sim1</span></span>
-<span>                 <span class="op">)</span></span></code></pre></div>
+<span>                <span class="op">)</span></span></code></pre></div>
 <!-- That did not go well. As the error shows, `$TABLE` refers to a `ROW` column. Nonmem needs this to run the control stream as is. Since this does not happen until `$TABLE`, we have two options to fix it -->
 <!-- - Add `ROW` to the input data set -->
 <!-- - Modify `$TABLE` (using the `text.table`, demonstrated later) -->
+<p>Before we continue with that model, we want to compare a simulation
+based on this model to another model we are considering.
+<code>NMsim</code> can do this and collect the data into one object:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## file.mod &lt;- "../nonmem/xgxr014.mod"</span></span>
+<span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nonmem/xgxr014.mod"</span>,<span class="st">"nonmem/xgxr114.mod"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
+<span>                data<span class="op">=</span><span class="va">dat.sim1</span></span>
+<span>                <span class="op">)</span></span></code></pre></div>
+<p>In case multiple models are provided, <code>NMsim</code> simply loops
+over them. For simplicitym, we shall show the rest of the examples for
+just one model. Any of them could be run on multiple models the same way
+as shown above.</p>
 <!-- subproblems vs repetition of input data -->
 <div class="section level3">
 <h3 id="more-subjects">More subjects<a class="anchor" aria-label="anchor" href="#more-subjects"></a>
 </h3>
-</div>
-</div>
-<div class="section level2">
-<h2 id="simulation-of-multiple-models">Simulation of multiple models<a class="anchor" aria-label="anchor" href="#simulation-of-multiple-models"></a>
-</h2>
-<div class="section level3">
-<h3 id="simulation-from-a-bootstrap">Simulation from a bootstrap<a class="anchor" aria-label="anchor" href="#simulation-from-a-bootstrap"></a>
-</h3>
+<p>To create a prediction interval based on the selected model, we need
+to simulate multiple new subjects. There are two ways to easily obtain
+that. One is to repeat (<code>rbind</code>) the simulation input
+dataset, one repetetion per new subject, and then update the
+<code>ID</code> column to get distinct subjects. The follwing shows how
+one could generate 1000 subjects using <code>data.table</code>. (I use
+<code>data.table</code> a lot, if you can provide a good way to do this
+with tidyverse packages, I am happy to include that instead).</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat.sim.1000</span> <span class="op">&lt;-</span> <span class="fu">NMdata</span><span class="fu">::</span><span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/egdt.html" class="external-link">egdt</a></span><span class="op">(</span></span>
+<span>                            <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">dat.sim1</span><span class="op">)</span><span class="op">[</span>,<span class="op">!</span><span class="op">(</span><span class="st">"ID"</span><span class="op">)</span><span class="op">]</span></span>
+<span>                           ,</span>
+<span>                            <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>ID<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span><span class="op">)</span></span>
+<span>                        <span class="op">)</span></span>
+<span><span class="va">dat.sim.1000</span><span class="op">[</span>,<span class="va">ID</span><span class="op">:=</span><span class="va">.GRP</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">ID</span>,<span class="va">regimen</span>,<span class="va">dose</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">dat.sim.1000</span>,<span class="va">regimen</span>,<span class="va">dose</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span></code></pre></div>
+<p>We now simulate 1000 subjects by plugging in this data object:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr014.mod"</span><span class="op">)</span></span>
+<span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
+<span>                data<span class="op">=</span><span class="va">dat.sim.1000</span></span>
+<span>                <span class="op">)</span></span></code></pre></div>
+<p>The other way to do this is making use of Nonmem’s
+<code>SUBPROBLEMS</code> simulation feature which makes Nonmem rerun the
+simulation the specified number of times. Notice that to do this, we use
+the <code>dat.sim1</code> data without the 1000 replications. We then
+make use of the NMREP column generated by
+<code><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMdata::NMscanData</a></code> to redefine the <code>ID</code>
+column:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## file.mod &lt;- "../nonmem/xgxr014.mod"</span></span>
+<span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr014.mod"</span><span class="op">)</span></span>
+<span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
+<span>                data<span class="op">=</span><span class="va">dat.sim1</span>,</span>
+<span>                subproblems<span class="op">=</span><span class="fl">1000</span></span>
+<span>                <span class="op">)</span></span>
+<span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">simres</span><span class="op">)</span><span class="op">[</span>,<span class="va">ID</span><span class="op">:=</span><span class="va">.GRP</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">NMREP</span>,<span class="va">ID</span>,<span class="va">regimen</span>,<span class="va">dose</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<p>The two approaches are computationally about equally fast, the most
+significant different probably being in Nonmem reading a smaller or
+larger simulation input data file. It is merely a question of preference
+of the modeler which one to use. In a general case where the simulated
+patients need different dosing or sample schedules, the manual
+repetition of the data is needed.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="simulation-of-a-typical-subject">Simulation of a typical subject<a class="anchor" aria-label="anchor" href="#simulation-of-a-typical-subject"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p>A typical subject is here understood as a subject without random
+effects, i.e. all ETA’s equal zero. It is important to realize that
+“typical” does not have to do with covariates which the user will still
+need to control in the model, in the simulation input data, or by a
+combination of these. Getting <code>NMsim</code> to run with all ETA’s
+equaling zero is this easy:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simres.typ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                    data<span class="op">=</span><span class="va">dat.sim1</span>,</span>
-<span>                    type.sim<span class="op">=</span><span class="st">"typical"</span><span class="op">)</span></span></code></pre></div>
+<span>                    method.sim<span class="op">=</span><span class="va">NMsim_typical</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="simulation-of-known-subjects">Simulation of known subjects<a class="anchor" aria-label="anchor" href="#simulation-of-known-subjects"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>We sometimes want to simulate the already observed subjects. This
+means we want to reuse the estimated random effects (ETA’s) given the
+subject ID’s. <code>NMsim</code> has a method for this. The restriction
+is that all subjects (values of <code>ID</code>) in the simulation input
+data must have been used in the estimation input data.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base.sim.known</span> <span class="op">&lt;-</span> <span class="va">dat.sim.md</span><span class="op">[</span><span class="va">dat.sim.md</span><span class="op">$</span><span class="va">DOSE</span><span class="op">==</span><span class="fl">400</span>,<span class="op">]</span></span>
 <span></span>
-<span><span class="va">res.mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMscanData</a></span><span class="op">(</span><span class="va">file.mod</span><span class="op">)</span></span>
-<span><span class="va">idvars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/findCovs.html" class="external-link">findCovs</a></span><span class="op">(</span><span class="va">res.mod</span>,by<span class="op">=</span><span class="st">"ID"</span><span class="op">)</span></span>
+<span><span class="va">res.mod</span> <span class="op">&lt;-</span> <span class="fu">NMscanData</span><span class="op">(</span><span class="va">file.mod</span><span class="op">)</span></span>
+<span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="va">res.mod</span><span class="op">[</span>,<span class="fu">.</span><span class="op">(</span>ID<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span></span>
 <span><span class="va">dat.sim1.known</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">ids</span>,</span>
-<span>                        <span class="va">base.sim.known</span><span class="op">[</span>,<span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">base.sim.known</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ID"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span>                        <span class="va">base.sim.known</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">base.sim.known</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ID"</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span>                        <span class="op">)</span></span>
 <span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">dat.sim1.known</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span>
 <span></span>
@@ -241,22 +268,200 @@ want to try the simplest thing we can think of.</p>
 <span>                   data<span class="op">=</span><span class="va">dat.sim1.known</span>,</span>
 <span>                   suffix.sim<span class="op">=</span><span class="st">"known1"</span>,</span>
 <span>                   text.table<span class="op">=</span><span class="st">"PRED IPRED CL V KA"</span></span>
-<span>                  ,type.sim<span class="op">=</span><span class="st">"known"</span></span>
+<span>                  ,method.sim<span class="op">=</span><span class="va">NMsim_known</span></span>
 <span>                  ,path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe75"</span></span>
 <span>                   <span class="op">)</span></span></code></pre></div>
-<p>Show a plot of the individual parameters in estimate and in sim</p>
+<!-- Show a plot of the individual parameters in estimate and in sim -->
 <div class="section level3">
 <h3 id="impute-simulation-times-for-building-a-pkpd-dataset">Impute simulation times for building a PK/PD dataset<a class="anchor" aria-label="anchor" href="#impute-simulation-times-for-building-a-pkpd-dataset"></a>
 </h3>
+<p>We also connected some PK data. We want to plot the PD data angainst
+PK. However, PD was sampled differnetly than PK, and we want to evaluate
+the individual predictions of the PK model at the individual PD samplng
+times.</p>
+<p>Currently, there is no PD data in the example data used to build this
+vignette. For a PK model without time-varying covariates, the steps to
+to generate the data for the simulation are:</p>
+<ul>
+<li>Take dose records from PK model estimation input data
+(<code>pkdos</code>). Just keep necessary columns like <code>ID</code>,
+<code>TIME</code>, <code>EVID</code>, <code>CMT</code>,
+<code>AMT</code>, <code>ADDL</code>, <code>II</code>, and any necessary
+covariates</li>
+<li>Take PD data observation records (<code>pdsamples</code>). Just keep
+<code>ID</code>, <code>TIME</code>, and set <code>EVID=2</code>.</li>
+<li>Add a unique row identifier to <code>pdsamples</code> (an integer
+row counter, like <code>ROW=1:nrow(pdsamples)</code>)</li>
+<li>Stack (<code>rbind</code> for data.tables or <code>bind_rows</code>
+in tidyverse) <code>pkdos</code> and <code>pdsamples</code> to one data
+set (<code>pdsim</code>)</li>
+<li>In <code>pdsim</code>, set <code>DV=NA</code>
+</li>
+<li>Sort <code>pdsim</code> at least by <code>ID</code>,
+<code>TIME</code> and <code>EVID</code>. There could be more depending
+on trial design</li>
+</ul>
+<p>In case of time-varying covariates, you can keep all data records
+from the PK data (without <code>DV</code>), but change observation
+records to simulation records (<code>EVID=2</code> instead of
+<code>EVID=0</code>).</p>
+<p>Then run <code>NMsim</code> like this. We include
+<code>text.table="ROW IPRED"</code> because we need the row identifier
+for merging, and the individual predictions are what we are running this
+for.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res.pksim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span><span class="va">file.mod</span>,</span>
+<span>                   data<span class="op">=</span><span class="va">pdsim</span>,</span>
+<span>                   suffix.sim<span class="op">=</span><span class="st">"pkpd"</span>,</span>
+<span>                  ,method.sim<span class="op">=</span><span class="va">NMsim_known</span></span>
+<span>                  ,text.table<span class="op">=</span><span class="st">"ROW IPRED"</span> </span>
+<span>                  ,path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe75"</span></span>
+<span>                   <span class="op">)</span></span></code></pre></div>
+<p>Now rename <code>res.pksim$IPRED</code> to something meaningfull like
+<code>res.pksim$PKIPRED</code>, and you can merge <code>res.pksim</code>
+onto the PD data by the unique row identifier.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="simulation-of-parameter-uncertainty">Simulation of parameter uncertainty<a class="anchor" aria-label="anchor" href="#simulation-of-parameter-uncertainty"></a>
+</h2>
+<p>We already saw how <code>NMsim</code> can easily be used to generate
+new subjects (for say prediction intervals) by using the between-subject
+and between-occasion variability as described by the model. We may also
+want to simulate the uncertainty of the parameter estimates (for say
+confidence intervals). <code>NMsim</code> supports two different
+approaches to this.</p>
+<ul>
+<li><p>Simulation based on the estimated variance-covariance matrix of
+the parameters as estimated by a successful <code>$COVARIANCE</code>
+step in Nonmem.</p></li>
+<li><p>Simulation based on a bootstrap of the model. <code>NMsim</code>
+does not provide functions to run the bootstrap, but it can use the
+results of sampled models, like what is generated by <code>PSN</code>’s
+bootstrap function.</p></li>
+</ul>
+<p>It is beyond the scope of this vignette to describe the pros and cons
+of those two approaches. The following examples serve to exlain the
+preequisites for using <code>NMsim</code> to do it, and obviously how to
+get <code>NMsim</code> to do the job.</p>
+<div class="section level3">
+<h3 id="simulation-of-parameter-uncertainty-based-on-a-covariance-step">Simulation of parameter uncertainty based on a covariance step<a class="anchor" aria-label="anchor" href="#simulation-of-parameter-uncertainty-based-on-a-covariance-step"></a>
+</h3>
+<p>If you have a succesful covariance step from Nonmem,
+<code>NMsim</code> can sample models from the estimated
+variance-covariance matrix. Again, <code>NMsim</code> does not derive
+confidence intervals based on the estimated variance-covariance matrix.
+It samples models from it, and then you can derive the desired
+confidence intervals, or whatever you need.</p>
+<p>Again, we shall try not to get too far into details here, but
+remember what we are doing here. We are assuming that the estimated
+vairance-covariance matrix is a reliable estimate of the parameter
+precision, implying Gaussian distribution of all parameter
+uncertainties. The reason this is important to understand is that
+depending on the model, this can lead to samples of parameter values
+beyond some allowed range. This can lead some of the sampled models to
+fail or not be meaningful. The point here is that a successful
+covariance step may not be a sufficient criterion for picking this
+approach to simulating uncertainty; appropriate parametrization is
+another one.</p>
+<p>Anyway, getting <code>NMsim</code> to do the work is as simple as
+this:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">file.mod.cov</span> <span class="op">&lt;-</span> <span class="st">"inst/examples/nonmem/xgxr114.mod"</span></span>
+<span><span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span></span>
+<span>    path.mod<span class="op">=</span><span class="va">file.mod.cov</span>,</span>
+<span>    data<span class="op">=</span><span class="va">dat.sim1</span></span>
+<span>   ,method.sim<span class="op">=</span><span class="va">NMsim_VarCov</span> <span class="co">## Var-Cov parameter sampling</span></span>
+<span>   ,name.sim<span class="op">=</span><span class="st">"VarCov"</span>       <span class="co">## a recognizable directory name</span></span>
+<span>   ,nsims<span class="op">=</span><span class="fl">500</span>               <span class="co">## sampling 500 models</span></span>
+<span>   ,method.execute<span class="op">=</span><span class="st">"psn"</span>    <span class="co">## use PSN's execute to allow for parallel execution</span></span>
+<span>   ,sge<span class="op">=</span><span class="cn">TRUE</span>                <span class="co">## run simulations in parallel please</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>We used <code>sge=TRUE</code> which means we are sending the 500
+generated jobs to the queuing system. In this case, <code>NMsim</code>
+does not track the execution of the jobs and does hence not collect the
+results once they are done. You have to check the status of the jobs
+manually, and once they are all done, you can read all the results using
+<code><a href="https://philipdelff.github.io/NMdata/reference/NMscanMultiple.html" class="external-link">NMdata::NMscanMultiple</a></code>:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simres.VarCov</span> <span class="op">&lt;-</span> <span class="fu">NMscanMultiple</span><span class="op">(</span>dir<span class="op">=</span></span>
+<span>                        ,file.pattern<span class="op">=</span><span class="st">".+\\.lst$"</span></span>
+<span>                        ,merge.by.row<span class="op">=</span><span class="cn">FALSE</span>,quiet<span class="op">=</span><span class="cn">T</span></span>
+<span>                        ,as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="https://philipdelff.github.io/NMdata/reference/NMscanMultiple.html" class="external-link">NMdata::NMscanMultiple</a></code> is a wrapper of
+<code><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMdata::NMscanData</a></code>, and just like
+<code><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMdata::NMscanData</a></code> it keeps a column by default called
+<code>model</code> which holds the model name, derived from the control
+stream file name. As an example, we can derive an estimated confidence
+interval of the population prediction against time by summarizing across
+the simulation models (samples):</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ci.VarCov</span> <span class="op">&lt;-</span> <span class="va">simres.VarCov</span><span class="op">[</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">dose</span>,<span class="va">regimen</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="simulation-from-a-bootstrap">Simulation from a bootstrap<a class="anchor" aria-label="anchor" href="#simulation-from-a-bootstrap"></a>
+</h3>
+<p>The other approach to simulation with parameter uncertainty currently
+provided by <code>NMsim</code> is simulation from a bootstrap. Again,
+<code>NMsim</code> does not run a bootstrap, it simply runs a simulation
+using each of the sampled models from a bootstrap. In fact this means we
+don’t even need a dedicated method to achieve this, we simply run a
+simulation with multiple Nonmem models as described in the begging of
+this vignette. We used <code>PSN</code>’s bootstrap. We can run the
+simulation on all the models this way:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## generate a vector with paths to all the input control streams</span></span>
+<span><span class="va">mods.bootstrap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path<span class="op">=</span><span class="st">"../nonmem/bs1_014_N1000/m1"</span>,pattern<span class="op">=</span><span class="st">".+\\.mod$"</span>,full.names <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span></span>
+<span>    path.mod<span class="op">=</span><span class="va">mods.bootstrap</span>,</span>
+<span>    data<span class="op">=</span><span class="va">dat.sim1</span></span>
+<span>   ,method.sim<span class="op">=</span><span class="va">NMsim_default</span> <span class="co">## a single simulation with each sampled model</span></span>
+<span>   ,name.sim<span class="op">=</span><span class="st">"bootstrap"</span>       <span class="co">## a recognizable directory name</span></span>
+<span>   ,method.execute<span class="op">=</span><span class="st">"psn"</span>    <span class="co">## use PSN's execute to allow for parallel execution</span></span>
+<span>   ,sge<span class="op">=</span><span class="cn">TRUE</span>                <span class="co">## run simulations in parallel please</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Reading and post-processing the results is similar to the same steps
+above when we used the covariance step.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simres.bootstrap</span> <span class="op">&lt;-</span> <span class="fu">NMscanMultiple</span><span class="op">(</span>dir<span class="op">=</span></span>
+<span>                        ,file.pattern<span class="op">=</span><span class="st">".+\\.lst$"</span></span>
+<span>                        ,merge.by.row<span class="op">=</span><span class="cn">FALSE</span>,quiet<span class="op">=</span><span class="cn">T</span></span>
+<span>                        ,as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ci.bootstrap</span> <span class="op">&lt;-</span> <span class="va">simres.bootstrap</span><span class="op">[</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">dose</span>,<span class="va">regimen</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="add-residual-variability">Add residual variability<a class="anchor" aria-label="anchor" href="#add-residual-variability"></a>
 </h2>
+<p><code>NMsim</code> currently does not provide any way to add
+simulation of residual variability with Nonmem. It does however provide
+a method to simulate residual variability in R, based on the Nonmem
+parameter estimates. The function is called <code><a href="../reference/addResVar.html">addResVar()</a></code> and
+supports additive, proportional, and combined (additive and
+proportional) error models. It can also add the residual error on log
+scale (exponential error model).</p>
+<p><code>NMresVar</code> supports both estimation using
+<code>$SIGMA</code> and <code>$THETA</code> (in Nonmem). The user has to
+specify which of the two methods were used in the Nonmem model using the
+<code>par.type</code> argument. The other thing that must be specified
+is the parameter numbers for the standard deviations or variances. The
+model simulated in this vignette has this combined error model estimated
+using the <code>$SIGMA</code> matrix:</p>
+<pre><code><span>  <span class="va">Y</span><span class="op">=</span><span class="cn">F</span><span class="op">+</span><span class="cn">F</span><span class="op">*</span><span class="fu">ERR</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">+</span><span class="fu">ERR</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span></code></pre>
+<p>We now specify for <code>addResVar</code> to find the variance for
+the proportional component in <code>$SIGMA[1,1]</code> and the one for
+the additive component in <code>$SIGMA[2,2]</code>. In this case where
+<code>SIGMA</code> is used, the off-diagonal (covariance) elements of
+the <code>$SIGMA</code> matrix are also used for the simulation.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simres.with.resvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addResVar.html">addResVar</a></span><span class="op">(</span><span class="va">simres</span>,path.ext<span class="op">=</span><span class="fu">fnExtension</span><span class="op">(</span><span class="va">file.mod</span>,<span class="st">"ext"</span><span class="op">)</span>,par.type<span class="op">=</span><span class="st">"SIGMA"</span>,prop<span class="op">=</span><span class="fl">1</span>,add<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="configuration-of-how-to-execute-nonmem">Configuration of how to execute Nonmem<a class="anchor" aria-label="anchor" href="#configuration-of-how-to-execute-nonmem"></a>
 </h2>
+<p><code>NMsim</code> supports two ways</p>
 </div>
 <div class="section level2">
 <h2 id="other-important-arguments-to-nmsim">Other important arguments to <code>NMsim</code><a class="anchor" aria-label="anchor" href="#other-important-arguments-to-nmsim"></a>

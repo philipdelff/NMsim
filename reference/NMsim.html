@@ -12,7 +12,7 @@ create neccesary files, run the simulation and read the results."><!-- mathjax -
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.909</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.920</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,7 +60,7 @@ create neccesary files, run the simulation and read the results.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">NMsim</span><span class="op">(</span></span>
 <span>  <span class="va">path.mod</span>,</span>
 <span>  <span class="va">data</span>,</span>
-<span>  <span class="va">dir.sim</span>,</span>
+<span>  <span class="va">dir.sims</span>,</span>
 <span>  <span class="va">name.sim</span>,</span>
 <span>  order.columns <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  script <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -71,7 +71,7 @@ create neccesary files, run the simulation and read the results.</p>
 <span>  nmquiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">text.table</span>,</span>
 <span>  <span class="va">type.mod</span>,</span>
-<span>  <span class="va">type.sim</span>,</span>
+<span>  method.sim <span class="op">=</span> <span class="va">NMsim_default</span>,</span>
 <span>  execute <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  sge <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  transform <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -82,7 +82,8 @@ create neccesary files, run the simulation and read the results.</p>
 <span>  <span class="va">dir.psn</span>,</span>
 <span>  path.nonmem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">as.fun</span>,</span>
-<span>  <span class="va">suffix.sim</span></span>
+<span>  <span class="va">suffix.sim</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -99,7 +100,7 @@ to be stored next to the input control stream and ending in
 <dd><p>The simulation data as a data.frame.</p></dd>
 
 
-<dt>dir.sim</dt>
+<dt>dir.sims</dt>
 <dd><p>The directory in which NMsim will store all
 generated files.</p></dd>
 
@@ -170,10 +171,12 @@ in case type.mod="sim", `subproblems` is ignored. `type.mod`
 may be automated in the future.</p></dd>
 
 
-<dt>type.sim</dt>
-<dd><p>One of "default" (new simulation), "typical"
-(typical subject, ETAs = 0), or "known" (ID's observed in
-model estimation).</p></dd>
+<dt>method.sim</dt>
+<dd><p>A function that creates the simulation control
+stream and other necessary files for a simulation based on the
+estimation control stream, the data, etc. Four methods are
+included: NMsim_default, NMsim_typical, NMsim_known, and
+NMsim_VarCov. See examples and vignettes on how to use these.</p></dd>
 
 
 <dt>execute</dt>
@@ -229,7 +232,7 @@ structure or other code in the control streams.</p></dd>
 
 
 <dt>create.dir</dt>
-<dd><p>If the directory specified in dir.sim does not
+<dd><p>If the directory specified in dir.sims does not
 exists, should it be created? Default is TRUE.</p></dd>
 
 
@@ -260,6 +263,10 @@ NMdataConf.</p></dd>
 
 <dt>suffix.sim</dt>
 <dd><p>Deprecated. Use name.sim instead.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Additional arguments passed to <code>method.sim</code>.</p></dd>
 
 </dl></div>
 
