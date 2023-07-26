@@ -49,7 +49,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed){
 ### modify .mod to use local copy of input data. Notice the newfile
 ### arg to NMwriteSection creating file.mod.tmp.
     sec.data.new <- paste("$DATA",sub(extr.data$string,basename(extr.data$path),extr.data$DATA,fixed=TRUE))
-    NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp)
+    NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp,quiet=TRUE)
 
 ### copy .phi if found
     ## file.copy(fnExtension(file.mod,"phi"),dir.tmp)

@@ -277,7 +277,7 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
     ## dir.sim
     
     if(missing(dir.sim)) dir.sim <- NULL
-    dir.sim <- simpleCharArg("dir.sim",dir.sim,file.path(dirname(file.mod),"NMsim"),accepted=NULL,lower=FALSE)
+    dir.sim <- simpleCharArg("dir.sim",dir.sim,file.path(dirname(path.mod),"NMsim"),accepted=NULL,lower=FALSE)
     
     if(!dir.exists(dir.sim)){
         if(!create.dir){
@@ -380,7 +380,8 @@ NMsim <- function(path.mod,data,dir.sim, name.sim,
 
     if(type.mod=="est"){
         if(method.update.inits=="psn"){
-            cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim,seed,path.mod)
+            ## cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim,seed,path.mod)
+            cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,fn.sim,path.mod)
             system(cmd.update,wait=TRUE)
 
             file.rename(path.sim.0,path.sim)
