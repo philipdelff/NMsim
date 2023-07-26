@@ -28,16 +28,10 @@
     <loc>https://philipdelff.github.io/NMsim/reference/NMexec.html</loc>
   </url>
   <url>
-    <loc>https://philipdelff.github.io/NMsim/reference/NMexecDirectory.html</loc>
-  </url>
-  <url>
-    <loc>https://philipdelff.github.io/NMsim/reference/NMreadCov.html</loc>
-  </url>
-  <url>
-    <loc>https://philipdelff.github.io/NMsim/reference/NMreplaceInits.html</loc>
-  </url>
-  <url>
     <loc>https://philipdelff.github.io/NMsim/reference/NMsim.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMwriteSection.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/addEVID2.html</loc>
@@ -47,9 +41,6 @@
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/callArgs.html</loc>
-  </url>
-  <url>
-    <loc>https://philipdelff.github.io/NMsim/reference/callNonmemDirect.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/digestElements.html</loc>
