@@ -16,7 +16,7 @@
 ^CODE_OF_CONDUCT\.md$
 ^README\.Rmd$
 modelfit_dir.*
-nonmem
+nonmem$
 temp_dir
 compile.lnk
 FDATA
