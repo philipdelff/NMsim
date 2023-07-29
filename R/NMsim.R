@@ -316,6 +316,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     ## fn.sim <- sub("^run","NMsim",basename(path.mod))
     dt.models[,fn.mod:=basename(path.mod)]
     dt.models[,fn.sim:=paste0("NMsim_",fn.mod)]
+    ## dt.models[,fn.sim:=paste0(fn.mod)]
     dt.models[,fn.sim:=fnAppend(fn.sim,name.sim)]
 
 
@@ -388,7 +389,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     },by=.(ROWMODEL)
     ]
 
-
+    
 
 ########## this is used to generate the first version of file.sim. It would not need to, but beware PSN's update_inits needs to create a new file - don't try to overwrite an existing one.
     if(method.update.inits=="none"){
@@ -399,7 +400,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
         dt.models[,{
             ## cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim.tmp,seed,path.mod)
             cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,fn.sim.tmp,path.mod)
-            ### would be better to write to another location than next to estimation model
+### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),path.mod)
 
             sys.res <- system(cmd.update,wait=TRUE)
@@ -428,6 +429,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 #### Section start: Output tables ####
 
     dt.models[,{
+        
         fn.tab.base <- paste0("FILE=",run.sim,".tab")
         lines.sim <- readLines(path.sim)
         lines.tables <- NMreadSection(lines=lines.sim,section="TABLE",as.one=FALSE,simplify=FALSE)
@@ -493,7 +495,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
     ## TODO: if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
 
-
+    
 
     ## TODO: if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
     

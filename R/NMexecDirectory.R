@@ -72,13 +72,14 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     } else {
         sec.data.new <- paste("$DATA",sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE))
     }
-    
+    NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp)
 
 ### copy .phi if found
     ## file.copy(fnExtension(file.mod,"phi"),dir.tmp)
     if(!is.null(files.needed)){
         file.copy(files.needed,dir.tmp)
     }
+
     
 ### identify tables that will be created
     meta.tables <- NMscanTables(file.mod.tmp,meta.only=TRUE,as.fun="data.table")
@@ -94,7 +95,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
        ,
         sprintf("cd %s;" ,dir.tmp)
        ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-       ## ,"cd $WD0"
+       ,"cd $WD0"
        ,sprintf("cp %s/*.+(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo) %s",dir.tmp,dir.mod)
        ,sprintf("cp %s %s",paste(meta.tables[,file],collapse=" "),dir.mod)
        ,""

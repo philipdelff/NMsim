@@ -16,7 +16,6 @@
 ^CODE_OF_CONDUCT\.md$
 ^README\.Rmd$
 modelfit_dir.*
-nonmem$
 temp_dir
 compile.lnk
 FDATA
@@ -41,4 +40,5 @@ INTER
 LINK.LNK
 ^inst/examples/simulations/.+$
 ^inst/examples/nonmem/bs1_014_N1000/
+^inst/examples/nonmem/NMsim
 .*_dir.*
