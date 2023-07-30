@@ -489,15 +489,26 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
     ## TODO: check that all path.sim have been generated
 
-    ## TODO: if files.needed, psn execute cannot be used.
-
-    ## TODO: if multiple models spwned, direct is not allowed
-
     ## TODO: if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
-
+    if(nrow(dt.models.gen)>1 && !is.null(dt.models.gen[,files.needed])){
+        if(method.execute!="directory"){
+            stop("Multiple simulation runs spawned, and they need additional files than the simulation input control streams. The only way this is supported is using method.execute=\"directory\".")
+        }
+    }
     
-
-    ## TODO: if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
+    ## if files.needed, psn execute cannot be used.
+    if(!is.null(dt.models.gen[,files.needed])){
+        if(method.execute=="psn"){
+            stop("method.execute=\"psn\" cannot be used with simulation methods that need additional files to run. Try method.execute=\"directory\".")
+        }
+    }
+    ## if multiple models spawned, direct is not allowed
+    if(nrow(dt.models.gen)>1){
+        if(method.execute=="direct"){
+            stop("method.execute=\"direct\" cannot be used with simulation methods that spawn multiple simulation runs. Try method.execute=\"directory\" or method.execute=\"psn\".")
+        }
+    }
+    
     
     setnames(dt.models,"path.sim","path.sim.main")
     cols.fneed <- cnames.gen[grepl("^files.needed",cnames.gen)]

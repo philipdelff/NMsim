@@ -13,21 +13,21 @@ Path to nonmem, psn, other ways to exec.
 ** NMexec
 *** TODO Move existing results files to backup before running nonmem
 ** NMsim
-*** TODO Support method.sim=NULL for doing nothing to the control stream.
+*** DONE Support method.sim="asis" for doing nothing to the control stream.
 *** DONE Support additional args to methods
 For now, ellipses used
 *** TODO Support submitting jobs to queue system
-*** TODO [#A] Go through selection of execution method
-*** TODO Define a more flexible structure to return
-Currently the sim methods return just files.needed. We need to be able to return 
+*** DONE Go through selection of execution method
 **** DONE all columns which names start by file.needed used
 *** CANCELED Use dt list elements for multiple files.needed
 *** TODO Use meaningful by in execute part
 *** TODO Modularize simulation methods
 **** DONE Handle seed and subproblems outside modules
-**** TODO How to handle replace.sim?
-Should that only be available for the default method?
-*** TODO Support simulation of new models from covariance step
+**** DONE How to handle replace.sim?
+Only be available for the default method. In fact, method.sim="asis"
+may be what the user wants.
+*** DONE Support simulation of new models from covariance step
+method.sim="VarCov"
 *** TODO path.mod should be file.mod
 Or files?
 To align with argument naming in NMdata

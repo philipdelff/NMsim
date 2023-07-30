@@ -152,7 +152,7 @@ the simplest thing we can think of.
 file.mod <- file.project("nonmem/xgxr014.mod")
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1
-                ## ,method.update.inits="nmsim"
+               ## ,method.update.inits="nmsim"
                ,dir.sims="~/NMsim_test"
                 )
 ```
@@ -228,7 +228,7 @@ We sometimes want to simulate the already observed subjects. This means we want 
 base.sim.known <- dat.sim.md[dat.sim.md$DOSE==400,]
 
 res.mod <- NMscanData(file.mod)
-ids <- res.mod[,.(ID=unique(ID))]
+ids <- data.frame(ID=unique(res.mod$ID))
 
 
 dat.sim1.known <- merge(ids,
@@ -241,7 +241,8 @@ res.known <- NMsim(file.mod,
                    suffix.sim="known1",
                    text.table="PRED IPRED CL V KA"
                   ,method.sim=NMsim_known
-                  ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                  ## ,method.update.inits="nmsim"
+                  ## ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                    )
 ```
 
