@@ -170,7 +170,14 @@ simres <- NMsim(path.mod=file.mod,
                 )
 ```
 
-In case multiple models are provided, `NMsim` simply loops over them. For simplicitym, we shall show the rest of the examples for just one model. Any of them could be run on multiple models the same way as shown above.
+In case multiple models are provided, `NMsim` simply loops over them. It does collect all the results, and we can use the `model` column to separate the two simulations:
+
+```{r,eval=FALSE}
+ggplot(simres,aes(TIME,PRED,colour=model))+geom_line()+
+    facet_wrap(c("regimen","dose"),scales="free")
+```
+
+For simplicity, we shall show the rest of the examples for just one model. Any of them could be run on multiple models the same way as shown above.
 
 <!-- subproblems vs repetition of input data -->
 
@@ -210,7 +217,25 @@ simres <- NMsim(path.mod=file.mod,
 simres <- as.data.table(simres)[,ID:=.GRP,by=.(NMREP,ID,regimen,dose)]
 ```
 
-The two approaches are computationally about equally fast, the most significant different probably being in Nonmem reading a smaller or larger simulation input data file. It is merely a question of preference of the modeler which one to use. In a general case where the simulated patients need different dosing or sample schedules, the manual repetition of the data is needed.
+The two approaches are computationally about equally fast, the most significant difference probably being in Nonmem reading a smaller or larger simulation input data file. It is merely a question of preference of the modeler which one to use. In a general case where the simulated patients need different dosing or sample schedules, the manual repetition of the data is needed.
+
+We now plot a prediction interval - in this case based on the results of the simulation using `SUBPROBLEMS`; this makes no difference to how to derive the prediction interval.
+
+```{r,eval=FALSE}
+simres.pi <- simres[,setNames(as.list(quantile(IPRED,probs=c(.05,.5,.95))),cc(ll,median,ul)),
+                    by=.(regimen,TIME,dose)]
+simres.pi$type <- "pi"
+simres.pi$pi.cover <- "90%"
+
+p.pi.typ <- ggplot(simres.pi,aes(TIME,fill=dose))+
+    geom_ribbon(aes(ymin=ll,ymax=ul,alpha=pi.cover))+
+    geom_line(aes(y=median,colour=dose))+
+    facet_wrap(~regimen,scales="free_x")+
+    scale_alpha_manual(values=c("90%"=.5))+
+    labs(x="Hours since first dose",y="Concentration (ng/mL)")
+
+p.pi.typ
+```
 
 ## Simulation of a typical subject
 A typical subject is here understood as a subject without random effects, i.e. all ETA's equal zero. It is important to realize that "typical" does not have to do with covariates which the user will still need to control in the model, in the simulation input data, or by a combination of these. Getting `NMsim` to run with all ETA's equaling zero is this easy:
@@ -218,7 +243,8 @@ A typical subject is here understood as a subject without random effects, i.e. a
 ```{r,eval=FALSE}
 simres.typ <- NMsim(path.mod=file.mod,
                     data=dat.sim1,
-                    method.sim=NMsim_typical)
+                    name.sim="typSubj",
+                    method.sim=NMsim:::NMsim_typical)
 
 ```
 
@@ -262,16 +288,13 @@ Currently, there is no PD data in the example data used to build this vignette. 
 
 In case of time-varying covariates, you can keep all data records from the PK data (without `DV`), but change observation records to simulation records (`EVID=2` instead of `EVID=0`).
 
-Then run `NMsim` like this. We include `text.table="ROW IPRED"`
-because we need the row identifier for merging, and the individual
-predictions are what we are running this for.
+Then run `NMsim` like this:
 
 ```{r,known-pkpd,eval=FALSE}
 res.pksim <- NMsim(file.mod,
                    data=pdsim,
                    suffix.sim="pkpd",
                   ,method.sim=NMsim_known
-                  ,text.table="ROW IPRED" 
                   ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                    )
 
@@ -326,7 +349,7 @@ another one.
 Anyway, getting `NMsim` to do the work is as simple as this:
 
 ```{r,VarCov,eval=FALSE}
-file.mod.cov <- "inst/examples/nonmem/xgxr114.mod"
+file.mod.cov <- file.project("nonmem/xgxr114.mod")
 NMsim(
     path.mod=file.mod.cov,
     data=dat.sim1

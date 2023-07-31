@@ -13,8 +13,8 @@ NMsim_typical <- function(path.sim,path.mod,data.sim,return.text=FALSE){
 
     files.needed.def <- NMsim_default(path.sim=path.sim,path.mod,data.sim)
     lines.sim <- readLines(path.sim)
-
-    extres <- NMreadExt(fnExtension(path.sim,"ext"))
+    
+    extres <- NMreadExt(fnExtension(path.mod,"ext"))
     Netas <- extres$pars[par.type=="OMEGA",max(i)]
 
     lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
