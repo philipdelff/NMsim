@@ -279,6 +279,13 @@ We also connected some PK data. We want to plot the PD data angainst PK. However
 
 Currently, there is no PD data in the example data used to build this vignette. For a PK model without time-varying covariates, the steps to to generate the data for the simulation are:
 
+```{r,pddata,include=FALSE}
+library(xgxr)
+pkpd <- as.data.table(case1_pkpd)
+pd <- pkpd[NAME=="PD - Continuous"]
+pd
+```
+
 * Take dose records from PK model estimation input data (`pkdos`). Just keep necessary columns like `ID`, `TIME`, `EVID`, `CMT`, `AMT`, `ADDL`, `II`, and any necessary covariates
 * Take PD data observation records (`pdsamples`). Just keep `ID`, `TIME`, and set `EVID=2`.
 * Add a unique row identifier to `pdsamples` (an integer row counter, like `ROW=1:nrow(pdsamples)`)
@@ -288,14 +295,29 @@ Currently, there is no PD data in the example data used to build this vignette. 
 
 In case of time-varying covariates, you can keep all data records from the PK data (without `DV`), but change observation records to simulation records (`EVID=2` instead of `EVID=0`).
 
+```{r,known-pkpd}
+## Take dose records from PK model estimation input data
+pkres <- NMscanData(file.mod,as.fun="data.table")
+pkdos <- pkres[EVID==1,.(ID, TIME, EVID, CMT, AMT)]
+## Take PD data observation records (`pdsamples`)
+pdsamples <- pd[EVID==0,.(ID,TIME,EVID=2)]
+pdsamples[,ROWPD:=.I]
+## Stack `pkdos` and `pdsamples` to one data set (`pdsim`)
+pdsim <- rbind(pkdos,pdsamples,fill=TRUE)
+pdsim[,DV:=NA]
+setorder(pdsim,ID,TIME,EVID)
+```
+
 Then run `NMsim` like this:
 
-```{r,known-pkpd,eval=FALSE}
+```{r,known-pkpd-run,eval=FALSE}
+
 res.pksim <- NMsim(file.mod,
                    data=pdsim,
                    suffix.sim="pkpd",
                   ,method.sim=NMsim_known
                   ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                   ,text.table="IPRED PRED"
                    )
 
 ```

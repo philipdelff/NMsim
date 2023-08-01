@@ -27,16 +27,13 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="TABLE",location="before",
                                    newlines=lines.new,backup=FALSE,quiet=TRUE)
 
+### $SIM ONLYSIM does not work in combination with $ESTIM, so we have to drop ONLYSIM
+    lines.section.sim <- NMreadSection(lines=lines.sim,section="SIM")
+    lines.section.sim <- sub("ONLYSIM(ULATION)*","",lines.section.sim)
+    lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="SIM",newlines=lines.section.sim,backup=FALSE,quiet=FALSE)
     
 #### .mod done
-    ##         lines.sim
-
-    ##     }
-    ## ,
-
-    ## fun.phi = function(path.sim,path.mod,data.sim){
-
-    ## simulation data is needed 
+ 
     
 ###### todo
     ## cant allow disjoint id's in data
