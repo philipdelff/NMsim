@@ -295,7 +295,7 @@ pd
 
 In case of time-varying covariates, you can keep all data records from the PK data (without `DV`), but change observation records to simulation records (`EVID=2` instead of `EVID=0`).
 
-```{r,known-pkpd}
+```{r,known-pkpd,eval=FALSE}
 ## Take dose records from PK model estimation input data
 pkres <- NMscanData(file.mod,as.fun="data.table")
 pkdos <- pkres[EVID==1,.(ID, TIME, EVID, CMT, AMT)]
