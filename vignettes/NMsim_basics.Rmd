@@ -13,7 +13,7 @@ header-includes:
 - \usepackage{ae}
 ---
 
-```{r, include = FALSE}
+```{r,include = FALSE}
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
                       collapse = TRUE
@@ -152,7 +152,7 @@ the simplest thing we can think of.
 file.mod <- file.project("nonmem/xgxr014.mod")
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1
-               ## ,method.update.inits="nmsim"
+                ## ,method.update.inits="nmsim"
                ,dir.sims="~/NMsim_test"
                 )
 ```
@@ -267,8 +267,8 @@ res.known <- NMsim(file.mod,
                    suffix.sim="known1",
                    text.table="PRED IPRED CL V KA"
                   ,method.sim=NMsim_known
-                  ## ,method.update.inits="nmsim"
-                  ## ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                   ## ,method.update.inits="nmsim"
+                   ## ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                    )
 ```
 
@@ -280,10 +280,8 @@ We also connected some PK data. We want to plot the PD data angainst PK. However
 Currently, there is no PD data in the example data used to build this vignette. For a PK model without time-varying covariates, the steps to to generate the data for the simulation are:
 
 ```{r,pddata,include=FALSE}
-library(xgxr)
-pkpd <- as.data.table(case1_pkpd)
-pd <- pkpd[NAME=="PD - Continuous"]
-pd
+## pd <- readRDS("~/wdirs/NMsim/inst/examples/data/xgxr_pd.rds")
+pd <- system.file("examples/data/xgxr_pd.rds", package = "NMsim")
 ```
 
 * Take dose records from PK model estimation input data (`pkdos`). Just keep necessary columns like `ID`, `TIME`, `EVID`, `CMT`, `AMT`, `ADDL`, `II`, and any necessary covariates
@@ -300,11 +298,14 @@ In case of time-varying covariates, you can keep all data records from the PK da
 pkres <- NMscanData(file.mod,as.fun="data.table")
 pkdos <- pkres[EVID==1,.(ID, TIME, EVID, CMT, AMT)]
 ## Take PD data observation records (`pdsamples`)
-pdsamples <- pd[EVID==0,.(ID,TIME,EVID=2)]
-pdsamples[,ROWPD:=.I]
+pd[,ROWPD:=.I]
+pdsamples <- pd[EVID==0,.(ROWPD,ID,TIME,EVID=2)]
 ## Stack `pkdos` and `pdsamples` to one data set (`pdsim`)
 pdsim <- rbind(pkdos,pdsamples,fill=TRUE)
 pdsim[,DV:=NA]
+## pdsim[,all(ID%in%pkres$ID)]
+## pdsim[,.N,by=ID%in%pkres$ID]
+pdsim <- pdsim[ID%in%pkres$ID]
 setorder(pdsim,ID,TIME,EVID)
 ```
 
@@ -317,13 +318,25 @@ res.pksim <- NMsim(file.mod,
                    suffix.sim="pkpd",
                   ,method.sim=NMsim_known
                   ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
-                   ,text.table="IPRED PRED"
+                  ,text.table="IPRED PRED"
                    )
 
 ```
 
 Now rename `res.pksim$IPRED` to something meaningfull like `res.pksim$PKIPRED`, and you can merge `res.pksim` onto the PD data by the unique row identifier. 
 
+```{r,merge-pdres,eval=FALSE}
+setnames(res.pksim,"IPRED","PKIPRED")
+pd2 <- mergeCheck(pd,res.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
+```
+
+```{r,eval=FALSE}
+ggplot(pd2[PKIPRED>0],aes(PKIPRED,LIDV))+
+    geom_point()+
+    lims(x=c(.001,.5))+
+    labs(x="Individual PK prediction",y="Observed PD value") ## +
+## scale_x_log10(limits=c(.001,.5))
+``` 
 
 
 ## Simulation of parameter uncertainty
@@ -372,12 +385,15 @@ Anyway, getting `NMsim` to do the work is as simple as this:
 
 ```{r,VarCov,eval=FALSE}
 file.mod.cov <- file.project("nonmem/xgxr114.mod")
+
+file.mod.cov <- "~/xgxg_data/nonmem/xgxr017.mod"
 NMsim(
     path.mod=file.mod.cov,
     data=dat.sim1
+    ,dir.sims="simulations"
    ,method.sim=NMsim_VarCov ## Var-Cov parameter sampling
    ,name.sim="VarCov"       ## a recognizable directory name
-   ,nsims=500               ## sampling 500 models
+   ,nsims=100               ## sampling 500 models
    ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
    ,sge=TRUE                ## run simulations in parallel please
 )
@@ -385,17 +401,48 @@ NMsim(
 We used `sge=TRUE` which means we are sending the 500 generated jobs to the queuing system. In this case, `NMsim` does not track the execution of the jobs and does hence not collect the results once they are done. You have to check the status of the jobs manually, and once they are all done, you can read all the results using `NMdata::NMscanMultiple`:
 
 ```{r,VarCov-collect,eval=FALSE}
-simres.VarCov <- NMscanMultiple(dir=
-                        ,file.pattern=".+\\.lst$"
-                        ,merge.by.row=FALSE,quiet=T
-                        ,as.fun="data.table")
+simres.VarCov <- NMscanMultiple(## dir="simulations/xgxr114_VarCov"
+                                dir=file.path("simulations",paste0(basename(fnExtension(file.mod.cov,"")),"_VarCov"))
+                               ,file.pattern=".+\\.lst$"
+                               ,merge.by.row=FALSE,quiet=T
+                               ,as.fun="data.table")
 
 ```
 
 `NMdata::NMscanMultiple` is a wrapper of `NMdata::NMscanData`, and just like `NMdata::NMscanData` it keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples):
 
 ```{r,VarCov-summarize,eval=FALSE}
-ci.VarCov <- simres.VarCov[,by=.(TIME,dose,regimen)]
+
+allresl <- melt(simres.VarCov[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
+
+sum.res.model <- allresl[,
+                         .(predm=quantile(pred,probs=c(.5)))
+                        ,by=.(model,regimen,dose,DOSE,TIME,pred.type)]
+
+
+sum.res <- sum.res.model[,
+                         setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
+
+                        ,by=.(regimen,dose,DOSE,TIME,pred.type)]
+
+
+
+
+ggplot(sum.res,aes(x=TIME,fill=dose))+
+    geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
+    geom_line(aes(y=predmm,colour=dose))+
+    ## facet_grid(regimen~pred.type,scales="free_x")
+    facet_wrap(cc(regimen,pred.type),scales="free_x")
+
+## 400 mg only
+p.cipi <- ggplot(sum.res[DOSE==400],aes(x=TIME,fill=pred.type))+
+    geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
+    geom_line(aes(y=predmm,colour=pred.type))+
+    facet_wrap("regimen",scales="free_x")+
+    labs(x="Hours since first dose",y="Concentration (ng/mL)")
+
+
+
 ```
 
 ### Simulation from a bootstrap
@@ -410,14 +457,18 @@ vignette. We used `PSN`'s bootstrap. We can run the simulation on all the models
 
 ```{r,bootstrap-execute,eval=FALSE}
 ## generate a vector with paths to all the input control streams
-mods.bootstrap <- list.files(path="../nonmem/bs1_014_N1000/m1",pattern=".+\\.mod$",full.names = T)
+
+## mods.bootstrap <- list.files(path="../nonmem/bs1_014_N1000/m1",pattern=".+\\.mod$",full.names = T)
+mods.bootstrap <- list.files(path="~/xgxg_data/nonmem/bootstrap_dir2/m1/",pattern=".+\\.mod$",full.names = T)
 
 NMsim(
     path.mod=mods.bootstrap,
     data=dat.sim1
    ,method.sim=NMsim_default ## a single simulation with each sampled model
-   ,name.sim="bootstrap"       ## a recognizable directory name
+   ,dir.sims="simulations/bootstrap"
+  ## ,name.sim="bootstrap"       ## a recognizable directory name
    ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
+   ,text.table="PRED IPRED"
    ,sge=TRUE                ## run simulations in parallel please
 )
 ```
@@ -426,15 +477,40 @@ Reading and post-processing the results is similar to the same steps
 above when we used the covariance step.
 
 ```{r,bootstrap-collect,eval=FALSE}
-simres.bootstrap <- NMscanMultiple(dir=
-                        ,file.pattern=".+\\.lst$"
-                        ,merge.by.row=FALSE,quiet=T
-                        ,as.fun="data.table")
+## ~/xgxg_data/nonmem/bootstrap_dir2/m1/NMsim/bs_pr1_100_bootstrap/NMsim_bs_pr1_100_bootstrap.mod
+files.lst <- list.files("simulations/bootstrap",recursive=TRUE,pattern=".lst$",full.names=TRUE)
+
+simres.bootstrap <- NMscanMultiple(files=files.lst
+    ## dir="
+    ## ,file.pattern=".+\\.lst$"
+                                  ,merge.by.row=FALSE,quiet=T
+                                  ,as.fun="data.table")
+
+allresl <- melt(simres.bootstrap[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
+
+sum.res.model <- allresl[,
+                         .(predm=quantile(pred,probs=c(.5)))
+                        ,by=.(model,regimen,dose,DOSE,TIME,pred.type)]
+
+
+sum.res.bootstrap <- sum.res.model[,
+                         setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
+
+                        ,by=.(regimen,dose,DOSE,TIME,pred.type)]
+
 
 ```
 
 ```{r,bootstrap-summarize,eval=FALSE}
-ci.bootstrap <- simres.bootstrap[,by=.(TIME,dose,regimen)]
+
+p.cipi.bootstrap <- ggplot(sum.res.bootstrap[DOSE==400],aes(x=TIME,fill=pred.type))+
+    geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
+    geom_line(aes(y=predmm,colour=pred.type))+
+    facet_wrap("regimen",scales="free_x")+
+    labs(x="Hours since first dose",y="Concentration (ng/mL)")
+
+p.cipi.bootstrap
+
 ```
 
 

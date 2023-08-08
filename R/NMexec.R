@@ -150,11 +150,11 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         files.exec <- findUpdated(files.all)
     }
 
-    message(paste(files.exec,collapse=", "))
+    ## message(paste(files.exec,collapse=", "))
     
     for(file.mod in files.exec){
         file.mod <- NMdata:::filePathSimple(file.mod)
-        message(file.mod)
+        message(paste0("Executing ",file.mod))
         if(!file.exists(file.mod)){
             stop(paste("Could not find file:",file.mod))
         }

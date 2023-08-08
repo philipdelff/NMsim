@@ -432,33 +432,36 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
         
         fn.tab.base <- paste0("FILE=",run.sim,".tab")
         lines.sim <- readLines(path.sim)
+        
         lines.tables <- NMreadSection(lines=lines.sim,section="TABLE",as.one=FALSE,simplify=FALSE)
 
         if(is.null(text.table)){
             ## replace output table name
             if(length(lines.tables)==0){
                 stop("No TABLE statements found in control stream.")
-            } else if(length(lines.tables)==1){
-                lines.tables <- list(gsub(paste0("FILE *= *[^ ]+"),replacement=fn.tab.base,lines.tables[[1]]))
+            } else if(length(lines.tables)<2){
+                ## notice, this must capture zero and 1.
+                lines.tables.new <- list(gsub(paste0("FILE *= *[^ ]+"),replacement=fn.tab.base,lines.tables[[1]]))
             } else {
                 
-                lines.tables <- lapply(seq_along(lines.tables),function(n){
+                lines.tables.new <- lapply(seq_along(lines.tables),function(n){
                     fn.tab <- fnAppend(fn.tab.base,n)
                     gsub(paste0("FILE *= *[^ ]+"),replacement=fn.tab,lines.tables[[n]])
                 })
             }
         } else {
-            lines.tables <- list(paste("$TABLE",text.table,fn.tab.base))
+            lines.tables.new <- list(paste("$TABLE",text.table,fn.tab.base))
         }
 
         fun.paste <- function(...) paste(...,sep="\n")
-        lines.tables.new <- do.call(fun.paste,lines.tables)
+        lines.tables.new <- do.call(fun.paste,lines.tables.new)
         ## if no $TABLE found already, just put it last
         if(length(lines.tables)){
             location <- "replace"
         } else {
             location <- "last"
         }
+
         lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,newlines=lines.tables.new,section="TABLE",backup=FALSE,location=location,quiet=TRUE)
 
 ### save file.sim
@@ -596,9 +599,13 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
             ## files.unwanted <- list.files(
             if(file.exists(path.sim.lst)){
                 message("Existing output control stream found. Removing.")
-                dt.outtabs <- NMscanTables(path.sim.lst,meta.only=TRUE,as.fun="data.table")
-                if(nrow(dt.outtabs)){
-                    file.remove(dt.outtabs[,file])    
+                
+                dt.outtabs <- try(NMscanTables(path.sim.lst,meta.only=TRUE,as.fun="data.table"),silent=TRUE)
+                if(!inherits(dt.outtabs,"try-error") && nrow(dt.outtabs)){
+                    
+                    file.remove(
+                        dt.outtabs[file.exists(file),file]
+                    )
                 }
                 unlink(path.sim.lst)
 
@@ -625,11 +632,13 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
             simres.n
         },by=.(ROWMODEL2)]
     }
-
+    if("ROWMODEL2"%in%colnames(simres)) {
+        simres[,ROWMODEL2:=NULL]
+    }
 ###  Section end: Execute
 
     ## saveRDS(run.fun$digest.new,file=path.digests)
 
-    simres
+    as.fun(simres)
 
 }

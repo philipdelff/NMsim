@@ -41,6 +41,7 @@ NMreadExt <- function(path.ext){
 -1000000003,cond
 -1000000004,stdDevCor
 -1000000005,seStdDevCor
+-1000000006,FIX
 -1000000007,termStat
 -1000000008,partLik")
 

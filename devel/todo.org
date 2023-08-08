@@ -2,6 +2,8 @@
 
 ** general
 
+*** TODO Issue with varCov for n=1 repetitions.
+As if submodel structure does not support n=1.
 *** pkgdown
 
 *** TODO goathunter
@@ -21,7 +23,7 @@ For now, ellipses used
 **** DONE all columns which names start by file.needed used
 *** CANCELED Use dt list elements for multiple files.needed
 *** TODO Use meaningful by in execute part
-*** TODO Modularize simulation methods
+*** DONE Modularize simulation methods
 **** DONE Handle seed and subproblems outside modules
 **** DONE How to handle replace.sim?
 Only be available for the default method. In fact, method.sim="asis"

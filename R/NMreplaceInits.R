@@ -45,6 +45,7 @@ NMreplaceInits <- function(inits,fix=FALSE,...){
     
     ## create SIGMA section
     sigmas <- inits[par.type=="SIGMA"]
+    sigmas[value==0,value:=1e-30]
     Netas <- sigmas[,max(i)]
     setorder(sigmas,i,j)
     dt.diag <- dcast(sigmas,j~i,value.var="value")

@@ -43,24 +43,33 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
     
     ## nonmem2rx::nmcov(path.cov)
     covmat <- NMreadCov(path.cov)
-    ests <- NMreadExt(path.ext)$pars[NMREP==1,.(parameter,par.type,i,j,est)]
+    ests <- NMreadExt(path.ext)$pars[NMREP==1,.(parameter,par.type,i,j,est,FIX)]
     ests <- ests[match(ests$parameter,colnames(covmat))]
 
     
     newpars <- mvrnorm(n=nsims,Sigma=covmat,mu=ests$est)
+    
     newpars <- as.data.table(newpars)
     newpars[,SUBMODEL:=.I]
     
+## ests.fix <- ests[FIX==1]
+##     mergeCheck(newpars.l,ests.fix,by="parameter",all.x=T)
+
 
     newpars <- mergeCheck(melt(newpars,id.vars="SUBMODEL",variable.name="parameter")
                          ,ests
                          ,by="parameter",quiet=TRUE)
 
     newpars <- mergeCheck(newpars,dt.sims,by="SUBMODEL")
+    ## if the parameter was fixed, reset it to the estimate
+    newpars[FIX==1,value:=est]
+    ## todo: if OMEGA or SIGMA diagonal elements are <0 set to 0.
+    newpars[i==j&value<0,value:=0]
+    
     ## newpars[,est:=NULL]
     ## setnames(newpars,"value","est")
     
-
+    
 ### create control streams one by one
     res <- newpars[,
                    NMreplaceInits(files=unique(path.sim.0)

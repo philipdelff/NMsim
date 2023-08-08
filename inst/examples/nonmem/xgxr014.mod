@@ -31,8 +31,8 @@ $ERROR
 
 ;-----------------------INITIAL ESTIMATES---------------------------------
 $THETA  (0,0.9)             ; POPKA
-$THETA  (0,4.2)             ; POPCL
-$THETA  (0,3.6)             ; POPV2
+$THETA  (0,4.2)             ; POPV2
+$THETA  (0,3.6)             ; POPCL
 
 $OMEGA 0.1
 $OMEGA 0.1
