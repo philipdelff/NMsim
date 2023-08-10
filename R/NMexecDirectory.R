@@ -88,25 +88,35 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     
     ## callNonmem(file.mod=file.mod.tmp,nonmem=nonmem)
     
+    
+    ## must be called like qsub -wd dir.tmp 
+    exts.cp <- cc(lst,xml,ext,cov,cor,coi,phi,msf,msfi,msfo)
     lines.bash <- c(
         "#!/bin/bash"
-       ,"shopt -s extglob"
-       ,"WD0=$PWD"
-       ,
-        sprintf("cd %s;" ,dir.tmp)
+        ##,"shopt -s extglob"
+        ## ,"WD0=$PWD"
+        ## ,sprintf("cd %s;" ,dir.tmp)
        ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-       ,"cd $WD0"
-       ,sprintf("cp %s/*.+(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo) %s",dir.tmp,dir.mod)
-       ,sprintf("cp %s %s",paste(meta.tables[,file],collapse=" "),dir.mod)
+        ## ,"cd $WD0"
+       ,paste("cd",dir.mod)
+        ## ,paste("cd",dir.mod)
+        
+### this works when path.mod is a relative path
+        ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
+        ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
+
+       ,paste("find",dir.tmp,"-type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} . \\;")
+       ,sprintf("cp %s .",file.path(dir.tmp,paste(meta.tables[,name],collapse=" ")))
        ,""
     )
+    
 
     path.script <- file.path(dir.tmp,"run_nonmem.sh")
     con.newfile <- file(path.script,"wb")
     writeLines(lines.bash,con=con.newfile)
     close(con.newfile)
     Sys.chmod(path.script,mode="0577")
-    
+
     ## system(path.script)
     path.script
 #### the rest should be done in bash - have callNonmem take care of it

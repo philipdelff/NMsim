@@ -27,10 +27,10 @@ knitr::opts_chunk$set(
 ```
 
 ```{r,setup,include=F}
-## library(devtools)
+library(devtools)
 ## load_all("../../../../NMdata")
-## load_all()
-library(NMsim)
+load_all()
+## library(NMsim)
 library(data.table)
 library(NMdata)
 library(dplyr)
@@ -384,17 +384,19 @@ another one.
 Anyway, getting `NMsim` to do the work is as simple as this:
 
 ```{r,VarCov,eval=FALSE}
-file.mod.cov <- file.project("nonmem/xgxr114.mod")
+## file.mod.cov <- file.project("nonmem/xgxr114.mod")
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 
 file.mod.cov <- "~/xgxg_data/nonmem/xgxr017.mod"
 NMsim(
     path.mod=file.mod.cov,
     data=dat.sim1
-    ,dir.sims="simulations"
+   ,dir.sims="simulations"
    ,method.sim=NMsim_VarCov ## Var-Cov parameter sampling
    ,name.sim="VarCov"       ## a recognizable directory name
-   ,nsims=100               ## sampling 500 models
-   ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
+   ,nsims=500               ## sampling 500 models
+    ## ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
+   ,method.execute="directory"    ## 
    ,sge=TRUE                ## run simulations in parallel please
 )
 ```
@@ -402,10 +404,10 @@ We used `sge=TRUE` which means we are sending the 500 generated jobs to the queu
 
 ```{r,VarCov-collect,eval=FALSE}
 simres.VarCov <- NMscanMultiple(## dir="simulations/xgxr114_VarCov"
-                                dir=file.path("simulations",paste0(basename(fnExtension(file.mod.cov,"")),"_VarCov"))
-                               ,file.pattern=".+\\.lst$"
-                               ,merge.by.row=FALSE,quiet=T
-                               ,as.fun="data.table")
+    dir=file.path("simulations",paste0(basename(fnExtension(file.mod.cov,"")),"_VarCov"))
+   ,file.pattern=".+\\.lst$"
+   ,merge.by.row=FALSE,quiet=T
+   ,as.fun="data.table")
 
 ```
 
@@ -435,7 +437,7 @@ ggplot(sum.res,aes(x=TIME,fill=dose))+
     facet_wrap(cc(regimen,pred.type),scales="free_x")
 
 ## 400 mg only
-p.cipi <- ggplot(sum.res[DOSE==400],aes(x=TIME,fill=pred.type))+
+p.cipi.VarCov <- ggplot(sum.res[DOSE==400],aes(x=TIME,fill=pred.type))+
     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
     geom_line(aes(y=predmm,colour=pred.type))+
     facet_wrap("regimen",scales="free_x")+
@@ -466,7 +468,7 @@ NMsim(
     data=dat.sim1
    ,method.sim=NMsim_default ## a single simulation with each sampled model
    ,dir.sims="simulations/bootstrap"
-  ## ,name.sim="bootstrap"       ## a recognizable directory name
+    ## ,name.sim="bootstrap"       ## a recognizable directory name
    ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
    ,text.table="PRED IPRED"
    ,sge=TRUE                ## run simulations in parallel please
@@ -481,8 +483,8 @@ above when we used the covariance step.
 files.lst <- list.files("simulations/bootstrap",recursive=TRUE,pattern=".lst$",full.names=TRUE)
 
 simres.bootstrap <- NMscanMultiple(files=files.lst
-    ## dir="
-    ## ,file.pattern=".+\\.lst$"
+                                   ## dir="
+                                   ## ,file.pattern=".+\\.lst$"
                                   ,merge.by.row=FALSE,quiet=T
                                   ,as.fun="data.table")
 
@@ -494,9 +496,9 @@ sum.res.model <- allresl[,
 
 
 sum.res.bootstrap <- sum.res.model[,
-                         setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
+                                   setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
 
-                        ,by=.(regimen,dose,DOSE,TIME,pred.type)]
+                                  ,by=.(regimen,dose,DOSE,TIME,pred.type)]
 
 
 ```
@@ -513,7 +515,15 @@ p.cipi.bootstrap
 
 ```
 
+```{r,compare-plots}
 
+p.cipi.VarCov+
+    lims(y=c(0,12500))+
+    labs(subtitle="Covariance step")+
+    p.cipi.bootstrap+
+    lims(y=c(0,12500))+
+    labs(subtitle="Bootstrap")
+```
 
 ## Add residual variability
 `NMsim` currently does not provide any way to add simulation of

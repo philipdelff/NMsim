@@ -1,7 +1,7 @@
 Package: NMsim
 Type: Package
 Title: Start Nonmem jobs and run Nonmem simulations from R
-Version: 0.0.1.921
+Version: 0.0.1.922
 Authors@R: person("Philip", "Delff", email = "philip@delff.dk",
                   role = c("aut", "cre"))
 Maintainer: Philip Delff <philip@delff.dk>

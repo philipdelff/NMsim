@@ -189,6 +189,12 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         }
         if(method.execute=="directory"){
             string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed)
+            if(sge) {
+                string.cmd <- sprintf("qsub -terse -wd \'%s\' %s",dirname(string.cmd),string.cmd)
+                wait <- TRUE
+            } else {
+                string.cmd <- sprintf("cd %s; ./%s",dirname(string.cmd),basename(string.cmd))
+            }
         }
         
         if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
