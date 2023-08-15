@@ -3,14 +3,14 @@
 ##' @keywords internal
 
 
-findUpdated <- function(lsts){
-    times.res <- sapply(lsts,function(lst){
-        file.mod <- fnExtension(lst,".mod")
-        try(checkTimes(lst,use.input=TRUE,file.mod=file.mod)$time.ok)
+findUpdated <- function(mods){
+    times.res <- sapply(mods,function(mod){
+        file.lst <- fnExtension(mod,".lst")
+        try(checkTimes(file.lst,use.input=TRUE,file.mod=mod)$time.ok)
     })
     
     times.res
     
-    lsts.updated <- lsts[times.res!="All OK"]
-    lsts.updated
+    mods.updated <- mods[times.res!="All OK"]
+    mods.updated
 }

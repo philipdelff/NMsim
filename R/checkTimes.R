@@ -30,7 +30,7 @@ checkTimes <- function(file.lst,use.input,nminfo.input=NULL,file.mod,tz.lst=NULL
     if(use.input){
         if(is.null(nminfo.input)){
             
-            dt.input <- NMscanInput(file.lst,file.mod=file.mod)
+            dt.input <- NMscanInput(file.lst,file.mod=file.mod,quiet=TRUE)
             nminfo.input <- NMinfo(dt.input)
         }
         logtime.inp <- max(nminfo.input$tables$file.logtime)
