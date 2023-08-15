@@ -97,6 +97,7 @@ doses.sd
 ### multiple dose regimens with loading are easily created with NMcreateDoses too
 ## We use ADDL+II (either method easy)
 dt.amt <- data.frame(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
+dt.amt <- subset(dt.amt,DOSE==400)
 doses.md <- NMcreateDoses(TIME=c(0,24),AMT=dt.amt,addl=data.frame(ADDL=c(0,5),II=c(0,24)))
 doses.md <- within(doses.md,{
     dose=paste(DOSE,"mg")
@@ -107,9 +108,10 @@ doses.md
 
 
 ## we will simulate with SD and QD
-doses.all <- bind_rows(doses.sd,doses.md)
-
-
+## doses.all <- bind_rows(doses.sd
+##                        ,
+##                        doses.md
+##                        )
 
 
 ## Add simulation records - longer for QD regimens
@@ -117,7 +119,11 @@ dat.sim.sd <- addEVID2(doses.sd,time.sim=0:24,CMT=2)
 dat.sim.md <- addEVID2(doses.md,time.sim=0:(24*7),CMT=2)
 
 ## Stack simulation data, reassign ID to be unique in combined dataset
-dat.sim1 <- bind_rows(dat.sim.sd,dat.sim.md)
+dat.sim1 <- bind_rows(
+    ##  dat.sim.sd
+    ## ,
+    dat.sim.md
+)
 dat.sim1 <- as.data.table(dat.sim1)[,ID:=.GRP,by=.(regimen,ID,DOSE)]
 setorder(dat.sim1,ID,TIME,EVID)
 dat.sim1$ROW <- 1:nrow(dat.sim1)
@@ -149,13 +155,40 @@ the simplest thing we can think of.
 
 ```{r,sim-simplest,eval=FALSE}
 ## file.mod <- "../nonmem/xgxr014.mod"
-file.mod <- file.project("nonmem/xgxr014.mod")
+file.mod <- file.project("nonmem/xgxr017.mod")
+file.mod <- "~/xgxg_data/nonmem/xgxr018.mod"
+file.mod <- "~/xgxg_data/nonmem/xgxr021.mod"
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1
                 ## ,method.update.inits="nmsim"
                ,dir.sims="~/NMsim_test"
+               ,seed=12345
                 )
 ```
+
+We plot population and individual predictions as the simulations of
+(in this case) the typical subject and one simulated subject. Residual
+variability is not simulated in this case. More on that later in this
+paper.
+
+```{r,eval=FALSE}
+as.data.table(simres) |>
+    melt(measure.vars=cc(PRED,IPRED))|>
+	ggplot(aes(TIME,value,colour=variable))+
+    geom_line()+
+    facet_wrap(~regimen+dose)
+
+datl <- as.data.table(simres) |>
+    melt(measure.vars=cc(PRED,IPRED,Y))
+## datl[,type:="Prediction"]
+## datl[variable=="Y",type:="Simulation"]
+
+	ggplot(datl,aes(TIME,value,colour=variable))+
+    geom_line(data=function(x)x[variable!="Y"])+
+    geom_point(data=function(x)x[variable=="Y"])+
+    facet_wrap(~regimen+dose)
+```
+
 <!-- That did not go well. As the error shows, `$TABLE` refers to a `ROW` column. Nonmem needs this to run the control stream as is. Since this does not happen until `$TABLE`, we have two options to fix it -->
 <!-- - Add `ROW` to the input data set -->
 <!-- - Modify `$TABLE` (using the `text.table`, demonstrated later) -->
@@ -244,7 +277,19 @@ A typical subject is here understood as a subject without random effects, i.e. a
 simres.typ <- NMsim(path.mod=file.mod,
                     data=dat.sim1,
                     name.sim="typSubj",
-                    method.sim=NMsim:::NMsim_typical)
+                    method.sim=NMsim_typical)
+
+```
+
+In the first simulation we used `PRED` from the default simulation
+method to get a typical subject simulation. That will work in many
+cases, but that depends on the model. The way to run a simulation with
+all ETA's set to 0 is using `method.sim=NMsim_typical`.
+
+```{r,eval=FALSE}
+p.typ <- ggplot(simres.typ,aes(TIME,IPRED))+geom_line()+
+    geom_line(aes(y=PRED),colour=2)
+p.typ
 
 ```
 
@@ -515,7 +560,7 @@ p.cipi.bootstrap
 
 ```
 
-```{r,compare-plots}
+```{r,compare-plots,eval=FALSE}
 
 p.cipi.VarCov+
     lims(y=c(0,12500))+
