@@ -21,6 +21,7 @@ NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.tex
         ##Insert $SIM before $TABLE. If not $TABLE, insert $SIM in the bottom.
         ## section.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
         section.sim <- "$SIMULATION ONLYSIM"
+        ## section.sim <- "$SIMULATION"
         
         lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="$SIMULATION",
                                        newlines="",backup=FALSE,quiet=TRUE)

@@ -117,6 +117,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
                   nmquiet=FALSE,text.table, type.mod,method.sim=NMsim_default,
                   execute=TRUE,sge=FALSE,transform=NULL ,type.input,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
+                  list.sections,
                   path.nonmem=NULL,as.fun
                  ,suffix.sim
                  ,...
@@ -472,6 +473,19 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 ###  Section end: Output tables
 
 
+#### Section start: Additional control stream modifications specified by user - list.sections ####
+    if( !missing(list.sections) && !is.null(list.sections) ){
+        ### This requires NMdata >=0.1.0.905
+        dt.models[,{
+            NMwriteSection(files=path.sim,list.sections=list.sections)
+        },by=.(ROWMODEL)]
+    }
+
+### Section end: Additional control stream modifications specified by user - list.sections
+
+
+
+    
     ## fun simulation method
     ## dt.models[,
     ##           files.needed:=paste(method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data),collapse=":")

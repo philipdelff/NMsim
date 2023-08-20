@@ -141,12 +141,13 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                                  ,accepted=NULL
                                  ,clean=FALSE
                                  ,lower=FALSE)
-
+    
     if(is.null(files) && is.null(file.pattern)) file.pattern <- ".+\\.mod"
     files.all <- NMdata:::getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=TRUE)
-
+    
     files.exec <- files.all
     if(update.only){
+        ## files.exec <- findUpdated(fnExtension(files.all,"lst"))
         files.exec <- findUpdated(files.all)
     }
 
