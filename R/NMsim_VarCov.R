@@ -2,23 +2,23 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
+    . <- NULL
+    est <- NULL
+    i <- NULL
+    j <- NULL
+    FIX <- NULL
+    fn.sim <- NULL
     submodel <- NULL
     SUBMODEL <- NULL
-    . <- NULL
-    fn.sim <- NULL
     run.sim <- NULL
     NMREP <- NULL
     parameter <- NULL
     par.type <- NULL
-    i <- NULL
-    j <- NULL
-    est <- NULL
+    value <- NULL
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks 
 
 
-    
-    
     files.needed.def <- NMsim_default(path.sim=path.sim,path.mod,data.sim)
 
     
@@ -29,7 +29,6 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
     ##    NMreadTabCov(path.cov,rm.name=F)
 
     ## define new files
-### we generate two sims
     path.sim.0 <- path.sim
     run.sim.0 <- fnExtension(basename(path.sim.0),"")
     rm(path.sim)
@@ -52,8 +51,8 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
     newpars <- as.data.table(newpars)
     newpars[,SUBMODEL:=.I]
     
-## ests.fix <- ests[FIX==1]
-##     mergeCheck(newpars.l,ests.fix,by="parameter",all.x=T)
+    ## ests.fix <- ests[FIX==1]
+    ##     mergeCheck(newpars.l,ests.fix,by="parameter",all.x=T)
 
 
     newpars <- mergeCheck(melt(newpars,id.vars="SUBMODEL",variable.name="parameter")

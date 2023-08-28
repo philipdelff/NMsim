@@ -27,6 +27,7 @@ NMsim(
   method.update.inits,
   create.dir = TRUE,
   dir.psn,
+  list.sections,
   path.nonmem = NULL,
   as.fun,
   suffix.sim,

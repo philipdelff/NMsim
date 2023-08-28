@@ -95,6 +95,13 @@
 ##'     is a made up example). No default is available. You should be
 ##'     able to figure this out through how you normally execute
 ##'     Nonmem, or ask a colleague.
+##' @param list.sections Named list of additional control stream
+##'     section edits. Note, these can be functions that define how to
+##'     edit sections. This is an advanced feature which is not needed
+##'     to run most simulations. It is however powerful for some types
+##'     of analyses, like modifying parameter values. See vignettes
+##'     for further information. Documentation still under
+##'     development.
 ##' @param create.dir If the directory specified in dir.sims does not
 ##'     exists, should it be created? Default is TRUE.
 ##' @param as.fun The default is to return data as a data.frame. Pass
@@ -421,6 +428,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
 ### save data and replace $input and $data
 #### multiple todo: save for each path.data
+    
     dt.models[,{
         nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
         NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext,backup=FALSE,quiet=TRUE)

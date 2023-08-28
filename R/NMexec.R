@@ -51,6 +51,7 @@
 ##'     the nonmem results
 ##'     NMdataConf(file.data=function(x)fnExtension(fnAppend(x,"input"),".rds"))
 ##' @import NMdata
+##' @importFrom R.utils getAbsolutePath
 ##' @examples
 ##' \dontrun{
 ##' file.mod <- "run001.mod"
@@ -191,7 +192,12 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         if(method.execute=="directory"){
             string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed)
             if(sge) {
-                string.cmd <- sprintf("qsub -terse -wd \'%s\' %s",dirname(string.cmd),string.cmd)
+                
+                ## string.cmd <- sprintf("cd %s; qsub -terse -wd \'%s\' %s",getwd(),dirname(string.cmd),string.cmd)
+                #### I am not sure if absolute path is needed here.
+                string.cmd <- sprintf("cd %s; qsub -terse -wd \'%s\' %s",
+                                      getwd(),getAbsolutePath(dirname(string.cmd)),string.cmd)
+                ## string.cmd <- paste0("CURWD=",getwd()," ",string.cmd)
                 wait <- TRUE
             } else {
                 string.cmd <- sprintf("cd %s; ./%s",dirname(string.cmd),basename(string.cmd))
@@ -208,3 +214,4 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     return(invisible(NULL))
 }
 
+list.files("/data/home/philipde/prod_vx548_phase2_analysis/trunk/analysis/Study_005_A5/simulations/DPN/run1003_PK_interim_preds_meanPI_sge_directory/NMsim_run1003_PK_interim_preds_meanPI_sge_directory_dir0023")

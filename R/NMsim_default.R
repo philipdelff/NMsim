@@ -1,7 +1,16 @@
 ##' @import NMdata
 
-NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.text=FALSE){
-    
+NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.text=FALSE,nsims=1){
+
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    . <- NULL
+    submodel <- NULL
+    SUBMODEL <- NULL
+    fn.sim <- NULL
+    run.sim <- NULL
+
+###  Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
     lines.sim <- readLines(path.sim)
 
@@ -15,7 +24,7 @@ NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.tex
     
     ## remove COV
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="$COVARIANCE",newlines="",backup=FALSE,quiet=TRUE)
-
+    
     ## replace SIM - the user may not want this
     if(replace.sim){
         ##Insert $SIM before $TABLE. If not $TABLE, insert $SIM in the bottom.
@@ -24,28 +33,66 @@ NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.tex
         ## section.sim <- "$SIMULATION"
         
         lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="$SIMULATION",
-                                       newlines="",backup=FALSE,quiet=TRUE)
+                                                newlines="",backup=FALSE,quiet=TRUE)
         
         tab.section.exists <- any(grepl("^(TABLE)$",names.sections))
         if(tab.section.exists){
             lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,
-                                           section="TABLE",
-                                           newlines=section.sim,
-                                           location="before",backup=FALSE,quiet=TRUE)
+                                                    section="TABLE",
+                                                    newlines=section.sim,
+                                                    location="before",backup=FALSE,quiet=TRUE)
         } else {
             lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="SIMULATION",
-                                           newlines=section.sim,location="last",
-                                           backup=FALSE,quiet=TRUE)
+                                                    newlines=section.sim,location="last",
+                                                    backup=FALSE,quiet=TRUE)
         }
 
     }
 
     if(return.text){
+        if(nsims!=1){stop("nsims must be 1 for return.text=TRUE")}
         return(lines.sim)            
     }
-
+    
     writeTextFile(lines=lines.sim,file=path.sim)
+    
+    if(nsims==1){
+        return(path.sim)
+    }
+    
+### if nsims>1
+    ## define new files
 
-    return(path.sim)
+    path.sim.0 <- path.sim
+    run.sim.0 <- fnExtension(basename(path.sim.0),"")
+    rm(path.sim)
+    dt.sims <- data.table(SUBMODEL=1:nsims)
+    length.num.char <- ceiling(log10(nsims+1))
+    dt.sims[,submodel:=sprintf(fmt=paste0("%0",length.num.char,"d"),SUBMODEL)]
+    dt.sims[,path.sim:=fnAppend(path.sim.0,submodel),by=.(SUBMODEL)]
+    dt.sims[,fn.sim:=basename(path.sim),by=.(SUBMODEL)]
+    dt.sims[,run.sim:=fnExtension(fn.sim,""),by=.(SUBMODEL)]
 
+    ## copy model control stream to submodel control streams
+    
+    res <- dt.sims[,
+                   
+                   file.copy(from=unique(path.sim.0)
+                            ,to=unique(path.sim)
+                            ,overwrite=TRUE)
+                  ,by="SUBMODEL"]
+    
+### output tables.
+    ## gsub the sim name string with a new subsetted simname string.
+    
+    sec.0 <- NMreadSection(file=path.sim.0,section="TABLE")
+    dt.sims[,{
+        sec.new <- gsub(run.sim.0,run.sim,x=sec.0)
+        NMwriteSection(files=path.sim,section="TABLE",newlines=sec.new)
+    },by=.(SUBMODEL)]
+
+    
+    
+    invisible(dt.sims[,unique(path.sim)])
+    
 }

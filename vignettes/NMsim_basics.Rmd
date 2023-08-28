@@ -27,10 +27,10 @@ knitr::opts_chunk$set(
 ```
 
 ```{r,setup,include=F}
-library(devtools)
+## library(devtools)
 ## load_all("../../../../NMdata")
-load_all()
-## library(NMsim)
+## load_all()
+library(NMsim)
 library(data.table)
 library(NMdata)
 library(dplyr)
@@ -324,7 +324,7 @@ We also connected some PK data. We want to plot the PD data angainst PK. However
 
 Currently, there is no PD data in the example data used to build this vignette. For a PK model without time-varying covariates, the steps to to generate the data for the simulation are:
 
-```{r,pddata,include=FALSE}
+```{r,pddata,include=FALSE,eval=FALSE}
 ## pd <- readRDS("~/wdirs/NMsim/inst/examples/data/xgxr_pd.rds")
 pd <- system.file("examples/data/xgxr_pd.rds", package = "NMsim")
 ```

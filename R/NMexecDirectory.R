@@ -1,5 +1,7 @@
 ##' Generate system command to call Nonmem directly
+##' @importFrom R.utils getAbsolutePath
 ##' @keywords internal
+
 callNonmemDirect <- function(file.mod,path.nonmem){
     bfile.mod <- basename(file.mod)
     sprintf("cd %s; %s %s %s; cd -",dirname(file.mod),path.nonmem,bfile.mod,fnExtension(bfile.mod,".lst"))
@@ -33,6 +35,12 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     ##     stop("method must be one of 'directory' and 'direct' - and only a single string.")
     ## }
 
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+    
+name <- NULL
+
+###  Section end: Dummy variables, only not to get NOTE's in pacakge checks
+    
     copy.data <- FALSE
     if(is.null(dir.data)){
         copy.data <- TRUE
@@ -70,7 +78,14 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
 ### arg to NMwriteSection creating file.mod.tmp.
         sec.data.new <- paste("$DATA",sub(extr.data$string,basename(extr.data$path.csv),extr.data$DATA,fixed=TRUE))
     } else {
-        sec.data.new <- paste("$DATA",sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE))
+        ## sec.data.new <- paste("$DATA",sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE))
+        sec.data.new <- sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE)
+        ## sec.data.new <- paste("$DATA",paste(sec.data.new,collapse="\\n"))
+        if(length(sec.data.new)>1){
+            sec.data.new <- c(paste("$DATA",sec.data.new[1]),sec.data.new[-1])
+        } else {
+            sec.data.new <- paste("$DATA",sec.data.new)
+        }
     }
     NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp)
 
@@ -90,27 +105,53 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     
     
     ## must be called like qsub -wd dir.tmp 
-    exts.cp <- cc(lst,xml,ext,cov,cor,coi,phi,msf,msfi,msfo)
+    exts.cp <- c("lst","xml","ext","cov","cor","coi","phi","msf","msfi","msfo" )
+    if(F){
+        lines.bash <- c(
+            "#!/bin/bash"
+            ##,"shopt -s extglob"
+            ## ,"WD0=$PWD"
+            ## ,sprintf("cd %s;" ,dir.tmp)
+           ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
+            ## ,"WD0=$PWD"
+            ## ,"cd $CURWD"
+
+           ,paste("cd",dir.mod)
+            
+### this works when path.mod is a relative path
+            ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
+            ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
+
+           ,paste("find",dir.tmp,"-type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} . \\;")
+           ,sprintf("cp %s .",file.path(dir.tmp,paste(meta.tables[,name],collapse=" ")))
+           ,""
+        )
+    }
+    ## if(F){
+    ## dir.mod.rel <- ".."
+
+    dir.mod.rel <- getAbsolutePath(dir.mod)
     lines.bash <- c(
         "#!/bin/bash"
         ##,"shopt -s extglob"
         ## ,"WD0=$PWD"
         ## ,sprintf("cd %s;" ,dir.tmp)
        ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-        ## ,"cd $WD0"
-       ,paste("cd",dir.mod)
+        ## ,"WD0=$PWD"
+        ## ,"cd $CURWD"
+
         ## ,paste("cd",dir.mod)
         
 ### this works when path.mod is a relative path
         ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
         ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
 
-       ,paste("find",dir.tmp,"-type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} . \\;")
-       ,sprintf("cp %s .",file.path(dir.tmp,paste(meta.tables[,name],collapse=" ")))
+       ,paste("find . -type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} ",dir.mod.rel," \\;")
+       ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),dir.mod.rel)
        ,""
     )
+    ## }
     
-
     path.script <- file.path(dir.tmp,"run_nonmem.sh")
     con.newfile <- file(path.script,"wb")
     writeLines(lines.bash,con=con.newfile)
