@@ -12,7 +12,7 @@ create neccesary files, run the simulation and read the results."><!-- mathjax -
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.922</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.931</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -246,6 +246,16 @@ need to specify this unless you want to explicitly use a
 specific installation of PSN on your system.</p></dd>
 
 
+<dt>list.sections</dt>
+<dd><p>Named list of additional control stream
+section edits. Note, these can be functions that define how to
+edit sections. This is an advanced feature which is not needed
+to run most simulations. It is however powerful for some types
+of analyses, like modifying parameter values. See vignettes
+for further information. Documentation still under
+development.</p></dd>
+
+
 <dt>path.nonmem</dt>
 <dd><p>The path to the Nonmem executable to use. The
 could be something like "/usr/local/NONMEM/run/nmfe75" (which
@@ -270,6 +280,13 @@ NMdataConf.</p></dd>
 <dd><p>Additional arguments passed to <code>method.sim</code>.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>A data.frame with simulation results (same number of rows
+    as input data)</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
