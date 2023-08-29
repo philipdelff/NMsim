@@ -1,5 +1,6 @@
 ##' Filter control streams to only those updated since last run
 ##' @param lstsd list of (input or output) control streams to consider
+##' @return character vector of paths found models
 ##' @keywords internal
 
 

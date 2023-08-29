@@ -9,6 +9,9 @@ inputArchiveDefault(file)
 \arguments{
 \item{file}{Path to input or output control stream.}
 }
+\value{
+A file name (character)
+}
 \description{
 Default location of input archive file
 }

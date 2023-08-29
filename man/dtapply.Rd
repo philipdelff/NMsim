@@ -9,12 +9,21 @@ dtapply(X, FUN, ...)
 \arguments{
 \item{...}{arguments passed to lapply}
 }
+\value{
+a data.table generally applicable but still too early to
+}
 \description{
 A convenience function that returns a data.table with a column
 representing the input values and a column with results. This is
 still experimental and will not work for many input structures.
 }
+\details{
+Only functions that return vectors are currently
+    supported. dtapply should support functions that return
+    data.frames.
+}
 \examples{
 NMsim:::dtapply(setNames(1:4,letters[1:4]),sqrt)
+
 }
 \keyword{internal}

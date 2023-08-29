@@ -17,8 +17,13 @@
 ##'     something else. If data.tables are wanted, use
 ##'     as.fun="data.table". The default can be configured using
 ##'     NMdataConf.
-##' @import data.table
-##' @import NMdata
+##' @details Experimental. Please check output before use. AMT, RATE,
+##'     SS, II, CMT are vectors of length 1 or longer. Those not of
+##'     max length 1 are repeated.  If TIME is longer than those, they
+##'     are extended to match length of TIME. Allowed combinations of
+##'     AMT, RATE, SS, II here:
+##'     \url{https://ascpt.onlinelibrary.wiley.com/doi/10.1002/psp4.12404}
+##' @return A data.frame with dosing events
 ##' @examples
 ##' library(data.table)
 ##' ## arguments are expanded - makes loading easy
@@ -48,27 +53,13 @@
 ##' doses.md.2$dose <- paste(doses.md.2$DOSE,"mg")
 ##' doses.md.2$regimen <- "QD"
 ##' doses.md.2
-##'
+##' @import data.table
+##' @import NMdata
 ##' @export
 
-## AMT, RATE, SS, II, CMT are vectors of length 1 or longer. Those not of max
-## length 1 are repeated.  If TIME is longer than those, they are
-## extended to match length of TIME.
 
-### allowed combinations of AMT, RATE, SS, II here:
-## https://ascpt.onlinelibrary.wiley.com/doi/10.1002/psp4.12404
 
-##### examples
-## library(data.table)
-## library(NMdata)
 
-## NMcreateDoses(TIME=data.table(ID=c(1,1,2,2,2),TIME=c(0,1,0,1,4)),AMT=data.table(ID=c(1,1,2,2),AMT=c(2,1,4,2)))
-
-## NMcreateDoses(TIME=c(0,1,4),AMT=data.table(ID=c(1,1,2,2),AMT=c(2,1,4,2)))
-## NMcreateDoses(TIME=c(0,1,4),AMT=data.table(DOSELEVEL=c(1,1,2,2),AMT=c(2,1,4,2)))
-
-## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2))
-## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2),CMT=1)
 
 NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, addl=NULL, as.fun){
     

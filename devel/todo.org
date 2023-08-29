@@ -2,11 +2,16 @@
 
 ** general
 
-*** TODO Issue with varCov for n=1 repetitions.
-As if submodel structure does not support n=1.
+*** TODO [#A] Add @return to all functions
+
+*** TODO [#A] Clean up code files
+
+*** TODO [#A] Issue with varCov for n=1 repetitions.
+As if submodel structure does not support n=1. For now, just give an
+error to avoid some weird message.
 *** pkgdown
 
-*** TODO goathunter
+*** TODO [#A] goathunter
 *** DONE Setting for paths to executables
 Path to nonmem, psn, other ways to exec.
 
@@ -14,6 +19,8 @@ Path to nonmem, psn, other ways to exec.
 
 ** NMexec
 *** TODO Move existing results files to backup before running nonmem
+** NMexecDirectory
+*** TODO [#A] Clean up after switching to absolute paths
 ** NMsim
 *** TODO Support for modifications to control stream(s).
 Like insert lines to $PK or $ERROR. The best would be to extend
@@ -91,7 +98,10 @@ https://nmhelp.tingjieguo.com/$etasphis.htm
 ** NMcreateDoses
 *** TODO II/ADDL should only be applied to last event.
 addl.lastonly argument?
-*** DONE TIME must be full length
+*** TODO TIME must be full length
+## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2))
+## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2),CMT=1)
+
 *** TODO No NA's should be allowed anywhere? Or?
 *** TODO if a cov is found in multiple arguments, it must span same values
 

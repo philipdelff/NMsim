@@ -112,6 +112,8 @@
 ##' @param suffix.sim Deprecated. Use name.sim instead.
 ##' @param type.input Deprecated. Use type.mod instead.
 ##' @param ... Additional arguments passed to \code{method.sim}.
+##' @return A data.frame with simulation results (same number of rows
+##'     as input data)
 ##' @import NMdata
 
 ##' @export

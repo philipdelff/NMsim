@@ -147,6 +147,14 @@ system's search path. So if you can run 'execute' and
 need to specify this unless you want to explicitly use a
 specific installation of PSN on your system.}
 
+\item{list.sections}{Named list of additional control stream
+section edits. Note, these can be functions that define how to
+edit sections. This is an advanced feature which is not needed
+to run most simulations. It is however powerful for some types
+of analyses, like modifying parameter values. See vignettes
+for further information. Documentation still under
+development.}
+
 \item{path.nonmem}{The path to the Nonmem executable to use. The
 could be something like "/usr/local/NONMEM/run/nmfe75" (which
 is a made up example). No default is available. You should be
@@ -162,6 +170,10 @@ NMdataConf.}
 \item{suffix.sim}{Deprecated. Use name.sim instead.}
 
 \item{...}{Additional arguments passed to \code{method.sim}.}
+}
+\value{
+A data.frame with simulation results (same number of rows
+    as input data)
 }
 \description{
 Supply a data set and an input control stream, and NMsim will

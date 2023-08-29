@@ -38,7 +38,6 @@ input.grd
 input.shk
 INTER
 LINK.LNK
-^inst/examples/simulations
 ^inst/examples/nonmem/.+
 ^inst/examples/nonmem/bs1_014_N1000/
 ^inst/examples/nonmem/NMsim
