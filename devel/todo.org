@@ -19,6 +19,7 @@ Path to nonmem, psn, other ways to exec.
 
 ** NMexec
 *** TODO Move existing results files to backup before running nonmem
+*** TODO Rename sge to parallel
 ** NMexecDirectory
 *** TODO [#A] Clean up after switching to absolute paths
 ** NMsim

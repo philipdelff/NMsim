@@ -2,7 +2,7 @@
 % Please edit documentation in R/NMexec.R
 \name{NMexec}
 \alias{NMexec}
-\title{execute nonmem while also archiving input data}
+\title{Execute Nonmem and archive input data with model files}
 \usage{
 NMexec(
   files,
@@ -36,14 +36,15 @@ specific data file.}
 for control streams in.}
 
 \item{sge}{Use the sge queing system. Default is TRUE. Disable for
-quick models not to wait.}
+quick models not to wait for the queue to run the job.}
 
 \item{input.archive}{A function of the model file path to generate
 the path in which to archive the input data as RDS. Set to
 NULL not to archive the data.}
 
-\item{nc}{Number of cores to use if sending to the
-cluster. Default is 64.}
+\item{nc}{Number of cores to use if sending to the cluster. This
+will only be used if \code{method.execute="psn"}, and
+\code{sge=TRUE}. Default is 64.}
 
 \item{dir.data}{The directory in which the data file is
 stored. This is normally not needed as data will be found
@@ -65,8 +66,31 @@ updated since last run?}
 \item{nmquiet}{Suppress terminal output from `Nonmem`. This is
 likely to only work on linux/unix systems.}
 
-\item{method.execute}{How to run nonmem. Must be one of 'psn',
-'direct', or 'directory'.}
+\item{method.execute}{How to run Nonmem. Must be one of 'psn',
+    'direct', or 'directory'. 
+\itemize{
+
+\item psn PSN's execute is used. This supports parallel Nonmem
+runs. Use the \code{nc} argument to control how many cores to use
+for each job. For estimation runs, this is most likely the better
+choice, if you have PSN installed. See \code{dir.psn} argument
+too.
+
+\item direct Nonmem is called directly on the control stream. This
+is the simplest method and is the least convenient in most
+cases. It does not offer parallel runs and leaves all the Nonmem
+output files next to the control streams.
+
+\item directory Creates a temporary directory and runs Nonmem
+inside that directory before copying relevant results files back
+to the folder where the input control stream was. If
+\code{sge=TRUE}, the job will be submitted to a cluster, but
+parallel execution of the job itself is not supported. See
+\code{path.nonmem} argument too.
+
+}
+
+See `sge` as well.}
 
 \item{dir.psn}{The directory in which to find PSN
 executables. This is only needed if these are not searchable
@@ -75,10 +99,13 @@ about where to find them (i.e. want to use a specific
 installed version of PSN).}
 
 \item{path.nonmem}{The path to the nonmem executable. Only used if
-method.execute="direct" (which is not default). If this
-argument is not supplied, NMexec will try to run nmfe75,
+\code{method.execute="direct"} or
+\code{method.execute="directory"} (which is not default). If
+this argument is not supplied, NMexec will try to run nmfe75,
 i.e. this has to be available in the path of the underlying
-shell.}
+shell. The default value can be modified using
+\code{NMdata::NMdataConf}, like
+\code{NMdataConf(path.nonmem="/path/to/nonmem")}}
 
 \item{files.needed}{In case method.execute="directory", this
 argument specifies files to be copied into the temporary
@@ -86,12 +113,14 @@ directory before Nonmem is run. Input control stream and
 simulation input data does not need to be specified.}
 }
 \description{
-execute nonmem while also archiving input data
+Execute Nonmem from within R - optionally but by default in
+parallel. Archiving the input data ensures that postprocessing can
+still be reproduced if the input data files should be updated.
 }
 \details{
 Use this to read the archived input data when retrieving
     the nonmem results
-    NMdataConf(file.data=function(x)fnExtension(fnAppend(x,"input"),".rds"))
+    \code{NMdataConf(file.data=inputArchiveDefault)}
 }
 \examples{
 \dontrun{
