@@ -1,15 +1,16 @@
-#' Read in data file
-#'
-#' @param file The .cov covariance Nonmem matrix file to read 
-#' @param ... Passed to fread
-#'
-#' @details This function is taken from nonmem2rx::nmcov. 
-#' 
-#' @return A matrix with covariance step from NONMEM
-#' 
-#' @author Philip Delff and Matthew L. Fidler
-#' @keywords internal
-#'
+##' Read in data file
+##'
+##' @param file The .cov covariance Nonmem matrix file to read 
+##' @param ... Passed to fread
+##'
+##' @details This function is taken from nonmem2rx::nmcov. 
+##' 
+##' @return A matrix with covariance step from NONMEM
+##' 
+##' @author Philip Delff and Matthew L. Fidler
+##' 
+##' @keywords internal
+
 
 
 NMreadCov <- function (file, ...) {
@@ -19,7 +20,7 @@ NMreadCov <- function (file, ...) {
     NAME <- NULL
     colnames <- readLines(file, n=2)[2]
     if (grepl(", *OMEGA\\( *1 *, *1\\)", colnames)) {
-                                        # in this case the NAME also has commas
+        ## in this case the NAME also has commas
         lines <- readLines(file)
         lines <- gsub("(OMEGA|SIGMA)[(]([0-9]+),([0-9]+)[)]", "\\1\\2AAAAAAAAA\\3", lines)
         file2 <- tempfile()

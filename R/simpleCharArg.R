@@ -1,4 +1,17 @@
 
+##' Check that a variable is a single character string meeting specified requirements
+##'
+##'
+##' @param name.arg Name of the argument
+##' @param val.arg argument value
+##' @param default If val.arg is NULL, what should be returned?
+##' @param accepted What values are allowed
+##' @param lower run tolower?
+##' @param clean clean white spaces?
+##' @return The resulting parameter value
+##' @details Better options may be available in packages like
+##'     checkmate. This function doesn't only check the parameter
+##'     value, it also sets it to the default value if missing.
 ##' @keywords internal
 simpleCharArg <- function(name.arg,val.arg,default,accepted,lower=TRUE,clean=TRUE) {
     

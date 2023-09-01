@@ -1,3 +1,10 @@
+##' Conveniently writeLines to file
+##' @param lines the character lines to write
+##' @param file The file name path to write to
+##' @return NULL
+##' @internal
+
+
 writeTextFile <- function(lines,file){
     con <- file(file, "wb")
     writeLines(lines, con = con)

@@ -2,8 +2,8 @@ Package: NMsim
 Type: Package
 Title: Start Nonmem jobs and run Nonmem simulations from R
 Version: 0.0.1.931
-Authors@R: person("Philip", "Delff", email = "philip@delff.dk",
-                  role = c("aut", "cre"))
+Authors@R: c(person("Philip", "Delff", email = "philip@delff.dk",role = c("aut","cre")),
+  person("Matthew","Fidler", role = c("ctb"), email = "matt.fidler@novartis.com", comment="Co-author on NMreadCov"))
 Maintainer: Philip Delff <philip@delff.dk>
 Description: Tools allowing for turning Nonmem control streams into simulation control streams, executing them with specified simulation input data and collecting the results. All in all a complete interface for simulation of Nonmem models from R. The simulation is performed by Nonmem, eliminating time spent and risks of reimplementation of models in other tools.
 License: MIT + file LICENSE

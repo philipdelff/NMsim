@@ -41,5 +41,6 @@ LINK.LNK
 ^inst/examples/nonmem/.+
 ^inst/examples/nonmem/bs1_014_N1000/
 ^inst/examples/nonmem/NMsim
+^inst/examples/simulations/.+
 ^vignettes/simulations/.+
 .*_dir.*

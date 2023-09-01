@@ -1,3 +1,10 @@
+##' Generate PNM file for sge clusters
+##'
+##' @param nc number of cores wanted
+##' @param file The file path to write the result to
+##' @return The file path (character string)
+##' @internal
+
 NMgenPNM <- function(nc,file){
 
     if(missing(file)) file <- tempfile()

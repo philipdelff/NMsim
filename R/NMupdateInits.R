@@ -1,3 +1,8 @@
+##' Create new Nonmem control stream with updated initial parameter values
+##' @param file.mod The control stream to update. Will not be edited.
+##' @param newfile New file to generate
+##' @param fix Fix the values? Probably only TRUE is supported.
+##' @return The resulting control stream contents as text
 ##' @keywords internal
 
 NMupdateInits <- function(file.mod,newfile,fix){
