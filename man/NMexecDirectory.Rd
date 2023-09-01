@@ -7,6 +7,16 @@
 NMexecDirectory(file.mod, path.nonmem, files.needed, dir.data = "..")
 }
 \arguments{
+\item{file.mod}{Path to a Nonmem input control stream.}
+
+\item{path.nonmem}{Path to Nonmem executable. You may want to
+control this with \code{NMdata::NMdataConf}.}
+
+\item{files.needed}{Files needed to run the control stream. This
+cold be a .phi file from which etas will be read. Notice,
+input data set will be handled automatically, you do not need
+to specify that.}
+
 \item{dir.data}{If NULL, data will be copied into the temporary
 directory, and Nonmem will read it from there. If not NULL,
 dir.data must be the relative path from where Nonmem is run to
@@ -18,6 +28,8 @@ stored.}
 A bash shell script for execution of Nonmem
 }
 \description{
-Execute Nonmem inside a dedicated directory
+Like PSN's execute with less features. But easier to control from
+NMexec. NMexecDirectory is not intended to be run by the user. Use
+\code{NMexec} or \code{NMsim} instead.
 }
 \keyword{internal}

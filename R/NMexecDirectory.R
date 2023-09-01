@@ -1,5 +1,4 @@
 ##' Generate system command to call Nonmem directly
-##' @importFrom R.utils getAbsolutePath
 ##' @keywords internal
 
 callNonmemDirect <- function(file.mod,path.nonmem){
@@ -8,7 +7,18 @@ callNonmemDirect <- function(file.mod,path.nonmem){
 }
 
 ##' Execute Nonmem inside a dedicated directory
-##' 
+##'
+##' Like PSN's execute with less features. But easier to control from
+##' NMexec. NMexecDirectory is not intended to be run by the user. Use
+##' \code{NMexec} or \code{NMsim} instead.
+##'
+##' @param file.mod Path to a Nonmem input control stream.
+##' @param path.nonmem Path to Nonmem executable. You may want to
+##'     control this with \code{NMdata::NMdataConf}.
+##' @param files.needed Files needed to run the control stream. This
+##'     cold be a .phi file from which etas will be read. Notice,
+##'     input data set will be handled automatically, you do not need
+##'     to specify that.
 ##' @param dir.data If NULL, data will be copied into the temporary
 ##'     directory, and Nonmem will read it from there. If not NULL,
 ##'     dir.data must be the relative path from where Nonmem is run to
@@ -16,15 +26,9 @@ callNonmemDirect <- function(file.mod,path.nonmem){
 ##'     run directory is created in a directory where the data is
 ##'     stored.
 ##' @import NMdata
+##' @importFrom R.utils getAbsolutePath
 ##' @return A bash shell script for execution of Nonmem
 ##' @keywords internal
-
-### like execute but in R.
-## copy necessary files into temporary
-## run nonmem
-## copy resulting files back out
-
-## maybe just use bbr?
 
 ## do not export. NMexec will call this.
 
@@ -37,7 +41,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
     
-name <- NULL
+    name <- NULL
 
 ###  Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
@@ -100,57 +104,21 @@ name <- NULL
     meta.tables <- NMscanTables(file.mod.tmp,meta.only=TRUE,as.fun="data.table")
 
 ### execute nonmem
-    
-    ## callNonmem(file.mod=file.mod.tmp,nonmem=nonmem)
-    
-    
-    ## must be called like qsub -wd dir.tmp 
     exts.cp <- c("lst","xml","ext","cov","cor","coi","phi","msf","msfi","msfo" )
-    if(F){
-        lines.bash <- c(
-            "#!/bin/bash"
-            ##,"shopt -s extglob"
-            ## ,"WD0=$PWD"
-            ## ,sprintf("cd %s;" ,dir.tmp)
-           ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-            ## ,"WD0=$PWD"
-            ## ,"cd $CURWD"
 
-           ,paste("cd",dir.mod)
-            
-### this works when path.mod is a relative path
-            ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
-            ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
-
-           ,paste("find",dir.tmp,"-type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} . \\;")
-           ,sprintf("cp %s .",file.path(dir.tmp,paste(meta.tables[,name],collapse=" ")))
-           ,""
-        )
-    }
-    ## if(F){
-    ## dir.mod.rel <- ".."
-
-    dir.mod.rel <- getAbsolutePath(dir.mod)
+    dir.mod.abs <- getAbsolutePath(dir.mod)
     lines.bash <- c(
         "#!/bin/bash"
-        ##,"shopt -s extglob"
-        ## ,"WD0=$PWD"
-        ## ,sprintf("cd %s;" ,dir.tmp)
        ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-        ## ,"WD0=$PWD"
-        ## ,"cd $CURWD"
-
-        ## ,paste("cd",dir.mod)
-        
 ### this works when path.mod is a relative path
         ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
         ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
 
-       ,paste("find . -type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} ",dir.mod.rel," \\;")
-       ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),dir.mod.rel)
+### copy wanted files back to orig location of file.mod 
+       ,paste("find . -type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} ",dir.mod.abs," \\;")
+       ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),dir.mod.abs)
        ,""
     )
-    ## }
     
     path.script <- file.path(dir.tmp,"run_nonmem.sh")
     con.newfile <- file(path.script,"wb")
@@ -160,10 +128,5 @@ name <- NULL
 
     ## system(path.script)
     path.script
-#### the rest should be done in bash - have callNonmem take care of it
-    
-### copy wanted files back to orig location of file.mod 
 
-
-### optionally remove temporary dir
 }
