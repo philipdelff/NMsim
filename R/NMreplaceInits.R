@@ -1,7 +1,12 @@
 ##' Replace initial values in Nonmem control stream
-##' @param inits A data.frame with new initial estimates, same style as returned by NMreadExt. Column` par.type` can contain elements THETA, OMEGA, SIGMA.
+##' @param inits A data.frame with new initial estimates, same style
+##'     as returned by NMreadExt. Column` par.type` can contain
+##'     elements THETA, OMEGA, SIGMA.
 ##' @param fix Fix the initial values? Default is not to.
-##' @param ... Passed to NMdata::NMwriteSection
+##' @param ... Passed to NMdata::NMwriteSection. This is important for
+##'     NMreplaceInits to run at all.
+##' @return The modified control stream
+##' @keywords internal
 
 NMreplaceInits <- function(inits,fix=FALSE,...){
 

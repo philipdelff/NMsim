@@ -1,12 +1,16 @@
 ##' Run simulations from an estimated Nonmem model
 ##'
-##' Supply a data set and an input control stream, and NMsim will
-##' create neccesary files, run the simulation and read the results.
+##' Supply a data set and an input control stream, and NMsim can
+##' create neccesary files, run the simulation and read the
+##' results. It has additional methods for other siulation types
+##' available, can do multiple simulations at once and more. Please
+##' see vignettes for an introcution to how to get the most out of
+##' this.
 ##'
 ##' @param path.mod Path to the input control stream to run the
 ##'     simulation on. The outpult control stream is for now assumed
 ##'     to be stored next to the input control stream and ending in
-##'     .lst instead of .modl
+##'     .lst instead of .mod.
 ##' @param data The simulation data as a data.frame.
 ##' @param dir.sims The directory in which NMsim will store all
 ##'     generated files.
@@ -51,9 +55,11 @@
 ##'     may be automated in the future.
 ##' @param method.sim A function that creates the simulation control
 ##'     stream and other necessary files for a simulation based on the
-##'     estimation control stream, the data, etc. Four methods are
-##'     included: NMsim_default, NMsim_typical, NMsim_known, and
-##'     NMsim_VarCov. See examples and vignettes on how to use these.
+##'     estimation control stream, the data, etc. The default is
+##'     called \code{NMsim_default} which will replace any estimation
+##'     and covariance step by a simulation step. See details section
+##'     on oter methods, and see examples and especially vignettes on
+##'     how to use the different provided methods.
 ##' @param execute Execute the simulation or only prepare it?
 ##'     `execute=FALSE` can be useful if you want to do additional
 ##'     tweaks or simulate using other parameter estimates.
@@ -346,41 +352,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     ## path.sim: full path to simulation control stream
     dt.models[,path.sim:=NMdata:::filePathSimple(file.path(dir.sim,fn.sim))]
 
-    if(F){
-        ## where to store checksums 
-        dt.models[,path.digests:=fnExtension(fnAppend(path.sim.lst,"digests"),"rds")]
-###  Section end: Defining additional paths based on arguments
-
-        ## if(missing(obj.checksums)){
-
-        ## run.fun <- needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines))
-
-
-        run.fun <- try(
-            needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines,reuse.results=function(x)NULL),which=-2)
-           ,silent=TRUE)
-        
-        if(inherits(run.fun,"try-error")){
-            run.fun <- list(needRun=TRUE
-                           ,digest.new=paste(Sys.time(),"unsuccesful")
-                            )
-        }
-        if(reuse.results && !run.fun$needRun){
-            simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,file.data=input.archive))
-            if(!inherits(simres,"try-error")){
-                message("Found results from identical previous run (and reuse.results is TRUE). Not re-running simulation.")
-                if(!is.null(transform)){
-                    
-                    for(name in names(transform)){
-                        simres[,(name):=transform[[name]](get(name))]
-                    }
-                }
-                return(simres)
-            } else {
-                message("Tried to reuse results but failed to find/read any. Going to do the simulation.")
-            }
-        }
-    }
+### note: insert test for whether run is needed here
 
     data <- copy(as.data.table(data))
 

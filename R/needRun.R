@@ -1,3 +1,55 @@
+######## This code has been taken out of NMsim just after:
+
+   ## ## dir.sim is the model-individual directory in which the model will be run
+   ##  dt.models[,
+   ##            dir.sim:=file.path(dir.sims,paste(run.mod,name.sim,sep="_"))]
+
+   ##  ## path.sim.0 is a temporary path to the sim control stream - it
+   ##  ## will be moved to path.sim once created.
+   ##  dt.models[,fn.sim.tmp:=fnAppend(fn.sim,"tmp")]
+   ##  ## path.sim: full path to simulation control stream
+   ##  dt.models[,path.sim:=NMdata:::filePathSimple(file.path(dir.sim,fn.sim))]
+
+## here is the code that was taken out:
+
+    if(F){
+        ## where to store checksums 
+        dt.models[,path.digests:=fnExtension(fnAppend(path.sim.lst,"digests"),"rds")]
+###  Section end: Defining additional paths based on arguments
+
+        ## if(missing(obj.checksums)){
+
+        ## run.fun <- needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines))
+
+
+        run.fun <- try(
+            needRun(path.sim.lst, path.digests, funs=list(path.mod=readLines,reuse.results=function(x)NULL),which=-2)
+           ,silent=TRUE)
+        
+        if(inherits(run.fun,"try-error")){
+            run.fun <- list(needRun=TRUE
+                           ,digest.new=paste(Sys.time(),"unsuccesful")
+                            )
+        }
+        if(reuse.results && !run.fun$needRun){
+            simres <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,file.data=input.archive))
+            if(!inherits(simres,"try-error")){
+                message("Found results from identical previous run (and reuse.results is TRUE). Not re-running simulation.")
+                if(!is.null(transform)){
+                    
+                    for(name in names(transform)){
+                        simres[,(name):=transform[[name]](get(name))]
+                    }
+                }
+                return(simres)
+            } else {
+                message("Tried to reuse results but failed to find/read any. Going to do the simulation.")
+            }
+        }
+    }
+
+
+
 ##' get arguments passed to a function
 ##'
 ##' Within a function, run callArgs to get a list of all arguments
@@ -73,6 +125,7 @@ digestElements <- function(obj,funs){
 ##' @param funs Named list of functions to apply to arguments
 ##' @param which Number of environment levels to jump to evaluate the
 ##'     arguments
+##' @return A list of info of whether run is needed and digest values
 ##' @keywords internal
 needRun <- function(path.res,path.digest,funs,which=-2){
     

@@ -1,7 +1,9 @@
-
-## Netas <- pars[par.type=="OMEGA",max(i)]
-## Nomega.diag <- pars[par.type=="OMEGA",.N]
-
+##' Read information from Nonmem ext files
+##'
+##' @param path.ext Path to the ext file
+##'
+##' @return A list with a final parameter table and a table of the iterations
+##' @keywords internal
 
 NMreadExt <- function(path.ext){
 

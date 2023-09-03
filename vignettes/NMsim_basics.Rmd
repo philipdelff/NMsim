@@ -591,6 +591,22 @@ We now specify for `addResVar` to find the variance for the proportional compone
 simres.with.resvar <- addResVar(simres,path.ext=fnExtension(file.mod,"ext"),par.type="SIGMA",prop=1,add=2)
 ```
 
+## Vary parameter values
+```{r,include=FALSE,eval=FALSE}
+dt.inp2 <- rbind(
+    transform(dt.inp,CLSCALE=1,sim="CL unchanged")
+    ,transform(dt.inp,CLSCALE=2,sim="Double CL")
+)
+dt.inp2[,ID:=.GRP,by=.(sim,ID)]
+NMcheckData(dt.inp2)
+
+
+simres2 <- NMsim(path.mod=path.model,dt.inp2,name.sim="20mg_CL2"
+                ,list.sections=list(PK=function(x)c(x,"CLP=CLP*CLSCALE","CLM=CLM*CLSCALE")))
+
+ggplot(simres2[EVID==2],aes(TIME,PRED,colour=sim))+geom_line()+facet_wrap(~compound)
+
+
 ## Configuration of how to execute Nonmem
 `NMsim` supports two ways
 

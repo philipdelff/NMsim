@@ -44,3 +44,4 @@ LINK.LNK
 ^inst/examples/simulations/.+
 ^vignettes/simulations/.+
 .*_dir.*
+^R/needRun.R

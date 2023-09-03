@@ -38,6 +38,7 @@
 ##' addEVID2(dt.doses,time.sim=seq.time,CMT=2)
 ##' @import data.table
 ##' @import NMdata
+##' @return A data.frame with dosing records
 ##' @export 
 
 

@@ -37,6 +37,7 @@
 ##' @import MASS
 ##' @import data.table
 ##' @import NMdata
+##' @return An updated data.frame
 ##' @export
 
 

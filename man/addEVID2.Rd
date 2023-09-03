@@ -22,6 +22,9 @@ something else. If data.tables are wanted, use
 as.fun="data.table". The default can be configured using
 NMdataConf.}
 }
+\value{
+A data.frame with dosing records
+}
 \description{
 Performs the simple job of adding simulation events to all
 subjects in a data set. Copies over columns that are not varying

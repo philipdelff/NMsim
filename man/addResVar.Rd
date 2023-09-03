@@ -65,6 +65,9 @@ something else. If data.tables are wanted, use
 as.fun="data.table". The default can be configured using
 NMdataConf.}
 }
+\value{
+An updated data.frame
+}
 \description{
 Add residual variability based on parameter estimates
 }
