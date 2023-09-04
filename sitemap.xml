@@ -46,13 +46,7 @@
     <loc>https://philipdelff.github.io/NMsim/reference/addResVar.html</loc>
   </url>
   <url>
-    <loc>https://philipdelff.github.io/NMsim/reference/callArgs.html</loc>
-  </url>
-  <url>
     <loc>https://philipdelff.github.io/NMsim/reference/callNonmemDirect.html</loc>
-  </url>
-  <url>
-    <loc>https://philipdelff.github.io/NMsim/reference/digestElements.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/dtapply.html</loc>
@@ -65,8 +59,5 @@
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/inputArchiveDefault.html</loc>
-  </url>
-  <url>
-    <loc>https://philipdelff.github.io/NMsim/reference/needRun.html</loc>
   </url>
 </urlset>

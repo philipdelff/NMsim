@@ -60,7 +60,9 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>inits</dt>
-<dd><p>A data.frame with new initial estimates, same style as returned by NMreadExt. Column` par.type` can contain elements THETA, OMEGA, SIGMA.</p></dd>
+<dd><p>A data.frame with new initial estimates, same style
+as returned by NMreadExt. Column` par.type` can contain
+elements THETA, OMEGA, SIGMA.</p></dd>
 
 
 <dt>fix</dt>
@@ -68,9 +70,16 @@
 
 
 <dt>...</dt>
-<dd><p>Passed to NMdata::NMwriteSection</p></dd>
+<dd><p>Passed to NMdata::NMwriteSection. This is important for
+NMreplaceInits to run at all.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>The modified control stream</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
