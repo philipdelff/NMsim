@@ -1,3 +1,26 @@
+##' Known subject simulation method
+##' 
+##' Simulates _known_ subjects, meaning that it reuses ETA values from
+##' estimation run. This is what is refered to as emperical Bayes
+##' estimates. The .phi file from the estimation run must be found
+##' next to the .lst file from the estimation.This means that ID
+##' values in the (simulation) input data must be ID values that were
+##' used in the estimation too. Runs an \code{$ESTIMATION MAXEVAL=0}
+##' but pulls in ETAs for the ID's found in data. No
+##' \code{$SIMULATION} step is run which may affect how for instance
+##' residual variability is simulated, if at all.
+##' 
+##' @param path.sim See \code{?NMsim}.
+##' @param path.mod See \code{?NMsim}.
+##' @param data.sim See \code{?NMsim}.
+##' @param return.text If TRUE, just the text will be returned, and
+##'     resulting control stream is not written to file.
+##' @import NMdata
+##' @import data.table
+##' @return Path to simulation control stream
+##' @keywords internal
+
+
 NMsim_known <- function(path.sim,path.mod,data.sim,return.text=FALSE){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####

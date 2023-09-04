@@ -1,4 +1,20 @@
+##' Typical subject simiulation method
+##' 
+##' Like \code{NMsim_default} but with all ETAs=0, giving a
+##' "typical subject" simulation. Do not confuse this with a
+##' "reference subject" simulation which has to do with covariate
+##' values. Technically all ETAs=0 is obtained by replacing
+##' \code{$OMEGA} by a zero matrix.
+##' 
+##' @param path.sim See \code{?NMsim}.
+##' @param path.mod See \code{?NMsim}.
+##' @param data.sim See \code{?NMsim}.
+##' @param return.text If TRUE, just the text will be returned, and
+##'     resulting control stream is not written to file.
 ##' @import NMdata
+##' @return Path to simulation control stream
+##' @keywords internal
+
 
 NMsim_typical <- function(path.sim,path.mod,data.sim,return.text=FALSE){
 
@@ -8,7 +24,6 @@ NMsim_typical <- function(path.sim,path.mod,data.sim,return.text=FALSE){
     i <- NULL
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
-
 
 
     files.needed.def <- NMsim_default(path.sim=path.sim,path.mod,data.sim)

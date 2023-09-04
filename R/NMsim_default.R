@@ -1,9 +1,27 @@
-##' Transform an estimated Nonmem model into a simulation control stream
+##' Transform an estimated Nonmem model into a simulation control
+##' stream
+##'
+##' The default behaviour of \code{NMsim}. Replaces any $ESTIMATION
+##' and $COVARIANCE sections by a $SIMULATION section.
+##' 
+##' @param path.sim See \code{?NMsim}.
+##' @param path.mod See \code{?NMsim}.
+##' @param data.sim See \code{?NMsim}.
+##' @param nsims Number of replications wanted. The default is 1. If
+##'     greater, multiple control streams will be generated.
+##' @param replace.sim If there is a $SIMULATION section in the
+##'     contents of path.sim, should it be replaced? Default is
+##'     yes. See the \code{list.section} argument to \code{NMsim} for
+##'     how to provide custom contents to sections with \code{NMsim}
+##'     instead of editing the control streams beforehand.
+##' @param return.text If TRUE, just the text will be returned, and
+##'     resulting control stream is not written to file.
 ##' @import NMdata
 ##' @import data.table
+##' @return Character vector of simulation control stream paths
 ##' @keywords internal
 
-NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.text=FALSE,nsims=1){
+NMsim_default <- function(path.sim,path.mod,data.sim,nsims=1,replace.sim=TRUE,return.text=FALSE){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -31,13 +49,17 @@ NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.tex
     ## replace SIM - the user may not want this
     if(replace.sim){
         ##Insert $SIM before $TABLE. If not $TABLE, insert $SIM in the bottom.
+
+        ## define the $SIM section to insert
         ## section.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
         section.sim <- "$SIMULATION ONLYSIM"
         ## section.sim <- "$SIMULATION"
-        
+
+        ## remove any existing $SIM
         lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="$SIMULATION",
                                                 newlines="",backup=FALSE,quiet=TRUE)
         
+        ## if there is $TABLE, insert before those
         tab.section.exists <- any(grepl("^(TABLE)$",names.sections))
         if(tab.section.exists){
             lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,
@@ -45,6 +67,7 @@ NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.tex
                                                     newlines=section.sim,
                                                     location="before",backup=FALSE,quiet=TRUE)
         } else {
+            ## else in the bottom
             lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="SIMULATION",
                                                     newlines=section.sim,location="last",
                                                     backup=FALSE,quiet=TRUE)
@@ -94,7 +117,6 @@ NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.tex
         NMwriteSection(files=path.sim,section="TABLE",newlines=sec.new)
     },by=.(SUBMODEL)]
 
-    
     
     invisible(dt.sims[,unique(path.sim)])
     

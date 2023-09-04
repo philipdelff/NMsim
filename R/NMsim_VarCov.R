@@ -1,3 +1,30 @@
+##' Simulate with parameter values sampled from a covariance step
+##'
+##' Like \code{NMsim_default} but `$THETA`, `$OMEGA`, and `SIGMA` are
+##' drawn from distribution estimated in covariance step. This means
+##' that a successful covariance step must be available from the
+##' estimation. In case the simulation leads to negative diagonal
+##' elements in $OMEGA and $SIGMA, those values are truncated at
+##' zero. For simulation with parameter variability based on bootstrap
+##' results, use \code{NMsim_default}.
+##'
+##' @param path.sim See \code{?NMsim}.
+##' @param path.mod See \code{?NMsim}.
+##' @param data.sim See \code{?NMsim}.
+##' @param nsims Number of replications wanted. The default is 1. If
+##'     greater, multiple control streams will be generated.
+##' @param replace.sim If there is a $SIMULATION section in the
+##'     contents of path.sim, should it be replaced? Default is
+##'     yes. See the \code{list.section} argument to \code{NMsim} for
+##'     how to provide custom contents to sections with \code{NMsim}
+##'     instead of editing the control streams beforehand.
+##' @param return.text If TRUE, just the text will be returned, and
+##'     resulting control stream is not written to file.
+##' @import NMdata
+##' @import data.table
+##' @return Character vector of simulation control stream paths
+##' @keywords internal
+
 NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -47,16 +74,21 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
 
     
     newpars <- mvrnorm(n=nsims,Sigma=covmat,mu=ests$est)
-    
-    newpars <- as.data.table(newpars)
+    ### as.list first is because without it, this will fail for
+    ### nsims=1. This is because a single-column data.table would be
+    ### created in that case, and then SUBMODEL and further steps
+    ### become wrong and will fail.
+    newpars <- as.data.table(as.list(newpars))
     newpars[,SUBMODEL:=.I]
     
     ## ests.fix <- ests[FIX==1]
     ##     mergeCheck(newpars.l,ests.fix,by="parameter",all.x=T)
+    
 
-
-    newpars <- mergeCheck(melt(newpars,id.vars="SUBMODEL",variable.name="parameter")
-                         ,ests
+    newpars <- mergeCheck(
+        melt(newpars,id.vars="SUBMODEL",variable.name="parameter")
+       ,
+        ests
                          ,by="parameter",quiet=TRUE)
 
     newpars <- mergeCheck(newpars,dt.sims,by="SUBMODEL")
