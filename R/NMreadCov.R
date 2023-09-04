@@ -18,18 +18,17 @@ NMreadCov <- function (file, ...) {
     TABLE <- NULL
     NMREP <- NULL
     NAME <- NULL
+
+    
+    
     colnames <- readLines(file, n=2)[2]
     if (grepl(", *OMEGA\\( *1 *, *1\\)", colnames)) {
         ## in this case the NAME also has commas
         lines <- readLines(file)
         lines <- gsub("(OMEGA|SIGMA)[(]([0-9]+),([0-9]+)[)]", "\\1\\2AAAAAAAAA\\3", lines)
-        file2 <- tempfile()
-        writeLines(lines, file2)
-        dt1 <- fread(file2, fill = TRUE, header = TRUE, skip = 1, sep=",", 
-                     ...)
-        unlink(file2)
-        dt1$NAME <- gsub("[A]([0-9]+)AAAAAAAAA([0-9]+)", "A(\\1,\\2)", dt1$NAME)
-        setnames(dt1, gsub("[A]([0-9]+)AAAAAAAAA([0-9]+)", "A(\\1,\\2)", names(dt1)))
+        dt1 <- fread(text=lines, fill = TRUE, header = TRUE, skip = 1, sep=",", ...)
+        dt1[,NAME:=gsub("[A]([0-9]+)AAAAAAAAA([0-9]+)", "A(\\1,\\2)",NAME)]
+        setnames(dt1, function(x)gsub("[A]([0-9]+)AAAAAAAAA([0-9]+)", "A(\\1,\\2)", x))
     } else {
         dt1 <- fread(file, fill = TRUE, header = TRUE, skip = 1, 
                      ...)

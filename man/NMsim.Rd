@@ -28,6 +28,7 @@ NMsim(
   create.dir = TRUE,
   dir.psn,
   list.sections,
+  sim.dir.from.scratch = TRUE,
   path.nonmem = NULL,
   as.fun,
   suffix.sim,
@@ -91,13 +92,14 @@ $DATA, and $TABLE sections should be edited. This implies that
 in case type.mod="sim", `subproblems` is ignored. `type.mod`
 may be automated in the future.}
 
-\item{method.sim}{A function (not quoted) that creates the simulation control
-stream and other necessary files for a simulation based on the
-estimation control stream, the data, etc. The default is
-called \code{NMsim_default} which will replace any estimation
-and covariance step by a simulation step. See details section
-on oter methods, and see examples and especially vignettes on
-how to use the different provided methods.}
+\item{method.sim}{A function (not quoted) that creates the
+simulation control stream and other necessary files for a
+simulation based on the estimation control stream, the data,
+etc. The default is called \code{NMsim_default} which will
+replace any estimation and covariance step by a simulation
+step. See details section on oter methods, and see examples
+and especially vignettes on how to use the different provided
+methods.}
 
 \item{execute}{Execute the simulation or only prepare it?
 `execute=FALSE` can be useful if you want to do additional
@@ -157,6 +159,21 @@ to run most simulations. It is however powerful for some types
 of analyses, like modifying parameter values. See vignettes
 for further information. Documentation still under
 development.}
+
+\item{sim.dir.from.scratch}{If TRUE (default) this will wipe the
+simulation directory before running new simulations. The
+directory that will be emptied is _not_ dir.sims where you may
+keep many or all your simulations. It is the subdirectory
+named based on the run name and \code{name.sim}. The reason it
+is advised to wipe this directory is that if you in a previous
+simulation created simulation runs that are now obsolete, you
+could end up reading those too when collecting the
+results. NMsim will delete previously generated simulation
+control streams with the same name, but this option goes
+further. An example where it is important is if you first ran
+1000 replications, fixed something and now rand 500. If you
+choose FALSE here, you can end up with the results of 500 new
+and 500 old simulations.}
 
 \item{path.nonmem}{The path to the Nonmem executable to use. The
 could be something like "/usr/local/NONMEM/run/nmfe75" (which

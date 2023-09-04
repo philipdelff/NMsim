@@ -53,13 +53,14 @@
 ##'     $DATA, and $TABLE sections should be edited. This implies that
 ##'     in case type.mod="sim", `subproblems` is ignored. `type.mod`
 ##'     may be automated in the future.
-##' @param method.sim A function (not quoted) that creates the simulation control
-##'     stream and other necessary files for a simulation based on the
-##'     estimation control stream, the data, etc. The default is
-##'     called \code{NMsim_default} which will replace any estimation
-##'     and covariance step by a simulation step. See details section
-##'     on oter methods, and see examples and especially vignettes on
-##'     how to use the different provided methods.
+##' @param method.sim A function (not quoted) that creates the
+##'     simulation control stream and other necessary files for a
+##'     simulation based on the estimation control stream, the data,
+##'     etc. The default is called \code{NMsim_default} which will
+##'     replace any estimation and covariance step by a simulation
+##'     step. See details section on oter methods, and see examples
+##'     and especially vignettes on how to use the different provided
+##'     methods.
 ##' @param execute Execute the simulation or only prepare it?
 ##'     `execute=FALSE` can be useful if you want to do additional
 ##'     tweaks or simulate using other parameter estimates.
@@ -111,6 +112,20 @@
 ##'     development.
 ##' @param create.dir If the directory specified in dir.sims does not
 ##'     exists, should it be created? Default is TRUE.
+##' @param sim.dir.from.scratch If TRUE (default) this will wipe the
+##'     simulation directory before running new simulations. The
+##'     directory that will be emptied is _not_ dir.sims where you may
+##'     keep many or all your simulations. It is the subdirectory
+##'     named based on the run name and \code{name.sim}. The reason it
+##'     is advised to wipe this directory is that if you in a previous
+##'     simulation created simulation runs that are now obsolete, you
+##'     could end up reading those too when collecting the
+##'     results. NMsim will delete previously generated simulation
+##'     control streams with the same name, but this option goes
+##'     further. An example where it is important is if you first ran
+##'     1000 replications, fixed something and now rand 500. If you
+##'     choose FALSE here, you can end up with the results of 500 new
+##'     and 500 old simulations.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say tibble::as_tibble) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use
@@ -186,7 +201,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
                   nmquiet=FALSE,text.table, type.mod,method.sim=NMsim_default,
                   execute=TRUE,sge=FALSE,transform=NULL ,type.input,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
-                  list.sections,
+                  list.sections,sim.dir.from.scratch=TRUE,
                   path.nonmem=NULL,as.fun
                  ,suffix.sim
                  ,...
@@ -418,6 +433,12 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
     dt.models[,fn.data:=paste0("NMsimData_",fnExtension(fnAppend(basename(path.mod),name.sim),".csv"))]
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
 
+    ### clear simulation directories so user does not end up with old results
+    dt.models[,]
+
+    if(sim.dir.from.scratch){
+        dt.models[,if(dir.exists(dir.sim)) unlink(dir.sim),by=.(ROWMODEL)]
+    }
     dt.models[,if(file.exists(path.sim)) unlink(path.sim),by=.(ROWMODEL)]
 
     dt.models[,{if(!dir.exists(dir.sim)){
@@ -519,19 +540,16 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
 ### Section end: Additional control stream modifications specified by user - list.sections
 
-
-
+    
     
     ## fun simulation method
-    ## dt.models[,
-    ##           files.needed:=paste(method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data),collapse=":")
-    ##          ,by=.(ROWMODEL)]
-
     
     dt.models.gen <- dt.models[,
                                method.sim(path.sim=path.sim,path.mod=path.mod,data.sim=data,...)
                               ,by=.(ROWMODEL)]
-    
+
+
+    ## when methods return just a vector of path.sim, we need to reorganize
     if(ncol(dt.models.gen)==2 && all(colnames(dt.models.gen)%in%c("ROWMODEL","V1"))){
         setnames(dt.models.gen,"V1","path.sim")
     }
@@ -542,7 +560,7 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
     ## TODO: check that all path.sim have been generated
 
-    ## TODO: if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
+    ## if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
     if(nrow(dt.models.gen)>1 && "files.needed"%in%colnames(dt.models.gen)){
         if(method.execute!="directory"){
             stop("Multiple simulation runs spawned, and they need additional files than the simulation input control streams. The only way this is supported is using method.execute=\"directory\".")
@@ -644,8 +662,9 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
             simres.n <- NULL
             files.needed.n <- try(strsplit(files.needed,":")[[1]],silent=TRUE)
             if(inherits(files.needed.n,"try-error")) files.needed.n <- NULL
-            ## if the output control stream exists, delete it. If not, we risk reading old results in case Nonmem fails
-### this is an important assumption. Removing everyting in format run.extension. run_input.extension kept. Impo
+            
+### this is an important assumption. Removing everyting in format
+### run.extension. run_input.extension kept.
             ## files.unwanted <- list.files(
             if(file.exists(path.sim.lst)){
                 message("Existing output control stream found. Removing.")

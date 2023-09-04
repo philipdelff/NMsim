@@ -2,13 +2,11 @@
 
 ** general
 
-*** TODO [#A] Add @return to all functions
+*** DONE Add @return to all functions
 
-*** TODO [#A] Clean up code files
+*** DONE Clean up code files
 
-*** TODO [#A] Issue with varCov for n=1 repetitions.
-As if submodel structure does not support n=1. For now, just give an
-error to avoid some weird message.
+
 *** pkgdown
 
 *** TODO [#A] goathunter
@@ -17,16 +15,42 @@ Path to nonmem, psn, other ways to exec.
 
 *** DONE Fork NMwriteSection from NMdata
 
+*** TODO [#A] Vignette: Get started
+
+**** Explain Nonmem is needed.
+
+**** How to use psn and not.
+
+***** execution
+
+***** Updating parameter initial values
+
+**** Benefits/downsides of different methods
+
+*** TODO [#B] Vignette: How NMsim works
+
+**** Automates data handling and calls Nonmem
+
+**** The steps done by NMsim - and the order of them
+
+**** Writing new methods
+
 ** NMexec
-*** TODO Move existing results files to backup before running nonmem
-*** TODO Rename sge to parallel
+*** TODO [#B] Move existing results files to backup before running nonmem
+If this is not resolved, it is important. But right now NMsim is the
+priority, and NMsim already clears this before running.
+*** TODO Rename sge to parallel/cluster?
+It means if we send to the cluster. There is a slight difference of
+the implication in NMexec and NMsim. In NMexec, if we send to cluster
+the default is to parellellize each job on nc=64 cores or threads. In
+NMsim we restrict to nc=1.
 ** NMexecDirectory
 *** DONE Clean up after switching to absolute paths
 ** NMsim
-*** TODO save data fewer times
+*** TODO [#B] save data fewer times
 Save only for each unique path.data. Merge in the nmtext somehow? It's
 a list so it's not that simple.
-*** TODO Delete existing results prior to running
+*** DONE Delete existing results prior to running
 It does for single simulations. But when spawning mutiple inside a
 folder it does not. It should by default delete everything.
 *** DONE Support for modifications to control stream(s).
@@ -34,7 +58,7 @@ Like insert lines to $PK or $ERROR. The best would be to extend
 NMwriteSection to support a function as argument. Then it would be like
 list(PK=function(text) c(text,"KA=KA*KASCALE"))
 or something like that
-*** TODO Check for existance of estimate files
+*** TODO [#A] Check for existance of estimate files
 NMsim will run even if only .mod exists. But it is natural to expect
 the model estimate to be used. Hence, checks for existence of at least
 .ext file should be done. Issue warning if something missing. 
@@ -42,7 +66,7 @@ the model estimate to be used. Hence, checks for existence of at least
 *** DONE Support method.sim="asis" for doing nothing to the control stream.
 *** DONE Support additional args to methods
 For now, ellipses used
-*** TODO Support submitting jobs to queue system
+*** DONE Support submitting jobs to queue system
 *** DONE Go through selection of execution method
 **** DONE all columns which names start by file.needed used
 *** CANCELED Use dt list elements for multiple files.needed
@@ -54,7 +78,7 @@ Only be available for the default method. In fact, method.sim="asis"
 may be what the user wants.
 *** DONE Support simulation of new models from covariance step
 method.sim="VarCov"
-*** TODO path.mod should be file.mod
+*** TODO [#A] path.mod should be file.mod
 Or files?
 To align with argument naming in NMdata
 *** DONE If path.nonmem is not supplied, use psn?
@@ -69,7 +93,7 @@ If not, throw error if dir.sim does not exist
 *** DONE Support non-data.table workflows
 **** DONE use NMdata's as.fun
 *** DONE Rename type.input to type.mod
-*** TODO Revise input data paths
+*** TODO [#B] Revise input data paths
 Currently, NMsimData... goes together with NMsim....  It would be
 better for svn if the first part of the filenames were aligned. Also,
 do we need to archive input data as _input as well in this case?
@@ -102,10 +126,14 @@ the new one, it will be a difference.
 Just repeat 0 for as many ETAS as used
 $ETAS 0 0 0 
 https://nmhelp.tingjieguo.com/$etasphis.htm
+** NMsim_VarCov
+*** DONE Issue with varCov for n=1 repetitions.
+As if submodel structure does not support n=1. For now, just give an
+error to avoid some weird message.
 ** NMcreateDoses
 *** TODO II/ADDL should only be applied to last event.
 addl.lastonly argument?
-*** TODO TIME must be full length
+*** TODO [#B] TIME must be full length
 ## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2))
 ## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2),CMT=1)
 
@@ -117,7 +145,7 @@ For now, required
 
 *** TODO avoid hard coding variable names
 
-*** TODO N is another arg 
+*** TODO N is another arg
 If ID not in covs, everything is replicated. It can be a data.table
 too, meaning that we replicate within covariates. Maybe we have to be
 able to use a known set of ID's and covs? Or use ID?
