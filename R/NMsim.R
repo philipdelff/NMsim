@@ -401,12 +401,12 @@ NMsim <- function(path.mod,data,dir.sims, name.sim,
 
 
 ### save data and replace $input and $data
-#### multiple todo: save for each path.data
+#### multiple todo: save only for each unique path.data
     
     dt.models[,{
         nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
         NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext,backup=FALSE,quiet=TRUE)
-    }]
+    },by=.(ROWMODEL)]
 
 
 #### Section start: Output tables ####
