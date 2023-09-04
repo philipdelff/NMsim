@@ -1,4 +1,7 @@
+##' Transform an estimated Nonmem model into a simulation control stream
 ##' @import NMdata
+##' @import data.table
+##' @keywords internal
 
 NMsim_default <- function(path.sim,path.mod,data.sim,replace.sim=TRUE,return.text=FALSE,nsims=1){
 

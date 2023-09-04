@@ -62,7 +62,7 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
     newpars <- mergeCheck(newpars,dt.sims,by="SUBMODEL")
     ## if the parameter was fixed, reset it to the estimate
     newpars[FIX==1,value:=est]
-    ## todo: if OMEGA or SIGMA diagonal elements are <0 set to 0.
+    ## if OMEGA or SIGMA diagonal elements are <0 set to 0.
     newpars[i==j&value<0,value:=0]
     
     ## newpars[,est:=NULL]

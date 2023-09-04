@@ -53,7 +53,7 @@
 ##'     $DATA, and $TABLE sections should be edited. This implies that
 ##'     in case type.mod="sim", `subproblems` is ignored. `type.mod`
 ##'     may be automated in the future.
-##' @param method.sim A function that creates the simulation control
+##' @param method.sim A function (not quoted) that creates the simulation control
 ##'     stream and other necessary files for a simulation based on the
 ##'     estimation control stream, the data, etc. The default is
 ##'     called \code{NMsim_default} which will replace any estimation
@@ -73,11 +73,12 @@
 ##'     to PSN's execute), and "direct" (just run Nonmem directly and
 ##'     dump all the temporary files). "directory" has advantages over
 ##'     "psn" that makes it the only supported method when
-##'     type.sim="known". "psn" has the simple advantage that the path
-##'     to nonmem does not have to be specified if "execute" is in the
-##'     system search path. So as long as you know where your Nonmem
-##'     executable is, "directory" is recommended. The default is
-##'     "directory" if path.nonmem is specified, and "psn" if not.
+##'     type.sim="NMsim_known". "psn" has the simple advantage that
+##'     the path to nonmem does not have to be specified if "execute"
+##'     is in the system search path. So as long as you know where
+##'     your Nonmem executable is, "directory" is recommended. The
+##'     default is "directory" if path.nonmem is specified, and "psn"
+##'     if not.
 ##' @param method.update.inits The initial estimates must be updated
 ##'     from the estimated model before running the simulation. NMsim
 ##'     supports two ways of doing this: "psn" which uses PSN's
@@ -120,7 +121,60 @@
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
 ##'     as input data)
+##' @details Loosely speaking, the argument \code{method.sim} defines
+##'     _what_ NMsim will do, \code{method.executes} define _how_ it
+##'     does it. \code{method.sim} takes a function that converts an
+##'     estimation control stream into whatever should be
+##'     run. Features like replacing `$INPUT`, `$DATA`, `$TABLE`, and
+##'     handling seeds are NMsim features that are done in addition to
+##'     the \code{method.sim}. Also the \code{list.sections} argument
+##'     is handled in addition to the \code{method.sim}. The
+##'     \code{subproblems} and \code{seed} arguments are available to
+##'     all methods creating a \code{$SIMULATION} section.
+##'
+##' Notice, the following functions are internally available to
+##' `NMsim` so you can run them by say \code{method.sim=NMsim_known}
+##' without quotes. To see the code of that method, type
+##' \code{NMsim:::NMsim_known}.
+##' 
+##' \itemize{
+##' 
+##' \item \code{NMsim_default} The default behaviour. Replaces any
+##' $ESTIMATION and $COVARIANCE sections by a $SIMULATION section.
+##'
+##' \item \code{NMsim_asis} The simplest of all method. It does nothing (but
+##' again, \code{NMsim} handles `$INPUT`, `$DATA`, `$TABLE` and
+##' more. Use this for instance if you already created a simulation
+##' (or estimation actually) control stream and want NMsim to run it
+##' on different data sets.
+##'
+##' \item \code{NMsim_typical} Like \code{NMsim_default} but with all
+##' ETAs=0, giving a "typical subject" simulation. Do not confuse this
+##' with a "reference subject" simulation which has to do with
+##' covariate values. Technically all ETAs=0 is obtained by replacing
+##' \code{$OMEGA} by a zero matrix.
+##' 
+##' \item \code{NMsim_known} Simulates _known_ subjects, meaning that
+##' it reuses ETA values from estimation run. This is what is refered
+##' to as emperical Bayes estimates. The .phi file from the estimation
+##' run must be found next to the .lst file from the estimation.This
+##' means that ID values in the (simulation) input data must be ID
+##' values that were used in the estimation too. Runs an
+##' \code{$ESTIMATION MAXEVAL=0} but pulls in ETAs for the ID's found
+##' in data. No \code{$SIMULATION} step is run which may affect how
+##' for instance residual variability is simulated, if at all.
+##'
+##' \item \code{NMsim_VarCov} Like \code{NMsim_default} but `$THETA`,
+##' `$OMEGA`, and `SIGMA` are drawn from distribution estimated in
+##' covariance step. This means that a successful covariance step must
+##' be available from the estimation. In case the simulation leads to
+##' negative diagonal elements in $OMEGA and $SIGMA, those values are
+##' truncated at zero. For simulation with parameter variability based
+##' on bootstrap results, use \code{NMsim_default}.
+##'
+##' }
 ##' @import NMdata
+##' @import data.table
 
 ##' @export
 

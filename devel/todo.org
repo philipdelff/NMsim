@@ -21,9 +21,15 @@ Path to nonmem, psn, other ways to exec.
 *** TODO Move existing results files to backup before running nonmem
 *** TODO Rename sge to parallel
 ** NMexecDirectory
-*** TODO [#A] Clean up after switching to absolute paths
+*** DONE Clean up after switching to absolute paths
 ** NMsim
-*** TODO Support for modifications to control stream(s).
+*** TODO save data fewer times
+Save only for each unique path.data. Merge in the nmtext somehow? It's
+a list so it's not that simple.
+*** TODO Delete existing results prior to running
+It does for single simulations. But when spawning mutiple inside a
+folder it does not. It should by default delete everything.
+*** DONE Support for modifications to control stream(s).
 Like insert lines to $PK or $ERROR. The best would be to extend
 NMwriteSection to support a function as argument. Then it would be like
 list(PK=function(text) c(text,"KA=KA*KASCALE"))
