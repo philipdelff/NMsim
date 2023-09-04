@@ -93,6 +93,7 @@ this.</p>
 <span>  create.dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">dir.psn</span>,</span>
 <span>  <span class="va">list.sections</span>,</span>
+<span>  sim.dir.from.scratch <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  path.nonmem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">as.fun</span>,</span>
 <span>  <span class="va">suffix.sim</span>,</span>
@@ -185,13 +186,14 @@ may be automated in the future.</p></dd>
 
 
 <dt>method.sim</dt>
-<dd><p>A function (not quoted) that creates the simulation control
-stream and other necessary files for a simulation based on the
-estimation control stream, the data, etc. The default is
-called <code>NMsim_default</code> which will replace any estimation
-and covariance step by a simulation step. See details section
-on oter methods, and see examples and especially vignettes on
-how to use the different provided methods.</p></dd>
+<dd><p>A function (not quoted) that creates the
+simulation control stream and other necessary files for a
+simulation based on the estimation control stream, the data,
+etc. The default is called <code>NMsim_default</code> which will
+replace any estimation and covariance step by a simulation
+step. See details section on oter methods, and see examples
+and especially vignettes on how to use the different provided
+methods.</p></dd>
 
 
 <dt>execute</dt>
@@ -269,6 +271,23 @@ to run most simulations. It is however powerful for some types
 of analyses, like modifying parameter values. See vignettes
 for further information. Documentation still under
 development.</p></dd>
+
+
+<dt>sim.dir.from.scratch</dt>
+<dd><p>If TRUE (default) this will wipe the
+simulation directory before running new simulations. The
+directory that will be emptied is _not_ dir.sims where you may
+keep many or all your simulations. It is the subdirectory
+named based on the run name and <code>name.sim</code>. The reason it
+is advised to wipe this directory is that if you in a previous
+simulation created simulation runs that are now obsolete, you
+could end up reading those too when collecting the
+results. NMsim will delete previously generated simulation
+control streams with the same name, but this option goes
+further. An example where it is important is if you first ran
+1000 replications, fixed something and now rand 500. If you
+choose FALSE here, you can end up with the results of 500 new
+and 500 old simulations.</p></dd>
 
 
 <dt>path.nonmem</dt>
