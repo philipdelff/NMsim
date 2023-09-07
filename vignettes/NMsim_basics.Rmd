@@ -28,8 +28,11 @@ knitr::opts_chunk$set(
 
 ```{r,setup,include=F}
 ## library(devtools)
-## load_all("../../../../NMdata")
-## load_all()
+unloadNamespace("NMsim")
+unloadNamespace("NMdata")
+
+load_all("~/wdirs//NMdata")
+load_all()
 library(NMsim)
 library(data.table)
 library(NMdata)
@@ -159,7 +162,13 @@ file.mod <- file.project("nonmem/xgxr017.mod")
 file.mod <- "~/xgxg_data/nonmem/xgxr018.mod"
 file.mod <- "~/xgxg_data/nonmem/xgxr021.mod"
 file.mod <- file.project("nonmem/xgxr021.mod")
-simres <- NMsim(path.mod=file.mod,
+
+unloadNamespace("NMsim")
+unloadNamespace("NMdata")
+load_all("~/wdirs//NMdata")
+load_all()
+
+simres <- NMsim(file.mod=file.mod,
                 data=dat.sim1
                 ## ,method.update.inits="nmsim"
                ,dir.sims="~/NMsim_test"

@@ -230,7 +230,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     direct <- NULL
     directory <- NULL
     nmsim <- NULL
-    file.mod <- NULL
     ROWMODEL <- NULL
     fn.mod <- NULL
     fn.sim <- NULL
@@ -251,7 +250,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
 #### Section start: Checking aguments ####
-
+    
     if(missing(file.mod)) stop("file.mod must be supplied. It must be one or more paths to existing control streams.")
     if(any(!file.exists(file.mod))) stop("All elements in file.mod must be paths to existing input control streams.")
     
