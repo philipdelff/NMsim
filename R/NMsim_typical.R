@@ -6,8 +6,8 @@
 ##' values. Technically all ETAs=0 is obtained by replacing
 ##' \code{$OMEGA} by a zero matrix.
 ##' 
-##' @param path.sim See \code{?NMsim}.
-##' @param path.mod See \code{?NMsim}.
+##' @param file.sim See \code{?NMsim}.
+##' @param file.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.
 ##' @param return.text If TRUE, just the text will be returned, and
 ##'     resulting control stream is not written to file.
@@ -16,7 +16,7 @@
 ##' @keywords internal
 
 
-NMsim_typical <- function(path.sim,path.mod,data.sim,return.text=FALSE){
+NMsim_typical <- function(file.sim,file.mod,data.sim,return.text=FALSE){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -26,10 +26,10 @@ NMsim_typical <- function(path.sim,path.mod,data.sim,return.text=FALSE){
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
 
-    files.needed.def <- NMsim_default(path.sim=path.sim,path.mod,data.sim)
-    lines.sim <- readLines(path.sim)
+    files.needed.def <- NMsim_default(file.sim=file.sim,file.mod,data.sim)
+    lines.sim <- readLines(file.sim)
     
-    extres <- NMreadExt(fnExtension(path.mod,"ext"))
+    extres <- NMreadExt(fnExtension(file.mod,"ext"))
     Netas <- extres$pars[par.type=="OMEGA",max(i)]
 
     lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
@@ -39,7 +39,7 @@ NMsim_typical <- function(path.sim,path.mod,data.sim,return.text=FALSE){
         return(lines.sim)            
     }
 
-    writeTextFile(lines=lines.sim,file=path.sim)
+    writeTextFile(lines=lines.sim,file=file.sim)
 
-    return(path.sim)
+    return(file.sim)
 }

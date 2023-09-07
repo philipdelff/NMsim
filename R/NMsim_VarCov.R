@@ -8,13 +8,13 @@
 ##' zero. For simulation with parameter variability based on bootstrap
 ##' results, use \code{NMsim_default}.
 ##'
-##' @param path.sim See \code{?NMsim}.
-##' @param path.mod See \code{?NMsim}.
+##' @param file.sim See \code{?NMsim}.
+##' @param file.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.
 ##' @param nsims Number of replications wanted. The default is 1. If
 ##'     greater, multiple control streams will be generated.
 ##' @param replace.sim If there is a $SIMULATION section in the
-##'     contents of path.sim, should it be replaced? Default is
+##'     contents of file.sim, should it be replaced? Default is
 ##'     yes. See the \code{list.section} argument to \code{NMsim} for
 ##'     how to provide custom contents to sections with \code{NMsim}
 ##'     instead of editing the control streams beforehand.
@@ -25,7 +25,7 @@
 ##' @return Character vector of simulation control stream paths
 ##' @keywords internal
 
-NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
+NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -46,17 +46,17 @@ NMsim_VarCov <- function(path.sim,path.mod,data.sim,nsims=1){
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks 
 
 
-    files.needed.def <- NMsim_default(path.sim=path.sim,path.mod,data.sim)
+    files.needed.def <- NMsim_default(file.sim=file.sim,file.mod,data.sim)
 
     
-    path.lst <- fnExtension(path.mod,"lst")
+    path.lst <- fnExtension(file.mod,"lst")
     path.cov <- fnExtension(path.lst,"cov")
     path.ext <- fnExtension(path.lst,"ext")
     ## Should not include NMREP. 
     ##    NMreadTabCov(path.cov,rm.name=F)
 
     ## define new files
-    path.sim.0 <- path.sim
+    path.sim.0 <- file.sim
     run.sim.0 <- fnExtension(basename(path.sim.0),"")
     rm(path.sim)
     dt.sims <- data.table(SUBMODEL=1:nsims)

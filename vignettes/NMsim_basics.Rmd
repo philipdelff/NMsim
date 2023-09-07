@@ -158,6 +158,7 @@ the simplest thing we can think of.
 file.mod <- file.project("nonmem/xgxr017.mod")
 file.mod <- "~/xgxg_data/nonmem/xgxr018.mod"
 file.mod <- "~/xgxg_data/nonmem/xgxr021.mod"
+file.mod <- file.project("nonmem/xgxr021.mod")
 simres <- NMsim(path.mod=file.mod,
                 data=dat.sim1
                 ## ,method.update.inits="nmsim"
@@ -303,17 +304,17 @@ ids <- data.frame(ID=unique(res.mod$ID))
 
 
 dat.sim1.known <- merge(ids,
-                        base.sim.known[,setdiff(colnames(base.sim.known),c("ID"))]
+                        base.sim.known[,setdiff(colnames(base.sim.known),c("ID")),with=FALSE]
                         )
 setorder(dat.sim1.known,ID,TIME,EVID)
 
 res.known <- NMsim(file.mod,
                    data=dat.sim1.known,
                    suffix.sim="known1",
-                   text.table="PRED IPRED CL V KA"
+                   text.table="PRED IPRED CL V2 KA"
                   ,method.sim=NMsim_known
                    ## ,method.update.inits="nmsim"
-                   ## ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                  ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                    )
 ```
 

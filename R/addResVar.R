@@ -42,7 +42,7 @@
 
 
 
-addResVar <- function(data,path.ext,prop=NULL,add=NULL,log=FALSE,par.type="SIGMA",trunc0=TRUE,scale.par,subset,seed,as.fun){
+addResVar <- function(data,path.ext,prop=NULL,add=NULL,log=FALSE,par.type="SIGMA",trunc0=TRUE,scale.par,subset,seed,col.ipred="IPRED",col.ipredvar="IPREDVAR",as.fun){
 
     . <- NULL
     ERRadd <- NULL
@@ -150,11 +150,11 @@ addResVar <- function(data,path.ext,prop=NULL,add=NULL,log=FALSE,par.type="SIGMA
 
     ## calc predictions
     if(log){
-        data[eval(parse(text=subset)),IPREDVAR:=exp(log(IPRED)*(1+errs[,ERRprop])+errs[,ERRadd])]
+        data[eval(parse(text=subset)),(col.ipredvar):=exp(log(get(col.ipred))*(1+errs[,ERRprop])+errs[,ERRadd])]
     } else {
-        data[eval(parse(text=subset)),IPREDVAR:=IPRED*(1+errs[,ERRprop])+errs[,ERRadd]]
+        data[eval(parse(text=subset)),(col.ipredvar):=get(col.ipred)*(1+errs[,ERRprop])+errs[,ERRadd]]
         if(trunc0) {
-            data[eval(parse(text=subset))&IPREDVAR<0,IPREDVAR:=0]
+            data[eval(parse(text=subset))&get(col.ipredvar)<0,(col.ipredvar):=0]
         }
     }
 

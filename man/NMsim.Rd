@@ -5,7 +5,7 @@
 \title{Run simulations from an estimated Nonmem model}
 \usage{
 NMsim(
-  path.mod,
+  file.mod,
   data,
   dir.sims,
   name.sim,
@@ -36,10 +36,11 @@ NMsim(
 )
 }
 \arguments{
-\item{path.mod}{Path to the input control stream to run the
+\item{file.mod}{Path(s) to the input control stream(s) to run the
 simulation on. The outpult control stream is for now assumed
 to be stored next to the input control stream and ending in
-.lst instead of .mod.}
+.lst instead of .mod. The .ext file must also be present. If
+simulating known subjects, the .phi is necessary too.}
 
 \item{data}{The simulation data as a data.frame.}
 
@@ -65,9 +66,11 @@ means not to use SUBPROBLEMS.}
 they be used? If TRUE and reading the results fail, the
 simulations will still be rerun.}
 
-\item{seed}{Seed to pass to Nonmem. Default is to draw one like
-`sample(1:1e8,size=1)` for each simulation. In case
-type.sim=known, seed is not used and will be set to 1.}
+\item{seed}{Seed to pass to Nonmem. Default is to draw one betwen
+0 and 2147483647 (the values supported by Nonmem) for each
+simulation. In case type.sim=known, seed is not used and will
+be set to 1. You can pass a function that will be evaluated
+(say to choose a different pool of seeds to draw from).}
 
 \item{args.psn.execute}{A charachter string that will be passed as
 arguments PSN's `execute`.}

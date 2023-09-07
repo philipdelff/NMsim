@@ -6,14 +6,14 @@
 ##' estimation actually) control stream and want NMsim to run it on
 ##' different data sets.
 ##'
-##' @param path.sim See \code{?NMsim}.
-##' @param path.mod See \code{?NMsim}.
+##' @param file.sim See \code{?NMsim}.
+##' @param file.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.
 ##' @return Path to simulation control stream
 ##' @keywords internal 
 
-NMsim_asis <- function(path.sim,path.mod,data.sim){
+NMsim_asis <- function(file.sim,file.mod,data.sim){
 
-    return(path.sim)
+    return(file.sim)
 
 }

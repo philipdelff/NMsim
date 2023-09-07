@@ -15,6 +15,8 @@ addResVar(
   scale.par,
   subset,
   seed,
+  col.ipred = "IPRED",
+  col.ipredvar = "IPREDVAR",
   as.fun
 )
 }

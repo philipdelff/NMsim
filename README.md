@@ -1,7 +1,7 @@
 # NMsim
 `NMsim` is an R package that can modify and start Nonmem jobs from
 within R. Most notably, it can simulate Nonmem models (using the
-`NMsim` function) based on just a simulation data set and a path to a
+`NMsim` function) based on just a simulation data set and a path to an
 estimation control stream. It will also retrive and combine output tables with input data once Nonmem has finished and return the results to R. 
 
 ## Install

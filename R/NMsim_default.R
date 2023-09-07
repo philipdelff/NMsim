@@ -4,13 +4,13 @@
 ##' The default behaviour of \code{NMsim}. Replaces any $ESTIMATION
 ##' and $COVARIANCE sections by a $SIMULATION section.
 ##' 
-##' @param path.sim See \code{?NMsim}.
-##' @param path.mod See \code{?NMsim}.
+##' @param file.sim See \code{?NMsim}.
+##' @param file.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.
 ##' @param nsims Number of replications wanted. The default is 1. If
 ##'     greater, multiple control streams will be generated.
 ##' @param replace.sim If there is a $SIMULATION section in the
-##'     contents of path.sim, should it be replaced? Default is
+##'     contents of file.sim, should it be replaced? Default is
 ##'     yes. See the \code{list.section} argument to \code{NMsim} for
 ##'     how to provide custom contents to sections with \code{NMsim}
 ##'     instead of editing the control streams beforehand.
@@ -21,7 +21,7 @@
 ##' @return Character vector of simulation control stream paths
 ##' @keywords internal
 
-NMsim_default <- function(path.sim,path.mod,data.sim,nsims=1,replace.sim=TRUE,return.text=FALSE){
+NMsim_default <- function(file.sim,file.mod,data.sim,nsims=1,replace.sim=TRUE,return.text=FALSE){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -33,7 +33,7 @@ NMsim_default <- function(path.sim,path.mod,data.sim,nsims=1,replace.sim=TRUE,re
 
 ###  Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
-    lines.sim <- readLines(path.sim)
+    lines.sim <- readLines(file.sim)
 
     sections.sim <- NMreadSection(lines=lines.sim)
     names.sections <- names(sections.sim)
@@ -80,16 +80,16 @@ NMsim_default <- function(path.sim,path.mod,data.sim,nsims=1,replace.sim=TRUE,re
         return(lines.sim)            
     }
     
-    writeTextFile(lines=lines.sim,file=path.sim)
+    writeTextFile(lines=lines.sim,file=file.sim)
     
     if(nsims==1){
-        return(path.sim)
+        return(file.sim)
     }
     
 ### if nsims>1
     ## define new files
 
-    path.sim.0 <- path.sim
+    path.sim.0 <- file.sim
     run.sim.0 <- fnExtension(basename(path.sim.0),"")
     rm(path.sim)
     dt.sims <- data.table(SUBMODEL=1:nsims)

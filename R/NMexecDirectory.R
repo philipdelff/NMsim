@@ -110,7 +110,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     lines.bash <- c(
         "#!/bin/bash"
        ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-### this works when path.mod is a relative path
+### this works when file.mod is a relative path
         ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
         ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
 

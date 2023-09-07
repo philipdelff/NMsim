@@ -145,8 +145,12 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     combs[,(col.row):=.I]
     combs[,Nna:=sum(is.na(.SD)),by=col.row]
     
-### trying to fix. Is this a bug?
-    combs <- combs[Nna==0]
+### This used to drop rows. That seems too risky. Give warning if there are any.
+    nrows.na <- combs[Nna>0][,.N]
+    if(nrows.na){
+        warning("NA values among covariates. This may give unintended results.")
+    }
+    ## combs <- combs[Nna==0]
     ## combs <- combs[Nna<length(covs)]
 
     combs[,(col.row):=NULL]
@@ -195,6 +199,7 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     res <- lapply(res,unlist)
     res <- as.data.table(res)
     ## order rows and columns. 
+    
     setorderv(res,c("ID","TIME","CMT"))
     res <- NMorderColumns(res)
     

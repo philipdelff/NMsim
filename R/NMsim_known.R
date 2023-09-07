@@ -10,7 +10,7 @@
 ##' \code{$SIMULATION} step is run which may affect how for instance
 ##' residual variability is simulated, if at all.
 ##' 
-##' @param path.sim See \code{?NMsim}.
+##' @param file.sim See \code{?NMsim}.
 ##' @param path.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.
 ##' @param return.text If TRUE, just the text will be returned, and
@@ -21,7 +21,7 @@
 ##' @keywords internal
 
 
-NMsim_known <- function(path.sim,path.mod,data.sim,return.text=FALSE){
+NMsim_known <- function(file.sim,path.mod,data.sim,return.text=FALSE){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -35,10 +35,10 @@ NMsim_known <- function(path.sim,path.mod,data.sim,return.text=FALSE){
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
-    path.phi.sim <- fnAppend(fnExtension(path.sim,".phi"),"input")
-    files.needed.def <- NMsim_default(path.sim=path.sim,path.mod=path.mod,data.sim=data.sim)
+    path.phi.sim <- fnAppend(fnExtension(file.sim,".phi"),"input")
+    files.needed.def <- NMsim_default(file.sim=file.sim,path.mod=path.mod,data.sim=data.sim)
 
-    lines.sim <- readLines(path.sim)
+    lines.sim <- readLines(file.sim)
     
 ### prepare simulation control stream
     ## get rid of any $ETAS sections
@@ -89,18 +89,18 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     phi.use <- rbind(phi.lines[is.data==FALSE,.(text)],phi.use,fill=TRUE)
 
     lines.phi <- phi.use[,text]
-    path.phi.sim <- fnAppend(fnExtension(path.sim,".phi"),"input")
+    path.phi.sim <- fnAppend(fnExtension(file.sim,".phi"),"input")
 
     if(return.text){
         return(list(mod=lines.sim,
                     phi=lines.phi))
     }
     
-    writeTextFile(lines=lines.sim,file=path.sim)
+    writeTextFile(lines=lines.sim,file=file.sim)
     
     writeTextFile(lines.phi,path.phi.sim)
 
-    files.needed <- data.table(path.sim=path.sim,files.needed=path.phi.sim)
+    files.needed <- data.table(path.sim=file.sim,files.needed=path.phi.sim)
     files.needed
 }
 
