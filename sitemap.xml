@@ -31,13 +31,40 @@
     <loc>https://philipdelff.github.io/NMsim/reference/NMexecDirectory.html</loc>
   </url>
   <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMgenPNM.html</loc>
+  </url>
+  <url>
     <loc>https://philipdelff.github.io/NMsim/reference/NMreadCov.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMreadExt.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/NMreplaceInits.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/NMsim.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMsim_VarCov.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMsim_asis.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMsim_default.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMsim_known.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMsim_typical.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMupdateInits.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMwritePreamble.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/addEVID2.html</loc>
@@ -47,6 +74,9 @@
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/callNonmemDirect.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/checkTimes.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/dtapply.html</loc>
@@ -59,5 +89,11 @@
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/inputArchiveDefault.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/simpleCharArg.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/writeTextFile.html</loc>
   </url>
 </urlset>

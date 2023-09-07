@@ -20,7 +20,7 @@ this."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.931</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.941</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@ this.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">NMsim</span><span class="op">(</span></span>
-<span>  <span class="va">path.mod</span>,</span>
+<span>  <span class="va">file.mod</span>,</span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">dir.sims</span>,</span>
 <span>  <span class="va">name.sim</span>,</span>
@@ -103,11 +103,12 @@ this.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>path.mod</dt>
-<dd><p>Path to the input control stream to run the
+    <dl><dt>file.mod</dt>
+<dd><p>Path(s) to the input control stream(s) to run the
 simulation on. The outpult control stream is for now assumed
 to be stored next to the input control stream and ending in
-.lst instead of .mod.</p></dd>
+.lst instead of .mod. The .ext file must also be present. If
+simulating known subjects, the .phi is necessary too.</p></dd>
 
 
 <dt>data</dt>
@@ -149,9 +150,11 @@ simulations will still be rerun.</p></dd>
 
 
 <dt>seed</dt>
-<dd><p>Seed to pass to Nonmem. Default is to draw one like
-`sample(1:1e8,size=1)` for each simulation. In case
-type.sim=known, seed is not used and will be set to 1.</p></dd>
+<dd><p>Seed to pass to Nonmem. Default is to draw one betwen
+0 and 2147483647 (the values supported by Nonmem) for each
+simulation. In case type.sim=known, seed is not used and will
+be set to 1. You can pass a function that will be evaluated
+(say to choose a different pool of seeds to draw from).</p></dd>
 
 
 <dt>args.psn.execute</dt>
