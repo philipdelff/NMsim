@@ -182,33 +182,29 @@ variability is not simulated in this case. More on that later in this
 paper.
 
 ```{r,eval=FALSE}
-as.data.table(simres) |>
-    melt(measure.vars=cc(PRED,IPRED))|>
-	ggplot(aes(TIME,value,colour=variable))+
-    geom_line()+
-    facet_wrap(~regimen+dose)
-
 datl <- as.data.table(simres) |>
     melt(measure.vars=cc(PRED,IPRED,Y))
 ## datl[,type:="Prediction"]
 ## datl[variable=="Y",type:="Simulation"]
 
-	ggplot(datl,aes(TIME,value,colour=variable))+
+ggplot(datl,aes(TIME,value,colour=variable))+
     geom_line(data=function(x)x[variable!="Y"])+
     geom_point(data=function(x)x[variable=="Y"])+
     facet_wrap(~regimen+dose)
 ```
 
-<!-- That did not go well. As the error shows, `$TABLE` refers to a `ROW` column. Nonmem needs this to run the control stream as is. Since this does not happen until `$TABLE`, we have two options to fix it -->
-<!-- - Add `ROW` to the input data set -->
-<!-- - Modify `$TABLE` (using the `text.table`, demonstrated later) -->
+The reason we can plot a simulation with residual variability is that the control stream includes a variable `Y` defined with residual variability in `$ERROR`:
+```
+  Y=F+F*ERR(1)+ERR(2)
+```
+
 
 Before we continue with that model, we want to compare a simulation based on this model to another model we are considering. `NMsim` can do this and collect the data into one object:
 
 ```{r,sim-twomodels,eval=FALSE}
 ## file.mod <- "../nonmem/xgxr014.mod"
-file.mod <- file.project(c("nonmem/xgxr014.mod","nonmem/xgxr114.mod"))
-simres <- NMsim(path.mod=file.mod,
+files.2.mod <- file.project(c("nonmem/xgxr021.mod","nonmem/xgxr114.mod"))
+simres <- NMsim(file.mod=files.2.mod,
                 data=dat.sim1
                 )
 ```
@@ -241,8 +237,8 @@ setorder(dat.sim.1000,regimen,dose,ID,TIME,EVID)
 
 We now simulate 1000 subjects by plugging in this data object:
 ```{r,sim-1000-data,eval=FALSE}
-file.mod <- file.project("nonmem/xgxr014.mod")
-simres <- NMsim(path.mod=file.mod,
+## file.mod <- file.project("nonmem/xgxr014.mod")
+simres.n1000.1 <- NMsim(file.mod=file.mod,
                 data=dat.sim.1000
                 )
 ```
@@ -252,20 +248,20 @@ The other way to do this is making use of Nonmem's `SUBPROBLEMS` simulation feat
 
 ```{r,sim-1000-subproblem,eval=FALSE}
 ## file.mod <- "../nonmem/xgxr014.mod"
-file.mod <- file.project("nonmem/xgxr014.mod")
-simres <- NMsim(path.mod=file.mod,
+## file.mod <- file.project("nonmem/xgxr014.mod")
+simres.n1000.2 <- NMsim(file.mod=file.mod,
                 data=dat.sim1,
                 subproblems=1000
                 )
-simres <- as.data.table(simres)[,ID:=.GRP,by=.(NMREP,ID,regimen,dose)]
+simres.n1000.2 <- as.data.table(simres.n1000.2)[,ID:=.GRP,by=.(NMREP,ID,regimen,dose)]
 ```
 
-The two approaches are computationally about equally fast, the most significant difference probably being in Nonmem reading a smaller or larger simulation input data file. It is merely a question of preference of the modeler which one to use. In a general case where the simulated patients need different dosing or sample schedules, the manual repetition of the data is needed.
+The two approaches are computationally about equally fast, the most significant difference probably being in Nonmem reading a smaller or larger simulation input data file. Unless the input dataset becomes very large, it is merely a question of preference of the modeler which one to use. In a case where the simulated patients need different dosing or sample schedules, the manual construction of the data is needed - because it's not a straightforward replication.
 
 We now plot a prediction interval - in this case based on the results of the simulation using `SUBPROBLEMS`; this makes no difference to how to derive the prediction interval.
 
 ```{r,eval=FALSE}
-simres.pi <- simres[,setNames(as.list(quantile(IPRED,probs=c(.05,.5,.95))),cc(ll,median,ul)),
+simres.pi <- simres.n1000.2[,setNames(as.list(quantile(IPRED,probs=c(.05,.5,.95))),cc(ll,median,ul)),
                     by=.(regimen,TIME,dose)]
 simres.pi$type <- "pi"
 simres.pi$pi.cover <- "90%"
@@ -284,7 +280,7 @@ p.pi.typ
 A typical subject is here understood as a subject without random effects, i.e. all ETA's equal zero. It is important to realize that "typical" does not have to do with covariates which the user will still need to control in the model, in the simulation input data, or by a combination of these. Getting `NMsim` to run with all ETA's equaling zero is this easy:
 
 ```{r,eval=FALSE}
-simres.typ <- NMsim(path.mod=file.mod,
+simres.typ <- NMsim(file.mod=file.mod,
                     data=dat.sim1,
                     name.sim="typSubj",
                     method.sim=NMsim_typical)
@@ -297,8 +293,9 @@ cases, but that depends on the model. The way to run a simulation with
 all ETA's set to 0 is using `method.sim=NMsim_typical`.
 
 ```{r,eval=FALSE}
-p.typ <- ggplot(simres.typ,aes(TIME,IPRED))+geom_line()+
-    geom_line(aes(y=PRED),colour=2)
+p.typ <- ggplot(simres.typ,aes(TIME,IPRED,color=dose))+geom_line()+
+    geom_line(aes(y=PRED))+
+    facet_wrap(~regimen)
 p.typ
 
 ```
@@ -313,18 +310,23 @@ ids <- data.frame(ID=unique(res.mod$ID))
 
 
 dat.sim1.known <- merge(ids,
-                        base.sim.known[,setdiff(colnames(base.sim.known),c("ID")),with=FALSE]
+                        as.data.table(base.sim.known)[,setdiff(colnames(base.sim.known),c("ID")),with=FALSE]
                         )
 setorder(dat.sim1.known,ID,TIME,EVID)
 
-res.known <- NMsim(file.mod,
+res.known <- NMsim(file.mod=file.mod,
                    data=dat.sim1.known,
-                   suffix.sim="known1",
+                   name.sim="known1",
                    text.table="PRED IPRED CL V2 KA"
                   ,method.sim=NMsim_known
                    ## ,method.update.inits="nmsim"
                   ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                    )
+```
+
+```{r}
+ggplot(as.data.table(res.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
+    geom_line()
 ```
 
 <!-- Show a plot of the individual parameters in estimate and in sim -->
@@ -442,9 +444,9 @@ Anyway, getting `NMsim` to do the work is as simple as this:
 ## file.mod.cov <- file.project("nonmem/xgxr114.mod")
 NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 
-file.mod.cov <- "~/xgxg_data/nonmem/xgxr017.mod"
+#file.mod.cov <- "~/xgxg_data/nonmem/xgxr017.mod"
 NMsim(
-    path.mod=file.mod.cov,
+    file.mod=file.mod,
     data=dat.sim1
    ,dir.sims="simulations"
    ,method.sim=NMsim_VarCov ## Var-Cov parameter sampling
@@ -605,7 +607,7 @@ simres.with.resvar <- addResVar(simres,path.ext=fnExtension(file.mod,"ext"),par.
 ```{r,include=FALSE,eval=FALSE}
 dt.inp2 <- rbind(
     transform(dt.inp,CLSCALE=1,sim="CL unchanged")
-    ,transform(dt.inp,CLSCALE=2,sim="Double CL")
+   ,transform(dt.inp,CLSCALE=2,sim="Double CL")
 )
 dt.inp2[,ID:=.GRP,by=.(sim,ID)]
 NMcheckData(dt.inp2)

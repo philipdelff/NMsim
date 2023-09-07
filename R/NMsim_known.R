@@ -11,7 +11,7 @@
 ##' residual variability is simulated, if at all.
 ##' 
 ##' @param file.sim See \code{?NMsim}.
-##' @param path.mod See \code{?NMsim}.
+##' @param file.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.
 ##' @param return.text If TRUE, just the text will be returned, and
 ##'     resulting control stream is not written to file.
@@ -21,7 +21,7 @@
 ##' @keywords internal
 
 
-NMsim_known <- function(file.sim,path.mod,data.sim,return.text=FALSE){
+NMsim_known <- function(file.sim,file.mod,data.sim,return.text=FALSE){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -36,7 +36,7 @@ NMsim_known <- function(file.sim,path.mod,data.sim,return.text=FALSE){
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
     path.phi.sim <- fnAppend(fnExtension(file.sim,".phi"),"input")
-    files.needed.def <- NMsim_default(file.sim=file.sim,path.mod=path.mod,data.sim=data.sim)
+    files.needed.def <- NMsim_default(file.sim=file.sim,file.mod=file.mod,data.sim=data.sim)
 
     lines.sim <- readLines(file.sim)
     
@@ -66,7 +66,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
 
     ## phi file required
 ### read estimation phi file and select subjects to be simulated
-    path.phi <- fnExtension(path.mod,".phi")
+    path.phi <- fnExtension(file.mod,".phi")
     phi <- NMreadTab(path.phi)
 
     data.sim[,rowtmp:=.I]

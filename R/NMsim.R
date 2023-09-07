@@ -356,7 +356,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                           ,dir.psn=dir.psn
                           ,...
                            )
-        return(rbindlist(allres.l))
+        return(rbindlist(allres.l,fill=TRUE))
     }
     ## }
 
