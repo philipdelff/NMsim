@@ -324,7 +324,7 @@ res.known <- NMsim(file.mod=file.mod,
                    )
 ```
 
-```{r}
+```{r,eval=FALSE}
 ggplot(as.data.table(res.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
     geom_line()
 ```
