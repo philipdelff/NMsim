@@ -2,25 +2,7 @@ url: https://philipdelff.github.io/NMsim/
 template:
   bootstrap: 5
   includes:
-    after_body: |
-      <script data-goatcounter="https://nmsim.goatcounter.com/count"
+    after_body: |-
+      <script data-goatcounter="https://nmdata.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
-navbar:
-  structure:
-    left:
-    - home
-    - articles
-    - github
-    right: github
-  components:
-    home:
-      title: Simulations!
-      desc: |
-        Easy simulations
-      icon: fas fa-home fa-lg
-      href: index.html
-    articles:
-      text: Vignettes
-      menu:
-      - text: Various types of simulations
-        href: articles/NMsim_basics.html
+
