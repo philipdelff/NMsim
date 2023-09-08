@@ -4,12 +4,12 @@
 \alias{NMsim_known}
 \title{Known subject simulation method}
 \usage{
-NMsim_known(file.sim, path.mod, data.sim, return.text = FALSE)
+NMsim_known(file.sim, file.mod, data.sim, return.text = FALSE)
 }
 \arguments{
 \item{file.sim}{See \code{?NMsim}.}
 
-\item{path.mod}{See \code{?NMsim}.}
+\item{file.mod}{See \code{?NMsim}.}
 
 \item{data.sim}{See \code{?NMsim}.}
 

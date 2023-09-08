@@ -34,6 +34,11 @@
 ##'     something else. If data.tables are wanted, use
 ##'     as.fun="data.table". The default can be configured using
 ##'     NMdataConf.
+##' @param col.ipred The name of the column containing individual
+##'     predictions.
+##' @param col.ipredvar The name of the column to be created by
+##'     addResVar to contain the simulated observations (individual
+##'     predictions plus residual error).
 ##' @import MASS
 ##' @import data.table
 ##' @import NMdata

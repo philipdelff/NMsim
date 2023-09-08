@@ -193,6 +193,7 @@
 ##' }
 ##' @import NMdata
 ##' @import data.table
+##' @importFrom stats runif
 
 ##' @export
 
@@ -236,12 +237,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     run.mod <- NULL
     run.sim <- NULL
     dir.sim <- NULL
+    f.exists <- NULL
     fn.sim.tmp <- NULL
     path.sim <- NULL
     path.digests <- NULL
     path.sim.lst <- NULL
     fn.data <- NULL
     path.data <- NULL
+    value <- NULL
     variable <- NULL
     ROW <- NULL
     files.needed <- NULL

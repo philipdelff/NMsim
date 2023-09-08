@@ -3,7 +3,8 @@
 ##' @param file The .cov covariance Nonmem matrix file to read 
 ##' @param ... Passed to fread
 ##'
-##' @details This function is taken from nonmem2rx::nmcov. 
+##' @details This function is taken from nonmem2rx::nmcov which was
+##'     based on function from NMdata.
 ##' 
 ##' @return A matrix with covariance step from NONMEM
 ##' 

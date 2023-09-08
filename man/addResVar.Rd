@@ -61,6 +61,13 @@ simulating. Default is to generate a seed and report it in the
 console. Use seed=FALSE to avoid setting the seed (if you
 prefer doing it otherwise).}
 
+\item{col.ipred}{The name of the column containing individual
+predictions.}
+
+\item{col.ipredvar}{The name of the column to be created by
+addResVar to contain the simulated observations (individual
+predictions plus residual error).}
+
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say tibble::as_tibble) in as.fun to convert to
 something else. If data.tables are wanted, use

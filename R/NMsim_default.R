@@ -29,6 +29,7 @@ NMsim_default <- function(file.sim,file.mod,data.sim,nsims=1,replace.sim=TRUE,re
     submodel <- NULL
     SUBMODEL <- NULL
     fn.sim <- NULL
+    path.sim <- NULL
     run.sim <- NULL
 
 ###  Section end: Dummy variables, only not to get NOTE's in pacakge checks

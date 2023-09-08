@@ -18,7 +18,8 @@ A matrix with covariance step from NONMEM
 Read in data file
 }
 \details{
-This function is taken from nonmem2rx::nmcov.
+This function is taken from nonmem2rx::nmcov which was
+    based on function from NMdata.
 }
 \author{
 Philip Delff and Matthew L. Fidler

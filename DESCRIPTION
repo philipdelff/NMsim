@@ -13,7 +13,6 @@ VignetteBuilder: knitr
 Depends: R (>= 4.1.0)
 Imports: data.table,
          NMdata (>= 0.1.0),
-         digest,
          R.utils,
          MASS
 Suggests: 
