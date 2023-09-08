@@ -58,7 +58,7 @@ NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
     ## define new files
     path.sim.0 <- file.sim
     run.sim.0 <- fnExtension(basename(path.sim.0),"")
-    rm(path.sim)
+    rm(file.sim)
     dt.sims <- data.table(SUBMODEL=1:nsims)
     length.num.char <- ceiling(log10(nsims+1))
     dt.sims[,submodel:=sprintf(fmt=paste0("%0",length.num.char,"d"),SUBMODEL)]
@@ -77,14 +77,15 @@ NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
     ### as.list first is because without it, this will fail for
     ### nsims=1. This is because a single-column data.table would be
     ### created in that case, and then SUBMODEL and further steps
-    ### become wrong and will fail.
-    newpars <- as.data.table(as.list(newpars))
+### become wrong and will fail.
+    if(nsims==1){
+        newpars <- as.data.table(as.list(newpars))
+    } else {
+        newpars <- as.data.table(newpars)
+    }
     newpars[,SUBMODEL:=.I]
-    
-    ## ests.fix <- ests[FIX==1]
-    ##     mergeCheck(newpars.l,ests.fix,by="parameter",all.x=T)
-    
 
+    
     newpars <- mergeCheck(
         melt(newpars,id.vars="SUBMODEL",variable.name="parameter")
        ,

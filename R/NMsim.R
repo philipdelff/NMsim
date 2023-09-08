@@ -529,6 +529,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 #### Section start: Additional control stream modifications specified by user - list.sections ####
     if( !missing(list.sections) && !is.null(list.sections) ){
 ### This requires NMdata >=0.1.0.905
+        if(packageVersion("NMdata")<"0.1.1") warning("list.sections argument requires NMdata>=0.1.1. Please upgrade NMdata.") 
         dt.models[,{
             NMwriteSection(files=path.sim,list.sections=list.sections)
         },by=.(ROWMODEL)]
