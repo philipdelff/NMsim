@@ -1,0 +1,135 @@
+---
+title: "NMsim Configuration"
+output:
+rmarkdown::html_vignette:
+    toc: true
+Suggests: markdown
+VignetteBuilder: knitr
+vignette: >
+  %\VignetteIndexEntry{NMsim Configuration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+header-includes:
+- \usepackage{ae}
+---
+
+```{r,include = FALSE}
+##knitr::opts_chunk$set(dev = "cairo_pdf")
+knitr::opts_chunk$set(
+                      collapse = TRUE
+                     ,comment = "#>"
+                     ,fig.width=7
+                     ,cache=FALSE
+                  )
+
+## this changes data.table syntax. I think we can do without.
+## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+```
+
+NMsim relies on Nonmem for running simulations. If your system does
+not meet the requirements described in this document, it does not mean
+that NMsim can't work. It can still put together your Nonmem
+simulations and make everything ready for Nonmem to be executed. Once
+you have run Nonmem, you can then use `NMdata::NMscanData()` to
+collect the results.
+
+## Requirements
+Currently, NMsim only supports systems that run Nonmem on linux. If
+you run Nonmem on a Windows system, you can try to use the PSN
+methods, see below. 
+
+Notice, the important thing is which system is running Nonmem, not
+what system is running R. So if you run R on a windows system and can
+run Nonmem through an ssh tunnel, NMsim should still be able to
+work. If you run Nonmem on Windows and would like to get NMsim to
+work, reach out and we will figure it out.
+
+NMsim functions and their arguments often refer to input control
+streams by `.mod`. It should work independently of the file name
+extension of the input control streams. The estimate files (`.ext` and
+if known subjects simulated `.phi`) are currently expected to carry
+the same file name but with those file name extension.
+
+## Configuration of NMsim
+Below this section, some background discussion is provided to understand which methods to choose. No matter what you prefer to use, the best is to set up NMsim to be able to use both Nonmem and (if available) PSN. Then you have the flexibility to switch between methods as preferred. 
+
+### Specify the Nonmem paths
+For NMsim to run Nonmem, it needs to know where to find the Nonmem
+executable.
+
+The easiest way to do configure this is through NMdata's configuration
+function. Say you want to run Nonmem with `/opt/NONMEM/nm75/run/nmfe`,
+insert this after loading `NMdata` in the beginning of your script
+
+```{r,eval=FALSE}
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe")
+```
+
+If you normally use PSN as your Nonmem interface, and you therefore do not know where Nonmem is installed, you can check this using PSN. The following command should give you the Nonmem installation paths that PSN is configured with. However, you likely still need to add the last piece of the path from the installation directory to the nonmem binary.
+
+```
+psn -nm_versions
+```
+
+### Specify the PSN installation path
+If PSN is available, and you can run `execute` and `update_inits` in a
+terminal, you don't need to configure anything. If you have PSN
+installed, but you have to provide the paths to those two executables
+when running them (something like `/opt/PSN/execute run1.mod`), you
+will have to tell NMsim where to find them. In this case, the easiest
+is loading NMdata and then running:
+
+```{r,eval=FALSE}
+NMdataConf(dir.psn="/opt/PSN")
+```
+
+
+
+
+## PSN or not?
+### PSN or not for Nonmem execution
+NMsim can call Nonmem using PSN's `execute` or through similar
+functionality included in `NMsim`. We will refer to those methods by
+the way they are referred to in the NMsim function argument that
+controls which one is used, i.e. `method.execute="psn"` and
+`method.execute="nmsim"`. Notice, NMsim will handle it all no matter
+which of these you choose - the difference is what happens under the
+hood of NMsim. NMsim can make most things work using either of the
+two, but they do provide slightly different advantages so it's best if
+you configure NMsim to be able to use both.
+
+For simulations, `method.execute="psn"` does not provide advantages
+over `method.execute="nmsim"`. In contrast, there are simulation types
+that will only work with `method.execute="nmsim"`. You need to tell
+NMsim where to find Nonmem for this to work.
+
+Nonmem execution with `NMexec()` is a slightly different discussion. See
+`?NMexec` for that.
+
+### PSN or not for updating initial values
+NMsim needs to update initial values using the model estimate prior to
+running a simulation. PSN provides the `update_inits` function to do
+this, and if available, this is the default method in NMsim. Again, we
+refer to this by the argument name, `method.update.inits="psn"`.
+
+NMsim also provides a similar functionality internally, referred to as
+`method.update.inits="NMsim"`. This will be used if PSN is not found -
+and if you ask for it.
+
+`method.update.inits="psn"` has a few advantages over the
+NMsim-provided method. Most notbably, it is widely used, and it keeps
+comments in affected control stream sections (`$THETA`, `$OMEGA`,
+`$SIGMA`). `method.update.inits="nmsim"` will drop all comments in
+affected sections. I have in the past seen issues with some methods to
+update `$OMEGA` sections with off-diagonal elements
+(`BLOCK`). `method.update.inits="nmsim"` takes a very simple approach
+and writes out (and fixes) the full `OMEGA` matrix in the control
+stream. Since the `OMEGA` matrix is read from the `.lst` file, this is
+not relying on interpreting Nonmem code at all. In cases of
+"complicated" `BLOCK` structures this is a simple approach that may be
+less prone to errors. That and the support of systems without `PSN`
+are the two reasons one would choose `method.update.inits="nmsim"`
+over `method.update.inits="psn"`.
+
+In order to make use of `method.update.inits="psn"`, you need to make
+sure NMsim can find PSN.
