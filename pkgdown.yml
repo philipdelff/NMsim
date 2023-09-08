@@ -2,8 +2,9 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  NMsim_basics: NMsim_basics.html
-last_built: 2023-09-08T14:43Z
+  NMsim-config: NMsim-config.html
+  NMsim-simulate: NMsim-simulate.html
+last_built: 2023-09-08T17:40Z
 urls:
   reference: https://philipdelff.github.io/NMsim/reference
   article: https://philipdelff.github.io/NMsim/articles
