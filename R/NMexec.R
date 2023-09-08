@@ -205,7 +205,11 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             fn.input <- input.archive(file.mod)
 
             ## copy input data
-            dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
+            if(packageVersion("NMdata")<"0.1.1"){
+                dat.inp <- NMscanInput(file=file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
+            } else {
+                dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
+            }
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
 
@@ -230,7 +234,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             if(sge) {
                 
                 ## string.cmd <- sprintf("cd %s; qsub -terse -wd \'%s\' %s",getwd(),dirname(string.cmd),string.cmd)
-                #### I am not sure if absolute path is needed here.
+#### I am not sure if absolute path is needed here.
                 string.cmd <- sprintf("cd %s; qsub -terse -wd \'%s\' %s",
                                       getwd(),getAbsolutePath(dirname(string.cmd)),string.cmd)
                 ## string.cmd <- paste0("CURWD=",getwd()," ",string.cmd)

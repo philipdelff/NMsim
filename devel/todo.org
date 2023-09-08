@@ -9,7 +9,7 @@
 
 *** pkgdown
 
-*** TODO [#A] goathunter
+*** DONE goathunter
 *** DONE Setting for paths to executables
 Path to nonmem, psn, other ways to exec.
 
