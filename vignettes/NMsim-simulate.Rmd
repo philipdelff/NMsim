@@ -49,6 +49,7 @@ this.script <- "NMsim_basics.Rmd"
 writeOutput <- TRUE
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 ## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
+
 found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)",full.names=TRUE)
 unlink(found.files)
 
@@ -347,7 +348,8 @@ p.typ
 ## Simulation of known subjects
 We sometimes want to simulate the already observed subjects. This means we want to reuse the estimated random effects (ETA's) given the subject ID's. `NMsim` has a method for this. The restriction is that all subjects (values of `ID`) in the simulation input data must have been used in the estimation input data.
 ```{r,eval=FALSE}
-base.sim.known <- dat.sim.md[dat.sim.md$DOSE==400,]
+## base.sim.known <- dat.sim.md[dat.sim.md$DOSE==400,]
+base.sim.known <- dat.sim
 
 res.mod <- NMscanData(file.mod)
 ids <- data.frame(ID=unique(res.mod$ID))
@@ -358,27 +360,43 @@ dat.sim1.known <- merge(ids,
                         )
 setorder(dat.sim1.known,ID,TIME,EVID)
 
-res.known <- NMsim(file.mod=file.mod,
+simres.known <- NMsim(file.mod=file.mod,
                    data=dat.sim1.known,
                    name.sim="known1",
                    text.table="PRED IPRED CL V2 KA"
                   ,method.sim=NMsim_known
                    ## ,method.update.inits="nmsim"
-                  ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                  ## ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                    )
 ```
 
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_known.fst"
+if(run.simuls){
+    write_fst(simres.known,path=file.fst)
+} else {
+    simres.known <- read_fst(file.fst)
+}
+```
+
+
 ```{r,eval=FALSE}
-ggplot(as.data.table(res.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
-    geom_line()
+ggplot(as.data.table(simres.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
+    geom_line()+
+    theme(legend.position="none")
 ```
 
 <!-- Show a plot of the individual parameters in estimate and in sim -->
 
 ### Impute simulation times for building a PK/PD dataset
-We also connected some PK data. We want to plot the PD data angainst PK. However, PD was sampled differnetly than PK, and we want to evaluate the individual predictions of the PK model at the individual PD samplng times.
+We also connected some PK data. We want to plot the PD data angainst
+PK. However, PD was sampled differnetly than PK, and we want to
+evaluate the individual predictions of the PK model at the individual
+PD samplng times.
 
-Currently, there is no PD data in the example data used to build this vignette. For a PK model without time-varying covariates, the steps to to generate the data for the simulation are:
+Currently, there is no PD data in the example data used to build this
+vignette. For a PK model without time-varying covariates, the steps to
+to generate the data for the simulation are:
 
 ```{r,pddata,include=FALSE,eval=FALSE}
 ## pd <- readRDS("~/wdirs/NMsim/inst/examples/data/xgxr_pd.rds")
