@@ -6,7 +6,12 @@
 
 *** DONE Clean up code files
 
+*** TODO [#A] Rename method.execute="directory" to method.execute="nmsim"
 
+*** TODO [#A] Warn against method.execute="nmsim" for NMexec directly
+
+*** TODO [#A] Disable method.update.inits="nmsim". 
+I am concerned if VarCov is similarly affected
 *** pkgdown
 
 *** DONE goathunter

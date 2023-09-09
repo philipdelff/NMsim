@@ -356,13 +356,13 @@ res.mod <- NMscanData(file.mod)
 ids <- data.frame(ID=unique(res.mod$ID))
 
 
-dat.sim1.known <- merge(ids,
+dat.sim.known <- merge(ids,
                         as.data.table(base.sim.known)[,setdiff(colnames(base.sim.known),c("ID")),with=FALSE]
                         )
-setorder(dat.sim1.known,ID,TIME,EVID)
+setorder(dat.sim.known,ID,TIME,EVID)
 
 simres.known <- NMsim(file.mod=file.mod,
-                   data=dat.sim1.known,
+                   data=dat.sim.known,
                    name.sim="known1",
                    text.table="PRED IPRED CL V2 KA"
                   ,method.sim=NMsim_known
@@ -436,7 +436,7 @@ Then run `NMsim` like this:
 
 simres.pksim <- NMsim(file.mod,
                    data=pdsim,
-                   suffix.sim="pkpd",
+                   name.sim="pkpd",
                   ,method.sim=NMsim_known
                   ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                   ,text.table="IPRED PRED"
@@ -456,8 +456,8 @@ if(run.simuls){
 Now rename `res.pksim$IPRED` to something meaningfull like `res.pksim$PKIPRED`, and you can merge `res.pksim` onto the PD data by the unique row identifier. 
 
 ```{r,merge-pdres,eval=FALSE}
-setnames(res.pksim,"IPRED","PKIPRED")
-pd2 <- mergeCheck(pd,res.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
+setnames(simres.pksim,"IPRED","PKIPRED")
+pd2 <- mergeCheck(pd,simres.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
 ```
 
 ```{r,eval=TRUE}
@@ -520,7 +520,7 @@ NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
                                         #file.mod.cov <- "~/xgxg_data/nonmem/xgxr017.mod"
 NMsim(
     file.mod=file.mod,
-    data=dat.sim1
+    data=dat.sim
    ,dir.sims="simulations"
    ,method.sim=NMsim_VarCov ## Var-Cov parameter sampling
    ,name.sim="VarCov"       ## a recognizable directory name
@@ -540,10 +540,19 @@ simres.VarCov <- NMscanMultiple(## dir="simulations/xgxr114_VarCov"
    ,as.fun="data.table")
 
 ```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_VarCov.fst"
+if(run.simuls){
+    write_fst(simres.VarCov,path=file.fst)
+} else {
+    simres.VarCov <- read_fst(file.fst)
+}
+```
+
 
 `NMdata::NMscanMultiple` is a wrapper of `NMdata::NMscanData`, and just like `NMdata::NMscanData` it keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples):
 
-```{r,VarCov-summarize,eval=FALSE}
+```{r,VarCov-summarize,eval=TRUE}
 
 allresl <- melt(simres.VarCov[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
 
@@ -560,20 +569,20 @@ sum.res <- sum.res.model[,
 
 
 
-ggplot(sum.res,aes(x=TIME,fill=dose))+
-    geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
-    geom_line(aes(y=predmm,colour=dose))+
-    ## facet_grid(regimen~pred.type,scales="free_x")
-    facet_wrap(cc(regimen,pred.type),scales="free_x")
+## ggplot(sum.res,aes(x=TIME,fill=dose))+
+##     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
+##     geom_line(aes(y=predmm,colour=dose))+
+##     ## facet_grid(regimen~pred.type,scales="free_x")
+##     facet_wrap(cc(regimen,pred.type),scales="free_x")
 
 ## 400 mg only
-p.cipi.VarCov <- ggplot(sum.res[DOSE==400],aes(x=TIME,fill=pred.type))+
+p.cipi.VarCov <- ggplot(sum.res,aes(x=TIME,fill=pred.type))+
     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
     geom_line(aes(y=predmm,colour=pred.type))+
     facet_wrap("regimen",scales="free_x")+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
 
-
+##p.cipi.VarCov
 
 ```
 
@@ -621,7 +630,19 @@ simres.bootstrap <- NMscanMultiple(files=files.lst
                                   ,quiet=T
                                   ,as.fun="data.table")
 dim(simres.bootstrap)
+```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_bootstrap.fst"
+if(run.simuls){
+    write_fst(simres.bootstrap,path=file.fst)
+} else {
+    simres.bootstrap <- read_fst(file.fst)
+}
+```
 
+
+
+```{r,bootstrap-summa}
 allresl <- melt(simres.bootstrap[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
 
 sum.res.model <- allresl[,
@@ -637,7 +658,7 @@ sum.res.bootstrap <- sum.res.model[,
 
 ```
 
-```{r,bootstrap-summarize,eval=FALSE}
+```{r,bootstrap-plot,eval=TRUE}
 
 p.cipi.bootstrap <- ggplot(sum.res.bootstrap[DOSE==400],aes(x=TIME,fill=pred.type))+
     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
@@ -645,18 +666,20 @@ p.cipi.bootstrap <- ggplot(sum.res.bootstrap[DOSE==400],aes(x=TIME,fill=pred.typ
     facet_wrap("regimen",scales="free_x")+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
 
-p.cipi.bootstrap
+## p.cipi.bootstrap
 
 ```
 
-```{r,compare-plots,eval=FALSE}
+```{r,compare-plots,eval=TRUE}
 
 p.cipi.VarCov+
     lims(y=c(0,15000))+
     labs(subtitle="Covariance step")+
     p.cipi.bootstrap +
     lims(y=c(0,15000))+
-    labs(subtitle="Bootstrap")
+    labs(subtitle="Bootstrap")+
+    plot_layout(guides="collect")## +
+    ## theme(legend.position="bottom")
 ```
 
 ## Add residual variability
