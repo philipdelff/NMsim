@@ -54,7 +54,7 @@ file.project <- function(...)file.path("../inst/examples",...)
 found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)",full.names=TRUE)
 unlink(found.files)
 
-run.simuls <- TRUE
+run.simuls <- FALSE
 ```
 
 
@@ -401,7 +401,8 @@ to generate the data for the simulation are:
 
 ```{r,pddata,include=FALSE,eval=FALSE}
 ## pd <- readRDS("~/wdirs/NMsim/inst/examples/data/xgxr_pd.rds")
-pd <- system.file("examples/data/xgxr_pd.rds", package = "NMsim")
+## pd <- system.file("examples/data/xgxr_pd.rds", package = "NMsim")
+pd <- readRDS(file.project("data/xgxr_pd.rds", package = "NMsim")) |> as.data.table()
 ```
 
 * Take dose records from PK model estimation input data (`pkdos`). Just keep necessary columns like `ID`, `TIME`, `EVID`, `CMT`, `AMT`, `ADDL`, `II`, and any necessary covariates
