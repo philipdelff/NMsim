@@ -414,7 +414,7 @@ pd <- readRDS(file.project("data/xgxr_pd.rds")) |> as.data.table()
 
 In case of time-varying covariates, you can keep all data records from the PK data (without `DV`), but change observation records to simulation records (`EVID=2` instead of `EVID=0`).
 
-```{r,known-pkpd,eval=FALSE}
+```{r,known-pkpd,eval=TRUE}
 ## Take dose records from PK model estimation input data
 pkres <- NMscanData(file.mod,as.fun="data.table")
 pkdos <- pkres[EVID==1,.(ID, TIME, EVID, CMT, AMT)]
@@ -554,7 +554,7 @@ if(run.simuls){
 `NMdata::NMscanMultiple` is a wrapper of `NMdata::NMscanData`, and just like `NMdata::NMscanData` it keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples):
 
 ```{r,VarCov-summarize,eval=TRUE}
-
+setDT(simres.VarCov)
 allresl <- melt(simres.VarCov[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
 
 sum.res.model <- allresl[,
@@ -644,27 +644,28 @@ if(run.simuls){
 
 
 ```{r,bootstrap-summa}
+setDT(simres.bootstrap)
 allresl <- melt(simres.bootstrap[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
 
 sum.res.model <- allresl[,
                          .(predm=quantile(pred,probs=c(.5)))
-                        ,by=.(model,regimen,dose,DOSE,TIME,pred.type)]
+                        ,by=.(model,TIME,pred.type)]
 
 
 sum.res.bootstrap <- sum.res.model[,
                                    setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
 
-                                  ,by=.(regimen,dose,DOSE,TIME,pred.type)]
+                                  ,by=.(TIME,pred.type)]
 
 
 ```
 
 ```{r,bootstrap-plot,eval=TRUE}
 
-p.cipi.bootstrap <- ggplot(sum.res.bootstrap[DOSE==400],aes(x=TIME,fill=pred.type))+
+p.cipi.bootstrap <- ggplot(sum.res.bootstrap,aes(x=TIME,fill=pred.type))+
     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
     geom_line(aes(y=predmm,colour=pred.type))+
-    facet_wrap("regimen",scales="free_x")+
+    ## facet_wrap("regimen",scales="free_x")+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
 
 ## p.cipi.bootstrap
