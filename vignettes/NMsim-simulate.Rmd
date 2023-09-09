@@ -88,6 +88,9 @@ ggplot(res,aes(TIME,DV))+
     geom_point()+
     facet_wrap(~trtact)
 
+NMreadTab("~/wdirs/NMsim/inst/examples/nonmem/xgxr021.phi")
+NMreadTab("~/wdirs/NMsim/inst/examples/nonmem/xgxr021.ext")
+
 ```
 
 We want predict exposure in a few dosing regimens that we are
@@ -159,7 +162,7 @@ NMdataConf(dir.psn="/opt/psn")
 
 simres <- NMsim(file.mod=file.mod,
                 data=dat.sim
-                ## ,method.update.inits="nmsim"
+                 ,method.update.inits="nmsim"
                ,dir.sims="~/NMsim_test"
                ,seed=12345
                 ##,method.execute="directory"

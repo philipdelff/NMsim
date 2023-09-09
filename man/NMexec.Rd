@@ -119,8 +119,16 @@ still be reproduced if the input data files should be updated.
 }
 \details{
 Use this to read the archived input data when retrieving
-    the nonmem results
+    the nonmem results:
     \code{NMdataConf(file.data=inputArchiveDefault)}
+
+Since `NMexec` will typically not be used for simulations directly
+(`NMsim` is the natural interface for that purpose), the default
+method for `NMexec` is currently to use `method.execute="psn"`
+which is at this point the only of the methods that allow for
+multi-core execution of a single Nonmem job (NB:
+`method.execute="NMsim"` can run multiple jobs in parallel which
+is normally sufficient for simulations).
 }
 \examples{
 \dontrun{
