@@ -159,7 +159,7 @@ NMdataConf(dir.psn="/opt/psn")
 
 simres <- NMsim(file.mod=file.mod,
                 data=dat.sim
-                 ,method.update.inits="nmsim"
+                ## ,method.update.inits="nmsim"
                ,dir.sims="~/NMsim_test"
                ,seed=12345
                 ##,method.execute="directory"
