@@ -15,6 +15,6 @@ NMupdateInits <- function(file.mod,newfile,fix){
     ext <- NMreadExt(fnExtension(file.mod,"ext"))
     pars.est <- ext$pars
     setnames(pars.est,"est","value")
-    res <- NMreplaceInits(files=file.mod,newfile=newfile,inits=ext$pars,fix=fix)
+    res <- NMreplaceInits(files=file.mod,newfile=newfile,inits=ext$pars,fix=fix,quiet=TRUE)
     invisible(res)
 }

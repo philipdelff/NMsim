@@ -20,7 +20,7 @@ NMreadExt <- function(path.ext){
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
     
-    res.NMdat <- NMreadTab(path.ext,as.fun="data.table")
+    res.NMdat <- NMreadTab(path.ext,as.fun="data.table",quiet=TRUE)
     ## compareCols(
     ##     res.NMdat
     ##    ,

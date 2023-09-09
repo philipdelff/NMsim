@@ -15,7 +15,7 @@ Path to nonmem, psn, other ways to exec.
 
 *** DONE Fork NMwriteSection from NMdata
 
-*** TODO [#A] Vignette: Get started
+*** DONE Vignette: Get started
 
 **** Explain Nonmem is needed.
 
@@ -37,6 +37,7 @@ Path to nonmem, psn, other ways to exec.
 
 ** NMexec
 
+*** TODO [#A] if using path.nonmem, test that it exists
 *** TODO [#B] Check for existence of input data
 Currently, we get an error from NMscanInput. It would be clearer if
 this was checked by NMexec as a prerequisite.
@@ -51,6 +52,7 @@ NMsim we restrict to nc=1.
 ** NMexecDirectory
 *** DONE Clean up after switching to absolute paths
 ** NMsim
+*** DONE If PSN is not available, make method.update.inits="nmsim"
 *** DONE Limit seed function to what Nonmem can use
 0:2147483647
 *** TODO [#B] save data fewer times

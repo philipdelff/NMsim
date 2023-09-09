@@ -42,13 +42,17 @@ library(ggplot2)
 library(patchwork)
 library(tracee)
 library(tidyr)
+library(fst)
 
 theme_set(theme_bw())
 this.script <- "NMsim_basics.Rmd"
 writeOutput <- TRUE
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
 found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)",full.names=TRUE)
 unlink(found.files)
+
+run.simuls <- TRUE
 ```
 
 
@@ -75,6 +79,15 @@ model input and output control streams (here with extensions `.mod`
 and `.lst` respetively), parameter estimates (`.ext`) and estimated
 random effects (`.phi`) are available.
 
+```{r,include=FALSE}
+file.mod <- file.project("nonmem/xgxr021.mod")
+res <- NMscanData(file.mod)
+ggplot(res,aes(TIME,DV))+
+    geom_point()+
+    facet_wrap(~trtact)
+
+```
+
 We want predict exposure in a few dosing regimens that we are
 particularly interested in. These are regimens that we have not
 studied in clinical trials so far, and we have decided to use
@@ -86,64 +99,32 @@ compartment 2.
 
 
 ```{r,dsCreateSim,include=FALSE}
-dt.amt <- data.frame(DOSE=c(100,400))
-dt.amt <- within(dt.amt,{AMT=DOSE*1000})
-dt.amt
-doses.sd <- NMcreateDoses(TIME=0,AMT=dt.amt)
-doses.sd <- within(doses.sd,{
-    dose=paste(DOSE,"mg")
-    regimen="SD"
-})
-doses.sd
-
-
 ### multiple dose regimens with loading are easily created with NMcreateDoses too
 ## We use ADDL+II (either method easy)
-dt.amt <- data.frame(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
-dt.amt <- subset(dt.amt,DOSE==400)
-doses.md <- NMcreateDoses(TIME=c(0,24),AMT=dt.amt,addl=data.frame(ADDL=c(0,5),II=c(0,24)))
-doses.md <- within(doses.md,{
-    dose=paste(DOSE,"mg")
-    regimen="QD"
-})
-doses.md
-## doses.md$ID <- max(doses.sd$ID)+doses.md$ID
-
-
-## we will simulate with SD and QD
-## doses.all <- bind_rows(doses.sd
-##                        ,
-##                        doses.md
-##                        )
-
+doses <- NMcreateDoses(TIME=c(0,24),AMT=c(300,150),addl=data.frame(ADDL=c(0,5),II=c(0,24)))
+doses <- mutate(doses,trt="300 mg then 150 mg QD")
 
 ## Add simulation records - longer for QD regimens
-dat.sim.sd <- addEVID2(doses.sd,time.sim=0:24,CMT=2)
-dat.sim.md <- addEVID2(doses.md,time.sim=0:(24*7),CMT=2)
+dat.sim <- addEVID2(doses,time.sim=0:(24*7),CMT=2)
 
-## Stack simulation data, reassign ID to be unique in combined dataset
-dat.sim1 <- bind_rows(
-    ##  dat.sim.sd
-    ## ,
-    dat.sim.md
-)
-dat.sim1 <- as.data.table(dat.sim1)[,ID:=.GRP,by=.(regimen,ID,DOSE)]
-setorder(dat.sim1,ID,TIME,EVID)
-dat.sim1$ROW <- 1:nrow(dat.sim1)
+setorder(dat.sim,ID,TIME,EVID)
+dat.sim$ROW <- 1:nrow(dat.sim)
 
-dat.sim1 <- NMorderColumns(dat.sim1)
-
-
-dat.sim1 <- as_tibble(dat.sim1)
+dat.sim <- as_tibble(dat.sim)
 ```
 
+We check the simulation data set for various potential issues in
+Nonmem data sets using `NMdata::NMcheckData` and summarize the number
+of doses and observations:
+
 ```{r}
-NMexpandDoses(dat.sim1) %>%
-    group_by(ID,regimen,DOSE,EVID,AMT) %>%
+NMcheckData(dat.sim,type.data="sim")
+NMexpandDoses(dat.sim) %>%
+    group_by(ID,trt,EVID,AMT) %>%
     summarize(N=length(EVID)) %>%
     spread(EVID,N)
 
-print(as.data.table(dat.sim1),topn=5)
+print(as.data.table(dat.sim),topn=5)
 ```
 
 We have put together a simulation data set. We used the
@@ -158,22 +139,39 @@ the simplest thing we can think of.
 
 ```{r,sim-simplest,eval=FALSE}
 ## file.mod <- "../nonmem/xgxr014.mod"
-file.mod <- file.project("nonmem/xgxr017.mod")
-file.mod <- "~/xgxg_data/nonmem/xgxr018.mod"
-file.mod <- "~/xgxg_data/nonmem/xgxr021.mod"
+## file.mod <- file.project("nonmem/xgxr017.mod")
+## file.mod <- "~/xgxg_data/nonmem/xgxr018.mod"
+## file.mod <- "~/xgxg_data/nonmem/xgxr021.mod"
+## file.mod <- file.project("nonmem/xgxr014.mod")
 file.mod <- file.project("nonmem/xgxr021.mod")
+
 
 ## unloadNamespace("NMsim")
 ## unloadNamespace("NMdata")
 ## load_all("~/wdirs//NMdata")
 ## load_all()
 
+NMdataConf(path.nonmem="/opt/nonmem/nm751/run/nmfe75")
+NMdataConf(dir.psn="/opt/psn")
+
+
 simres <- NMsim(file.mod=file.mod,
-                data=dat.sim1
+                data=dat.sim
                 ## ,method.update.inits="nmsim"
                ,dir.sims="~/NMsim_test"
                ,seed=12345
+                ## ,method.execute="directory"
+                ##,method.execute="directory"
                 )
+```
+
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres.fst"
+if(run.simuls){
+    write_fst(simres,path=file.fst)
+} else {
+    simres <- read_fst(file.fst)
+}
 ```
 
 We plot population and individual predictions as the simulations of
@@ -181,7 +179,7 @@ We plot population and individual predictions as the simulations of
 variability is not simulated in this case. More on that later in this
 paper.
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
 datl <- as.data.table(simres) |>
     melt(measure.vars=cc(PRED,IPRED,Y))
 ## datl[,type:="Prediction"]
@@ -190,7 +188,7 @@ datl <- as.data.table(simres) |>
 ggplot(datl,aes(TIME,value,colour=variable))+
     geom_line(data=function(x)x[variable!="Y"])+
     geom_point(data=function(x)x[variable=="Y"])+
-    facet_wrap(~regimen+dose)
+    facet_wrap(~trt)
 ```
 
 The reason we can plot a simulation with residual variability is that the control stream includes a variable `Y` defined with residual variability in `$ERROR`:
@@ -204,16 +202,26 @@ Before we continue with that model, we want to compare a simulation based on thi
 ```{r,sim-twomodels,eval=FALSE}
 ## file.mod <- "../nonmem/xgxr014.mod"
 files.2.mod <- file.project(c("nonmem/xgxr021.mod","nonmem/xgxr114.mod"))
-simres <- NMsim(file.mod=files.2.mod,
-                data=dat.sim1
-                )
+simres.2models <- NMsim(file.mod=files.2.mod,
+                        data=dat.sim
+                        )
 ```
+
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_2models.fst"
+if(run.simuls){
+    write_fst(simres.2models,path=file.fst)
+} else {
+    simres.2models <- read_fst(file.fst)
+}
+```
+
 
 In case multiple models are provided, `NMsim` simply loops over them. It does collect all the results, and we can use the `model` column to separate the two simulations:
 
-```{r,eval=FALSE}
-ggplot(simres,aes(TIME,PRED,colour=model))+geom_line()+
-    facet_wrap(c("regimen","dose"),scales="free")
+```{r,eval=TRUE}
+ggplot(simres.2models,aes(TIME,PRED,colour=model))+geom_line()+
+    facet_wrap(c("trt"),scales="free")
 ```
 
 For simplicity, we shall show the rest of the examples for just one model. Any of them could be run on multiple models the same way as shown above.
@@ -222,7 +230,13 @@ For simplicity, we shall show the rest of the examples for just one model. Any o
 
 ### More subjects
 To create a prediction interval based on the selected model, we need
-to simulate multiple new subjects. There are two ways to easily obtain that. One is to repeat (`rbind`) the simulation input dataset, one repetetion per new subject, and then update the `ID` column to get distinct subjects. The follwing shows how one could generate 1000 subjects using `data.table`. (I use `data.table` a lot, if you can provide a good way to do this with tidyverse packages, I am happy to include that instead).
+to simulate multiple new subjects. There are two ways to easily obtain
+that. One is to repeat (`rbind`) the simulation input dataset, one
+repetetion per new subject, and then update the `ID` column to get
+distinct subjects. The follwing shows how one could generate 1000
+subjects using `data.table`. (I use `data.table` a lot, if you can
+provide a good way to do this with tidyverse packages, I am happy to
+include that instead).
 
 ```{r,eval=FALSE}
 dat.sim.1000 <- NMdata::egdt(
@@ -243,6 +257,16 @@ simres.n1000.1 <- NMsim(file.mod=file.mod,
                         )
 ```
 
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_n1000_1.fst"
+if(run.simuls){
+    write_fst(simres.n1000.1,path=file.fst)
+} else {
+    simres.n1000.1 <- read_fst(file.fst)
+}
+```
+
+
 The other way to do this is making use of Nonmem's `SUBPROBLEMS` simulation feature which makes Nonmem rerun the simulation the specified number of times. Notice that to do this, we use the `dat.sim1` data without the 1000 replications. We then make use of the NMREP column generated by `NMdata::NMscanData` to redefine the `ID` column:
 
 
@@ -256,12 +280,22 @@ simres.n1000.2 <- NMsim(file.mod=file.mod,
 simres.n1000.2 <- as.data.table(simres.n1000.2)[,ID:=.GRP,by=.(NMREP,ID,regimen,dose)]
 ```
 
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_n1000_2.fst"
+if(run.simuls){
+    write_fst(simres.n1000.2,path=file.fst)
+} else {
+    simres.n1000.2 <- read_fst(file.fst)
+}
+```
+
+
 The two approaches are computationally about equally fast, the most significant difference probably being in Nonmem reading a smaller or larger simulation input data file. Unless the input dataset becomes very large, it is merely a question of preference of the modeler which one to use. In a case where the simulated patients need different dosing or sample schedules, the manual construction of the data is needed - because it's not a straightforward replication.
 
 We now plot a prediction interval - in this case based on the results of the simulation using `SUBPROBLEMS`; this makes no difference to how to derive the prediction interval.
 
-```{r,eval=FALSE}
-simres.pi <- simres.n1000.2[,setNames(as.list(quantile(IPRED,probs=c(.05,.5,.95))),cc(ll,median,ul)),
+```{r,eval=TRUE}
+simres.pi <- as.data.table(simres.n1000.2)[,setNames(as.list(quantile(IPRED,probs=c(.05,.5,.95))),cc(ll,median,ul)),
                             by=.(regimen,TIME,dose)]
 simres.pi$type <- "pi"
 simres.pi$pi.cover <- "90%"
@@ -287,12 +321,22 @@ simres.typ <- NMsim(file.mod=file.mod,
 
 ```
 
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_typ.fst"
+if(run.simuls){
+    write_fst(simres.typ,path=file.fst)
+} else {
+    simres.typ <- read_fst(file.fst)
+}
+```
+
+
 In the first simulation we used `PRED` from the default simulation
 method to get a typical subject simulation. That will work in many
 cases, but that depends on the model. The way to run a simulation with
 all ETA's set to 0 is using `method.sim=NMsim_typical`.
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
 p.typ <- ggplot(simres.typ,aes(TIME,IPRED,color=dose))+geom_line()+
     geom_line(aes(y=PRED))+
     facet_wrap(~regimen)
