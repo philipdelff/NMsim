@@ -48,6 +48,7 @@ theme_set(theme_bw())
 this.script <- "NMsim_basics.Rmd"
 writeOutput <- TRUE
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+file.project <- function(...)file.path("../inst/examples",...)
 ## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
 
 found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)",full.names=TRUE)
@@ -432,7 +433,7 @@ Then run `NMsim` like this:
 
 ```{r,known-pkpd-run,eval=FALSE}
 
-res.pksim <- NMsim(file.mod,
+simres.pksim <- NMsim(file.mod,
                    data=pdsim,
                    suffix.sim="pkpd",
                   ,method.sim=NMsim_known
@@ -441,6 +442,15 @@ res.pksim <- NMsim(file.mod,
                    )
 
 ```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_n1000_1.fst"
+if(run.simuls){
+    write_fst(simres.n1000.1,path=file.fst)
+} else {
+    simres.n1000.1 <- read_fst(file.fst)
+}
+```
+
 
 Now rename `res.pksim$IPRED` to something meaningfull like `res.pksim$PKIPRED`, and you can merge `res.pksim` onto the PD data by the unique row identifier. 
 
