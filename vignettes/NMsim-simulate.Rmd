@@ -457,6 +457,7 @@ Now rename `res.pksim$IPRED` to something meaningfull like `res.pksim$PKIPRED`, 
 
 ```{r,merge-pdres,eval=TRUE}
 setnames(simres.pksim,"IPRED","PKIPRED")
+setDT(simres.pksim)
 pd2 <- mergeCheck(pd,simres.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
 ```
 
