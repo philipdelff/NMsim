@@ -33,7 +33,7 @@ callNonmemDirect <- function(file.mod,path.nonmem){
 ## do not export. NMexec will call this.
 
 NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
-
+    
     ## if(missing(method)||is.null(method)) method <- "directory"
     ## if(!(is.characther(method) && length(method)==1)||!method%in%cc(directory,direct)){
     ##     stop("method must be one of 'directory' and 'direct' - and only a single string.")
@@ -82,9 +82,11 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
 ### arg to NMwriteSection creating file.mod.tmp.
         sec.data.new <- paste("$DATA",sub(extr.data$string,basename(extr.data$path.csv),extr.data$DATA,fixed=TRUE))
     } else {
-        ## sec.data.new <- paste("$DATA",sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE))
+### This works with NMsim but not with estimation. 
         sec.data.new <- sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE)
-        ## sec.data.new <- paste("$DATA",paste(sec.data.new,collapse="\\n"))
+        ### this is a different interpretation of dir.data - ie. the relative change of path. It does not work.
+        ## sec.data.new <- sub(extr.data$string,file.path(dir.data,extr.data$path.csv),extr.data$DATA,fixed=TRUE)
+        
         if(length(sec.data.new)>1){
             sec.data.new <- c(paste("$DATA",sec.data.new[1]),sec.data.new[-1])
         } else {

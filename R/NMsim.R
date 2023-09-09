@@ -251,7 +251,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ROWMODEL2 <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
-
+    
 #### Section start: Checking aguments ####
     
     if(missing(file.mod)) stop("file.mod must be supplied. It must be one or more paths to existing control streams.")
@@ -269,7 +269,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         file.path(dir.psn,file.psn)
     }
     
-    cmd.update.inits <- file.psn(dir.psn,"update_inits")
+
     
     ## path.nonmem - should use NMdataConf setup
     
@@ -306,8 +306,24 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## method.update.inits
     if(missing(method.update.inits)) method.update.inits <- NULL
     ## if method.execute is psn, default is psn. If not, it is NMsim.
-    if(is.null(method.update.inits)) method.update.inits <- "psn"
+    if(is.null(method.update.inits)) {
+        method.update.inits <- "psn"
+        cmd.update.inits <- file.psn(dir.psn,"update_inits")
+        ## check if update_inits is avail
+        ## if(suppressWarnings(system(paste(cmd.update.inits,"-h"),show.output.on.console=FALSE)!=0)){
+        if(!file.exists(cmd.update.inits)){
+            method.update.inits <- "nmsim"
+            rm(cmd.update.inits)
+        }
+    }
     method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim,none))
+    ## if update.inits with psn, it needs to be available
+    if(method.update.inits=="psn"){
+        cmd.update.inits <- file.psn(dir.psn,"update_inits")        
+        if(suppressWarnings(system(paste(cmd.update.inits,"-h"),ignore.stdout = TRUE)!=0)){
+            stop('Attempting to use PSN\'s update_inits but it was not found. Look at the dir.psn argument or use method.update.inits="nmsim"')
+        }
+    }
     
     if(missing(seed)) seed <- NULL
     
@@ -432,7 +448,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,fn.data:=paste0("NMsimData_",fnExtension(fnAppend(basename(file.mod),name.sim),".csv"))]
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
     
-    ### clear simulation directories so user does not end up with old results
+### clear simulation directories so user does not end up with old results
     dt.models[,]
     
     if(sim.dir.from.scratch){
@@ -453,6 +469,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
     if(method.update.inits=="psn"){
+        cmd.update.inits <- file.psn(dir.psn,"update_inits")
         dt.models[,{
             ## cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim.tmp,seed,file.mod)
             cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,fn.sim.tmp,file.mod)
@@ -663,7 +680,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         
         ## run sim
         wait <- !sge
-
+        
         simres <- dt.models[,{
             simres.n <- NULL
             files.needed.n <- try(strsplit(files.needed,":")[[1]],silent=TRUE)
@@ -675,7 +692,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             if(file.exists(path.sim.lst)){
                 message("Existing output control stream found. Removing.")
                 
-                dt.outtabs <- try(NMscanTables(path.sim.lst,meta.only=TRUE,as.fun="data.table"),silent=TRUE)
+                dt.outtabs <- try(NMscanTables(path.sim.lst,meta.only=TRUE,as.fun="data.table",quiet=TRUE),silent=TRUE)
                 if(!inherits(dt.outtabs,"try-error") && nrow(dt.outtabs)){
                     
                     file.remove(
