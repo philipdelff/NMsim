@@ -518,7 +518,7 @@ Anyway, getting `NMsim` to do the work is as simple as this:
 
 ```{r,VarCov,eval=FALSE}
 ## file.mod.cov <- file.project("nonmem/xgxr114.mod")
-NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 
                                         #file.mod.cov <- "~/xgxg_data/nonmem/xgxr017.mod"
 NMsim(
@@ -527,10 +527,10 @@ NMsim(
    ,dir.sims="simulations"
    ,method.sim=NMsim_VarCov ## Var-Cov parameter sampling
    ,name.sim="VarCov"       ## a recognizable directory name
-   ,nsims=500               ## sampling 500 models
+   ,nsims=2               ## sampling 500 models
     ## ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
    ,method.execute="directory"    ## 
-   ,sge=TRUE                ## run simulations in parallel please
+   ,sge=FALSE                ## run simulations in parallel please
 )
 ```
 We used `sge=TRUE` which means we are sending the 500 generated jobs to the queuing system. In this case, `NMsim` does not track the execution of the jobs and does hence not collect the results once they are done. You have to check the status of the jobs manually, and once they are all done, you can read all the results using `NMdata::NMscanMultiple`:
