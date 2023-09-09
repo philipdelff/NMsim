@@ -381,7 +381,7 @@ if(run.simuls){
 ```
 
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
 ggplot(as.data.table(simres.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
     geom_line()+
     theme(legend.position="none")
@@ -444,11 +444,11 @@ simres.pksim <- NMsim(file.mod,
 
 ```
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres_n1000_1.fst"
+file.fst <- "simulate-results/simres_pksim.fst"
 if(run.simuls){
-    write_fst(simres.n1000.1,path=file.fst)
+    write_fst(simres.pksim,path=file.fst)
 } else {
-    simres.n1000.1 <- read_fst(file.fst)
+    simres.pksim <- read_fst(file.fst)
 }
 ```
 
@@ -460,7 +460,7 @@ setnames(res.pksim,"IPRED","PKIPRED")
 pd2 <- mergeCheck(pd,res.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
 ```
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
 ggplot(pd2[PKIPRED>0],aes(PKIPRED,LIDV))+
     geom_point()+
     lims(x=c(.001,.5))+
