@@ -399,7 +399,7 @@ Currently, there is no PD data in the example data used to build this
 vignette. For a PK model without time-varying covariates, the steps to
 to generate the data for the simulation are:
 
-```{r,pddata,include=FALSE,eval=FALSE}
+```{r,pddata,include=FALSE,eval=TRUE}
 ## pd <- readRDS("~/wdirs/NMsim/inst/examples/data/xgxr_pd.rds")
 ## pd <- system.file("examples/data/xgxr_pd.rds", package = "NMsim")
 pd <- readRDS(file.project("data/xgxr_pd.rds", package = "NMsim")) |> as.data.table()
