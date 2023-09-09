@@ -47,7 +47,7 @@ library(fst)
 theme_set(theme_bw())
 this.script <- "NMsim_basics.Rmd"
 writeOutput <- TRUE
-file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+## file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 file.project <- function(...)file.path("../inst/examples",...)
 ## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
 
@@ -402,7 +402,7 @@ to generate the data for the simulation are:
 ```{r,pddata,include=FALSE,eval=TRUE}
 ## pd <- readRDS("~/wdirs/NMsim/inst/examples/data/xgxr_pd.rds")
 ## pd <- system.file("examples/data/xgxr_pd.rds", package = "NMsim")
-pd <- readRDS(file.project("data/xgxr_pd.rds", package = "NMsim")) |> as.data.table()
+pd <- readRDS(file.project("data/xgxr_pd.rds")) |> as.data.table()
 ```
 
 * Take dose records from PK model estimation input data (`pkdos`). Just keep necessary columns like `ID`, `TIME`, `EVID`, `CMT`, `AMT`, `ADDL`, `II`, and any necessary covariates
