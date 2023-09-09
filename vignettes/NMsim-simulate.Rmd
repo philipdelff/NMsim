@@ -455,7 +455,7 @@ if(run.simuls){
 
 Now rename `res.pksim$IPRED` to something meaningfull like `res.pksim$PKIPRED`, and you can merge `res.pksim` onto the PD data by the unique row identifier. 
 
-```{r,merge-pdres,eval=FALSE}
+```{r,merge-pdres,eval=TRUE}
 setnames(simres.pksim,"IPRED","PKIPRED")
 pd2 <- mergeCheck(pd,simres.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
 ```
