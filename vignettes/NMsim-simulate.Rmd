@@ -45,10 +45,10 @@ library(tidyr)
 library(fst)
 
 theme_set(theme_bw())
-this.script <- "NMsim_basics.Rmd"
+this.script <- "NMsim-simulate.Rmd"
 writeOutput <- TRUE
-file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
-## file.project <- function(...)file.path("../inst/examples",...)
+## file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+file.project <- function(...)file.path("../inst/examples",...)
 ## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
 
 found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)",full.names=TRUE)
