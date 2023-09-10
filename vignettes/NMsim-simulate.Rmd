@@ -1,12 +1,12 @@
 ---
-title: "NMsim basics"
+title: "NMsim Simulation Methods"
 output:
 rmarkdown::html_vignette:
     toc: true
 Suggests: markdown
 VignetteBuilder: knitr
 vignette: >
-  %\VignetteIndexEntry{NMsim basics}
+  %\VignetteIndexEntry{Simulation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 header-includes:

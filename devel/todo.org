@@ -10,8 +10,9 @@
 
 *** TODO [#A] Warn against method.execute="nmsim" for NMexec directly
 
-*** TODO [#A] Disable method.update.inits="nmsim". 
-I am concerned if VarCov is similarly affected
+*** CANCELED Disable method.update.inits="nmsim". 
+Wrote NMcreateMatLines instead which uses BLOCK structures as
+needed. I was concerned if VarCov is similarly affected
 *** pkgdown
 
 *** DONE goathunter

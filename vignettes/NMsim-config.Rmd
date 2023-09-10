@@ -6,7 +6,7 @@ rmarkdown::html_vignette:
 Suggests: markdown
 VignetteBuilder: knitr
 vignette: >
-  %\VignetteIndexEntry{NMsim Configuration}
+  %\VignetteIndexEntry{Configuration}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 header-includes:
