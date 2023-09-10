@@ -39,6 +39,10 @@ input.shk
 INTER
 LINK.LNK
 ^inst/examples/nonmem/.+
+^inst/examples/nonmem/NMdata_backup/
+^inst/examples/nonmem/NMsim
+^inst/examples/nonmem/xgxr01.+
+^inst/examples/nonmem/xgxr1.+
 ^inst/examples/nonmem/bs.+
 ^inst/examples/nonmem/NMsim
 ^inst/examples/simulations/.+
