@@ -88,8 +88,8 @@ ggplot(res,aes(TIME,DV))+
     geom_point()+
     facet_wrap(~trtact)
 
-NMreadTab("~/wdirs/NMsim/inst/examples/nonmem/xgxr021.phi")
-NMreadTab("~/wdirs/NMsim/inst/examples/nonmem/xgxr021.ext")
+## NMreadTab("~/wdirs/NMsim/inst/examples/nonmem/xgxr021.phi")
+## NMreadTab("~/wdirs/NMsim/inst/examples/nonmem/xgxr021.ext")
 
 ```
 
@@ -250,9 +250,9 @@ dat.sim.1000 <- NMdata::egdt(
                            ,
                             data.table(ID=1:1000)
                         )
-dat.sim.1000[,ID:=.GRP,by=.(ID,regimen,dose)]
+dat.sim.1000[,ID:=.GRP,by=.(ID,trt)]
 
-setorder(dat.sim.1000,regimen,dose,ID,TIME,EVID)
+setorder(dat.sim.1000,trt,ID,TIME,EVID)
 ```
 
 We now simulate 1000 subjects by plugging in this data object:
@@ -283,7 +283,7 @@ simres.n1000.2 <- NMsim(file.mod=file.mod,
                         data=dat.sim,
                         subproblems=1000
                         )
-simres.n1000.2 <- as.data.table(simres.n1000.2)[,ID:=.GRP,by=.(NMREP,ID,regimen,dose)]
+simres.n1000.2 <- as.data.table(simres.n1000.2)[,ID:=.GRP,by=.(NMREP,ID,trt)]
 ```
 
 ```{r,include=FALSE,eval=TRUE}
@@ -302,14 +302,14 @@ We now plot a prediction interval - in this case based on the results of the sim
 
 ```{r,eval=TRUE}
 simres.pi <- as.data.table(simres.n1000.2)[,setNames(as.list(quantile(IPRED,probs=c(.05,.5,.95))),cc(ll,median,ul)),
-                            by=.(regimen,TIME,dose)]
+                            by=.(trt,TIME)]
 simres.pi$type <- "pi"
 simres.pi$pi.cover <- "90%"
 
-p.pi.typ <- ggplot(simres.pi,aes(TIME,fill=dose))+
+p.pi.typ <- ggplot(simres.pi,aes(TIME,fill=trt))+
     geom_ribbon(aes(ymin=ll,ymax=ul,alpha=pi.cover))+
-    geom_line(aes(y=median,colour=dose))+
-    facet_wrap(~regimen,scales="free_x")+
+    geom_line(aes(y=median,colour=trt))+
+    ## facet_wrap(~trt,scales="free_x")+
     scale_alpha_manual(values=c("90%"=.5))+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
 
@@ -343,9 +343,8 @@ cases, but that depends on the model. The way to run a simulation with
 all ETA's set to 0 is using `method.sim=NMsim_typical`.
 
 ```{r,eval=TRUE}
-p.typ <- ggplot(simres.typ,aes(TIME,IPRED,color=dose))+geom_line()+
-    geom_line(aes(y=PRED))+
-    facet_wrap(~regimen)
+p.typ <- ggplot(simres.typ,aes(TIME,IPRED,color=trt))+geom_line()+
+    geom_line(aes(y=PRED))
 p.typ
 
 ```
@@ -466,9 +465,9 @@ pd2 <- mergeCheck(pd,simres.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
 ```
 
 ```{r,eval=TRUE}
-ggplot(pd2[PKIPRED>0],aes(PKIPRED,LIDV))+
+ggplot(pd2[!is.na(LIDV)&!is.na(PKIPRED)],aes(PKIPRED,LIDV))+
     geom_point()+
-    lims(x=c(.001,.5))+
+##    lims(x=c(.001,.5))+
     labs(x="Individual PK prediction",y="Observed PD value") ## +
 ``` 
 
