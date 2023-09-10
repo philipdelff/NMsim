@@ -9,12 +9,11 @@ NMreadPhi <- function(file){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
-    variable <- NULL
-    NMREP <- NULL
     par.type <- NULL
     parameter <- NULL
     i <- NULL
     j <- NULL
+    
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
@@ -23,7 +22,7 @@ NMreadPhi <- function(file){
 
     
     pars <- res.NMdat |>
-        melt(id.vars=cc(SUBJECT_NO,ID,NMREP),variable.name="parameter")
+        melt(id.vars=c("SUBJECT_NO","ID","NMREP"),variable.name="parameter")
 
     pars[,par.type:=NA_character_]
     pars[grepl("^ETA",parameter),par.type:="ETA"]

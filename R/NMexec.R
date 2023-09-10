@@ -92,6 +92,7 @@
 ##' 
 ##' @return NULL
 ##' @import NMdata
+##' @importFrom utils packageVersion
 ##' @importFrom R.utils getAbsolutePath
 ##' @examples
 ##' \dontrun{

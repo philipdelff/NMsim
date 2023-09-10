@@ -39,9 +39,10 @@ input.shk
 INTER
 LINK.LNK
 ^inst/examples/nonmem/.+
-^inst/examples/nonmem/bs1_014_N1000/
+^inst/examples/nonmem/bs.+
 ^inst/examples/nonmem/NMsim
 ^inst/examples/simulations/.+
-^vignettes/simulations/.+
+^vignettes/simulations
+^vignettes/simulate-results
 .*_dir.*
 ^R/needRun.R

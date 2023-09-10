@@ -1,4 +1,24 @@
+##' Create text lines for OMEGA and SIGMA Nonmem sections
+##'
+##' @param omegas See NMreadExt and the pars element returned by that
+##'     function.
+##' @param type The matrix type. OMEGA or SIGMA - case in-sensitive.
+##' @return Character vector
+##'
+##' @keywords internal
+
 NMcreateMatLines <- function(omegas,type){
+
+    . <- NULL
+    j <- NULL
+    i <- NULL
+    value <- NULL
+    maxOff <- NULL
+    hasOff <- NULL
+    offNonZero <- NULL
+
+    ## the code was written in the oppositie direction, so switching i
+    ## and j.
     omegas.long <- omegas[,.(i=j,j=i,value)]
     omegas.long[,maxOff:=0]
     omegas.long[,hasOff:=FALSE]
@@ -42,3 +62,4 @@ NMcreateMatLines <- function(omegas,type){
     
     return(lines.mat)
 }
+

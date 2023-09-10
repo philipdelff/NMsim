@@ -1,7 +1,7 @@
 Package: NMsim
 Type: Package
 Title: Nonmem simulation seamlessly integrated in R
-Version: 0.0.1.944
+Version: 0.0.1.945
 Authors@R: c(person("Philip", "Delff", email = "philip@delff.dk",role = c("aut","cre")),
   person("Matthew","Fidler", role = c("ctb"), email = "matt.fidler@novartis.com", comment="Co-author on NMreadCov"))
 Maintainer: Philip Delff <philip@delff.dk>
@@ -11,19 +11,21 @@ RoxygenNote: 7.2.3
 Roxygen: list(roclets=c("collate", "namespace", "rd", "vignette"))
 VignetteBuilder: knitr
 Depends: R (>= 4.1.0)
-Imports: data.table,
-         NMdata (>= 0.1.0),
-         R.utils,
-         MASS
+Imports:
+  data.table,
+  NMdata (>= 0.1.0),
+  R.utils,
+  MASS
 Suggests: 
-         knitr,
-         rmarkdown,
-         dplyr,
-         ggplot2,
-         patchwork,
-         tibble,
-         tracee,
-         tidyr
+  knitr,
+  rmarkdown,
+  fst,
+  dplyr,
+  ggplot2,
+  patchwork,
+  tibble,
+  tracee,
+  tidyr
 Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/philipdelff/NMsim/issues

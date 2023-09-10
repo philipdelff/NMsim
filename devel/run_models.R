@@ -22,6 +22,11 @@ NMexec("xgxr021.mod",sge=FALSE,method.execute="directory")
 load_all()
 NMexec("xgxr021.mod",sge=FALSE,method.execute="directory",path.nonmem="/opt/nonmem/nm751/run/nmfe75")
 
+
+
+system("bootstrap -run_on_sge -samples=1000 -threads=250 -dir=bs1_021_N1000 -seed=99521 bs1_014.mod")
+
+
 ##NMsim:::NMupdateInits(newfile="xgxr022.mod",file.mod="xgxr021.mod",fix=FALSE)
 system("/opt/psn/update_inits xgxr021.mod --output_model=xgxr022.mod")
 NMwritePreamble(file.mod="xgxr022.mod",based.on="xgxr021.mod",desc="Est CL:V2 corr")
