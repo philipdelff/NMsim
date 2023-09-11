@@ -721,7 +721,7 @@ Sometimes we want to simulate with some modification to the estimated model. NMs
 
 The SAD study was run with a fast solution formulation. We want to see how a slower absorption rate would affect the PK prediction for the multiple dose regimen. In the model estimate, `TVKA=2.17`. We now try with a four times slower absorption:
 
-```{r}
+```{r,eval=FALSE}
 ## NMscanData(file.mod) |> findCovs()
 simres.slowabs <- NMsim(file.mod=file.mod,
                         data=dat.sim
@@ -731,11 +731,6 @@ simres.slowabs <- NMsim(file.mod=file.mod,
                        ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/4","KA=KA/4"))
                         )
 
-simres.slowabs |> findCovs()
-
-rbind(simres,simres.slowabs) |>
-    ggplot(aes(TIME,PRED,colour=model))+
-    geom_line()
 ```
 ```{r,include=FALSE,eval=TRUE}
 file.fst <- "simulate-results/simres_slowabs.fst"
@@ -746,6 +741,14 @@ if(run.simuls){
 }
 ```
 
+```{r,eval=TRUE}
+simres.slowabs |> findCovs()
+
+rbind(simres,simres.slowabs) |>
+    ggplot(aes(TIME,PRED,colour=model))+
+    geom_line()
+
+```
 
 We used `list.sections` to modify the `$PK` section. We used it to
 append two lines. We could use it to modify any section in the model,
@@ -768,10 +771,6 @@ simres.varka <- NMsim(file.mod=file.mod,
                        ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
                         )
 
-simres.varka |> findCovs(by="KASCALE")
-simres.varka
-
-ggplot(simres.varka[EVID==2],aes(TIME,PRED,colour=factor(KASCALE)))+geom_line()+labs(colour="Fold absorption prolongation")
 ```
 ```{r,include=FALSE,eval=TRUE}
 file.fst <- "simulate-results/simres_varka.fst"
@@ -780,6 +779,12 @@ if(run.simuls){
 } else {
     simres.varka <- read_fst(file.fst)
 }
+```
+
+```{r,eval=TRUE}
+simres.varka |> findCovs(by="KASCALE")
+
+ggplot(simres.varka[simres.varka$EVID==2,],aes(TIME,PRED,colour=factor(KASCALE)))+geom_line()+labs(colour="Fold absorption prolongation")
 ```
 
 <!-- ## Using NMsim to validate reimplementations of models -->
