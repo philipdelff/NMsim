@@ -164,7 +164,7 @@ NMdataConf(dir.psn=NULL)
 
 simres <- NMsim(file.mod=file.mod,
                 data=dat.sim
-                 ,method.update.inits="nmsim"
+               ,method.update.inits="nmsim"
                ,dir.sims="~/NMsim_test"
                ,seed=12345
                 ##,method.execute="directory"
@@ -302,7 +302,7 @@ We now plot a prediction interval - in this case based on the results of the sim
 
 ```{r,eval=TRUE}
 simres.pi <- as.data.table(simres.n1000.2)[,setNames(as.list(quantile(IPRED,probs=c(.05,.5,.95))),cc(ll,median,ul)),
-                            by=.(trt,TIME)]
+                                           by=.(trt,TIME)]
 simres.pi$type <- "pi"
 simres.pi$pi.cover <- "90%"
 
@@ -360,18 +360,18 @@ ids <- data.frame(ID=unique(res.mod$ID))
 
 
 dat.sim.known <- merge(ids,
-                        as.data.table(base.sim.known)[,setdiff(colnames(base.sim.known),c("ID")),with=FALSE]
-                        )
+                       as.data.table(base.sim.known)[,setdiff(colnames(base.sim.known),c("ID")),with=FALSE]
+                       )
 setorder(dat.sim.known,ID,TIME,EVID)
 
 simres.known <- NMsim(file.mod=file.mod,
-                   data=dat.sim.known,
-                   name.sim="known1",
-                   text.table="PRED IPRED CL V2 KA"
-                  ,method.sim=NMsim_known
-                   ## ,method.update.inits="nmsim"
-                  ## ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
-                   )
+                      data=dat.sim.known,
+                      name.sim="known1",
+                      text.table="PRED IPRED CL V2 KA"
+                     ,method.sim=NMsim_known
+                      ## ,method.update.inits="nmsim"
+                      ## ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                      )
 ```
 
 ```{r,include=FALSE,eval=TRUE}
@@ -438,12 +438,12 @@ Then run `NMsim` like this:
 ```{r,known-pkpd-run,eval=FALSE}
 
 simres.pksim <- NMsim(file.mod,
-                   data=pdsim,
-                   name.sim="pkpd",
-                  ,method.sim=NMsim_known
-                  ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
-                  ,text.table="IPRED PRED"
-                   )
+                      data=pdsim,
+                      name.sim="pkpd",
+                     ,method.sim=NMsim_known
+                     ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                     ,text.table="IPRED PRED"
+                      )
 
 ```
 ```{r,include=FALSE,eval=TRUE}
@@ -467,7 +467,7 @@ pd2 <- mergeCheck(pd,simres.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
 ```{r,eval=TRUE}
 ggplot(pd2[!is.na(LIDV)&!is.na(PKIPRED)],aes(PKIPRED,LIDV))+
     geom_point()+
-##    lims(x=c(.001,.5))+
+    ##    lims(x=c(.001,.5))+
     labs(x="Individual PK prediction",y="Observed PD value") ## +
 ``` 
 
@@ -529,7 +529,7 @@ NMsim(
    ,name.sim="VarCov"       ## a recognizable directory name
    ,nsims=500               ## sampling 500 models
     ## ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
-   ## ,method.execute="directory"    ## 
+    ## ,method.execute="directory"    ## 
    ,sge=TRUE                ## run simulations in parallel please
 )
 ```
@@ -690,7 +690,7 @@ p.cipi.VarCov+
     lims(y=c(0,ymax))+
     labs(subtitle="Bootstrap")+
     plot_layout(guides="collect")## +
-    ## theme(legend.position="bottom")
+## theme(legend.position="bottom")
 ```
 
 ## Add residual variability
@@ -715,23 +715,71 @@ simres.with.resvar <- addResVar(simres,path.ext=fnExtension(file.mod,"ext"),par.
 ```
 
 ## Vary parameter values
-This feature requires NMdata >= 0.1.0.905 from github or NMdata >= 0.1.1 once that is on CRAN.
+The features described in this section require NMdata >= 0.1.1. 
 
+Sometimes we want to simulate with some modification to the estimated model. NMsim can make such user-specified modifications to the model before simulating through the `list.sections` argument. 
+
+The SAD study was run with a fast solution formulation. We want to see how a slower absorption rate would affect the PK prediction for the multiple dose regimen. In the model estimate, `TVKA=2.17`. We now try with a four times slower absorption:
+
+```{r}
+## NMscanData(file.mod) |> findCovs()
+simres.slowabs <- NMsim(file.mod=file.mod,
+                        data=dat.sim
+                       ,dir.sims="~/NMsim_test"
+                       ,name.sim="slower_abs"
+                       ,seed=12345
+                       ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/4","KA=KA/4"))
+                        )
+
+simres.slowabs |> findCovs()
+
+rbind(simres,simres.slowabs) |>
+    ggplot(aes(TIME,PRED,colour=model))+
+    geom_line()
+```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_slowabs.fst"
+if(run.simuls){
+    write_fst(simres.slowabs,path=file.fst)
+} else {
+    simres.slowabs <- read_fst(file.fst)
+}
+```
+
+
+We used `list.sections` to modify the `$PK` section. We used it to
+append two lines. We could use it to modify any section in the model,
+and we could essentially do any modification. However, appending to
+`$PK` or `$PRED` is simple and often both robust and flexible enough.
+
+That was a very spcific analysis of one specific `KA` value. It is often more convenient to control the numeric changes to the model using the simulation input data set rather than hard-coding numerical values into `list.sections`. The following tries a number of fold changes to `KA`.
 
 ```{r,include=FALSE,eval=FALSE}
-dt.inp2 <- rbind(
-    transform(dt.inp,CLSCALE=1,sim="CL unchanged")
-   ,transform(dt.inp,CLSCALE=2,sim="Double CL")
-)
-dt.inp2[,ID:=.GRP,by=.(sim,ID)]
-NMcheckData(dt.inp2)
+NMdataConf(as.fun="data.table")
+dat.sim.varka <- egdt(dat.sim,data.table(KASCALE=c(1,4,10)))
+dat.sim.varka[,ID:=.GRP,by=.(KASCALE,ID)]
+setorder(dat.sim.varka,ID,TIME,EVID)
 
+simres.varka <- NMsim(file.mod=file.mod,
+                        data=dat.sim.varka
+                       ,dir.sims="~/NMsim_test"
+                       ,name.sim="varka"
+                       ,seed=12345
+                       ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
+                        )
 
-simres2 <- NMsim(path.mod=path.model,dt.inp2,name.sim="20mg_CL2"
-                ,list.sections=list(PK=function(x)c(x,"CLP=CLP*CLSCALE","CLM=CLM*CLSCALE")))
+simres.varka |> findCovs(by="KASCALE")
+simres.varka
 
-ggplot(simres2[EVID==2],aes(TIME,PRED,colour=sim))+geom_line()+facet_wrap(~compound)
-
+ggplot(simres.varka[EVID==2],aes(TIME,PRED,colour=factor(KASCALE)))+geom_line()+labs(colour="Fold absorption prolongation")
+```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_varka.fst"
+if(run.simuls){
+    write_fst(simres.varka,path=file.fst)
+} else {
+    simres.varka <- read_fst(file.fst)
+}
 ```
 
 <!-- ## Using NMsim to validate reimplementations of models -->

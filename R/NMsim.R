@@ -719,7 +719,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 simres.n <- as.fun(simres.n)
             } else {
                 warn.notransform(transform)
-                simres.n <- NULL
+                ## simres.n <- NULL
+                simres.n <- path.sim.lst
             }
             simres.n
         },by=.(ROWMODEL2)]
