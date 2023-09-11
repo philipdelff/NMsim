@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.946</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.947</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@
 
     
     
-<p>Built 2023-09-11 using NMsim 0.0.1.946.</p>
+<p>Built 2023-09-11 using NMsim 0.0.1.947.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -692,22 +692,18 @@ now try with a four times slower absorption:</p>
 <span>                       ,name.sim<span class="op">=</span><span class="st">"slower_abs"</span></span>
 <span>                       ,seed<span class="op">=</span><span class="fl">12345</span></span>
 <span>                       ,list.sections<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">"TVKA=TVKA/4"</span>,<span class="st">"KA=KA/4"</span><span class="op">)</span><span class="op">)</span></span>
-<span>                        <span class="op">)</span></span>
-<span><span class="co">#&gt; Writing ~/NMsim_test/xgxr021_slower_abs/NMsim_xgxr021_slower_abs.mod</span></span>
-<span><span class="co">#&gt; Executing ~/NMsim_test/xgxr021_slower_abs/NMsim_xgxr021_slower_abs.mod</span></span>
-<span><span class="co">#&gt; Warning in system(string.cmd, ignore.stdout = nmquiet): error in running</span></span>
-<span><span class="co">#&gt; command</span></span>
-<span><span class="co">#&gt; Error : Model file ~/NMsim_test/xgxr021_slower_abs/NMsim_xgxr021_slower_abs.lst does</span></span>
-<span><span class="co">#&gt; not exist.</span></span>
-<span><span class="co">#&gt; Results could not be read.</span></span>
-<span></span>
-<span><span class="va">simres.slowabs</span> <span class="op">|&gt;</span> <span class="fu">findCovs</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; data frame with 0 columns and 0 rows</span></span>
+<span>                        <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simres.slowabs</span> <span class="op">|&gt;</span> <span class="fu">findCovs</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   ID DV MDV    TVKA   TVV2   TVV3   TVCL      KA     V2     V3     CL      Q</span></span>
+<span><span class="co">#&gt; 1  1  0   1 0.54164 75.729 150.06 13.978 0.54164 119.98 150.06 14.499 8.4865</span></span>
+<span><span class="co">#&gt;   RES WRES                   trt                    model nmout</span></span>
+<span><span class="co">#&gt; 1   0    0 300 mg then 150 mg QD NMsim_xgxr021_slower_abs  TRUE</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simres</span>,<span class="va">simres.slowabs</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">PRED</span>,colour<span class="op">=</span><span class="va">model</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-simulate_files/figure-html/unnamed-chunk-23-1.png" width="672"></p>
+<p><img src="NMsim-simulate_files/figure-html/unnamed-chunk-25-1.png" width="672"></p>
 <p>We used <code>list.sections</code> to modify the <code>$PK</code>
 section. We used it to append two lines. We could use it to modify any
 section in the model, and we could essentially do any modification.
@@ -718,6 +714,19 @@ value. It is often more convenient to control the numeric changes to the
 model using the simulation input data set rather than hard-coding
 numerical values into <code>list.sections</code>. The following tries a
 number of fold changes to <code>KA</code>.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simres.varka</span> <span class="op">|&gt;</span> <span class="fu">findCovs</span><span class="op">(</span>by<span class="op">=</span><span class="st">"KASCALE"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   KASCALE ID DV MDV    TVKA   TVV2   TVV3   TVCL      KA      V2     V3      CL</span></span>
+<span><span class="co">#&gt; 1       1  1  0   1 2.16660 75.729 150.06 13.978 2.16660 119.980 150.06 14.4990</span></span>
+<span><span class="co">#&gt; 2       4  2  0   1 0.54164 75.729 150.06 13.978 0.54164  87.259 150.06 21.3650</span></span>
+<span><span class="co">#&gt; 3      10  3  0   1 0.21666 75.729 150.06 13.978 0.21666  39.224 150.06  9.2223</span></span>
+<span><span class="co">#&gt;        Q RES WRES                   trt               model nmout</span></span>
+<span><span class="co">#&gt; 1 8.4865   0    0 300 mg then 150 mg QD NMsim_xgxr021_varka  TRUE</span></span>
+<span><span class="co">#&gt; 2 8.4865   0    0 300 mg then 150 mg QD NMsim_xgxr021_varka  TRUE</span></span>
+<span><span class="co">#&gt; 3 8.4865   0    0 300 mg then 150 mg QD NMsim_xgxr021_varka  TRUE</span></span>
+<span></span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">simres.varka</span><span class="op">[</span><span class="va">simres.varka</span><span class="op">$</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span>,<span class="op">]</span>,<span class="fu">aes</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">PRED</span>,colour<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">KASCALE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu">labs</span><span class="op">(</span>colour<span class="op">=</span><span class="st">"Fold absorption prolongation"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="NMsim-simulate_files/figure-html/unnamed-chunk-28-1.png" width="672"></p>
 <!-- ## Using NMsim to validate reimplementations of models -->
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
