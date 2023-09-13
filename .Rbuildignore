@@ -46,6 +46,7 @@ LINK.LNK
 ^inst/examples/nonmem/bs.+
 ^inst/examples/nonmem/NMsim
 ^inst/examples/simulations/.+
+^inst/examples/R/NMexec_run_estimates.R
 ^vignettes$
 .*_dir.*
 ^R/needRun.R

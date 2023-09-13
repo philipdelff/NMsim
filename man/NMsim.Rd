@@ -121,16 +121,15 @@ transform, the contents must be the function to apply.}
 \item{type.input}{Deprecated. Use type.mod instead.}
 
 \item{method.execute}{Specify how to call Nonmem. Options are
-"psn" (PSN's execute), "nmsim" (an internal method similar
-to PSN's execute), and "direct" (just run Nonmem directly and
+"psn" (PSN's execute), "nmsim" (an internal method similar to
+PSN's execute), and "direct" (just run Nonmem directly and
 dump all the temporary files). "nmsim" has advantages over
 "psn" that makes it the only supported method when
 type.sim="NMsim_known". "psn" has the simple advantage that
 the path to nonmem does not have to be specified if "execute"
 is in the system search path. So as long as you know where
-your Nonmem executable is, "nmsim" is recommended. The
-default is "nmsim" if path.nonmem is specified, and "psn"
-if not.}
+your Nonmem executable is, "nmsim" is recommended. The default
+is "nmsim" if path.nonmem is specified, and "psn" if not.}
 
 \item{method.update.inits}{The initial estimates must be updated
 from the estimated model before running the simulation. NMsim
@@ -196,8 +195,8 @@ NMdataConf.}
 }
 \value{
 A data.frame with simulation results (same number of rows
-    as input data). If `wait=FALSE` a data.frame with a column of
-    the generated output control streams.
+    as input data). If `wait=FALSE` a character vector with paths
+    to simulation control streams.
 }
 \description{
 Supply a data set and an input control stream, and NMsim can

@@ -56,6 +56,8 @@ Experimental. Please check output before use. AMT, RATE,
 }
 \examples{
 library(data.table)
+## Users should not use setDTthreads. This is for CRAN to only use 1 core.
+data.table::setDTthreads(1) 
 ## arguments are expanded - makes loading easy
 NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1))
 ## Different doses by covariate

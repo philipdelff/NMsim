@@ -769,7 +769,7 @@ and we could essentially do any modification. However, appending to
 
 That was a very spcific analysis of one specific `KA` value. It is often more convenient to control the numeric changes to the model using the simulation input data set rather than hard-coding numerical values into `list.sections`. The following tries a number of fold changes to `KA`.
 
-```{r,include=FALSE,eval=FALSE}
+```{r,include=TRUE,eval=FALSE}
 NMdataConf(as.fun="data.table")
 dat.sim.varka <- egdt(dat.sim,data.table(KASCALE=c(1,4,10)))
 dat.sim.varka[,ID:=.GRP,by=.(KASCALE,ID)]

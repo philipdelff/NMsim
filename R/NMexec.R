@@ -91,13 +91,13 @@
 ##' `method.execute="NMsim"` can run multiple jobs in parallel which
 ##' is normally sufficient for simulations).
 ##' 
-##' @return NULL
+##' @return NULL (invisibly)
 ##' @import NMdata
 ##' @importFrom utils packageVersion
 ##' @importFrom R.utils getAbsolutePath
 ##' @examples
-##' \dontrun{
 ##' file.mod <- "run001.mod"
+##' \dontrun{
 ##' ## run locally - not on cluster
 ##' NMexec(file.mod,sge=FALSE)
 ##' ## run on cluster with 16 cores. 64 cores is default
@@ -110,8 +110,6 @@
 ##' }
 ##' @export
 
-
-### -nm_version=nm74_gf
 
 NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                    nc=64,dir.data=NULL,wait=FALSE, args.psn.execute,
@@ -238,9 +236,15 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             string.cmd <- paste(string.cmd,basename(file.mod))
         }
         if(method.execute=="direct"){
+            if(!file.exists(path.nonmem)){
+                stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
+            }
             string.cmd <- callNonmemDirect(file.mod,path.nonmem)
         }
         if(method.execute=="nmsim"){
+            if(!file.exists(path.nonmem)){
+                stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
+            }
             string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed)
             if(sge) {
                 

@@ -1,4 +1,7 @@
 context("NMscanTables")
+library(data.table)
+data.table::setDTthreads(1) 
+library(NMdata)
 
 NMdataConf(reset=T)
 test_that("Basic",{

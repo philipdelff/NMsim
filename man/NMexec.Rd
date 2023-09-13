@@ -113,6 +113,9 @@ argument specifies files to be copied into the temporary
 directory before Nonmem is run. Input control stream and
 simulation input data does not need to be specified.}
 }
+\value{
+NULL (invisibly)
+}
 \description{
 Execute Nonmem from within R - optionally but by default in
 parallel. Archiving the input data ensures that postprocessing can
@@ -132,8 +135,8 @@ multi-core execution of a single Nonmem job (NB:
 is normally sufficient for simulations).
 }
 \examples{
-\dontrun{
 file.mod <- "run001.mod"
+\dontrun{
 ## run locally - not on cluster
 NMexec(file.mod,sge=FALSE)
 ## run on cluster with 16 cores. 64 cores is default

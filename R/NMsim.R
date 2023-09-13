@@ -611,7 +611,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.files <- melt(dt.models.gen,measure.vars=c("path.sim",cols.fneed),value.name="file")
     dt.files[,missing:=!file.exists(file)]
     if(dt.files[,sum(missing)]){
-        print(dt.files[,.("No. of files missing"=sum(missing)),by=.(column=variable)])
+        message(print(dt.files[,.("No. of files missing"=sum(missing)),by=.(column=variable)]))
         stop("All needed files must be available after running simulation method.")
     }
     

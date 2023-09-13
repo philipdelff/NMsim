@@ -1,4 +1,5 @@
 library(data.table)
+data.table::setDTthreads(1)
 library(NMdata)
 
 context("NMcreateDoses")

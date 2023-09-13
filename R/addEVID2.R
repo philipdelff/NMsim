@@ -19,6 +19,8 @@
 ##'     EVID. You may have to reorder for your specific needs.
 ##' @examples
 ##' library(data.table)
+##' ## Users should not use setDTthreads. This is for CRAN to only use 1 core.
+##' data.table::setDTthreads(1) 
 ##' (doses1 <- NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1)))
 ##' addEVID2(doses1,time.sim=seq(0,28,by=4),CMT=2)
 ##'

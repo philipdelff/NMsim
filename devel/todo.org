@@ -6,7 +6,7 @@
 
 *** DONE Clean up code files
 
-*** TODO [#A] Rename method.execute="directory" to method.execute="nmsim"
+*** DONE Rename method.execute="directory" to method.execute="nmsim"
 
 *** TODO [#A] Warn against method.execute="nmsim" for NMexec directly
 
@@ -43,7 +43,7 @@ Path to nonmem, psn, other ways to exec.
 
 ** NMexec
 
-*** TODO [#A] if using path.nonmem, test that it exists
+*** DONE if using path.nonmem, test that it exists
 *** TODO [#B] Check for existence of input data
 Currently, we get an error from NMscanInput. It would be clearer if
 this was checked by NMexec as a prerequisite.
