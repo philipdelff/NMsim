@@ -7,7 +7,7 @@
 findUpdated(mods)
 }
 \arguments{
-\item{lstsd}{list of (input or output) control streams to consider}
+\item{mods}{list of (input or output) control streams to consider}
 }
 \value{
 character vector of paths found models

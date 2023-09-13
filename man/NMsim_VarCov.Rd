@@ -15,15 +15,6 @@ NMsim_VarCov(file.sim, file.mod, data.sim, nsims = 1)
 
 \item{nsims}{Number of replications wanted. The default is 1. If
 greater, multiple control streams will be generated.}
-
-\item{replace.sim}{If there is a $SIMULATION section in the
-contents of file.sim, should it be replaced? Default is
-yes. See the \code{list.section} argument to \code{NMsim} for
-how to provide custom contents to sections with \code{NMsim}
-instead of editing the control streams beforehand.}
-
-\item{return.text}{If TRUE, just the text will be returned, and
-resulting control stream is not written to file.}
 }
 \value{
 Character vector of simulation control stream paths

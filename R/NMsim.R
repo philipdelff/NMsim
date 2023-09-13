@@ -73,16 +73,15 @@
 ##'     e.g. simulate with all parameter estimates from a bootstrap
 ##'     result.
 ##' @param method.execute Specify how to call Nonmem. Options are
-##'     "psn" (PSN's execute), "directory" (an internal method similar
-##'     to PSN's execute), and "direct" (just run Nonmem directly and
-##'     dump all the temporary files). "directory" has advantages over
+##'     "psn" (PSN's execute), "nmsim" (an internal method similar to
+##'     PSN's execute), and "direct" (just run Nonmem directly and
+##'     dump all the temporary files). "nmsim" has advantages over
 ##'     "psn" that makes it the only supported method when
 ##'     type.sim="NMsim_known". "psn" has the simple advantage that
 ##'     the path to nonmem does not have to be specified if "execute"
 ##'     is in the system search path. So as long as you know where
-##'     your Nonmem executable is, "directory" is recommended. The
-##'     default is "directory" if path.nonmem is specified, and "psn"
-##'     if not.
+##'     your Nonmem executable is, "nmsim" is recommended. The default
+##'     is "nmsim" if path.nonmem is specified, and "psn" if not.
 ##' @param method.update.inits The initial estimates must be updated
 ##'     from the estimated model before running the simulation. NMsim
 ##'     supports two ways of doing this: "psn" which uses PSN's
@@ -138,7 +137,8 @@
 ##' @param type.input Deprecated. Use type.mod instead.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
-##'     as input data)
+##'     as input data). If `wait=FALSE` a character vector with paths
+##'     to simulation control streams.
 ##' @details Loosely speaking, the argument \code{method.sim} defines
 ##'     _what_ NMsim will do, \code{method.executes} define _how_ it
 ##'     does it. \code{method.sim} takes a function that converts an
@@ -287,11 +287,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(is.null(path.nonmem)) {
         method.execute.def <- "psn"
     } else {
-        method.execute.def <- "directory"
+        method.execute.def <- "nmsim"
     }
-    method.execute <- simpleCharArg("method.execute",method.execute,method.execute.def,cc(psn,direct,directory))
-    if(method.execute%in%cc(direct,directory) && is.null(path.nonmem)){
-        stop("When method.execute is direct or directory, path.nonmem must be provided.")
+    method.execute <- simpleCharArg("method.execute",method.execute,method.execute.def,cc(psn,direct,nmsim))
+    if(method.execute%in%cc(direct,nmsim) && is.null(path.nonmem)){
+        stop("When method.execute is direct or nmsim, path.nonmem must be provided.")
     }
     
     ## args.psn.execute
@@ -583,23 +583,23 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(!"path.sim"%in%cnames.gen) stop("path.sim must be in returned data.table")
     
 
-    ## if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "directory"
+    ## if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "nmsim"
     if(nrow(dt.models.gen)>1 && "files.needed"%in%colnames(dt.models.gen)){
-        if(method.execute!="directory"){
-            stop("Multiple simulation runs spawned, and they need additional files than the simulation input control streams. The only way this is supported is using method.execute=\"directory\".")
+        if(method.execute!="nmsim"){
+            stop("Multiple simulation runs spawned, and they need additional files than the simulation input control streams. The only way this is supported is using method.execute=\"nmsim\".")
         }
     }
     
     ## if files.needed, psn execute cannot be used.
     if("files.needed"%in%colnames(dt.models.gen)){
         if(method.execute=="psn"){
-            stop("method.execute=\"psn\" cannot be used with simulation methods that need additional files to run. Try method.execute=\"directory\".")
+            stop("method.execute=\"psn\" cannot be used with simulation methods that need additional files to run. Try method.execute=\"nmsim\".")
         }
     }
     ## if multiple models spawned, direct is not allowed
     if(nrow(dt.models.gen)>1){
         if(method.execute=="direct"){
-            stop("method.execute=\"direct\" cannot be used with simulation methods that spawn multiple simulation runs. Try method.execute=\"directory\" or method.execute=\"psn\".")
+            stop("method.execute=\"direct\" cannot be used with simulation methods that spawn multiple simulation runs. Try method.execute=\"nmsim\" or method.execute=\"psn\".")
         }
     }
     
@@ -720,7 +720,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             } else {
                 warn.notransform(transform)
                 ## simres.n <- NULL
-                simres.n <- path.sim.lst
+                simres.n <- list(lst=path.sim.lst)
             }
             simres.n
         },by=.(ROWMODEL2)]
@@ -730,8 +730,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 ###  Section end: Execute
 
-    ## saveRDS(run.fun$digest.new,file=path.digests)
-
+    if(!wait) return(simres$ls)
     as.fun(simres)
 
 }

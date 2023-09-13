@@ -14,4 +14,4 @@ writeTextFile(lines, file)
 \description{
 Conveniently writeLines to file
 }
-\keyword{@internal}
+\keyword{internal}

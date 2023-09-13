@@ -51,7 +51,7 @@ control stream and datafile.
 `NMsim` is in itself a small R package. It makes extensive use of
 functionality to handle Nonmem data and control streams provided by
 the R package
-[`NMdata`](https://cran.r-project.org/web/packages/NMdata/index.html).
+[`NMdata`](https://cran.r-project.org/package=NMdata).
 
 ## Supported types of simulations
 `NMsim` has a flexible way to define simulation methods. The following

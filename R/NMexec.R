@@ -37,7 +37,7 @@
 ##' @param nmquiet Suppress terminal output from `Nonmem`. This is
 ##'     likely to only work on linux/unix systems.
 ##' @param method.execute How to run Nonmem. Must be one of 'psn',
-##'     'direct', or 'directory'. 
+##'     'nmsim', or 'direct'. 
 ##' \itemize{
 ##'
 ##' \item psn PSN's execute is used. This supports parallel Nonmem
@@ -45,18 +45,19 @@
 ##' for each job. For estimation runs, this is most likely the better
 ##' choice, if you have PSN installed. See \code{dir.psn} argument
 ##' too.
+##'
+##' \item nmsim Creates a temporary directory and runs Nonmem
+##' inside that directory before copying relevant results files back
+##' to the folder where the input control stream was. If
+##' \code{sge=TRUE}, the job will be submitted to a cluster, but
+##' parallel execution of the job itself is not supported. See
+##' \code{path.nonmem} argument too.
 ##' 
 ##' \item direct Nonmem is called directly on the control stream. This
 ##' is the simplest method and is the least convenient in most
 ##' cases. It does not offer parallel runs and leaves all the Nonmem
 ##' output files next to the control streams.
 ##' 
-##' \item directory Creates a temporary directory and runs Nonmem
-##' inside that directory before copying relevant results files back
-##' to the folder where the input control stream was. If
-##' \code{sge=TRUE}, the job will be submitted to a cluster, but
-##' parallel execution of the job itself is not supported. See
-##' \code{path.nonmem} argument too.
 ##'
 ##' }
 ##'
@@ -68,13 +69,13 @@
 ##'     installed version of PSN).
 ##' @param path.nonmem The path to the nonmem executable. Only used if
 ##'     \code{method.execute="direct"} or
-##'     \code{method.execute="directory"} (which is not default). If
+##'     \code{method.execute="nmsim"} (which is not default). If
 ##'     this argument is not supplied, NMexec will try to run nmfe75,
 ##'     i.e. this has to be available in the path of the underlying
 ##'     shell. The default value can be modified using
 ##'     \code{NMdata::NMdataConf}, like
 ##'     \code{NMdataConf(path.nonmem="/path/to/nonmem")}
-##' @param files.needed In case method.execute="directory", this
+##' @param files.needed In case method.execute="nmsim", this
 ##'     argument specifies files to be copied into the temporary
 ##'     directory before Nonmem is run. Input control stream and
 ##'     simulation input data does not need to be specified.
@@ -142,8 +143,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     cmd.execute <- fun.file.psn(dir.psn,"execute")
 
     method.execute <- gsub(" ","",method.execute) |> tolower() 
-    if(!method.execute %in% c("psn","direct","directory")){
-        stop("method.execute must be one of psn, direct, and directory.")
+    if(!method.execute %in% c("psn","direct","nmsim")){
+        stop("method.execute must be one of psn, direct, and nmsim.")
     }
     
     ## path.nonmem
@@ -239,7 +240,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         if(method.execute=="direct"){
             string.cmd <- callNonmemDirect(file.mod,path.nonmem)
         }
-        if(method.execute=="directory"){
+        if(method.execute=="nmsim"){
             string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed)
             if(sge) {
                 

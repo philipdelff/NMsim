@@ -47,8 +47,8 @@ library(fst)
 theme_set(theme_bw())
 this.script <- "NMsim-simulate.Rmd"
 writeOutput <- TRUE
-## file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
-file.project <- function(...)file.path("../inst/examples",...)
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+## file.project <- function(...)file.path("../inst/examples",...)
 ## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
 
 found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)",full.names=TRUE)
@@ -521,24 +521,31 @@ Anyway, getting `NMsim` to do the work is as simple as this:
 ## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 
                                         #file.mod.cov <- "~/xgxg_data/nonmem/xgxr017.mod"
-NMsim(
+simlsts.VarCov <- NMsim(
     file.mod=file.mod,
     data=dat.sim
-   ,dir.sims="simulations"
+   ,dir.sims="~/NMsim_vignette"
    ,method.sim=NMsim_VarCov ## Var-Cov parameter sampling
    ,name.sim="VarCov"       ## a recognizable directory name
-   ,nsims=500               ## sampling 500 models
+   ,nsims=1000               ## sampling 500 models
     ## ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
     ## ,method.execute="directory"    ## 
    ,sge=TRUE                ## run simulations in parallel please
 )
+
 ```
+
+You may get messages like "Unable to run job" and that the job "is not
+allowed to run in any queue". Contra-intuitively to most, these
+messages do not mean that the job isn't run.
+
 We used `sge=TRUE` which means we are sending the 500 generated jobs to the queuing system. In this case, `NMsim` does not track the execution of the jobs and does hence not collect the results once they are done. You have to check the status of the jobs manually, and once they are all done, you can read all the results using `NMdata::NMscanMultiple`:
 
 ```{r,VarCov-collect,eval=FALSE}
 simres.VarCov <- NMscanMultiple(## dir="simulations/xgxr114_VarCov"
-    dir=file.path("simulations",paste0(basename(fnExtension(file.mod,"")),"_VarCov"))
-   ,file.pattern=".+\\.lst$"
+   ##  dir=file.path("simulations",paste0(basename(fnExtension(file.mod,"")),"_VarCov"))
+    ## ,file.pattern=".+\\.lst$"
+    files=simlsts.VarCov$lst
    ,merge.by.row=FALSE,quiet=T
    ,as.fun="data.table")
 
@@ -555,31 +562,35 @@ if(run.simuls){
 
 `NMdata::NMscanMultiple` is a wrapper of `NMdata::NMscanData`, and just like `NMdata::NMscanData` it keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples):
 
-```{r,VarCov-summarize,eval=TRUE}
+```{r,VarCov-summarize,eval=FALSE}
 setDT(simres.VarCov)
 allresl <- melt(simres.VarCov[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
 
-sum.res.model <- allresl[,
+sum.res.VarCov <- allresl[,
                          .(predm=quantile(pred,probs=c(.5)))
                         ,by=.(model,trt,TIME,pred.type)]
 
 
-sum.res <- sum.res.model[,
+sum.VarCov <- sum.res.VarCov[,
                          setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
 
                         ,by=.(trt,TIME,pred.type)]
 
+```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/sum_VarCov.fst"
+if(run.simuls){
+    write_fst(sum.VarCov,path=file.fst)
+} else {
+    sum.VarCov <- read_fst(file.fst)
+}
+```
 
 
 
-## ggplot(sum.res,aes(x=TIME,fill=dose))+
-##     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
-##     geom_line(aes(y=predmm,colour=dose))+
-##     ## facet_grid(regimen~pred.type,scales="free_x")
-##     facet_wrap(cc(regimen,pred.type),scales="free_x")
+```{r}
 
-## 400 mg only
-p.cipi.VarCov <- ggplot(sum.res,aes(x=TIME,fill=pred.type))+
+p.cipi.VarCov <- ggplot(sum.VarCov,aes(x=TIME,fill=pred.type))+
     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
     geom_line(aes(y=predmm,colour=pred.type))+
     facet_wrap("trt",scales="free_x")+
@@ -588,6 +599,7 @@ p.cipi.VarCov <- ggplot(sum.res,aes(x=TIME,fill=pred.type))+
 ##p.cipi.VarCov
 
 ```
+
 
 ### Simulation from a bootstrap
 The other approach to simulation with parameter uncertainty currently
@@ -604,15 +616,15 @@ vignette. We used `PSN`'s bootstrap. We can run the simulation on all the models
 
 ## mods.bootstrap <- list.files(path="../nonmem/bs1_014_N1000/m1",pattern=".+\\.mod$",full.names = T)
 ## mods.bootstrap <- list.files(path="~/xgxg_data/nonmem/bootstrap_dir2/m1/",pattern=".+\\.mod$",full.names = T)
-mods.bootstrap <- list.files(path=file.project("nonmem/bs1_021_N1000/m1"),pattern=".+\\.mod$",full.names = T)
+mods.bootstrap <- list.files(path="~/NMsim_vignette_work/bs1_021_N1000/m1",pattern=".+\\.mod$",full.names = T)
 ## number of models to be run
 ## length(mods.bootstrap)
 
-NMsim(
+simlsts.bootstrap <- NMsim(
     file.mod=mods.bootstrap
    ,data=dat.sim
    ,method.sim=NMsim_default ## a single simulation with each sampled model
-   ,dir.sims="simulations/bootstrap"
+   ,dir.sims="~/NMsim_vignette/bootstrap"
     ## ,name.sim="bootstrap"       ## a recognizable directory name
     ## ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
    ,text.table="PRED IPRED"
@@ -625,14 +637,14 @@ above when we used the covariance step.
 
 ```{r,bootstrap-collect,eval=FALSE}
 ## ~/xgxg_data/nonmem/bootstrap_dir2/m1/NMsim/bs_pr1_100_bootstrap/NMsim_bs_pr1_100_bootstrap.mod
-dirs.tmp <- list.files("simulations/bootstrap",recursive=TRUE,include.dirs=TRUE,pattern=".+\\_dir.+$",full.names=TRUE)
-unlink(dirs.tmp,recursive=TRUE)
+## dirs.tmp <- list.files("simulations/bootstrap",recursive=TRUE,include.dirs=TRUE,pattern=".+\\_dir.+$",full.names=TRUE)
+## unlink(dirs.tmp,recursive=TRUE)
 
-files.lst <- list.files("simulations/bootstrap",recursive=TRUE,pattern="noname\\.lst$",full.names=TRUE)
-length(files.lst)
+## files.lst <- list.files("simulations/bootstrap",recursive=TRUE,pattern="noname\\.lst$",full.names=TRUE)
+## length(files.lst)
 ## files.lst
 
-simres.bootstrap <- NMscanMultiple(files=files.lst
+simres.bootstrap <- NMscanMultiple(files=simlsts.bootstrap$lst
                                    ##,dir="simulations/bootstrap"
                                    ## ,file.pattern=".+\\.lst$"
                                   ,merge.by.row=FALSE
