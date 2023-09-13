@@ -14,7 +14,7 @@ still be reproduced if the input data files should be updated."><!-- mathjax -->
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.947</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.192</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,21 +149,21 @@ likely to only work on linux/unix systems.</p></dd>
 
 <dt>method.execute</dt>
 <dd><p>How to run Nonmem. Must be one of 'psn',
-    'direct', or 'directory'.</p><ul><li><p>psn PSN's execute is used. This supports parallel Nonmem
+    'nmsim', or 'direct'.</p><ul><li><p>psn PSN's execute is used. This supports parallel Nonmem
 runs. Use the <code>nc</code> argument to control how many cores to use
 for each job. For estimation runs, this is most likely the better
 choice, if you have PSN installed. See <code>dir.psn</code> argument
 too.</p></li>
-<li><p>direct Nonmem is called directly on the control stream. This
-is the simplest method and is the least convenient in most
-cases. It does not offer parallel runs and leaves all the Nonmem
-output files next to the control streams.</p></li>
-<li><p>directory Creates a temporary directory and runs Nonmem
+<li><p>nmsim Creates a temporary directory and runs Nonmem
 inside that directory before copying relevant results files back
 to the folder where the input control stream was. If
 <code>sge=TRUE</code>, the job will be submitted to a cluster, but
 parallel execution of the job itself is not supported. See
 <code>path.nonmem</code> argument too.</p></li>
+<li><p>direct Nonmem is called directly on the control stream. This
+is the simplest method and is the least convenient in most
+cases. It does not offer parallel runs and leaves all the Nonmem
+output files next to the control streams.</p></li>
 </ul><p>See `sge` as well.</p></dd>
 
 
@@ -178,7 +178,7 @@ installed version of PSN).</p></dd>
 <dt>path.nonmem</dt>
 <dd><p>The path to the nonmem executable. Only used if
 <code>method.execute="direct"</code> or
-<code>method.execute="directory"</code> (which is not default). If
+<code>method.execute="nmsim"</code> (which is not default). If
 this argument is not supplied, NMexec will try to run nmfe75,
 i.e. this has to be available in the path of the underlying
 shell. The default value can be modified using
@@ -187,12 +187,18 @@ shell. The default value can be modified using
 
 
 <dt>files.needed</dt>
-<dd><p>In case method.execute="directory", this
+<dd><p>In case method.execute="nmsim", this
 argument specifies files to be copied into the temporary
 directory before Nonmem is run. Input control stream and
 simulation input data does not need to be specified.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>NULL (invisibly)</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Use this to read the archived input data when retrieving
@@ -209,8 +215,8 @@ is normally sufficient for simulations).</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="st">"run001.mod"</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="st">"run001.mod"</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co">## run locally - not on cluster</span></span></span>
 <span class="r-in"><span><span class="fu">NMexec</span><span class="op">(</span><span class="va">file.mod</span>,sge<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co">## run on cluster with 16 cores. 64 cores is default</span></span></span>

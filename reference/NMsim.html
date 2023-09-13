@@ -20,7 +20,7 @@ this."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.947</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.192</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -226,16 +226,15 @@ transform, the contents must be the function to apply.</p></dd>
 
 <dt>method.execute</dt>
 <dd><p>Specify how to call Nonmem. Options are
-"psn" (PSN's execute), "directory" (an internal method similar
-to PSN's execute), and "direct" (just run Nonmem directly and
-dump all the temporary files). "directory" has advantages over
+"psn" (PSN's execute), "nmsim" (an internal method similar to
+PSN's execute), and "direct" (just run Nonmem directly and
+dump all the temporary files). "nmsim" has advantages over
 "psn" that makes it the only supported method when
 type.sim="NMsim_known". "psn" has the simple advantage that
 the path to nonmem does not have to be specified if "execute"
 is in the system search path. So as long as you know where
-your Nonmem executable is, "directory" is recommended. The
-default is "directory" if path.nonmem is specified, and "psn"
-if not.</p></dd>
+your Nonmem executable is, "nmsim" is recommended. The default
+is "nmsim" if path.nonmem is specified, and "psn" if not.</p></dd>
 
 
 <dt>method.update.inits</dt>
@@ -323,7 +322,8 @@ NMdataConf.</p></dd>
     
 
 <p>A data.frame with simulation results (same number of rows
-    as input data)</p>
+    as input data). If `wait=FALSE` a character vector with paths
+    to simulation control streams.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

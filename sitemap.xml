@@ -28,6 +28,9 @@
     <loc>https://philipdelff.github.io/NMsim/reference/NMcreateDoses.html</loc>
   </url>
   <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMcreateMatLines.html</loc>
+  </url>
+  <url>
     <loc>https://philipdelff.github.io/NMsim/reference/NMexec.html</loc>
   </url>
   <url>
@@ -68,9 +71,6 @@
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/NMupdateInits.html</loc>
-  </url>
-  <url>
-    <loc>https://philipdelff.github.io/NMsim/reference/NMwritePreamble.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/addEVID2.html</loc>
