@@ -38,6 +38,8 @@ NMcreateMatLines <- function(omegas,type){
     loopres <- c()
     Netas <- omegas[,max(i)]
 
+
+    
     while(i.idx <= length(is)){
         i.this <- is[i.idx]
         nis.block <- omegas.long[i==i.this,unique(maxOff)]
@@ -47,7 +49,7 @@ NMcreateMatLines <- function(omegas,type){
             values.this[values.this==0] <- 1e-30
             res <- paste0("BLOCK(",nis.block+1,") FIX ",paste(values.this,collapse=" "))
             loopres <- c(loopres,res)
-            i.idx <- i.idx+nis.block
+            i.idx <- i.idx+nis.block+1
         } else {
             value.this <- omegas.long[i==i.this&j==i.this,value]
             res <- paste(value.this)

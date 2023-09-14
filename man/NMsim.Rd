@@ -11,7 +11,7 @@ NMsim(
   name.sim,
   order.columns = TRUE,
   script = NULL,
-  subproblems,
+  subproblems = NULL,
   reuse.results = FALSE,
   seed,
   args.psn.execute,

@@ -200,7 +200,7 @@
 
 
 NMsim <- function(file.mod,data,dir.sims, name.sim,
-                  order.columns=TRUE,script=NULL,subproblems,
+                  order.columns=TRUE,script=NULL,subproblems=NULL,
                   reuse.results=FALSE,seed,args.psn.execute,
                   nmquiet=FALSE,text.table, type.mod,method.sim=NMsim_default,
                   execute=TRUE,sge=FALSE,transform=NULL ,type.input,
@@ -211,8 +211,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,...
                   ){#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
     
-    sim <- NULL
     est <- NULL
+    dir.sim <- NULL
+    f.exists <- NULL
+    files.needed <- NULL
+    fn.sim.tmp <- NULL
     fn <- NULL
     par.type <- NULL
     i <- NULL
@@ -226,7 +229,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     textmod <- NULL
     default <- NULL
     known <- NULL
-    typical <- NULL
+    model <- NULL
     psn <- NULL
     direct <- NULL
     directory <- NULL
@@ -236,18 +239,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     fn.sim <- NULL
     run.mod <- NULL
     run.sim <- NULL
-    dir.sim <- NULL
-    f.exists <- NULL
-    fn.sim.tmp <- NULL
+    typical <- NULL
     path.sim <- NULL
     path.digests <- NULL
     path.sim.lst <- NULL
     fn.data <- NULL
     path.data <- NULL
+    sim <- NULL
     value <- NULL
     variable <- NULL
     ROW <- NULL
-    files.needed <- NULL
     ROWMODEL2 <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
@@ -270,10 +271,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
 
-    
-    ## path.nonmem - should use NMdataConf setup
-    
-    if(missing(path.nonmem)) path.nonmem <- NULL
+    ## path.nonmem
+        if(missing(path.nonmem)) path.nonmem <- NULL
     path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem),silent=TRUE)
     if(inherits(path.nonmem,"try-error")){
         path.nonmem <- NULL
@@ -309,9 +308,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(is.null(method.update.inits)) {
         method.update.inits <- "psn"
         cmd.update.inits <- file.psn(dir.psn,"update_inits")
+        
         ## check if update_inits is avail
         ## if(suppressWarnings(system(paste(cmd.update.inits,"-h"),show.output.on.console=FALSE)!=0)){
-        if(!file.exists(cmd.update.inits)){
+        which.found <- system(paste("which",cmd.update.inits),ignore.stdout=T)
+        if(which.found!=0){
             method.update.inits <- "nmsim"
             rm(cmd.update.inits)
         }
@@ -337,7 +338,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     if(missing(name.sim)) name.sim <- NULL
     name.sim <- simpleCharArg("name.sim",name.sim,"noname",accepted=NULL,lower=FALSE)
-    
+
+    ## modelname
+    ## if(missing(modelname)){
+        modelname <- NULL
+    ## }
+    file.mod.named <- FALSE
+    if(!is.null(names(file.mod))){
+        file.mod.named <- TRUE
+    }
     
     ## as.fun
     if(missing(as.fun)) as.fun <- NULL
@@ -354,9 +363,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
 
-    ## if(F){
     if(length(file.mod)>1){
-        allres.l <- lapply(file.mod,NMsim
+        allres.l <- lapply(1:length(file.mod),function(x)
+                           NMsim(file.mod=file.mod[[x]],
                           ,data=data
                           ,dir.sims=dir.sims,
                            name.sim=name.sim,
@@ -368,16 +377,20 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                            text.table=text.table,
                            type.mod=type.mod,execute=execute,
                            sge=sge
+                           ## ,modelname=modelname
                           ,transform=transform
-                           ##,type.sim=type.sim
                           ,method.sim=method.sim
                           ,path.nonmem=path.nonmem
                           ,dir.psn=dir.psn
                           ,...
-                           )
+                           ))
+        if(file.mod.named){
+            names.mod <- names(file.mod)
+            allres.l <- lapply(1:length(allres.l),function(I) allres.l[[I]][,model:=names.mod[[I]]])
+        }
         return(rbindlist(allres.l,fill=TRUE))
     }
-    ## }
+
 
 
     
@@ -418,12 +431,13 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,fn.sim:=paste0("NMsim_",fn.mod)]
     ## dt.models[,fn.sim:=paste0(fn.mod)]
     dt.models[,fn.sim:=fnAppend(fn.sim,name.sim)]
-    
 
-    ## run.mod <- sub("\\.mod","",basename(file.mod))
+    if(missing(modelname)) modelname <- NULL
+    ## modelname <- NMdataDecideOption("modelname",modelname)
+    if(is.null(modelname)) modelname <- function(fn) fnExtension(basename(fn),"")
+
     dt.models[,run.mod:=fnExtension(basename(file.mod),"")]
-    ## run.sim <- sub("\\.mod","",fn.sim)
-    dt.models[,run.sim:=fnExtension(basename(fn.sim),"")]
+    dt.models[,run.sim:=modelname(fn.sim)]
     
 
     ## dir.sim is the model-individual directory in which the model will be run
@@ -611,7 +625,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.files <- melt(dt.models.gen,measure.vars=c("path.sim",cols.fneed),value.name="file")
     dt.files[,missing:=!file.exists(file)]
     if(dt.files[,sum(missing)]){
-        message(print(dt.files[,.("No. of files missing"=sum(missing)),by=.(column=variable)]))
+        message(dt.files[,.("No. of files missing"=sum(missing)),by=.(column=variable)])
         stop("All needed files must be available after running simulation method.")
     }
     
@@ -730,7 +744,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 ###  Section end: Execute
 
-    if(!wait) return(simres$ls)
+    ## if(!wait) return(simres$lst)
     as.fun(simres)
 
 }
