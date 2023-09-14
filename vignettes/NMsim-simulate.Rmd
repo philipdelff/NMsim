@@ -44,6 +44,9 @@ library(tracee)
 library(tidyr)
 library(fst)
 
+## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+## NMdataConf(dir.psn=NULL)
+
 theme_set(theme_bw())
 this.script <- "NMsim-simulate.Rmd"
 writeOutput <- TRUE
@@ -66,22 +69,26 @@ This vignettes aims at enabling you to
 
 * Use `NMsim` to simulate Nonmem models with a given input data set
 
-* Distinguish between and perform the most common types of simulations: new subjects (default), typical subjects, known subjects, and simulation with parameter uncertainty
+* Distinguish between and perform the most common types of simulations: 
+ - new subjects (default), 
+ - typical subjects, 
+ - known (estimated) subjects, 
+ - simulation with parameter uncertainty
 
-* Configure `NMsim` to use `PSN` or methods provided by `NMsim` to update Nonmem control stream initial values and to run Nonmem
+* Simulation with parameters modified from the estimated values
 
-* Understand pros and cons of using `PSN` vs. methods provided by `NMsim`.
+## Prerequisites
+You should have configured `NMsim` with the path to the Nonmem
+installation and maybe also PSN. See
+[`NMsim-config.html`](https://philipdelff.github.io/NMsim/articles/NMsim-config.html). Don't
+worry - it is very easy.
 
-<!-- * Configure `NMsim` to use `PSN`'s `update_inits` or an alternative simple method provided by `NMsim` -->
 
 ## Estimation, then simulation
-The situation is like this: We collected PK and PD data on a drug
-candidate. A PK model was estimated using Nonmem. We have on file
-model input and output control streams (here with extensions `.mod`
-and `.lst` respetively), parameter estimates (`.ext`) and estimated
-random effects (`.phi`) are available.
+The situation is like this: We collected PK and PD data from a single ascending dose 
+trial on a drug candidate. 
 
-```{r,include=FALSE}
+```{r,include=TRUE,echo=FALSE}
 file.mod <- file.project("nonmem/xgxr021.mod")
 res <- NMscanData(file.mod)
 ggplot(res,aes(TIME,DV))+
@@ -93,27 +100,33 @@ ggplot(res,aes(TIME,DV))+
 
 ```
 
-We want predict exposure in a few dosing regimens that we are
-particularly interested in. These are regimens that we have not
+A PK model was estimated using Nonmem. We have on file
+model input and output control streams (here with extensions `.mod`
+and `.lst` respetively), parameter estimates (`.ext`) and estimated
+random effects (`.phi`) are available.
+
+We want to predict exposure in a multiple dose regimen that we are
+particularly interested in. This is a regimen that we have not
 studied in clinical trials so far, and we have decided to use
 population PK simulations for this purpose. 
 
-The pop PK model is estimated using an ADVAN subroutine with
-extravascular dosing in compartment 1 andthe central compartment is
-compartment 2. 
+The pop PK model was estimated using an ADVAN subroutine with
+extravascular dosing in compartment 1 and the central compartment is
+compartment 2.
 
+It does not matter to NMsim how we create a simulation data set as long as we get it into a data.frame structure. We used functions included with NMsim for the purpose, but you can use anything. We create a regimen with a loading dose of 300 mg followed by 150 QD for 6 days. Notice that the compartment numbers match the compartment numbers that were used when estimating the model.
 
 ```{r,dsCreateSim,include=TRUE}
 ### multiple dose regimens with loading are easily created with NMcreateDoses too
 ## We use ADDL+II (either method easy)
-doses <- NMcreateDoses(TIME=c(0,24),AMT=c(300,150),addl=data.frame(ADDL=c(0,5),II=c(0,24)))
-doses <- mutate(doses,trt="300 mg then 150 mg QD")
+doses <- NMcreateDoses(TIME=c(0,24),AMT=c(300,150),addl=data.frame(ADDL=c(0,5),II=c(0,24)),CMT=1)
+doses <- transform(doses,trt="300 mg then 150 mg QD")
 
 ## Add simulation records - longer for QD regimens
 dat.sim <- addEVID2(doses,time.sim=0:(24*7),CMT=2)
 
+## sort data set 
 setorder(dat.sim,ID,TIME,EVID)
-dat.sim$ROW <- 1:nrow(dat.sim)
 
 ```
 
@@ -131,44 +144,17 @@ NMexpandDoses(dat.sim) %>%
 print(as.data.table(dat.sim),topn=5)
 ```
 
-We have put together a simulation data set. We used the
-`NMcreateDoses` and `addEVID2` functions from `NMsim` to do so, but
-that is not the topic of this vignette. We simulate two different doses (100 mg and 400 mg) as single dose, and then the same dose levels as QD with a double loading dose.
-
 
 ## Simulation of new subjects
 This is the first time we are using `NMsim`, and we just want to try
-the simplest thing we can think of.
+the simplest thing we can think of. Simulate a new subject on the considerd multiple dose regimen with our estimated PK model from the single dose study.
 
 
 ```{r,sim-simplest,eval=FALSE}
-## file.mod <- "../nonmem/xgxr014.mod"
-## file.mod <- file.project("nonmem/xgxr017.mod")
-## file.mod <- "~/xgxg_data/nonmem/xgxr018.mod"
-## file.mod <- "~/xgxg_data/nonmem/xgxr021.mod"
-## file.mod <- file.project("nonmem/xgxr014.mod")
 file.mod <- file.project("nonmem/xgxr021.mod")
 
-
-## unloadNamespace("NMsim")
-## unloadNamespace("NMdata")
-## load_all("~/wdirs//NMdata")
-## load_all()
-
-## NMdataConf(path.nonmem="/opt/nonmem/nm751/run/nmfe75")
-## NMdataConf(dir.psn="/opt/psn")
-
-NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
-NMdataConf(dir.psn=NULL)
-
-
 simres <- NMsim(file.mod=file.mod,
-                data=dat.sim
-               ,method.update.inits="nmsim"
-               ,dir.sims="~/NMsim_test"
-               ,seed=12345
-                ##,method.execute="directory"
-                )
+                data=dat.sim)
 ```
 
 ```{r,include=FALSE,eval=TRUE}

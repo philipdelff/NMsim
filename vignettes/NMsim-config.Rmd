@@ -26,6 +26,14 @@ knitr::opts_chunk$set(
 ## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
+## Objectives
+This vignettes aims at enabling you to
+
+* Configure `NMsim` to use `PSN` or methods provided by `NMsim` to update Nonmem control stream initial values and to run Nonmem
+
+* Understand pros and cons of using `PSN` vs. methods provided by `NMsim`.
+
+
 NMsim relies on Nonmem for running simulations. If your system does
 not meet the requirements described in this document, it does not mean
 that NMsim can't work. It can still put together your Nonmem
