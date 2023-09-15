@@ -58,6 +58,7 @@ found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xm
 unlink(found.files)
 
 run.simuls <- FALSE
+NMdataConf(as.fun="data.table")
 ```
 
 
@@ -90,7 +91,7 @@ trial on a drug candidate.
 
 ```{r,include=TRUE,echo=FALSE}
 file.mod <- file.project("nonmem/xgxr021.mod")
-res <- NMscanData(file.mod)
+res <- NMscanData(file.mod,quiet=TRUE)
 ggplot(res,aes(TIME,DV))+
     geom_point()+
     facet_wrap(~trtact)
@@ -136,18 +137,29 @@ of doses and observations:
 
 ```{r}
 NMcheckData(dat.sim,type.data="sim")
-NMexpandDoses(dat.sim) %>%
-    group_by(ID,trt,EVID,AMT) %>%
-    summarize(N=length(EVID)) %>%
-    spread(EVID,N)
-
-print(as.data.table(dat.sim),topn=5)
+```
+```{r,echo=TRUE}
+NMexpandDoses(dat.sim)[,.(Nrows=.N),keyby=.(trt,EVID,AMT)] ## %>%
+    ## group_by(ID,trt,EVID,AMT) %>%
+    ## summarize(N=length(EVID)) %>%
+    ## spread(EVID,N)
 ```
 
+Showing the top five rows for understanding what the data now looks like. Notice that the following are _not_ issues:
+
+- Data contains a mix of numeric and non-numeric columns
+- Columns are not sorted in Nonmem-friendly style with non-numeric columns to the right
+
+
+```{r}
+dat.sim[1:5,]
+```
 
 ## Simulation of new subjects
 This is the first time we are using `NMsim`, and we just want to try
-the simplest thing we can think of. Simulate a new subject on the considerd multiple dose regimen with our estimated PK model from the single dose study.
+the simplest thing we can think of. Simulate a new subject on the
+considerd multiple dose regimen with our estimated PK model from the
+single dose study.
 
 
 ```{r,sim-simplest,eval=FALSE}
@@ -644,14 +656,13 @@ file.fst <- "simulate-results/simres_bootstrap.fst"
 if(run.simuls){
     write_fst(simres.bootstrap,path=file.fst)
 } else {
-    simres.bootstrap <- read_fst(file.fst)
+    simres.bootstrap <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
 
 
-```{r,bootstrap-summa}
-setDT(simres.bootstrap)
+```{r,bootstrap-summa,eval=FALSE}
 allresl <- melt(simres.bootstrap[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
 
 sum.res.model <- allresl[,
@@ -659,17 +670,25 @@ sum.res.model <- allresl[,
                         ,by=.(model,TIME,pred.type)]
 
 
-sum.res.bootstrap <- sum.res.model[,
+sum.bootstrap <- sum.res.model[,
                                    setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
 
                                   ,by=.(TIME,pred.type)]
 
-
 ```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/sum_bootstrap.fst"
+if(run.simuls){
+    write_fst(sum.bootstrap,path=file.fst)
+} else {
+    sum.bootstrap <- read_fst(file.fst)
+}
+```
+
 
 ```{r,bootstrap-plot,eval=TRUE}
 
-p.cipi.bootstrap <- ggplot(sum.res.bootstrap,aes(x=TIME,fill=pred.type))+
+p.cipi.bootstrap <- ggplot(sum.bootstrap,aes(x=TIME,fill=pred.type))+
     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
     geom_line(aes(y=predmm,colour=pred.type))+
     ## facet_wrap("regimen",scales="free_x")+
