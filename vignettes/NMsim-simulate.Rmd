@@ -43,7 +43,7 @@ library(patchwork)
 library(tracee)
 library(tidyr)
 library(fst)
-
+library(knitr)
 ## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 ## NMdataConf(dir.psn=NULL)
 
@@ -71,10 +71,10 @@ This vignettes aims at enabling you to
 * Use `NMsim` to simulate Nonmem models with a given input data set
 
 * Distinguish between and perform the most common types of simulations: 
- - new subjects (default), 
- - typical subjects, 
- - known (estimated) subjects, 
- - simulation with parameter uncertainty
+- new subjects (default), 
+- typical subjects, 
+- known (estimated) subjects, 
+- simulation with parameter uncertainty
 
 * Simulation with parameters modified from the estimated values
 
@@ -91,13 +91,10 @@ trial on a drug candidate.
 
 ```{r,include=TRUE,echo=FALSE}
 file.mod <- file.project("nonmem/xgxr021.mod")
-res <- NMscanData(file.mod,quiet=TRUE)
+res <- NMscanInput(file.mod,quiet=TRUE)
 ggplot(res,aes(TIME,DV))+
     geom_point()+
     facet_wrap(~trtact)
-
-## NMreadTab("~/wdirs/NMsim/inst/examples/nonmem/xgxr021.phi")
-## NMreadTab("~/wdirs/NMsim/inst/examples/nonmem/xgxr021.ext")
 
 ```
 
@@ -115,7 +112,12 @@ The pop PK model was estimated using an ADVAN subroutine with
 extravascular dosing in compartment 1 and the central compartment is
 compartment 2.
 
-It does not matter to NMsim how we create a simulation data set as long as we get it into a data.frame structure. We used functions included with NMsim for the purpose, but you can use anything. We create a regimen with a loading dose of 300 mg followed by 150 QD for 6 days. Notice that the compartment numbers match the compartment numbers that were used when estimating the model.
+It does not matter to NMsim how we create a simulation data set as
+long as we get it into a data.frame structure. We used functions
+included with NMsim for the purpose, but you can use anything. We
+create a regimen with a loading dose of 300 mg followed by 150 QD for
+6 days. Notice that the compartment numbers match the compartment
+numbers that were used when estimating the model.
 
 ```{r,dsCreateSim,include=TRUE}
 ### multiple dose regimens with loading are easily created with NMcreateDoses too
@@ -139,10 +141,8 @@ of doses and observations:
 NMcheckData(dat.sim,type.data="sim")
 ```
 ```{r,echo=TRUE}
-NMexpandDoses(dat.sim)[,.(Nrows=.N),keyby=.(trt,EVID,AMT)] ## %>%
-    ## group_by(ID,trt,EVID,AMT) %>%
-    ## summarize(N=length(EVID)) %>%
-    ## spread(EVID,N)
+NMexpandDoses(dat.sim)[,.(Nrows=.N),keyby=.(trt,EVID,AMT)] |>
+    kable()
 ```
 
 Showing the top five rows for understanding what the data now looks like. Notice that the following are _not_ issues:
@@ -155,7 +155,7 @@ Showing the top five rows for understanding what the data now looks like. Notice
 dat.sim[1:5,]
 ```
 
-## Simulation of new subjects
+## Simulation of a new subject
 This is the first time we are using `NMsim`, and we just want to try
 the simplest thing we can think of. Simulate a new subject on the
 considerd multiple dose regimen with our estimated PK model from the
@@ -200,7 +200,7 @@ The reason we can plot a simulation with residual variability is that the contro
   Y=F+F*ERR(1)+ERR(2)
 ```
 
-
+## Multiple models
 Before we continue with that model, we want to compare a simulation based on this model to another model we are considering. `NMsim` can do this and collect the data into one object:
 
 ```{r,sim-twomodels,eval=FALSE}
@@ -232,15 +232,18 @@ For simplicity, we shall show the rest of the examples for just one model. Any o
 
 <!-- subproblems vs repetition of input data -->
 
-### More subjects
+## More subjects and prediction intervals
 To create a prediction interval based on the selected model, we need
 to simulate multiple new subjects. There are two ways to easily obtain
 that. One is to repeat (`rbind`) the simulation input dataset, one
 repetetion per new subject, and then update the `ID` column to get
-distinct subjects. The follwing shows how one could generate 1000
+distinct subjects. 
+
+### Multiple subjects created in simulation input data
+The follwing shows how one could generate 1000
 subjects using `data.table`. (I use `data.table` a lot, if you can
-provide a good way to do this with tidyverse packages, I am happy to
-include that instead).
+provide a good way to do this without, I am happy to
+include that).
 
 ```{r,eval=FALSE}
 dat.sim.1000 <- NMdata::egdt(
@@ -249,13 +252,14 @@ dat.sim.1000 <- NMdata::egdt(
                             data.table(ID=1:1000)
                         )
 dat.sim.1000[,ID:=.GRP,by=.(ID,trt)]
-
+## order with respect to new IDs
 setorder(dat.sim.1000,trt,ID,TIME,EVID)
+## check dataset
+NMcheckData(dat.sim.1000,type.data="sim")
 ```
 
 We now simulate 1000 subjects by plugging in this data object:
 ```{r,sim-1000-data,eval=FALSE}
-## file.mod <- file.project("nonmem/xgxr014.mod")
 simres.n1000.1 <- NMsim(file.mod=file.mod,
                         data=dat.sim.1000
                         )
@@ -270,8 +274,8 @@ if(run.simuls){
 }
 ```
 
-
-The other way to do this is making use of Nonmem's `SUBPROBLEMS` simulation feature which makes Nonmem rerun the simulation the specified number of times. Notice that to do this, we use the `dat.sim` data without the 1000 replications. We then make use of the NMREP column generated by `NMdata::NMscanData` to redefine the `ID` column:
+### Multiple subjects generated by Nonmem
+The other way to simulate multiple subjects is making use of Nonmem's `SUBPROBLEMS` simulation feature which makes Nonmem rerun the simulation the specified number of times. Notice that to do this, we use the `dat.sim` data without the 1000 replications. We then make use of the NMREP column generated by `NMdata::NMscanData` to redefine the `ID` column:
 
 
 ```{r,sim-1000-subproblem,eval=FALSE}
@@ -296,6 +300,7 @@ if(run.simuls){
 
 The two approaches are computationally about equally fast, the most significant difference probably being in Nonmem reading a smaller or larger simulation input data file. Unless the input dataset becomes very large, it is merely a question of preference of the modeler which one to use. In a case where the simulated patients need different dosing or sample schedules, the manual construction of the data is needed - because it's not a straightforward replication.
 
+### Generate the prediction interval
 We now plot a prediction interval - in this case based on the results of the simulation using `SUBPROBLEMS`; this makes no difference to how to derive the prediction interval.
 
 ```{r,eval=TRUE}
@@ -349,26 +354,25 @@ p.typ
 
 ## Simulation of known subjects
 We sometimes want to simulate the already observed subjects. This means we want to reuse the estimated random effects (ETA's) given the subject ID's. `NMsim` has a method for this. The restriction is that all subjects (values of `ID`) in the simulation input data must have been used in the estimation input data.
-```{r,eval=FALSE}
-## base.sim.known <- dat.sim.md[dat.sim.md$DOSE==400,]
-base.sim.known <- dat.sim
 
-res.mod <- NMscanData(file.mod)
+```{r,eval=FALSE}
+## read model results just to extract the observed ID's
+res.mod <- NMscanData(file.mod,quiet=TRUE)
 ids <- data.frame(ID=unique(res.mod$ID))
 
-
+## Repeat the simulation data set for each ID and order accordingly
 dat.sim.known <- merge(ids,
-                       as.data.table(base.sim.known)[,setdiff(colnames(base.sim.known),c("ID")),with=FALSE]
+                       dat.sim[,setdiff(colnames(base.sim.known),c("ID")),with=FALSE]
                        )
 setorder(dat.sim.known,ID,TIME,EVID)
+## check data
+NMcheckData(dat.sim.known,type.data="sim")
 
 simres.known <- NMsim(file.mod=file.mod,
                       data=dat.sim.known,
                       name.sim="known1",
                       text.table="PRED IPRED CL V2 KA"
                      ,method.sim=NMsim_known
-                      ## ,method.update.inits="nmsim"
-                      ## ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                       )
 ```
 
@@ -381,7 +385,7 @@ if(run.simuls){
 }
 ```
 
-
+And the simulation results are plotted for each subject.
 ```{r,eval=TRUE}
 ggplot(as.data.table(simres.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
     geom_line()+
@@ -417,7 +421,7 @@ In case of time-varying covariates, you can keep all data records from the PK da
 
 ```{r,known-pkpd,eval=TRUE}
 ## Take dose records from PK model estimation input data
-pkres <- NMscanData(file.mod,as.fun="data.table")
+pkres <- NMscanData(file.mod,quiet=TRUE)
 pkdos <- pkres[EVID==1,.(ID, TIME, EVID, CMT, AMT)]
 ## Take PD data observation records (`pdsamples`)
 pd[,ROWPD:=.I]
@@ -425,8 +429,6 @@ pdsamples <- pd[EVID==0,.(ROWPD,ID,TIME,EVID=2)]
 ## Stack `pkdos` and `pdsamples` to one data set (`pdsim`)
 pdsim <- rbind(pkdos,pdsamples,fill=TRUE)
 pdsim[,DV:=NA]
-## pdsim[,all(ID%in%pkres$ID)]
-## pdsim[,.N,by=ID%in%pkres$ID]
 pdsim <- pdsim[ID%in%pkres$ID]
 setorder(pdsim,ID,TIME,EVID)
 ```
@@ -515,10 +517,6 @@ another one.
 Anyway, getting `NMsim` to do the work is as simple as this:
 
 ```{r,VarCov,eval=FALSE}
-## file.mod.cov <- file.project("nonmem/xgxr114.mod")
-## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
-
-                                        #file.mod.cov <- "~/xgxg_data/nonmem/xgxr017.mod"
 simlsts.VarCov <- NMsim(
     file.mod=file.mod,
     data=dat.sim
@@ -526,8 +524,6 @@ simlsts.VarCov <- NMsim(
    ,method.sim=NMsim_VarCov ## Var-Cov parameter sampling
    ,name.sim="VarCov"       ## a recognizable directory name
    ,nsims=1000               ## sampling 500 models
-    ## ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
-    ## ,method.execute="directory"    ## 
    ,sge=TRUE                ## run simulations in parallel please
 )
 
@@ -540,9 +536,7 @@ messages do not mean that the job isn't run.
 We used `sge=TRUE` which means we are sending the 500 generated jobs to the queuing system. In this case, `NMsim` does not track the execution of the jobs and does hence not collect the results once they are done. You have to check the status of the jobs manually, and once they are all done, you can read all the results using `NMdata::NMscanMultiple`:
 
 ```{r,VarCov-collect,eval=FALSE}
-simres.VarCov <- NMscanMultiple(## dir="simulations/xgxr114_VarCov"
-   ##  dir=file.path("simulations",paste0(basename(fnExtension(file.mod,"")),"_VarCov"))
-    ## ,file.pattern=".+\\.lst$"
+simres.VarCov <- NMscanMultiple(
     files=simlsts.VarCov$lst
    ,merge.by.row=FALSE,quiet=T
    ,as.fun="data.table")
@@ -565,14 +559,14 @@ setDT(simres.VarCov)
 allresl <- melt(simres.VarCov[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
 
 sum.res.VarCov <- allresl[,
-                         .(predm=quantile(pred,probs=c(.5)))
-                        ,by=.(model,trt,TIME,pred.type)]
+                          .(predm=quantile(pred,probs=c(.5)))
+                         ,by=.(model,trt,TIME,pred.type)]
 
 
 sum.VarCov <- sum.res.VarCov[,
-                         setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
+                             setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
 
-                        ,by=.(trt,TIME,pred.type)]
+                            ,by=.(trt,TIME,pred.type)]
 
 ```
 ```{r,include=FALSE,eval=TRUE}
@@ -594,8 +588,6 @@ p.cipi.VarCov <- ggplot(sum.VarCov,aes(x=TIME,fill=pred.type))+
     facet_wrap("trt",scales="free_x")+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
 
-##p.cipi.VarCov
-
 ```
 
 
@@ -611,9 +603,6 @@ vignette. We used `PSN`'s bootstrap. We can run the simulation on all the models
 
 ```{r,bootstrap-execute,eval=FALSE}
 ## generate a vector with paths to all the input control streams
-
-## mods.bootstrap <- list.files(path="../nonmem/bs1_014_N1000/m1",pattern=".+\\.mod$",full.names = T)
-## mods.bootstrap <- list.files(path="~/xgxg_data/nonmem/bootstrap_dir2/m1/",pattern=".+\\.mod$",full.names = T)
 mods.bootstrap <- list.files(path="~/NMsim_vignette_work/bs1_021_N1000/m1",pattern=".+\\.mod$",full.names = T)
 ## number of models to be run
 ## length(mods.bootstrap)
@@ -623,8 +612,6 @@ simlsts.bootstrap <- NMsim(
    ,data=dat.sim
    ,method.sim=NMsim_default ## a single simulation with each sampled model
    ,dir.sims="~/NMsim_vignette/bootstrap"
-    ## ,name.sim="bootstrap"       ## a recognizable directory name
-    ## ,method.execute="psn"    ## use PSN's execute to allow for parallel execution
    ,text.table="PRED IPRED"
    ,sge=TRUE                ## run simulations in parallel 
 )
@@ -634,17 +621,7 @@ Reading and post-processing the results is similar to the same steps
 above when we used the covariance step.
 
 ```{r,bootstrap-collect,eval=FALSE}
-## ~/xgxg_data/nonmem/bootstrap_dir2/m1/NMsim/bs_pr1_100_bootstrap/NMsim_bs_pr1_100_bootstrap.mod
-## dirs.tmp <- list.files("simulations/bootstrap",recursive=TRUE,include.dirs=TRUE,pattern=".+\\_dir.+$",full.names=TRUE)
-## unlink(dirs.tmp,recursive=TRUE)
-
-## files.lst <- list.files("simulations/bootstrap",recursive=TRUE,pattern="noname\\.lst$",full.names=TRUE)
-## length(files.lst)
-## files.lst
-
 simres.bootstrap <- NMscanMultiple(files=simlsts.bootstrap$lst
-                                   ##,dir="simulations/bootstrap"
-                                   ## ,file.pattern=".+\\.lst$"
                                   ,merge.by.row=FALSE
                                   ,quiet=T
                                   ,as.fun="data.table")
@@ -671,9 +648,9 @@ sum.res.model <- allresl[,
 
 
 sum.bootstrap <- sum.res.model[,
-                                   setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
+                               setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
 
-                                  ,by=.(TIME,pred.type)]
+                              ,by=.(TIME,pred.type)]
 
 ```
 ```{r,include=FALSE,eval=TRUE}
@@ -706,8 +683,7 @@ p.cipi.VarCov+
     p.cipi.bootstrap +
     lims(y=c(0,ymax))+
     labs(subtitle="Bootstrap")+
-    plot_layout(guides="collect")## +
-## theme(legend.position="bottom")
+    plot_layout(guides="collect") & theme(legend.position="bottom")
 ```
 
 ## Add residual variability
@@ -732,14 +708,11 @@ simres.with.resvar <- addResVar(simres,path.ext=fnExtension(file.mod,"ext"),par.
 ```
 
 ## Vary parameter values
-The features described in this section require NMdata >= 0.1.1. 
-
 Sometimes we want to simulate with some modification to the estimated model. NMsim can make such user-specified modifications to the model before simulating through the `list.sections` argument. 
 
 The SAD study was run with a fast solution formulation. We want to see how a slower absorption rate would affect the PK prediction for the multiple dose regimen. In the model estimate, `TVKA=2.17`. We now try with a four times slower absorption:
 
 ```{r,eval=FALSE}
-## NMscanData(file.mod) |> findCovs()
 simres.slowabs <- NMsim(file.mod=file.mod,
                         data=dat.sim
                        ,dir.sims="~/NMsim_test"
@@ -781,12 +754,12 @@ dat.sim.varka[,ID:=.GRP,by=.(KASCALE,ID)]
 setorder(dat.sim.varka,ID,TIME,EVID)
 
 simres.varka <- NMsim(file.mod=file.mod,
-                        data=dat.sim.varka
-                       ,dir.sims="~/NMsim_test"
-                       ,name.sim="varka"
-                       ,seed=12345
-                       ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
-                        )
+                      data=dat.sim.varka
+                     ,dir.sims="~/NMsim_test"
+                     ,name.sim="varka"
+                     ,seed=12345
+                     ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
+                      )
 
 ```
 ```{r,include=FALSE,eval=TRUE}
