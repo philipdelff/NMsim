@@ -286,6 +286,36 @@ that. One is to repeat (`rbind`) the simulation input dataset, one
 repetetion per new subject, and then update the `ID` column to get
 distinct subjects. 
 
+## Why could `NMsim` fail or be slow?
+If `NMsim` can find the Nonmem executable and/or PSN, it should work on basically any models where where it makes sense to replace the `$ESTIMATION` by a `$SIMULATION`. The single most common reason it will fail is Nonmem fails to run. Make sure to read the output from Nonmem in the R console. If `NMsim` complains it cannot find the output tables, it is likely because Nonmem failed and did not generate them. 
+
+There is one thing about the Nonmem model evaluation you have to remember here. Nonmem cannot run a model if it uses variables that are unavailable. It may be a covariate in the model that you did not include in your data set. And often the estimation models include variables in output tables that were not used for anything else by Nonmem than being read from the input data set and printed in output tables. In fact, this was exactly why we included a row identifier calle `ROW` when generating the simulation data set. If we do not do that, we get this error:
+
+```
+Starting NMTRAN
+ 
+ AN ERROR WAS FOUND IN THE CONTROL STATEMENTS.
+ 
+AN ERROR WAS FOUND ON LINE 60 AT THE APPROXIMATE POSITION NOTED:
+ $TABLE ROW TVKA TVV2 TVV3 TVCL KA V2 V3 CL Q PRED IPRED Y NOPRINT FILE=NMsim_xgxr021_noname.tab
+         X  
+ THE CHARACTERS IN ERROR ARE: ROW
+  479  THIS ITEM IS NOT LISTED IN MODULE NMPRD4 AND MAY NOT BE DISPLAYED.
+cp: cannot stat 'NMsim_xgxr021_noname.tab': No such file or directory
+Error in NMscanTables(file, quiet = TRUE, as.fun = "data.table", col.row = col.row,  : 
+  NMscanTables: File not found: /home/philip/R/x86_64-pc-linux-gnu-library/4.2/NMsim/examples/nonmem/NMsim/xgxr021_noname/NMsim_xgxr021_noname.tab. Did you copy the lst file but forgot table file?
+Results could not be read.
+```
+
+Nonmem gets to writing the `$TABLE` but cannot find a variable called `ROW`. Again, we fixed that by including `ROW`. In many cases, the best way to fix this is to reduce the `$TABLE` section using the `text.table` argument. All we need from the simulation results are population and individual predictions anyway. We could have omitted `ROW` in the input data set and done something as simple as
+
+```{r,sim-simplest-table,eval=FALSE}
+simres <- NMsim(file.mod=file.mod,
+                data=dat.sim,
+                text.table="PRED IPRED Y")
+```
+`text.table` can help avoid many of these problems. And if `NMsim` is slow, this is a potentially a very large low-hanging fruit. In a benchmark example, I reduced a (very large) simulation run time from ~1.5 hours to ~7 minutes this way. 
+
 ### Multiple subjects created in simulation input data
 The follwing shows how one could generate 1000 subjects using
 `data.table`. (I use `data.table` a lot, if you can provide a good way
