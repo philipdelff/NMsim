@@ -122,7 +122,7 @@ refer to this by the argument name, `method.update.inits="psn"`.
 
 NMsim also provides a similar functionality internally, referred to as
 `method.update.inits="NMsim"`. This will be used if PSN is not found -
-and if you ask for it.
+and if you ask for it. 
 
 `method.update.inits="psn"` has a few advantages over the
 NMsim-provided method. Most notbably, it is widely used, and it keeps
@@ -130,13 +130,9 @@ comments in affected control stream sections (`$THETA`, `$OMEGA`,
 `$SIGMA`). `method.update.inits="nmsim"` will drop all comments in
 affected sections. I have in the past seen issues with some methods to
 update `$OMEGA` sections with off-diagonal elements
-(`BLOCK`). `method.update.inits="nmsim"` takes a very simple approach
-and writes out (and fixes) the full `OMEGA` matrix in the control
-stream. Since the `OMEGA` matrix is read from the `.lst` file, this is
-not relying on interpreting Nonmem code at all. In cases of
-"complicated" `BLOCK` structures this is a simple approach that may be
-less prone to errors. That and the support of systems without `PSN`
-are the two reasons one would choose `method.update.inits="nmsim"`
+(`BLOCK`). `method.update.inits="nmsim"` takes a very simple approach. Reading the `OMEGA` matrix  from the `.ext` file, this is
+not relying on interpreting Nonmem code at all. The support of systems without `PSN`
+would be the main reason one would choose `method.update.inits="nmsim"`
 over `method.update.inits="psn"`.
 
 In order to make use of `method.update.inits="psn"`, you need to make

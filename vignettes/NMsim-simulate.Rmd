@@ -3,6 +3,7 @@ title: "NMsim Simulation Methods"
 output:
 rmarkdown::html_vignette:
     toc: true
+    code_folding: show
 Suggests: markdown
 VignetteBuilder: knitr
 vignette: >
@@ -45,6 +46,7 @@ library(tidyr)
 library(fst)
 library(knitr)
 ## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+## NMdataConf(path.nonmem="/opt/nonmem/nm751/run/nmfe75")
 ## NMdataConf(dir.psn=NULL)
 
 theme_set(theme_bw())
@@ -71,9 +73,9 @@ This vignettes aims at enabling you to
 * Use `NMsim` to simulate Nonmem models with a given input data set
 
 * Distinguish between and perform the most common types of simulations: 
-- new subjects (default), 
+- new subjects, 
 - typical subjects, 
-- known (estimated) subjects, 
+- known subjects (estimated random effects), 
 - simulation with parameter uncertainty
 
 * Simulation with parameters modified from the estimated values
@@ -85,36 +87,40 @@ installation and maybe also PSN. See
 worry - it is very easy.
 
 
+
 ## Estimation, then simulation
 The situation is like this: We collected PK and PD data from a single ascending dose 
-trial on a drug candidate. 
+trial on a drug candidate. The following plot shows the data for no other reason than pointing out clearly that the data informing the model was single dose, and we will be simulating a different dosing regimen.
 
 ```{r,include=TRUE,echo=FALSE}
 file.mod <- file.project("nonmem/xgxr021.mod")
 res <- NMscanInput(file.mod,quiet=TRUE)
-ggplot(res,aes(TIME,DV))+
+ggplot(res[!is.na(DV)],aes(TIME,DV))+
     geom_point()+
     facet_wrap(~trtact)
 
 ```
 
 A PK model was estimated using Nonmem. We have on file
-model input and output control streams (here with extensions `.mod`
+the model input and output control streams (here with extensions `.mod`
 and `.lst` respetively), parameter estimates (`.ext`) and estimated
-random effects (`.phi`) are available.
+random effects (`.phi`). 
 
-We want to predict exposure in a multiple dose regimen that we are
-particularly interested in. This is a regimen that we have not
+We want to predict concentrations in a multiple dose regimen. This is a regimen that we have not
 studied in clinical trials so far, and we have decided to use
 population PK simulations for this purpose. 
 
+### Generating a simulation input data set
 The pop PK model was estimated using an ADVAN subroutine with
 extravascular dosing in compartment 1 and the central compartment is
-compartment 2.
+compartment 2. This information is needed because the compartment
+numbers in the simulation data set will be created to match this. We
+shall see that this is the only information needed about the model for
+`NMsim` to be able to simulate it.
 
 It does not matter to NMsim how we create a simulation data set as
-long as we get it into a data.frame structure. We used functions
-included with NMsim for the purpose, but you can use anything. We
+long as we get it into a data.frame structure. For the example, we used functions
+included with NMsim, but you can use anything. We
 create a regimen with a loading dose of 300 mg followed by 150 QD for
 6 days. Notice that the compartment numbers match the compartment
 numbers that were used when estimating the model.
@@ -131,6 +137,8 @@ dat.sim <- addEVID2(doses,time.sim=0:(24*7),CMT=2)
 ## sort data set 
 setorder(dat.sim,ID,TIME,EVID)
 
+## Adding a row identifier (generally not necessary)
+dat.sim$ROW <- 1:nrow(dat.sim)
 ```
 
 We check the simulation data set for various potential issues in
@@ -140,7 +148,10 @@ of doses and observations:
 ```{r}
 NMcheckData(dat.sim,type.data="sim")
 ```
-```{r,echo=TRUE}
+
+A brief overview of the number of events broken down by event type `EVID` and dose amount `AMT`:
+
+```{r,echo=FALSE}
 NMexpandDoses(dat.sim)[,.(Nrows=.N),keyby=.(trt,EVID,AMT)] |>
     kable()
 ```
@@ -151,7 +162,7 @@ Showing the top five rows for understanding what the data now looks like. Notice
 - Columns are not sorted in Nonmem-friendly style with non-numeric columns to the right
 
 
-```{r}
+```{r,echo=FALSE}
 dat.sim[1:5,]
 ```
 
@@ -174,20 +185,17 @@ file.fst <- "simulate-results/simres.fst"
 if(run.simuls){
     write_fst(simres,path=file.fst)
 } else {
-    simres <- read_fst(file.fst)
+    simres <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
 We plot population and individual predictions as the simulations of
-(in this case) the typical subject and one simulated subject. Residual
-variability is not simulated in this case. More on that later in this
-paper.
+(in this case) the typical subject and one simulated subject. The variable called `Y` is the individual prediction plus residual variability.
+paper. The code is included to show that the results from `NMsim` are ready to be plotted. The main reason data is transformed to long format (`melt`) is to get ggplot2 to generate the legend automatically.
 
 ```{r,eval=TRUE}
 datl <- as.data.table(simres) |>
     melt(measure.vars=cc(PRED,IPRED,Y))
-## datl[,type:="Prediction"]
-## datl[variable=="Y",type:="Simulation"]
 
 ggplot(datl,aes(TIME,value,colour=variable))+
     geom_line(data=function(x)x[variable!="Y"])+
@@ -199,6 +207,34 @@ The reason we can plot a simulation with residual variability is that the contro
 ```
   Y=F+F*ERR(1)+ERR(2)
 ```
+More on residual variability in case you don't have such a line later
+in this paper.
+
+## What happened?
+`NMsim` uses automation tools from `NMdata` to 
+
+* Save the data in a Nonmem-friendly format 
+* Create a simulation control stream based on the referenced input control stream
+* Update the initial values based with estimated values 
+* Modify input data-related sections for reading input siulation data 
+* Modify output table file names and paths to generate simulation output tables
+* Run Nonmem
+* Read output tables and combine them with input data into one data object
+
+The generated files have all been stored in a folder called `NMsim` next to the estimation control stream. More on that shortly in the section "A few basic additional arguments to `NMsim`".
+
+Let's see the first few lines of the returned object:
+
+```{r}
+simres[1:3]
+```
+
+Notice a few things about the returned data:
+
+* All columns from the output tables defined in the input control stream are there. We will soon learn how to modify this
+* Input data columns are there too (like `trt`).
+* Additional columns (`model` and `nmout`) may be familiar to `NMdata` users.
+* We will soon learn where the "_noname" in the `model` column comes from.
 
 ## Multiple models
 Before we continue with that model, we want to compare a simulation based on this model to another model we are considering. `NMsim` can do this and collect the data into one object:
@@ -216,21 +252,32 @@ file.fst <- "simulate-results/simres_2models.fst"
 if(run.simuls){
     write_fst(simres.2models,path=file.fst)
 } else {
-    simres.2models <- read_fst(file.fst)
+    simres.2models <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
-
-
-In case multiple models are provided, `NMsim` simply loops over them. It does collect all the results, and we can use the `model` column to separate the two simulations:
+In case multiple models are provided, `NMsim` simply loops over them. It does collect all the results, and we can use the `model` column to separate the two simulations. Since we are so far just simulating on subject with each model, it makes litlle sense to compare individual preditions. We just plot the population prediction (`PRED`):
 
 ```{r,eval=TRUE}
 ggplot(simres.2models,aes(TIME,PRED,colour=model))+geom_line()+
     facet_wrap(c("trt"),scales="free")
 ```
 
-For simplicity, we shall show the rest of the examples for just one model. Any of them could be run on multiple models the same way as shown above.
+For simplicity, we shall show the rest of the examples for just one
+model. Any of them could be run on multiple models the same way as
+shown above.
 
 <!-- subproblems vs repetition of input data -->
+
+## A few basic additional arguments to `NMsim`
+The first couple of examples were run with the bare minimum of
+arguments - estimation control stream and simulation data set. You are obviously encouraged to read the help of `NMsim` to learn about the many useful features it has, and you will learn some more in this vignette. But there are a few arguments that you should learn about at this point already. Here they are:
+
+* `dir.sims` Path to a folder in which all generated files will be stored. Use this to avoid `NMsim` will write into the directories where your estimation models are. They may not belong there at all. You may want to separate the model development step from the post-processing step.
+* `name.sim` Give your simulation a meaningfull name. We did not do this above, so `NMsim` called it "noname".
+* `text.table` Very important. This redefines the output table section from the estimation control stream to the simulation control stream. The estimation control stream may have too many variables printed (which will make Nonmem slow), or it may not have some that are useful for the simulation analysis. See how this is used below. Once you get used to this argument, you will use it very frequently.
+* `seed` A numeric value that will be used in Nonmem's $SIMULATION section
+
+You will learn aabout a few more arguments in the next examples.
 
 ## More subjects and prediction intervals
 To create a prediction interval based on the selected model, we need
@@ -240,12 +287,11 @@ repetetion per new subject, and then update the `ID` column to get
 distinct subjects. 
 
 ### Multiple subjects created in simulation input data
-The follwing shows how one could generate 1000
-subjects using `data.table`. (I use `data.table` a lot, if you can
-provide a good way to do this without, I am happy to
-include that).
+The follwing shows how one could generate 1000 subjects using
+`data.table`. (I use `data.table` a lot, if you can provide a good way
+to do this without, I am happy to include that).
 
-```{r,eval=FALSE}
+```{r,eval=FALSE,collapse=TRUE,class.source = "fold-hide"}
 dat.sim.1000 <- NMdata::egdt(
                             as.data.table(dat.sim)[,!("ID")]
                            ,
@@ -270,7 +316,7 @@ file.fst <- "simulate-results/simres_n1000_1.fst"
 if(run.simuls){
     write_fst(simres.n1000.1,path=file.fst)
 } else {
-    simres.n1000.1 <- read_fst(file.fst)
+    simres.n1000.1 <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
@@ -279,8 +325,6 @@ The other way to simulate multiple subjects is making use of Nonmem's `SUBPROBLE
 
 
 ```{r,sim-1000-subproblem,eval=FALSE}
-## file.mod <- "../nonmem/xgxr014.mod"
-## file.mod <- file.project("nonmem/xgxr014.mod")
 simres.n1000.2 <- NMsim(file.mod=file.mod,
                         data=dat.sim,
                         subproblems=1000
@@ -293,14 +337,14 @@ file.fst <- "simulate-results/simres_n1000_2.fst"
 if(run.simuls){
     write_fst(simres.n1000.2,path=file.fst)
 } else {
-    simres.n1000.2 <- read_fst(file.fst)
+    simres.n1000.2 <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
 
 The two approaches are computationally about equally fast, the most significant difference probably being in Nonmem reading a smaller or larger simulation input data file. Unless the input dataset becomes very large, it is merely a question of preference of the modeler which one to use. In a case where the simulated patients need different dosing or sample schedules, the manual construction of the data is needed - because it's not a straightforward replication.
 
-### Generate the prediction interval
+### The prediction interval
 We now plot a prediction interval - in this case based on the results of the simulation using `SUBPROBLEMS`; this makes no difference to how to derive the prediction interval.
 
 ```{r,eval=TRUE}
@@ -312,7 +356,6 @@ simres.pi$pi.cover <- "90%"
 p.pi.typ <- ggplot(simres.pi,aes(TIME,fill=trt))+
     geom_ribbon(aes(ymin=ll,ymax=ul,alpha=pi.cover))+
     geom_line(aes(y=median,colour=trt))+
-    ## facet_wrap(~trt,scales="free_x")+
     scale_alpha_manual(values=c("90%"=.5))+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
 
@@ -335,7 +378,7 @@ file.fst <- "simulate-results/simres_typ.fst"
 if(run.simuls){
     write_fst(simres.typ,path=file.fst)
 } else {
-    simres.typ <- read_fst(file.fst)
+    simres.typ <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
@@ -381,7 +424,7 @@ file.fst <- "simulate-results/simres_known.fst"
 if(run.simuls){
     write_fst(simres.known,path=file.fst)
 } else {
-    simres.known <- read_fst(file.fst)
+    simres.known <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
@@ -451,7 +494,7 @@ file.fst <- "simulate-results/simres_pksim.fst"
 if(run.simuls){
     write_fst(simres.pksim,path=file.fst)
 } else {
-    simres.pksim <- read_fst(file.fst)
+    simres.pksim <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
@@ -460,14 +503,12 @@ Now rename `res.pksim$IPRED` to something meaningfull like `res.pksim$PKIPRED`, 
 
 ```{r,merge-pdres,eval=TRUE}
 setnames(simres.pksim,"IPRED","PKIPRED")
-setDT(simres.pksim)
 pd2 <- mergeCheck(pd,simres.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
 ```
 
 ```{r,eval=TRUE}
 ggplot(pd2[!is.na(LIDV)&!is.na(PKIPRED)],aes(PKIPRED,LIDV))+
     geom_point()+
-    ##    lims(x=c(.001,.5))+
     labs(x="Individual PK prediction",y="Observed PD value") ## +
 ``` 
 
@@ -547,7 +588,7 @@ file.fst <- "simulate-results/simres_VarCov.fst"
 if(run.simuls){
     write_fst(simres.VarCov,path=file.fst)
 } else {
-    simres.VarCov <- read_fst(file.fst)
+    simres.VarCov <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
@@ -555,7 +596,7 @@ if(run.simuls){
 `NMdata::NMscanMultiple` is a wrapper of `NMdata::NMscanData`, and just like `NMdata::NMscanData` it keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples):
 
 ```{r,VarCov-summarize,eval=FALSE}
-setDT(simres.VarCov)
+
 allresl <- melt(simres.VarCov[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
 
 sum.res.VarCov <- allresl[,
@@ -574,18 +615,17 @@ file.fst <- "simulate-results/sum_VarCov.fst"
 if(run.simuls){
     write_fst(sum.VarCov,path=file.fst)
 } else {
-    sum.VarCov <- read_fst(file.fst)
+    sum.VarCov <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
 
 
-```{r}
+```{r,varcov-plot}
 
 p.cipi.VarCov <- ggplot(sum.VarCov,aes(x=TIME,fill=pred.type))+
     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
     geom_line(aes(y=predmm,colour=pred.type))+
-    facet_wrap("trt",scales="free_x")+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
 
 ```
@@ -625,7 +665,6 @@ simres.bootstrap <- NMscanMultiple(files=simlsts.bootstrap$lst
                                   ,merge.by.row=FALSE
                                   ,quiet=T
                                   ,as.fun="data.table")
-simres.bootstrap[,.(Nmodels=uniqueN(model),Nrows=.N)]
 ```
 
 ```{r,include=FALSE,eval=TRUE}
@@ -658,7 +697,7 @@ file.fst <- "simulate-results/sum_bootstrap.fst"
 if(run.simuls){
     write_fst(sum.bootstrap,path=file.fst)
 } else {
-    sum.bootstrap <- read_fst(file.fst)
+    sum.bootstrap <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
@@ -668,12 +707,13 @@ if(run.simuls){
 p.cipi.bootstrap <- ggplot(sum.bootstrap,aes(x=TIME,fill=pred.type))+
     geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
     geom_line(aes(y=predmm,colour=pred.type))+
-    ## facet_wrap("regimen",scales="free_x")+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
 
-## p.cipi.bootstrap
-
 ```
+
+Plotting the two next to each other. For this simple model with a
+smooth covariance step the two confidence intervals are very
+similar. If you look hard, you can see minor differences.
 
 ```{r,compare-plots,eval=TRUE}
 ymax <- 6
@@ -727,7 +767,7 @@ file.fst <- "simulate-results/simres_slowabs.fst"
 if(run.simuls){
     write_fst(simres.slowabs,path=file.fst)
 } else {
-    simres.slowabs <- read_fst(file.fst)
+    simres.slowabs <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
@@ -767,7 +807,7 @@ file.fst <- "simulate-results/simres_varka.fst"
 if(run.simuls){
     write_fst(simres.varka,path=file.fst)
 } else {
-    simres.varka <- read_fst(file.fst)
+    simres.varka <- read_fst(file.fst,as.data.table=TRUE)
 }
 ```
 
