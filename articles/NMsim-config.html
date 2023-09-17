@@ -197,15 +197,11 @@ comments in affected control stream sections (<code>$THETA</code>,
 affected sections. I have in the past seen issues with some methods to
 update <code>$OMEGA</code> sections with off-diagonal elements
 (<code>BLOCK</code>). <code>method.update.inits="nmsim"</code> takes a
-very simple approach and writes out (and fixes) the full
-<code>OMEGA</code> matrix in the control stream. Since the
-<code>OMEGA</code> matrix is read from the <code>.lst</code> file, this
-is not relying on interpreting Nonmem code at all. In cases of
-“complicated” <code>BLOCK</code> structures this is a simple approach
-that may be less prone to errors. That and the support of systems
-without <code>PSN</code> are the two reasons one would choose
-<code>method.update.inits="nmsim"</code> over
-<code>method.update.inits="psn"</code>.</p>
+very simple approach. Reading the <code>OMEGA</code> matrix from the
+<code>.ext</code> file, this is not relying on interpreting Nonmem code
+at all. The support of systems without <code>PSN</code> would be the
+main reason one would choose <code>method.update.inits="nmsim"</code>
+over <code>method.update.inits="psn"</code>.</p>
 <p>In order to make use of <code>method.update.inits="psn"</code>, you
 need to make sure NMsim can find PSN.</p>
 </div>
