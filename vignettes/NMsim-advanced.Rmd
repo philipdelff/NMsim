@@ -420,6 +420,12 @@ Sometimes we want to simulate with some modification to the estimated model. NMs
 The SAD study was run with a fast solution formulation. We want to see how a slower absorption rate would affect the PK prediction for the multiple dose regimen. In the model estimate, `TVKA=2.17`. We now try with a four times slower absorption:
 
 ```{r,eval=FALSE}
+simres <- NMsim(file.mod=file.mod,
+                        data=dat.sim
+                       ,dir.sims="~/NMsim_test"
+                       ,seed=12345
+                )
+
 simres.slowabs <- NMsim(file.mod=file.mod,
                         data=dat.sim
                        ,dir.sims="~/NMsim_test"
@@ -436,6 +442,7 @@ if(run.simuls){
 } else {
     simres.slowabs <- read_fst(file.fst,as.data.table=TRUE)
 }
+simres <- read_fst(file.fst,as.data.table=TRUE)
 ```
 
 ```{r,eval=TRUE}
