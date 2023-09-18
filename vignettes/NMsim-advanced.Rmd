@@ -79,7 +79,12 @@ This vignettes aims at enabling you to Use `NMsim` to simulate
 You should have configured `NMsim` with the path to the Nonmem
 installation and maybe also PSN. See
 [`NMsim-config.html`](https://philipdelff.github.io/NMsim/articles/NMsim-config.html). Don't
-worry - it is very easy.
+worry - it is very easy. 
+
+This vignette will be using the same model as simulated in [`NMsim-simulate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-simulate.html)
+```{r}
+file.mod <- file.project("nonmem/xgxr021.mod")
+```
 
 ## Simulation of a typical subject
 A typical subject is here understood as a subject without random effects, i.e. all ETA's equal zero. It is important to realize that "typical" does not have to do with covariates which the user will still need to control in the model, in the simulation input data, or by a combination of these. Getting `NMsim` to run with all ETA's equaling zero is this easy:
