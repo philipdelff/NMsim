@@ -467,7 +467,7 @@ ggplot(as.data.table(simres.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
 
 <!-- Show a plot of the individual parameters in estimate and in sim -->
 
-### Impute simulation times for building a PK/PD dataset
+### Known subjects: Simulate individual PK at PD sampling times for a PK/PD dataset
 We also connected some PK data. We want to plot the PD data angainst
 PK. However, PD was sampled differnetly than PK, and we want to
 evaluate the individual predictions of the PK model at the individual
@@ -478,8 +478,6 @@ vignette. For a PK model without time-varying covariates, the steps to
 to generate the data for the simulation are:
 
 ```{r,pddata,include=FALSE,eval=TRUE}
-## pd <- readRDS("~/wdirs/NMsim/inst/examples/data/xgxr_pd.rds")
-## pd <- system.file("examples/data/xgxr_pd.rds", package = "NMsim")
 pd <- readRDS(file.project("data/xgxr_pd.rds")) |> as.data.table()
 ```
 
@@ -589,13 +587,14 @@ Anyway, getting `NMsim` to do the work is as simple as this:
 
 ```{r,VarCov,eval=FALSE}
 simlsts.VarCov <- NMsim(
-    file.mod=file.mod,
-    data=dat.sim
-   ,dir.sims="~/NMsim_vignette"
-   ,method.sim=NMsim_VarCov ## Var-Cov parameter sampling
-   ,name.sim="VarCov"       ## a recognizable directory name
-   ,nsims=1000               ## sampling 500 models
-   ,sge=TRUE                ## run simulations in parallel please
+    file.mod=file.mod,          ## Path to estimation input control stream
+    data=dat.sim                ## simulation input data
+   ,dir.sims="~/NMsim_vignette" ## where to store simulation files
+   ,text.table="PRED IPRED"     ## Let Nonmem write a minimum output table
+   ,method.sim=NMsim_VarCov     ## Var-Cov parameter sampling
+   ,name.sim="VarCov"           ## a recognizable directory name
+   ,nsims=1000                  ## sampling 500 models
+   ,sge=TRUE                    ## run simulations in parallel please
 )
 
 ```
@@ -604,7 +603,7 @@ You may get messages like "Unable to run job" and that the job "is not
 allowed to run in any queue". Contra-intuitively to most, these
 messages do not mean that the job isn't run.
 
-We used `sge=TRUE` which means we are sending the 500 generated jobs to the queuing system. In this case, `NMsim` does not track the execution of the jobs and does hence not collect the results once they are done. You have to check the status of the jobs manually, and once they are all done, you can read all the results using `NMdata::NMscanMultiple`:
+We used `sge=TRUE` which means we are sending the 1000 generated jobs to the queuing system. In this case, `NMsim` does not track the execution of the jobs and does hence not collect the results once they are done. Instead it returns a small data.frame with the paths to where all the simulation output control streams will be written. You have to check the status of the jobs manually, and once they are all done, you can read all the results using `NMdata::NMscanMultiple`:
 
 ```{r,VarCov-collect,eval=FALSE}
 simres.VarCov <- NMscanMultiple(
@@ -622,43 +621,8 @@ if(run.simuls){
 }
 ```
 
+We now have simulation results from 1000 sampled models collected. We shall do the same with the models sampled in a bootstrap, and then we will calculate confidence intervals based on both methods.
 
-`NMdata::NMscanMultiple` is a wrapper of `NMdata::NMscanData`, and just like `NMdata::NMscanData` it keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples):
-
-```{r,VarCov-summarize,eval=FALSE}
-
-allresl <- melt(simres.VarCov[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
-
-sum.res.VarCov <- allresl[,
-                          .(predm=quantile(pred,probs=c(.5)))
-                         ,by=.(model,trt,TIME,pred.type)]
-
-
-sum.VarCov <- sum.res.VarCov[,
-                             setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
-
-                            ,by=.(trt,TIME,pred.type)]
-
-```
-```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/sum_VarCov.fst"
-if(run.simuls){
-    write_fst(sum.VarCov,path=file.fst)
-} else {
-    sum.VarCov <- read_fst(file.fst,as.data.table=TRUE)
-}
-```
-
-
-
-```{r,varcov-plot}
-
-p.cipi.VarCov <- ggplot(sum.VarCov,aes(x=TIME,fill=pred.type))+
-    geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
-    geom_line(aes(y=predmm,colour=pred.type))+
-    labs(x="Hours since first dose",y="Concentration (ng/mL)")
-
-```
 
 
 ### Simulation from a bootstrap
@@ -678,17 +642,15 @@ mods.bootstrap <- list.files(path="~/NMsim_vignette_work/bs1_021_N1000/m1",patte
 ## length(mods.bootstrap)
 
 simlsts.bootstrap <- NMsim(
-    file.mod=mods.bootstrap
-   ,data=dat.sim
-   ,method.sim=NMsim_default ## a single simulation with each sampled model
-   ,dir.sims="~/NMsim_vignette/bootstrap"
-   ,text.table="PRED IPRED"
-   ,sge=TRUE                ## run simulations in parallel 
+    file.mod=mods.bootstrap   ## Estimation input control stream
+   ,data=dat.sim              ## Simulation input data
+   ,method.sim=NMsim_default  ## a single simulation with each sampled model
+   ,dir.sims="~/NMsim_vignette/bootstrap" ## Where to save simulation results
+   ,text.table="PRED IPRED"   ## Let Nonmem write a minimum output table
+   ,sge=TRUE                  ## run simulations in parallel 
 )
 
 ```
-Reading and post-processing the results is similar to the same steps
-above when we used the covariance step.
 
 ```{r,bootstrap-collect,eval=FALSE}
 simres.bootstrap <- NMscanMultiple(files=simlsts.bootstrap$lst
@@ -706,55 +668,56 @@ if(run.simuls){
 }
 ```
 
+`NMdata::NMscanMultiple` is a wrapper of `NMdata::NMscanData`, and just like `NMdata::NMscanData` it keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples). 
 
 
-```{r,bootstrap-summa,eval=FALSE}
-allresl <- melt(simres.bootstrap[EVID==2],measure.vars=cc(PRED,IPRED),variable.name="pred.type",value.name="pred")
+### The confidence intervals
+Derivation of the confidence intervals is identical for the two methods, so we do it at once using data.table's `by` feature to separate the two methods (sampling from covariance steps and using the bootstrap samples).
+
+
+```{r,uncertain-summa,eval=FALSE}
+allres <- rbind(simres.VarCov[,method:="Covariance step"],
+                simres.bootstrap[,method:="Bootstrap"],
+                fill=TRUE)
+
+allresl <- melt(allres[EVID==2],
+                measure.vars=c("PRED","IPRED"),
+                variable.name="pred.type",
+                value.name="pred")
 
 sum.res.model <- allresl[,
                          .(predm=quantile(pred,probs=c(.5)))
-                        ,by=.(model,TIME,pred.type)]
+                        ,by=.(method,model,TIME,pred.type)]
 
 
-sum.bootstrap <- sum.res.model[,
-                               setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),cc(predml,predmm,predmu))
-
-                              ,by=.(TIME,pred.type)]
+sum.uncertain <- sum.res.model[
+   ,setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),c("predml","predmm","predmu"))
+   ,by=.(method,TIME,pred.type)]
 
 ```
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/sum_bootstrap.fst"
+file.fst <- "simulate-results/sum_uncertain.fst"
 if(run.simuls){
-    write_fst(sum.bootstrap,path=file.fst)
+    write_fst(sum.uncertain,path=file.fst)
 } else {
-    sum.bootstrap <- read_fst(file.fst,as.data.table=TRUE)
+    sum.uncertain <- read_fst(file.fst,as.data.table=TRUE)
 }
-```
-
-
-```{r,bootstrap-plot,eval=TRUE}
-
-p.cipi.bootstrap <- ggplot(sum.bootstrap,aes(x=TIME,fill=pred.type))+
-    geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
-    geom_line(aes(y=predmm,colour=pred.type))+
-    labs(x="Hours since first dose",y="Concentration (ng/mL)")
-
 ```
 
 Plotting the two next to each other. For this simple model with a
 smooth covariance step the two confidence intervals are very
 similar. If you look hard, you can see minor differences.
 
-```{r,compare-plots,eval=TRUE}
-ymax <- 6
-p.cipi.VarCov+
-    lims(y=c(0,ymax))+
-    labs(subtitle="Covariance step")+
-    p.cipi.bootstrap +
-    lims(y=c(0,ymax))+
-    labs(subtitle="Bootstrap")+
-    plot_layout(guides="collect") & theme(legend.position="bottom")
+
+```{r,uncertain-plots,eval=TRUE}
+ggplot(sum.uncertain,aes(x=TIME,fill=pred.type))+
+    geom_ribbon(aes(ymin=predml,ymax=predmu),alpha=.5)+
+    geom_line(aes(y=predmm,colour=pred.type))+
+    labs(x="Hours since first dose",y="Concentration (ng/mL)")+
+    facet_wrap(~method)
+
 ```
+
 
 ## Add residual variability
 `NMsim` currently does not provide any way to add simulation of
@@ -769,7 +732,7 @@ error model).
 
 ```
   Y=F+F*ERR(1)+ERR(2)
-```
+  ```
 
 We now specify for `addResVar` to find the variance for the proportional component in `$SIGMA[1,1]` and the one for the additive component in `$SIGMA[2,2]`. In this case where `SIGMA` is used, the off-diagonal (covariance) elements of the `$SIGMA` matrix are also used for the simulation. 
 
