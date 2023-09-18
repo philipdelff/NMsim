@@ -6,12 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="NMsim">
-<title>NMsim Simulation Methods • NMsim</title>
+<title>NMsim -- Simulation of New Subjects • NMsim</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="NMsim Simulation Methods">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="NMsim -- Simulation of New Subjects">
 <meta property="og:description" content="NMsim">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -41,8 +41,9 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/NMsim-advanced.html">NMsim -- Additional Simulation Methods</a>
     <a class="dropdown-item" href="../articles/NMsim-config.html">NMsim Configuration</a>
-    <a class="dropdown-item" href="../articles/NMsim-simulate.html">NMsim Simulation Methods</a>
+    <a class="dropdown-item" href="../articles/NMsim-simulate.html">NMsim -- Simulation of New Subjects</a>
   </div>
 </li>
       </ul>
@@ -69,7 +70,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>NMsim Simulation Methods</h1>
+      <img src="" class="logo" alt=""><h1>NMsim -- Simulation of New Subjects</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/philipdelff/NMsim/blob/HEAD/vignettes/NMsim-simulate.Rmd" class="external-link"><code>vignettes/NMsim-simulate.Rmd</code></a></small>
@@ -78,7 +79,7 @@
 
     
     
-<p>Built 2023-09-17 using NMsim 0.0.2.</p>
+<p>Built 2023-09-18 using NMsim 0.0.2.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -89,11 +90,12 @@ input data set</p></li>
 <li><p>Distinguish between and perform the most common types of
 simulations:</p></li>
 <li><p>new subjects,</p></li>
-<li><p>typical subjects,</p></li>
-<li><p>known subjects (estimated random effects),</p></li>
-<li><p>simulation with parameter uncertainty</p></li>
-<li><p>Simulation with parameters modified from the estimated
-values</p></li>
+<li><p>Simulate multiple new subjects and derive prediction
+intervals</p></li>
+<li><p>Simulate more than one Nonmem model in one <code><a href="../reference/NMsim.html">NMsim()</a></code>
+function call</p></li>
+<li><p>Important arguments</p></li>
+<li><p>Speed up NMsim by avoiding large table statements</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -470,294 +472,6 @@ difference to how to derive the prediction interval.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="simulation-of-a-typical-subject">Simulation of a typical subject<a class="anchor" aria-label="anchor" href="#simulation-of-a-typical-subject"></a>
-</h2>
-<p>A typical subject is here understood as a subject without random
-effects, i.e. all ETA’s equal zero. It is important to realize that
-“typical” does not have to do with covariates which the user will still
-need to control in the model, in the simulation input data, or by a
-combination of these. Getting <code>NMsim</code> to run with all ETA’s
-equaling zero is this easy:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simres.typ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
-<span>                    data<span class="op">=</span><span class="va">dat.sim</span>,</span>
-<span>                    name.sim<span class="op">=</span><span class="st">"typSubj"</span>,</span>
-<span>                    method.sim<span class="op">=</span><span class="va">NMsim_typical</span><span class="op">)</span></span></code></pre></div>
-<p>In the first simulation we used <code>PRED</code> from the default
-simulation method to get a typical subject simulation. That will work in
-many cases, but that depends on the model. The way to run a simulation
-with all ETA’s set to 0 is using
-<code>method.sim=NMsim_typical</code>.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p.typ</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">simres.typ</span>,<span class="fu">aes</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">IPRED</span>,color<span class="op">=</span><span class="va">trt</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y<span class="op">=</span><span class="va">PRED</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">p.typ</span></span></code></pre></div>
-<p><img src="NMsim-simulate_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
-</div>
-<div class="section level2">
-<h2 id="simulation-of-known-subjects">Simulation of known subjects<a class="anchor" aria-label="anchor" href="#simulation-of-known-subjects"></a>
-</h2>
-<p>We sometimes want to simulate the already observed subjects. This
-means we want to reuse the estimated random effects (ETA’s) given the
-subject ID’s. <code>NMsim</code> has a method for this. The restriction
-is that all subjects (values of <code>ID</code>) in the simulation input
-data must have been used in the estimation input data.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## read model results just to extract the observed ID's</span></span>
-<span><span class="va">res.mod</span> <span class="op">&lt;-</span> <span class="fu">NMscanData</span><span class="op">(</span><span class="va">file.mod</span>,quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>ID<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">res.mod</span><span class="op">$</span><span class="va">ID</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Repeat the simulation data set for each ID and order accordingly</span></span>
-<span><span class="va">dat.sim.known</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">ids</span>,</span>
-<span>                       <span class="va">dat.sim</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">base.sim.known</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ID"</span><span class="op">)</span><span class="op">)</span>,with<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span></span>
-<span>                       <span class="op">)</span></span>
-<span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">dat.sim.known</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span>
-<span><span class="co">## check data</span></span>
-<span><span class="fu">NMcheckData</span><span class="op">(</span><span class="va">dat.sim.known</span>,type.data<span class="op">=</span><span class="st">"sim"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">simres.known</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
-<span>                      data<span class="op">=</span><span class="va">dat.sim.known</span>,</span>
-<span>                      name.sim<span class="op">=</span><span class="st">"known1"</span>,</span>
-<span>                      text.table<span class="op">=</span><span class="st">"PRED IPRED CL V2 KA"</span></span>
-<span>                     ,method.sim<span class="op">=</span><span class="va">NMsim_known</span></span>
-<span>                      <span class="op">)</span></span></code></pre></div>
-<p>And the simulation results are plotted for each subject.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">simres.known</span><span class="op">)</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span><span class="op">]</span>,<span class="fu">aes</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">IPRED</span>,colour<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">theme</span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-simulate_files/figure-html/unnamed-chunk-20-1.png" width="672"></p>
-<!-- Show a plot of the individual parameters in estimate and in sim -->
-<div class="section level3">
-<h3 id="impute-simulation-times-for-building-a-pkpd-dataset">Impute simulation times for building a PK/PD dataset<a class="anchor" aria-label="anchor" href="#impute-simulation-times-for-building-a-pkpd-dataset"></a>
-</h3>
-<p>We also connected some PK data. We want to plot the PD data angainst
-PK. However, PD was sampled differnetly than PK, and we want to evaluate
-the individual predictions of the PK model at the individual PD samplng
-times.</p>
-<p>Currently, there is no PD data in the example data used to build this
-vignette. For a PK model without time-varying covariates, the steps to
-to generate the data for the simulation are:</p>
-<ul>
-<li>Take dose records from PK model estimation input data
-(<code>pkdos</code>). Just keep necessary columns like <code>ID</code>,
-<code>TIME</code>, <code>EVID</code>, <code>CMT</code>,
-<code>AMT</code>, <code>ADDL</code>, <code>II</code>, and any necessary
-covariates</li>
-<li>Take PD data observation records (<code>pdsamples</code>). Just keep
-<code>ID</code>, <code>TIME</code>, and set <code>EVID=2</code>.</li>
-<li>Add a unique row identifier to <code>pdsamples</code> (an integer
-row counter, like <code>ROW=1:nrow(pdsamples)</code>)</li>
-<li>Stack (<code>rbind</code> for data.tables or <code>bind_rows</code>
-in tidyverse) <code>pkdos</code> and <code>pdsamples</code> to one data
-set (<code>pdsim</code>)</li>
-<li>In <code>pdsim</code>, set <code>DV=NA</code>
-</li>
-<li>Sort <code>pdsim</code> at least by <code>ID</code>,
-<code>TIME</code> and <code>EVID</code>. There could be more depending
-on trial design</li>
-</ul>
-<p>In case of time-varying covariates, you can keep all data records
-from the PK data (without <code>DV</code>), but change observation
-records to simulation records (<code>EVID=2</code> instead of
-<code>EVID=0</code>).</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## Take dose records from PK model estimation input data</span></span>
-<span><span class="va">pkres</span> <span class="op">&lt;-</span> <span class="fu">NMscanData</span><span class="op">(</span><span class="va">file.mod</span>,quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">pkdos</span> <span class="op">&lt;-</span> <span class="va">pkres</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">1</span>,<span class="fu">.</span><span class="op">(</span><span class="va">ID</span>, <span class="va">TIME</span>, <span class="va">EVID</span>, <span class="va">CMT</span>, <span class="va">AMT</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">## Take PD data observation records (`pdsamples`)</span></span>
-<span><span class="va">pd</span><span class="op">[</span>,<span class="va">ROWPD</span><span class="op">:=</span><span class="va">.I</span><span class="op">]</span></span>
-<span><span class="va">pdsamples</span> <span class="op">&lt;-</span> <span class="va">pd</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">0</span>,<span class="fu">.</span><span class="op">(</span><span class="va">ROWPD</span>,<span class="va">ID</span>,<span class="va">TIME</span>,EVID<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">## Stack `pkdos` and `pdsamples` to one data set (`pdsim`)</span></span>
-<span><span class="va">pdsim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">pkdos</span>,<span class="va">pdsamples</span>,fill<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">pdsim</span><span class="op">[</span>,<span class="va">DV</span><span class="op">:=</span><span class="cn">NA</span><span class="op">]</span></span>
-<span><span class="va">pdsim</span> <span class="op">&lt;-</span> <span class="va">pdsim</span><span class="op">[</span><span class="va">ID</span><span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span><span class="va">pkres</span><span class="op">$</span><span class="va">ID</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">pdsim</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span></code></pre></div>
-<p>Then run <code>NMsim</code> like this:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">simres.pksim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span><span class="va">file.mod</span>,</span>
-<span>                      data<span class="op">=</span><span class="va">pdsim</span>,</span>
-<span>                      name.sim<span class="op">=</span><span class="st">"pkpd"</span>,</span>
-<span>                     ,method.sim<span class="op">=</span><span class="va">NMsim_known</span></span>
-<span>                     ,path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe75"</span></span>
-<span>                     ,text.table<span class="op">=</span><span class="st">"IPRED PRED"</span></span>
-<span>                      <span class="op">)</span></span></code></pre></div>
-<p>Now rename <code>res.pksim$IPRED</code> to something meaningfull like
-<code>res.pksim$PKIPRED</code>, and you can merge <code>res.pksim</code>
-onto the PD data by the unique row identifier.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">simres.pksim</span>,<span class="st">"IPRED"</span>,<span class="st">"PKIPRED"</span><span class="op">)</span></span>
-<span><span class="va">pd2</span> <span class="op">&lt;-</span> <span class="fu">mergeCheck</span><span class="op">(</span><span class="va">pd</span>,<span class="va">simres.pksim</span><span class="op">[</span>,<span class="fu">.</span><span class="op">(</span><span class="va">ROWPD</span>,<span class="va">PKIPRED</span><span class="op">)</span><span class="op">]</span>,by<span class="op">=</span><span class="st">"ROWPD"</span>,all.x<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Column(s) added: PKIPRED</span></span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">pd2</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">LIDV</span><span class="op">)</span><span class="op">&amp;</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">PKIPRED</span><span class="op">)</span><span class="op">]</span>,<span class="fu">aes</span><span class="op">(</span><span class="va">PKIPRED</span>,<span class="va">LIDV</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">labs</span><span class="op">(</span>x<span class="op">=</span><span class="st">"Individual PK prediction"</span>,y<span class="op">=</span><span class="st">"Observed PD value"</span><span class="op">)</span> <span class="co">## +</span></span></code></pre></div>
-<p><img src="NMsim-simulate_files/figure-html/unnamed-chunk-22-1.png" width="672"></p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="simulation-of-parameter-uncertainty">Simulation of parameter uncertainty<a class="anchor" aria-label="anchor" href="#simulation-of-parameter-uncertainty"></a>
-</h2>
-<p>We already saw how <code>NMsim</code> can easily be used to generate
-new subjects (for say prediction intervals) by using the between-subject
-and between-occasion variability as described by the model. We may also
-want to simulate the uncertainty of the parameter estimates (for say
-confidence intervals). <code>NMsim</code> supports two different
-approaches to this.</p>
-<ul>
-<li><p>Simulation based on the estimated variance-covariance matrix of
-the parameters as estimated by a successful <code>$COVARIANCE</code>
-step in Nonmem.</p></li>
-<li><p>Simulation based on a bootstrap of the model. <code>NMsim</code>
-does not provide functions to run the bootstrap, but it can use the
-results of sampled models, like what is generated by <code>PSN</code>’s
-bootstrap function.</p></li>
-</ul>
-<p>It is beyond the scope of this vignette to describe the pros and cons
-of those two approaches. The following examples serve to exlain the
-preequisites for using <code>NMsim</code> to do it, and obviously how to
-get <code>NMsim</code> to do the job.</p>
-<div class="section level3">
-<h3 id="simulation-of-parameter-uncertainty-based-on-a-covariance-step">Simulation of parameter uncertainty based on a covariance step<a class="anchor" aria-label="anchor" href="#simulation-of-parameter-uncertainty-based-on-a-covariance-step"></a>
-</h3>
-<p>If you have a succesful covariance step from Nonmem,
-<code>NMsim</code> can sample models from the estimated
-variance-covariance matrix. Again, <code>NMsim</code> does not derive
-confidence intervals based on the estimated variance-covariance matrix.
-It samples models from it, and then you can derive the desired
-confidence intervals, or whatever you need.</p>
-<p>Again, we shall try not to get too far into details here, but
-remember what we are doing here. We are assuming that the estimated
-vairance-covariance matrix is a reliable estimate of the parameter
-precision, implying Gaussian distribution of all parameter
-uncertainties. The reason this is important to understand is that
-depending on the model, this can lead to samples of parameter values
-beyond some allowed range. This can lead some of the sampled models to
-fail or not be meaningful. The point here is that a successful
-covariance step may not be a sufficient criterion for picking this
-approach to simulating uncertainty; appropriate parametrization is
-another one.</p>
-<p>Anyway, getting <code>NMsim</code> to do the work is as simple as
-this:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simlsts.VarCov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span></span>
-<span>    file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
-<span>    data<span class="op">=</span><span class="va">dat.sim</span></span>
-<span>   ,dir.sims<span class="op">=</span><span class="st">"~/NMsim_vignette"</span></span>
-<span>   ,method.sim<span class="op">=</span><span class="va">NMsim_VarCov</span> <span class="co">## Var-Cov parameter sampling</span></span>
-<span>   ,name.sim<span class="op">=</span><span class="st">"VarCov"</span>       <span class="co">## a recognizable directory name</span></span>
-<span>   ,nsims<span class="op">=</span><span class="fl">1000</span>               <span class="co">## sampling 500 models</span></span>
-<span>   ,sge<span class="op">=</span><span class="cn">TRUE</span>                <span class="co">## run simulations in parallel please</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>You may get messages like “Unable to run job” and that the job “is
-not allowed to run in any queue”. Contra-intuitively to most, these
-messages do not mean that the job isn’t run.</p>
-<p>We used <code>sge=TRUE</code> which means we are sending the 500
-generated jobs to the queuing system. In this case, <code>NMsim</code>
-does not track the execution of the jobs and does hence not collect the
-results once they are done. You have to check the status of the jobs
-manually, and once they are all done, you can read all the results using
-<code><a href="https://philipdelff.github.io/NMdata/reference/NMscanMultiple.html" class="external-link">NMdata::NMscanMultiple</a></code>:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simres.VarCov</span> <span class="op">&lt;-</span> <span class="fu">NMscanMultiple</span><span class="op">(</span></span>
-<span>    files<span class="op">=</span><span class="va">simlsts.VarCov</span><span class="op">$</span><span class="va">lst</span></span>
-<span>   ,merge.by.row<span class="op">=</span><span class="cn">FALSE</span>,quiet<span class="op">=</span><span class="cn">T</span></span>
-<span>   ,as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="https://philipdelff.github.io/NMdata/reference/NMscanMultiple.html" class="external-link">NMdata::NMscanMultiple</a></code> is a wrapper of
-<code><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMdata::NMscanData</a></code>, and just like
-<code><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMdata::NMscanData</a></code> it keeps a column by default called
-<code>model</code> which holds the model name, derived from the control
-stream file name. As an example, we can derive an estimated confidence
-interval of the population prediction against time by summarizing across
-the simulation models (samples):</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">allresl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">simres.VarCov</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span><span class="op">]</span>,measure.vars<span class="op">=</span><span class="fu">cc</span><span class="op">(</span><span class="va">PRED</span>,<span class="va">IPRED</span><span class="op">)</span>,variable.name<span class="op">=</span><span class="st">"pred.type"</span>,value.name<span class="op">=</span><span class="st">"pred"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sum.res.VarCov</span> <span class="op">&lt;-</span> <span class="va">allresl</span><span class="op">[</span>,</span>
-<span>                          <span class="fu">.</span><span class="op">(</span>predm<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">pred</span>,probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>                         ,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">model</span>,<span class="va">trt</span>,<span class="va">TIME</span>,<span class="va">pred.type</span><span class="op">)</span><span class="op">]</span></span>
-<span></span>
-<span></span>
-<span><span class="va">sum.VarCov</span> <span class="op">&lt;-</span> <span class="va">sum.res.VarCov</span><span class="op">[</span>,</span>
-<span>                             <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">predm</span>,probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.025</span>,<span class="fl">.5</span>,<span class="fl">.975</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,<span class="fu">cc</span><span class="op">(</span><span class="va">predml</span>,<span class="va">predmm</span>,<span class="va">predmu</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span>                            ,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">trt</span>,<span class="va">TIME</span>,<span class="va">pred.type</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">p.cipi.VarCov</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">sum.VarCov</span>,<span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">TIME</span>,fill<span class="op">=</span><span class="va">pred.type</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">geom_ribbon</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">predml</span>,ymax<span class="op">=</span><span class="va">predmu</span><span class="op">)</span>,alpha<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y<span class="op">=</span><span class="va">predmm</span>,colour<span class="op">=</span><span class="va">pred.type</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">labs</span><span class="op">(</span>x<span class="op">=</span><span class="st">"Hours since first dose"</span>,y<span class="op">=</span><span class="st">"Concentration (ng/mL)"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="simulation-from-a-bootstrap">Simulation from a bootstrap<a class="anchor" aria-label="anchor" href="#simulation-from-a-bootstrap"></a>
-</h3>
-<p>The other approach to simulation with parameter uncertainty currently
-provided by <code>NMsim</code> is simulation from a bootstrap. Again,
-<code>NMsim</code> does not run a bootstrap, it simply runs a simulation
-using each of the sampled models from a bootstrap. In fact this means we
-don’t even need a dedicated method to achieve this, we simply run a
-simulation with multiple Nonmem models as described in the begging of
-this vignette. We used <code>PSN</code>’s bootstrap. We can run the
-simulation on all the models this way:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## generate a vector with paths to all the input control streams</span></span>
-<span><span class="va">mods.bootstrap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path<span class="op">=</span><span class="st">"~/NMsim_vignette_work/bs1_021_N1000/m1"</span>,pattern<span class="op">=</span><span class="st">".+\\.mod$"</span>,full.names <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span><span class="co">## number of models to be run</span></span>
-<span><span class="co">## length(mods.bootstrap)</span></span>
-<span></span>
-<span><span class="va">simlsts.bootstrap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span></span>
-<span>    file.mod<span class="op">=</span><span class="va">mods.bootstrap</span></span>
-<span>   ,data<span class="op">=</span><span class="va">dat.sim</span></span>
-<span>   ,method.sim<span class="op">=</span><span class="va">NMsim_default</span> <span class="co">## a single simulation with each sampled model</span></span>
-<span>   ,dir.sims<span class="op">=</span><span class="st">"~/NMsim_vignette/bootstrap"</span></span>
-<span>   ,text.table<span class="op">=</span><span class="st">"PRED IPRED"</span></span>
-<span>   ,sge<span class="op">=</span><span class="cn">TRUE</span>                <span class="co">## run simulations in parallel </span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Reading and post-processing the results is similar to the same steps
-above when we used the covariance step.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simres.bootstrap</span> <span class="op">&lt;-</span> <span class="fu">NMscanMultiple</span><span class="op">(</span>files<span class="op">=</span><span class="va">simlsts.bootstrap</span><span class="op">$</span><span class="va">lst</span></span>
-<span>                                  ,merge.by.row<span class="op">=</span><span class="cn">FALSE</span></span>
-<span>                                  ,quiet<span class="op">=</span><span class="cn">T</span></span>
-<span>                                  ,as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">allresl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">simres.bootstrap</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span><span class="op">]</span>,measure.vars<span class="op">=</span><span class="fu">cc</span><span class="op">(</span><span class="va">PRED</span>,<span class="va">IPRED</span><span class="op">)</span>,variable.name<span class="op">=</span><span class="st">"pred.type"</span>,value.name<span class="op">=</span><span class="st">"pred"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sum.res.model</span> <span class="op">&lt;-</span> <span class="va">allresl</span><span class="op">[</span>,</span>
-<span>                         <span class="fu">.</span><span class="op">(</span>predm<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">pred</span>,probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>                        ,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">model</span>,<span class="va">TIME</span>,<span class="va">pred.type</span><span class="op">)</span><span class="op">]</span></span>
-<span></span>
-<span></span>
-<span><span class="va">sum.bootstrap</span> <span class="op">&lt;-</span> <span class="va">sum.res.model</span><span class="op">[</span>,</span>
-<span>                               <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">predm</span>,probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.025</span>,<span class="fl">.5</span>,<span class="fl">.975</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,<span class="fu">cc</span><span class="op">(</span><span class="va">predml</span>,<span class="va">predmm</span>,<span class="va">predmu</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span>                              ,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">pred.type</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">p.cipi.bootstrap</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">sum.bootstrap</span>,<span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">TIME</span>,fill<span class="op">=</span><span class="va">pred.type</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">geom_ribbon</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>ymin<span class="op">=</span><span class="va">predml</span>,ymax<span class="op">=</span><span class="va">predmu</span><span class="op">)</span>,alpha<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y<span class="op">=</span><span class="va">predmm</span>,colour<span class="op">=</span><span class="va">pred.type</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">labs</span><span class="op">(</span>x<span class="op">=</span><span class="st">"Hours since first dose"</span>,y<span class="op">=</span><span class="st">"Concentration (ng/mL)"</span><span class="op">)</span></span></code></pre></div>
-<p>Plotting the two next to each other. For this simple model with a
-smooth covariance step the two confidence intervals are very similar. If
-you look hard, you can see minor differences.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ymax</span> <span class="op">&lt;-</span> <span class="fl">6</span></span>
-<span><span class="va">p.cipi.VarCov</span><span class="op">+</span></span>
-<span>    <span class="fu">lims</span><span class="op">(</span>y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="va">ymax</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">labs</span><span class="op">(</span>subtitle<span class="op">=</span><span class="st">"Covariance step"</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="va">p.cipi.bootstrap</span> <span class="op">+</span></span>
-<span>    <span class="fu">lims</span><span class="op">(</span>y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="va">ymax</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">labs</span><span class="op">(</span>subtitle<span class="op">=</span><span class="st">"Bootstrap"</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">plot_layout</span><span class="op">(</span>guides<span class="op">=</span><span class="st">"collect"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu">theme</span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-simulate_files/figure-html/compare-plots-1.png" width="672"></p>
-</div>
-</div>
-<div class="section level2">
 <h2 id="add-residual-variability">Add residual variability<a class="anchor" aria-label="anchor" href="#add-residual-variability"></a>
 </h2>
 <p><code>NMsim</code> currently does not provide any way to add
@@ -780,75 +494,8 @@ the proportional component in <code>$SIGMA[1,1]</code> and the one for
 the additive component in <code>$SIGMA[2,2]</code>. In this case where
 <code>SIGMA</code> is used, the off-diagonal (covariance) elements of
 the <code>$SIGMA</code> matrix are also used for the simulation.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simres.with.resvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addResVar.html">addResVar</a></span><span class="op">(</span><span class="va">simres</span>,path.ext<span class="op">=</span><span class="fu">fnExtension</span><span class="op">(</span><span class="va">file.mod</span>,<span class="st">"ext"</span><span class="op">)</span>,par.type<span class="op">=</span><span class="st">"SIGMA"</span>,prop<span class="op">=</span><span class="fl">1</span>,add<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="vary-parameter-values">Vary parameter values<a class="anchor" aria-label="anchor" href="#vary-parameter-values"></a>
-</h2>
-<p>Sometimes we want to simulate with some modification to the estimated
-model. NMsim can make such user-specified modifications to the model
-before simulating through the <code>list.sections</code> argument.</p>
-<p>The SAD study was run with a fast solution formulation. We want to
-see how a slower absorption rate would affect the PK prediction for the
-multiple dose regimen. In the model estimate, <code>TVKA=2.17</code>. We
-now try with a four times slower absorption:</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simres.slowabs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
-<span>                        data<span class="op">=</span><span class="va">dat.sim</span></span>
-<span>                       ,dir.sims<span class="op">=</span><span class="st">"~/NMsim_test"</span></span>
-<span>                       ,name.sim<span class="op">=</span><span class="st">"slower_abs"</span></span>
-<span>                       ,seed<span class="op">=</span><span class="fl">12345</span></span>
-<span>                       ,list.sections<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">"TVKA=TVKA/4"</span>,<span class="st">"KA=KA/4"</span><span class="op">)</span><span class="op">)</span></span>
-<span>                        <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simres.slowabs</span> <span class="op">|&gt;</span> <span class="fu">findCovs</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    ID DV MDV    TVKA   TVV2   TVV3   TVCL      KA     V2     V3     CL      Q</span></span>
-<span><span class="co">#&gt; 1:  1  0   1 0.54164 75.729 150.06 13.978 0.54164 119.98 150.06 14.499 8.4865</span></span>
-<span><span class="co">#&gt;    RES WRES                   trt                    model nmout</span></span>
-<span><span class="co">#&gt; 1:   0    0 300 mg then 150 mg QD NMsim_xgxr021_slower_abs  TRUE</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simres</span>,<span class="va">simres.slowabs</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">PRED</span>,colour<span class="op">=</span><span class="va">model</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-simulate_files/figure-html/unnamed-chunk-30-1.png" width="672"></p>
-<p>We used <code>list.sections</code> to modify the <code>$PK</code>
-section. We used it to append two lines. We could use it to modify any
-section in the model, and we could essentially do any modification.
-However, appending to <code>$PK</code> or <code>$PRED</code> is simple
-and often both robust and flexible enough.</p>
-<p>That was a very spcific analysis of one specific <code>KA</code>
-value. It is often more convenient to control the numeric changes to the
-model using the simulation input data set rather than hard-coding
-numerical values into <code>list.sections</code>. The following tries a
-number of fold changes to <code>KA</code>.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">NMdataConf</span><span class="op">(</span>as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span>
-<span><span class="va">dat.sim.varka</span> <span class="op">&lt;-</span> <span class="fu">egdt</span><span class="op">(</span><span class="va">dat.sim</span>,<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>KASCALE<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">4</span>,<span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">dat.sim.varka</span><span class="op">[</span>,<span class="va">ID</span><span class="op">:=</span><span class="va">.GRP</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">KASCALE</span>,<span class="va">ID</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">dat.sim.varka</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">simres.varka</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
-<span>                      data<span class="op">=</span><span class="va">dat.sim.varka</span></span>
-<span>                     ,dir.sims<span class="op">=</span><span class="st">"~/NMsim_test"</span></span>
-<span>                     ,name.sim<span class="op">=</span><span class="st">"varka"</span></span>
-<span>                     ,seed<span class="op">=</span><span class="fl">12345</span></span>
-<span>                     ,list.sections<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span></span>
-<span>                      <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simres.varka</span> <span class="op">|&gt;</span> <span class="fu">findCovs</span><span class="op">(</span>by<span class="op">=</span><span class="st">"KASCALE"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    KASCALE ID DV MDV    TVKA   TVV2   TVV3   TVCL      KA      V2     V3</span></span>
-<span><span class="co">#&gt; 1:       1  1  0   1 2.16660 75.729 150.06 13.978 2.16660 119.980 150.06</span></span>
-<span><span class="co">#&gt; 2:       4  2  0   1 0.54164 75.729 150.06 13.978 0.54164  87.259 150.06</span></span>
-<span><span class="co">#&gt; 3:      10  3  0   1 0.21666 75.729 150.06 13.978 0.21666  39.224 150.06</span></span>
-<span><span class="co">#&gt;         CL      Q RES WRES                   trt               model nmout</span></span>
-<span><span class="co">#&gt; 1: 14.4990 8.4865   0    0 300 mg then 150 mg QD NMsim_xgxr021_varka  TRUE</span></span>
-<span><span class="co">#&gt; 2: 21.3650 8.4865   0    0 300 mg then 150 mg QD NMsim_xgxr021_varka  TRUE</span></span>
-<span><span class="co">#&gt; 3:  9.2223 8.4865   0    0 300 mg then 150 mg QD NMsim_xgxr021_varka  TRUE</span></span>
-<span></span>
-<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">simres.varka</span><span class="op">[</span><span class="va">simres.varka</span><span class="op">$</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span>,<span class="op">]</span>,<span class="fu">aes</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">PRED</span>,colour<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">KASCALE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu">labs</span><span class="op">(</span>colour<span class="op">=</span><span class="st">"Fold absorption prolongation"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-simulate_files/figure-html/unnamed-chunk-33-1.png" width="672"></p>
-<!-- ## Using NMsim to validate reimplementations of models -->
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
