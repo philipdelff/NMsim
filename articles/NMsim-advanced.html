@@ -79,16 +79,21 @@
 
     
     
-<p>Built 2023-09-18 using NMsim 0.0.2.</p>
+<p>Built 2023-09-19 using NMsim 0.0.2.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
-<p>This vignettes aims at enabling you to Use <code>NMsim</code> to
-simulate</p>
+<p>This vignettes aims at enabling you to use <code>NMsim</code> for the
+following purposes</p>
 <ul>
-<li>typical subjects,</li>
-<li>known subjects (estimated random effects),</li>
-<li>simulation with parameter uncertainty</li>
+<li>Simulation of typical subjects,</li>
+<li>Simualation of known subjects (estimated random effects),</li>
+<li>Simulation with parameter uncertainty
+<ul>
+<li>By sampling for a successful covariance step</li>
+<li>By using models from bootstrap sampling</li>
+</ul>
+</li>
 <li>Simulation with parameters modified from the estimated values</li>
 </ul>
 </div>
@@ -98,7 +103,10 @@ simulate</p>
 <p>You should have configured <code>NMsim</code> with the path to the
 Nonmem installation and maybe also PSN. See <a href="https://philipdelff.github.io/NMsim/articles/NMsim-config.html"><code>NMsim-config.html</code></a>.
 Don’t worry - it is very easy.</p>
-<p>This vignette will be using the same model as simulated in <a href="https://philipdelff.github.io/NMsim/articles/NMsim-simulate.html"><code>NMsim-simulate.html</code></a></p>
+<p>You should be familiar with basic <code>NMsim</code> arguments as
+described in <a href="https://philipdelff.github.io/NMsim/articles/NMsim-simulate.html"><code>NMsim-simulate.html</code></a>.</p>
+<p>This vignette will be using the same model and simulation input data
+as in <a href="https://philipdelff.github.io/NMsim/articles/NMsim-simulate.html"><code>NMsim-simulate.html</code></a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr021.mod"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -214,7 +222,6 @@ records to simulation records (<code>EVID=2</code> instead of
 <span>                      data<span class="op">=</span><span class="va">pdsim</span>,</span>
 <span>                      name.sim<span class="op">=</span><span class="st">"pkpd"</span>,</span>
 <span>                     ,method.sim<span class="op">=</span><span class="va">NMsim_known</span></span>
-<span>                     ,path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe75"</span></span>
 <span>                     ,text.table<span class="op">=</span><span class="st">"IPRED PRED"</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
 <p>Now rename <code>res.pksim$IPRED</code> to something meaningfull like
@@ -352,22 +359,29 @@ methods, so we do it at once using data.table’s <code>by</code> feature
 to separate the two methods (sampling from covariance steps and using
 the bootstrap samples).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">allres</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simres.VarCov</span><span class="op">[</span>,<span class="va">method</span><span class="op">:=</span><span class="st">"Covariance step"</span><span class="op">]</span>,</span>
+<code class="sourceCode R"><span><span class="co">## Stacking results from the two approaches to simulating with</span></span>
+<span><span class="co">## parameter uncertainty.</span></span>
+<span><span class="va">allres</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simres.VarCov</span><span class="op">[</span>,<span class="va">method</span><span class="op">:=</span><span class="st">"Covariance step"</span><span class="op">]</span>,</span>
 <span>                <span class="va">simres.bootstrap</span><span class="op">[</span>,<span class="va">method</span><span class="op">:=</span><span class="st">"Bootstrap"</span><span class="op">]</span>,</span>
 <span>                fill<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co">## long format so calculations can be done by prediction type.</span></span>
 <span><span class="va">allresl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">allres</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span><span class="op">]</span>,</span>
 <span>                measure.vars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PRED"</span>,<span class="st">"IPRED"</span><span class="op">)</span>,</span>
 <span>                variable.name<span class="op">=</span><span class="st">"pred.type"</span>,</span>
-<span>                value.name<span class="op">=</span><span class="st">"pred"</span><span class="op">)</span></span>
+<span>                value.name<span class="op">=</span><span class="st">"pred.value"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co">## deriving median by model and time to have a single value per model</span></span>
+<span><span class="co">## and time point. This is only needed in case multiple subjects are</span></span>
+<span><span class="co">## simulated by each model.</span></span>
 <span><span class="va">sum.res.model</span> <span class="op">&lt;-</span> <span class="va">allresl</span><span class="op">[</span>,</span>
-<span>                         <span class="fu">.</span><span class="op">(</span>predm<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">pred</span>,probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>                         <span class="fu">.</span><span class="op">(</span>predm<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">pred.value</span><span class="op">)</span><span class="op">)</span></span>
 <span>                        ,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">method</span>,<span class="va">model</span>,<span class="va">TIME</span>,<span class="va">pred.type</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span></span>
 <span><span class="va">sum.uncertain</span> <span class="op">&lt;-</span> <span class="va">sum.res.model</span><span class="op">[</span></span>
-<span>   ,<span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">predm</span>,probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.025</span>,<span class="fl">.5</span>,<span class="fl">.975</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"predml"</span>,<span class="st">"predmm"</span>,<span class="st">"predmu"</span><span class="op">)</span><span class="op">)</span></span>
+<span>   ,<span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">predm</span>,probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.025</span>,<span class="fl">.5</span>,<span class="fl">.975</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"predml"</span>,<span class="st">"predmm"</span>,<span class="st">"predmu"</span><span class="op">)</span><span class="op">)</span></span>
 <span>   ,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">method</span>,<span class="va">TIME</span>,<span class="va">pred.type</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p>Plotting the two next to each other. For this simple model with a
 smooth covariance step the two confidence intervals are very similar. If
