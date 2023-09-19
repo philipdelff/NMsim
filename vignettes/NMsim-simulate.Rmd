@@ -83,6 +83,8 @@ This vignettes aims at enabling you to
 
 * Speed up NMsim by avoiding large table statements
 
+* Add residual variability to an already performed model simulation
+  using `NMsim`.
 
 
 ## Prerequisites
@@ -93,7 +95,7 @@ worry - it is very easy.
 
 
 
-## Estimation, then simulation
+## Estimation based on single dose, simulation of multiple doses
 The situation is like this: We collected PK and PD data from a single ascending dose 
 trial on a drug candidate. The following plot shows the data for no other reason than pointing out clearly that the data informing the model was single dose, and we will be simulating a different dosing regimen.
 
@@ -144,6 +146,9 @@ setorder(dat.sim,ID,TIME,EVID)
 
 ## Adding a row identifier (generally not necessary)
 dat.sim$ROW <- 1:nrow(dat.sim)
+```
+```{r,save-datsim,eval=FALSE}
+write_fst(dat.sim,"simulate-results/dat_sim.fst")
 ```
 
 We check the simulation data set for various potential issues in
@@ -417,3 +422,4 @@ We now specify for `addResVar` to find the variance for the proportional compone
 ```{r,eval=FALSE}
 simres.with.resvar <- addResVar(simres,path.ext=fnExtension(file.mod,"ext"),par.type="SIGMA",prop=1,add=2)
 ```
+

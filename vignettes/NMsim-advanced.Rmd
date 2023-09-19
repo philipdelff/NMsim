@@ -61,6 +61,8 @@ unlink(found.files)
 
 run.simuls <- FALSE
 NMdataConf(as.fun="data.table")
+
+dat.sim <- read_fst("simulate-results/dat_sim.fst",as.data.table=TRUE)
 ```
 
 
@@ -68,11 +70,13 @@ Built `r Sys.Date()` using NMsim `r packageVersion("NMsim")`.
 
 
 ## Objectives
-This vignettes aims at enabling you to Use `NMsim` to simulate
+This vignettes aims at enabling you to use `NMsim` for the following purposes
 
-* typical subjects, 
-* known subjects (estimated random effects), 
-* simulation with parameter uncertainty
+* Simulation of typical subjects, 
+* Simualation of known subjects (estimated random effects), 
+* Simulation with parameter uncertainty
+  - By sampling for a successful covariance step
+  - By using models from bootstrap sampling
 * Simulation with parameters modified from the estimated values
 
 ## Prerequisites
@@ -81,7 +85,9 @@ installation and maybe also PSN. See
 [`NMsim-config.html`](https://philipdelff.github.io/NMsim/articles/NMsim-config.html). Don't
 worry - it is very easy. 
 
-This vignette will be using the same model as simulated in [`NMsim-simulate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-simulate.html)
+You should be familiar with basic `NMsim` arguments as described in [`NMsim-simulate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-simulate.html).
+
+This vignette will be using the same model and simulation input data as in [`NMsim-simulate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-simulate.html)
 ```{r}
 file.mod <- file.project("nonmem/xgxr021.mod")
 ```
@@ -206,7 +212,6 @@ simres.pksim <- NMsim(file.mod,
                       data=pdsim,
                       name.sim="pkpd",
                      ,method.sim=NMsim_known
-                     ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                      ,text.table="IPRED PRED"
                       )
 
@@ -370,22 +375,29 @@ Derivation of the confidence intervals is identical for the two methods, so we d
 
 
 ```{r,uncertain-summa,eval=FALSE}
+## Stacking results from the two approaches to simulating with
+## parameter uncertainty.
 allres <- rbind(simres.VarCov[,method:="Covariance step"],
                 simres.bootstrap[,method:="Bootstrap"],
                 fill=TRUE)
 
+## long format so calculations can be done by prediction type.
 allresl <- melt(allres[EVID==2],
                 measure.vars=c("PRED","IPRED"),
                 variable.name="pred.type",
-                value.name="pred")
+                value.name="pred.value")
 
+## deriving median by model and time to have a single value per model
+## and time point. This is only needed in case multiple subjects are
+## simulated by each model.
 sum.res.model <- allresl[,
-                         .(predm=quantile(pred,probs=c(.5)))
+                         .(predm=median(pred.value))
                         ,by=.(method,model,TIME,pred.type)]
 
 
 sum.uncertain <- sum.res.model[
-   ,setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),c("predml","predmm","predmu"))
+   ,setNames(as.list(quantile(predm,probs=c(.025,.5,.975))),
+             c("predml","predmm","predmu"))
    ,by=.(method,TIME,pred.type)]
 
 ```
@@ -442,7 +454,7 @@ if(run.simuls){
 } else {
     simres.slowabs <- read_fst(file.fst,as.data.table=TRUE)
 }
-simres <- read_fst(file.fst,as.data.table=TRUE)
+simres <- read_fst("simulate-results/simres.fst",as.data.table=TRUE)
 ```
 
 ```{r,eval=TRUE}

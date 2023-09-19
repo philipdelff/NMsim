@@ -6,9 +6,12 @@ tables with input data once Nonmem has finished and return the results
 to R. 
 
 ## Install
-Easiest way to install `NMsim` is using the `remotes` package to install with R:
+`NMsim` is on CRAN and github:
 
 ```{r}
+## From CRAN
+install.packages("NMsim")
+## From github
 library(remotes)
 install_github("philipdelff/NMsim")
 ```
@@ -19,8 +22,8 @@ In its simplest use, a simulation of the (estimated) model stored in
 "path/to/file.mod" using the simulation input data set stored in the
 variable `data.sim` this way:
 
-```{r}
-simres <- NMsim(path.mod=/path/to/file.mod,
+```{r,eval=FALSE}
+simres <- NMsim(path.mod="/path/to/file.mod",
                 data=data.sim)
 ```
 `NMsim` will then do the following:
@@ -65,6 +68,7 @@ methods are currently provided:
 - Simulation of subjects already estimated in Nonmem model (`method.sim=NMsim_known`) 
 - Simulation with parameter uncertain based on a Nonmem covariance step (`method.sim=NMsim_VarCov`)
 - Simulation "as is" in case you already prepared a simulation control stream and just want to automate the use of it in combination with simulation data sets (`method.sim=NMsim_asis`)
+
 
 In addition, `NMsim` can simulate multiple models at a time. E.g., if a
 bootstrap run of a model is available, NMsim can run the simulation
@@ -128,11 +132,11 @@ available with PSN, so for some features you will have to specify the path to th
 Nonmem executable (say `path.nonmem=/path/to/nmfe75` or any Nonmem
 executable you want to use). Specifically of the simulation types
 currently available, simulation of known subjects is not possible
-using PSN (but works if a Nonmem executable is provided). On the other hand, submitting jobs to clusters is currently only supported via PSN.
+using PSN (but works if a Nonmem executable is provided). 
 
 If PSN is used, `NMsim` uses PSN's `execute` to run models. In
-addition, `NMsim` can use PSN's `update_inits` to update initial
-values in control streams. `NMsim` does also include its own simple
+addition, `NMsim` by default uses PSN's `update_inits` to update initial
+values in control streams, if PSN is available. `NMsim` does also include its own simple
 function to do this if `PSN` is not available.
 
 ## Is `NMsim` reliable?
