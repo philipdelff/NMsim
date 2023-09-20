@@ -13,7 +13,7 @@
 ##'     resulting control stream is not written to file.
 ##' @import NMdata
 ##' @return Path to simulation control stream
-##' @keywords internal
+##' @export
 
 
 NMsim_typical <- function(file.sim,file.mod,data.sim,return.text=FALSE){

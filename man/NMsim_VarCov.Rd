@@ -28,4 +28,3 @@ elements in $OMEGA and $SIGMA, those values are truncated at
 zero. For simulation with parameter variability based on bootstrap
 results, use \code{NMsim_default}.
 }
-\keyword{internal}

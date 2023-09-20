@@ -48,14 +48,6 @@
 ##'     as little as "PRED IPRED"). Nonmem writes data slowly so
 ##'     reducing output data from say 100 columns to a handful makes a
 ##'     big difference.
-##' @param type.mod The control stream "type". Default is "est"
-##'     meaning that an $ESTIMATION block will be replaced by a
-##'     "$SIMULATION" block, and parameter estimates should be taken
-##'     from the estimation results. If the control stream has already
-##'     been turned into a simulation control stream, and only $INPUT,
-##'     $DATA, and $TABLE sections should be edited. This implies that
-##'     in case type.mod="sim", `subproblems` is ignored. `type.mod`
-##'     may be automated in the future.
 ##' @param method.sim A function (not quoted) that creates the
 ##'     simulation control stream and other necessary files for a
 ##'     simulation based on the estimation control stream, the data,
@@ -134,7 +126,6 @@
 ##'     as.fun="data.table". The default can be configured using
 ##'     NMdataConf.
 ##' @param suffix.sim Deprecated. Use name.sim instead.
-##' @param type.input Deprecated. Use type.mod instead.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
 ##'     as input data). If `wait=FALSE` a character vector with paths
@@ -202,8 +193,8 @@
 NMsim <- function(file.mod,data,dir.sims, name.sim,
                   order.columns=TRUE,script=NULL,subproblems=NULL,
                   reuse.results=FALSE,seed,args.psn.execute,
-                  nmquiet=FALSE,text.table, type.mod,method.sim=NMsim_default,
-                  execute=TRUE,sge=FALSE,transform=NULL ,type.input,
+                  nmquiet=FALSE,text.table, method.sim=NMsim_default,
+                  execute=TRUE,sge=FALSE,transform=NULL,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
                   list.sections,sim.dir.from.scratch=TRUE,
                   path.nonmem=NULL,as.fun
@@ -372,10 +363,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                            order.columns=order.columns,script=script,
                            subproblems=subproblems,
                            reuse.results=reuse.results,seed=seed,
-                           args.psn.execute=args.psn.execute
-                          ,nmquiet=nmquiet,
+                           args.psn.execute=args.psn.execute,
+                           nmquiet=nmquiet,
                            text.table=text.table,
-                           type.mod=type.mod,execute=execute,
+                           execute=execute,
                            sge=sge
                            ## ,modelname=modelname
                           ,transform=transform

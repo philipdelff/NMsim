@@ -18,7 +18,7 @@
 ##' @import NMdata
 ##' @import data.table
 ##' @return Path to simulation control stream
-##' @keywords internal
+##' @export
 
 
 NMsim_known <- function(file.sim,file.mod,data.sim,return.text=FALSE){

@@ -17,12 +17,10 @@ NMsim(
   args.psn.execute,
   nmquiet = FALSE,
   text.table,
-  type.mod,
   method.sim = NMsim_default,
   execute = TRUE,
   sge = FALSE,
   transform = NULL,
-  type.input,
   method.execute,
   method.update.inits,
   create.dir = TRUE,
@@ -86,15 +84,6 @@ as little as "PRED IPRED"). Nonmem writes data slowly so
 reducing output data from say 100 columns to a handful makes a
 big difference.}
 
-\item{type.mod}{The control stream "type". Default is "est"
-meaning that an $ESTIMATION block will be replaced by a
-"$SIMULATION" block, and parameter estimates should be taken
-from the estimation results. If the control stream has already
-been turned into a simulation control stream, and only $INPUT,
-$DATA, and $TABLE sections should be edited. This implies that
-in case type.mod="sim", `subproblems` is ignored. `type.mod`
-may be automated in the future.}
-
 \item{method.sim}{A function (not quoted) that creates the
 simulation control stream and other necessary files for a
 simulation based on the estimation control stream, the data,
@@ -117,8 +106,6 @@ result.}
 after the Nonmem simulations and before plotting. For each
 list element, its name refers to the name of the column to
 transform, the contents must be the function to apply.}
-
-\item{type.input}{Deprecated. Use type.mod instead.}
 
 \item{method.execute}{Specify how to call Nonmem. Options are
 "psn" (PSN's execute), "nmsim" (an internal method similar to

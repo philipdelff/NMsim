@@ -19,7 +19,7 @@
 ##' @import NMdata
 ##' @import data.table
 ##' @return Character vector of simulation control stream paths
-##' @keywords internal
+##' @export
 
 NMsim_default <- function(file.sim,file.mod,data.sim,nsims=1,replace.sim=TRUE,return.text=FALSE){
 

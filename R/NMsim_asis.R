@@ -10,7 +10,7 @@
 ##' @param file.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.
 ##' @return Path to simulation control stream
-##' @keywords internal 
+##' @export 
 
 NMsim_asis <- function(file.sim,file.mod,data.sim){
 

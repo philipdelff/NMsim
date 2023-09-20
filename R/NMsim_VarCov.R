@@ -16,7 +16,7 @@
 ##' @import NMdata
 ##' @import data.table
 ##' @return Character vector of simulation control stream paths
-##' @keywords internal
+##' @export
 
 NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
 

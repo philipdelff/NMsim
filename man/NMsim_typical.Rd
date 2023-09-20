@@ -26,4 +26,3 @@ Like \code{NMsim_default} but with all ETAs=0, giving a
 values. Technically all ETAs=0 is obtained by replacing
 \code{$OMEGA} by a zero matrix.
 }
-\keyword{internal}

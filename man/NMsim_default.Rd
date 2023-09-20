@@ -40,4 +40,3 @@ Character vector of simulation control stream paths
 The default behaviour of \code{NMsim}. Replaces any $ESTIMATION
 and $COVARIANCE sections by a $SIMULATION section.
 }
-\keyword{internal}

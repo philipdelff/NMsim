@@ -23,4 +23,3 @@ this for instance if you already created a simulation (or
 estimation actually) control stream and want NMsim to run it on
 different data sets.
 }
-\keyword{internal}
