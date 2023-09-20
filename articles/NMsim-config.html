@@ -41,9 +41,9 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/NMsim-advanced.html">NMsim -- Additional Simulation Methods</a>
+    <a class="dropdown-item" href="../articles/NMsim-basics.html">NMsim -- Simulation of New Subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-config.html">NMsim Configuration</a>
-    <a class="dropdown-item" href="../articles/NMsim-simulate.html">NMsim -- Simulation of New Subjects</a>
+    <a class="dropdown-item" href="../articles/NMsim-methods.html">NMsim -- Additional Simulation Methods</a>
   </div>
 </li>
       </ul>
@@ -133,7 +133,7 @@ configuration function. Say you want to run Nonmem with
 <code>/opt/NONMEM/nm75/run/nmfe</code>, insert this after loading
 <code>NMdata</code> in the beginning of your script</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">NMdataConf</span><span class="op">(</span>path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMdataConf.html" class="external-link">NMdataConf</a></span><span class="op">(</span>path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe"</span><span class="op">)</span></span></code></pre></div>
 <p>If you normally use PSN as your Nonmem interface, and you therefore
 do not know where Nonmem is installed, you can check this using PSN. The
 following command should give you the Nonmem installation paths that PSN
@@ -152,7 +152,7 @@ to those two executables when running them (something like
 where to find them. In this case, the easiest is loading NMdata and then
 running:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">NMdataConf</span><span class="op">(</span>dir.psn<span class="op">=</span><span class="st">"/opt/PSN"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMdataConf.html" class="external-link">NMdataConf</a></span><span class="op">(</span>dir.psn<span class="op">=</span><span class="st">"/opt/PSN"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
