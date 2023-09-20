@@ -21,8 +21,7 @@ NMreadPhi <- function(file){
     res.NMdat <- NMreadTab(file,as.fun="data.table",quiet=TRUE)
 
     
-    pars <- res.NMdat |>
-        melt(id.vars=c("SUBJECT_NO","ID","NMREP"),variable.name="parameter")
+    pars <- melt(res.NMdat,id.vars=c("SUBJECT_NO","ID","NMREP"),variable.name="parameter")
 
     pars[,par.type:=NA_character_]
     pars[grepl("^ETA",parameter),par.type:="ETA"]

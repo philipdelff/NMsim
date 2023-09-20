@@ -9,13 +9,14 @@ Description: A complete and seamless 'Nonmem' simulation interface from within R
 License: MIT + file LICENSE
 RoxygenNote: 7.2.3
 Roxygen: list(roclets=c("collate", "namespace", "rd", "vignette"))
-Depends: R (>= 4.1.0)
+Depends: R (>= 3.1.0)
 Imports:
   data.table,
   NMdata (>= 0.1.1),
   R.utils,
   MASS
 Suggests: 
+  testthat,
   knitr,
   rmarkdown,
   fst,

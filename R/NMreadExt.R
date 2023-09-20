@@ -53,9 +53,9 @@ NMreadExt <- function(path.ext){
     ## res.NMdat
 
     
-    pars <- res.NMdat[variable%in%dt.codes$variable,setdiff(colnames(res.NMdat),"OBJ"),with=FALSE]|>
-        melt(id.vars=cc(ITERATION,variable,NMREP),variable.name="parameter")|>
-        dcast(NMREP+parameter~variable,value.var="value")
+    pars <- res.NMdat[variable%in%dt.codes$variable,setdiff(colnames(res.NMdat),"OBJ"),with=FALSE]
+    pars <- melt(pars,id.vars=cc(ITERATION,variable,NMREP),variable.name="parameter")
+    pars <- dcast(pars,NMREP+parameter~variable,value.var="value")
 
     pars[,par.type:=NA_character_]
     pars[grepl("^THETA",parameter),par.type:="THETA"]
@@ -70,8 +70,8 @@ NMreadExt <- function(path.ext){
     pars[,(cols):=lapply(.SD,as.integer),.SDcols=cols]
 
     ## what to do about OBJ? Disregard? And keep in a iteration table instead?
-    iterations <- res.NMdat[as.numeric(ITERATION)>(-1e9),!("variable")] |>
-        melt(id.vars=cc(ITERATION,NMREP))
+    iterations <- res.NMdat[as.numeric(ITERATION)>(-1e9),!("variable")] 
+    iterations <- melt(iterations,id.vars=cc(ITERATION,NMREP))
 
     list(pars=pars,iterations=iterations)
 }
