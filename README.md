@@ -34,7 +34,7 @@ methods are currently provided:
 - Simulation of new subjects (default or explicitly with `method.sim=NMsim_default`)
 - Simulation of a typical subject (ETAs equal 0, `method.sim=NMsim_typical`)
 - Simulation of subjects already estimated in Nonmem model (`method.sim=NMsim_known`) 
-- Simulation with parameter uncertain based on a Nonmem covariance step (`method.sim=NMsim_VarCov`)
+- Simulation with parameter uncertainty based on a Nonmem covariance step (`method.sim=NMsim_VarCov`)
 - Simulation "as is" in case you already prepared a simulation control stream and just want to automate the use of it in combination with simulation data sets (`method.sim=NMsim_asis`)
 
 

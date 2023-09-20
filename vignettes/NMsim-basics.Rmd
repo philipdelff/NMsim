@@ -451,7 +451,7 @@ p.pi.typ
 ## Read previously generated simulations
 There is no need to save simulation results because they are already saved by `NMsim`. Instead, use arguments `dir.sims` and `name.sim` to make sure to get a meaningful structure for the generated files. Then read the results with `NMdata::NMscanData`. `merge.by.row=FALSE` because there is no reason to combine `NMsim` datasets using a row identifier.
 
-```{r}
+```{r,eval=FALSE}
 library(NMdata)
 simres.n1000.1 <- NMscanData("~/NMsim_vignette/xgxr021_N1000_datarep/NMsim_xgxr021_N1000_datarep.lst",merge.by.row=FALSE)
 ```
