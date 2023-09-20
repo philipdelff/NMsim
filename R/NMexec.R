@@ -140,7 +140,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     }
     cmd.execute <- fun.file.psn(dir.psn,"execute")
 
-    method.execute <- gsub(" ","",method.execute) |> tolower() 
+    method.execute <- tolower(gsub(" ","",method.execute))
     if(!method.execute %in% c("psn","direct","nmsim")){
         stop("method.execute must be one of psn, direct, and nmsim.")
     }
