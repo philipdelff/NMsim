@@ -7,7 +7,7 @@ rmarkdown::html_vignette:
 Suggests: markdown
 VignetteBuilder: knitr
 vignette: >
-  %\VignetteIndexEntry{Simulation Advanced}
+  %\VignetteIndexEntry{Simulation Methods}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 header-includes:
@@ -50,7 +50,7 @@ library(knitr)
 ## NMdataConf(dir.psn=NULL)
 
 theme_set(theme_bw())
-this.script <- "NMsim-simulate.Rmd"
+this.script <- "NMsim-methods.Rmd"
 writeOutput <- TRUE
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 ## file.project <- function(...)file.path("../inst/examples",...)
@@ -85,21 +85,31 @@ installation and maybe also PSN. See
 [`NMsim-config.html`](https://philipdelff.github.io/NMsim/articles/NMsim-config.html). Don't
 worry - it is very easy. 
 
-You should be familiar with basic `NMsim` arguments as described in [`NMsim-simulate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-simulate.html).
+You should be familiar with basic `NMsim` arguments as described in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html). In that vignette you should have learned to use the default simulation method. This vignette will be using the same model and simulation input data as in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html) to demonstrate how to use additional methods and features of `NMsim`.
 
-This vignette will be using the same model and simulation input data as in [`NMsim-simulate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-simulate.html)
 ```{r}
 file.mod <- file.project("nonmem/xgxr021.mod")
 ```
 
+## A temporary note on syntax
+The first release of `NMsim` requires methods to specified with three
+colons like `method.sim=NMsim:::NMsim_typical`. This will still work
+but will not be required in future releases where the shorter
+`method.sim=NMsim_typical` will be sufficient.
+
 ## Simulation of a typical subject
-A typical subject is here understood as a subject without random effects, i.e. all ETA's equal zero. It is important to realize that "typical" does not have to do with covariates which the user will still need to control in the model, in the simulation input data, or by a combination of these. Getting `NMsim` to run with all ETA's equaling zero is this easy:
+A typical subject is here understood as a subject without random
+effects, i.e. all ETA's equal zero. It is important to realize that
+"typical" does not have to do with covariates which the user will
+still need to control in the model, in the simulation input data, or
+by a combination of these. Getting `NMsim` to run with all ETA's
+equaling zero is this easy:
 
 ```{r,eval=FALSE}
 simres.typ <- NMsim(file.mod=file.mod,
                     data=dat.sim,
                     name.sim="typSubj",
-                    method.sim=NMsim_typical)
+                    method.sim=NMsim:::NMsim_typical)
 
 ```
 
@@ -116,7 +126,7 @@ if(run.simuls){
 In the first simulation we used `PRED` from the default simulation
 method to get a typical subject simulation. That will work in many
 cases, but that depends on the model. The way to run a simulation with
-all ETA's set to 0 is using `method.sim=NMsim_typical`.
+all ETA's set to 0 is using `method.sim=NMsim:::NMsim_typical`.
 
 ```{r,eval=TRUE}
 p.typ <- ggplot(simres.typ,aes(TIME,IPRED,color=trt))+geom_line()+
@@ -432,15 +442,15 @@ Sometimes we want to simulate with some modification to the estimated model. NMs
 The SAD study was run with a fast solution formulation. We want to see how a slower absorption rate would affect the PK prediction for the multiple dose regimen. In the model estimate, `TVKA=2.17`. We now try with a four times slower absorption:
 
 ```{r,eval=FALSE}
-simres <- NMsim(file.mod=file.mod,
-                        data=dat.sim
-                       ,dir.sims="~/NMsim_test"
-                       ,seed=12345
+simres <- NMsim(file.mod=file.mod
+               ,data=dat.sim
+               ,dir.sims="~/NMsim_vignette" ## where to store simulation files
+               ,seed=12345
                 )
 
 simres.slowabs <- NMsim(file.mod=file.mod,
                         data=dat.sim
-                       ,dir.sims="~/NMsim_test"
+                       ,dir.sims="~/NMsim_vignette" ## where to store simulation files
                        ,name.sim="slower_abs"
                        ,seed=12345
                        ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/4","KA=KA/4"))
@@ -458,8 +468,6 @@ simres <- read_fst("simulate-results/simres.fst",as.data.table=TRUE)
 ```
 
 ```{r,eval=TRUE}
-simres.slowabs |> findCovs()
-
 rbind(simres,simres.slowabs) |>
     ggplot(aes(TIME,PRED,colour=model))+
     geom_line()
@@ -481,7 +489,7 @@ setorder(dat.sim.varka,ID,TIME,EVID)
 
 simres.varka <- NMsim(file.mod=file.mod,
                       data=dat.sim.varka
-                     ,dir.sims="~/NMsim_test"
+                     ,dir.sims="~/NMsim_vignette" ## where to store simulation files
                      ,name.sim="varka"
                      ,seed=12345
                      ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
@@ -498,9 +506,10 @@ if(run.simuls){
 ```
 
 ```{r,eval=TRUE}
-simres.varka |> findCovs(by="KASCALE")
-
 ggplot(simres.varka[simres.varka$EVID==2,],aes(TIME,PRED,colour=factor(KASCALE)))+geom_line()+labs(colour="Fold absorption prolongation")
 ```
 
+
+
 <!-- ## Using NMsim to validate reimplementations of models -->
+

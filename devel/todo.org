@@ -2,6 +2,7 @@
 
 ** general
 
+*** TODO [#A] Export simulation methods
 *** DONE Add @return to all functions
 
 *** DONE Clean up code files
@@ -58,6 +59,9 @@ NMsim we restrict to nc=1.
 ** NMexecDirectory
 *** DONE Clean up after switching to absolute paths
 ** NMsim
+*** TODO [#A] Remove documentation of type.mod
+It has no effect in model
+*** TODO [#A] Remove type.mod from documentation too
 *** DONE If PSN is not available, make method.update.inits="nmsim"
 *** DONE Limit seed function to what Nonmem can use
 0:2147483647
