@@ -1,5 +1,5 @@
 ---
-title: "NMsim -- Additional Simulation Methods"
+title: "NMsim - Additional Simulation Methods"
 output:
 rmarkdown::html_vignette:
     toc: true
@@ -91,11 +91,6 @@ You should be familiar with basic `NMsim` arguments as described in [`NMsim-basi
 file.mod <- file.project("nonmem/xgxr021.mod")
 ```
 
-## A temporary note on syntax
-The first release of `NMsim` requires methods to specified with three
-colons like `method.sim=NMsim:::NMsim_typical`. This will still work
-but will not be required in future releases where the shorter
-`method.sim=NMsim_typical` will be sufficient.
 
 ## Simulation of a typical subject
 A typical subject is here understood as a subject without random
