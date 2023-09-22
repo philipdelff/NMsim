@@ -14,7 +14,7 @@ test_that("Basic",{
 
     df.doses
     res
-    
+
     expect_equal_to_reference(res,fileRef)
 
 })
