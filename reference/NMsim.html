@@ -20,7 +20,7 @@ this."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,12 +84,10 @@ this.</p>
 <span>  <span class="va">args.psn.execute</span>,</span>
 <span>  nmquiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">text.table</span>,</span>
-<span>  <span class="va">type.mod</span>,</span>
 <span>  method.sim <span class="op">=</span> <span class="va">NMsim_default</span>,</span>
 <span>  execute <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  sge <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  transform <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">type.input</span>,</span>
 <span>  <span class="va">method.execute</span>,</span>
 <span>  <span class="va">method.update.inits</span>,</span>
 <span>  create.dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -179,17 +177,6 @@ reducing output data from say 100 columns to a handful makes a
 big difference.</p></dd>
 
 
-<dt>type.mod</dt>
-<dd><p>The control stream "type". Default is "est"
-meaning that an $ESTIMATION block will be replaced by a
-"$SIMULATION" block, and parameter estimates should be taken
-from the estimation results. If the control stream has already
-been turned into a simulation control stream, and only $INPUT,
-$DATA, and $TABLE sections should be edited. This implies that
-in case type.mod="sim", `subproblems` is ignored. `type.mod`
-may be automated in the future.</p></dd>
-
-
 <dt>method.sim</dt>
 <dd><p>A function (not quoted) that creates the
 simulation control stream and other necessary files for a
@@ -219,10 +206,6 @@ result.</p></dd>
 after the Nonmem simulations and before plotting. For each
 list element, its name refers to the name of the column to
 transform, the contents must be the function to apply.</p></dd>
-
-
-<dt>type.input</dt>
-<dd><p>Deprecated. Use type.mod instead.</p></dd>
 
 
 <dt>method.execute</dt>
