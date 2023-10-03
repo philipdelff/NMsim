@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4.901</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,16 +97,22 @@
 <li>Simulation with parameter uncertainty based on a Nonmem covariance step (<code>method.sim=NMsim_VarCov</code>)</li>
 <li>Simulation “as is” in case you already prepared a simulation control stream and just want to automate the use of it in combination with simulation data sets (<code>method.sim=NMsim_asis</code>)</li>
 </ul>
+<p>To learn how to run these simulations on your Nonmem models, get started with <a href="https://philipdelff.github.io/NMsim/articles/NMsim-basics.html"><code>NMsim-basics.html</code></a>. It is really easy.</p>
 <p>In addition, <code>NMsim</code> can simulate multiple models at a time. E.g., if a bootstrap run of a model is available, NMsim can run the simulation with each of the bootstrap models and collect all the results in one dataset. This provides a robust and easy way to simulate a Nonmem model with uncertainty.</p>
 <p>You can also write your own methods, if you have some other Nonmem-based simulation (or other job) you want to automate using <code>NMsim</code>.</p>
-<p>Many features are available. Prominent ones are: - Can use submit jobs to clusters (so running the simulation on say 1,000 model estimates from a bootstrap is actually not that hard). - Simulation replicates using Nonmem <code>SUBPROBLEMS</code> feature avaible through the <code>subproblems</code> argument - Can modify the simulation control stream on the fly - a powerful feature for studying the effect of varying model parameters - Simulations of models on transformed observations can be automatically transformed back using the <code>transform</code> argument.</p>
+<p>Many features are available. Prominent ones are:</p>
+<ul>
+<li>Can use submit jobs to clusters (so running the simulation on say 1,000 model estimates from a bootstrap is actually not that hard).</li>
+<li>Simulation replicates using Nonmem <code>SUBPROBLEMS</code> feature avaible through the <code>subproblems</code> argument</li>
+<li>Can modify the simulation control stream on the fly - a powerful feature for studying the effect of varying model parameters</li>
+<li>Simulations of models on transformed observations can be automatically transformed back using the <code>transform</code> argument.</li>
+</ul>
 <p>If residual variability is not implemented in the simulated model, <code>NMsim</code> provides a way (<code><a href="reference/addResVar.html">addResVar()</a></code>) to add residual variability in R after the simulation has been run.</p>
-<p>To learn how to run these simulations on your Nonmem models, get started with <a href="https://philipdelff.github.io/NMsim/articles/NMsim-basics.html"><code>NMsim-basics.html</code></a>. It is really easy.</p>
 </div>
 <div class="section level2">
 <h2 id="how-nmsim-works">How NMsim works<a class="anchor" aria-label="anchor" href="#how-nmsim-works"></a>
 </h2>
-<p>One strength of <code>NMsim</code> is that it does not simulate, translate or otherwise interpret the model. Instead, it automates the simulation workflow with Nonmem and wraps it all into one R function. In the example given above, <code>NMsim</code> will do the following:</p>
+<p>One strength of <code>NMsim</code> is that it does not simulate, translate or otherwise interpret a Nonmem model. Instead, it automates the simulation workflow with Nonmem and wraps it all into one R function. In the example given above, <code>NMsim</code> will do the following:</p>
 <ul>
 <li>Save the simulation input data for Nonmem</li>
 <li>Create a simulation input control stream based on <code>file.mod</code> ($INPUT and $DATA matching simulation data set, $SIMULATE instead of $ESTIMATION and $COVARIANCE)</li>
@@ -115,8 +121,8 @@
 <li>Collect output data tables, combine them, and merge with the simulation input data</li>
 <li>Return the collected data in R</li>
 </ul>
-<p>This eliminates the need for re-implementation of a model. On the other hand, this also means that <code>NMsim</code> can’t work without Nonmem, and that it does not provide anything beyond what is in the model.</p>
-<p><code>NMsim</code> can use Nonmem directly or via <code>PSN</code>. If <code>NMsim</code> is run on a system where Nonmem cannot be executed, <code>NMsim</code> can still prepare the simulation control stream and datafile.</p>
+<p>This eliminates the need for re-implementation of a model for simulation purposes. On the other hand, this also means that <code>NMsim</code> can’t work without Nonmem.</p>
+<p><code>NMsim</code> can call Nonmem directly or via <code>PSN</code>. If <code>NMsim</code> is run on a system where Nonmem cannot be executed, <code>NMsim</code> can still prepare the simulation control stream and datafile.</p>
 <p><code>NMsim</code> is in itself a small R package. It makes extensive use of functionality to handle Nonmem data and control streams provided by the R package <a href="https://cran.r-project.org/package=NMdata" class="external-link"><code>NMdata</code></a>.</p>
 </div>
 <div class="section level2">

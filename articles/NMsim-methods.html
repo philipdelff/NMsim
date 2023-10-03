@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4.901</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,7 +79,7 @@
 
     
     
-<p>Built 2023-09-22 using NMsim 0.0.4.</p>
+<p>Built 2023-10-03 using NMsim 0.0.4.901.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -114,15 +114,6 @@ to demonstrate how to use additional methods and features of
 <code class="sourceCode R"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr021.mod"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="a-temporary-note-on-syntax">A temporary note on syntax<a class="anchor" aria-label="anchor" href="#a-temporary-note-on-syntax"></a>
-</h2>
-<p>The first release of <code>NMsim</code> requires methods to specified
-with three colons like <code>method.sim=NMsim:::NMsim_typical</code>.
-This will still work but will not be required in future releases where
-the shorter <code>method.sim=NMsim_typical</code> will be
-sufficient.</p>
-</div>
-<div class="section level2">
 <h2 id="simulation-of-a-typical-subject">Simulation of a typical subject<a class="anchor" aria-label="anchor" href="#simulation-of-a-typical-subject"></a>
 </h2>
 <p>A typical subject is here understood as a subject without random
@@ -135,12 +126,12 @@ equaling zero is this easy:</p>
 <code class="sourceCode R"><span><span class="va">simres.typ</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                    data<span class="op">=</span><span class="va">dat.sim</span>,</span>
 <span>                    name.sim<span class="op">=</span><span class="st">"typSubj"</span>,</span>
-<span>                    method.sim<span class="op">=</span><span class="fu">NMsim</span><span class="fu">:::</span><span class="va"><a href="../reference/NMsim_typical.html">NMsim_typical</a></span><span class="op">)</span></span></code></pre></div>
+<span>                    method.sim<span class="op">=</span><span class="va">NMsim_typical</span><span class="op">)</span></span></code></pre></div>
 <p>In the first simulation we used <code>PRED</code> from the default
 simulation method to get a typical subject simulation. That will work in
 many cases, but that depends on the model. The way to run a simulation
 with all ETA’s set to 0 is using
-<code>method.sim=NMsim:::NMsim_typical</code>.</p>
+<code>method.sim=NMsim_typical</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p.typ</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">simres.typ</span>,<span class="fu">aes</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">IPRED</span>,color<span class="op">=</span><span class="va">trt</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y<span class="op">=</span><span class="va">PRED</span><span class="op">)</span><span class="op">)</span></span>
