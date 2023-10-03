@@ -58,7 +58,18 @@ the default is to parellellize each job on nc=64 cores or threads. In
 NMsim we restrict to nc=1.
 ** NMexecDirectory
 *** DONE Clean up after switching to absolute paths
+** NMreadExt
+*** TODO Include model column same way as NMscanData
+*** TODO Support multiple files
+*** TODO Intro arg return
+Something like
+if return="estimates" only return pars
+if return="iterations" only return iterations
 ** NMsim
+*** TODO Split text.table into table.vars and table.options
+**** TODO table.options="NOPRINT NOAPPEND" should be default - at least
+There is one to avoid repeated writing of TABLE NO in table files too
+that can be included to speed up fread.
 *** DONE Remove documentation of type.mod
 It has no effect in model
 *** DONE Remove type.mod from documentation too

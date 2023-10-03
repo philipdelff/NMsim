@@ -48,6 +48,10 @@
 ##'     as little as "PRED IPRED"). Nonmem writes data slowly so
 ##'     reducing output data from say 100 columns to a handful makes a
 ##'     big difference.
+##' @param text.sim A character string to be pasted into
+##'     $SIMULATION. This must not contain seed or SUBPROBLEM which
+##'     are handled separately. Default is to include "ONLYSIM". To
+##'     avoid that, use text.sim="".
 ##' @param method.sim A function (not quoted) that creates the
 ##'     simulation control stream and other necessary files for a
 ##'     simulation based on the estimation control stream, the data,
@@ -193,7 +197,8 @@
 NMsim <- function(file.mod,data,dir.sims, name.sim,
                   order.columns=TRUE,script=NULL,subproblems=NULL,
                   reuse.results=FALSE,seed,args.psn.execute,
-                  nmquiet=FALSE,text.table, method.sim=NMsim_default,
+                  nmquiet=FALSE,text.table,text.sim="ONLYSIM",
+                  method.sim=NMsim_default,
                   execute=TRUE,sge=FALSE,transform=NULL,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
                   list.sections,sim.dir.from.scratch=TRUE,
@@ -263,7 +268,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
 
     ## path.nonmem
-        if(missing(path.nonmem)) path.nonmem <- NULL
+    if(missing(path.nonmem)) path.nonmem <- NULL
     path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem),silent=TRUE)
     if(inherits(path.nonmem,"try-error")){
         path.nonmem <- NULL
@@ -332,7 +337,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     ## modelname
     ## if(missing(modelname)){
-        modelname <- NULL
+    modelname <- NULL
     ## }
     file.mod.named <- FALSE
     if(!is.null(names(file.mod))){
@@ -356,25 +361,26 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     if(length(file.mod)>1){
         allres.l <- lapply(1:length(file.mod),function(x)
-                           NMsim(file.mod=file.mod[[x]],
-                          ,data=data
-                          ,dir.sims=dir.sims,
-                           name.sim=name.sim,
-                           order.columns=order.columns,script=script,
-                           subproblems=subproblems,
-                           reuse.results=reuse.results,seed=seed,
-                           args.psn.execute=args.psn.execute,
-                           nmquiet=nmquiet,
-                           text.table=text.table,
-                           execute=execute,
-                           sge=sge
-                           ## ,modelname=modelname
-                          ,transform=transform
-                          ,method.sim=method.sim
-                          ,path.nonmem=path.nonmem
-                          ,dir.psn=dir.psn
-                          ,...
-                           ))
+            NMsim(file.mod=file.mod[[x]],
+                 ,data=data
+                 ,dir.sims=dir.sims,
+                  name.sim=name.sim,
+                  order.columns=order.columns,script=script,
+                  subproblems=subproblems,
+                  reuse.results=reuse.results,seed=seed,
+                  args.psn.execute=args.psn.execute,
+                  nmquiet=nmquiet,
+                  text.table=text.table,
+                  text.sim=text.sim,
+                  execute=execute,
+                  sge=sge
+                  ## ,modelname=modelname
+                 ,transform=transform
+                 ,method.sim=method.sim
+                 ,path.nonmem=path.nonmem
+                 ,dir.psn=dir.psn
+                 ,...
+                  ))
         if(file.mod.named){
             names.mod <- names(file.mod)
             allres.l <- lapply(1:length(allres.l),function(I) allres.l[[I]][,model:=names.mod[[I]]])
@@ -661,14 +667,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             if(n.sim.sections == 1 ){
                 name.sim <- names.sections[grepl("^(SIM|SIMULATION)$",names.sections)]
                 section.sim <- all.sections.sim[[name.sim]]
-                if(subproblems>0){
-                    section.sim <- gsub("SUBPROBLEMS *= *[0-9]*"," ",section.sim)
-                    section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
-                }
+                
                 if(!is.null(seed)){
                     section.sim <- gsub("\\([0-9]+\\)","",section.sim)
                     section.sim <- paste(section.sim,sprintf("(%s)",seed))
                 }
+                if(subproblems>0){
+                    section.sim <- gsub("SUBPROBLEMS *= *[0-9]*"," ",section.sim)
+                    section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
+                }
+                section.sim <- paste(section.sim,text.sim)
                 lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="simulation",newlines=section.sim,quiet=TRUE)
                 writeTextFile(lines.sim,path.sim)
             }

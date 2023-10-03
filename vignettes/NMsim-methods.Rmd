@@ -91,12 +91,6 @@ You should be familiar with basic `NMsim` arguments as described in [`NMsim-basi
 file.mod <- file.project("nonmem/xgxr021.mod")
 ```
 
-## A temporary note on syntax
-The first release of `NMsim` requires methods to specified with three
-colons like `method.sim=NMsim:::NMsim_typical`. This will still work
-but will not be required in future releases where the shorter
-`method.sim=NMsim_typical` will be sufficient.
-
 ## Simulation of a typical subject
 A typical subject is here understood as a subject without random
 effects, i.e. all ETA's equal zero. It is important to realize that
@@ -109,7 +103,7 @@ equaling zero is this easy:
 simres.typ <- NMsim(file.mod=file.mod,
                     data=dat.sim,
                     name.sim="typSubj",
-                    method.sim=NMsim:::NMsim_typical)
+                    method.sim=NMsim_typical)
 
 ```
 
@@ -126,7 +120,7 @@ if(run.simuls){
 In the first simulation we used `PRED` from the default simulation
 method to get a typical subject simulation. That will work in many
 cases, but that depends on the model. The way to run a simulation with
-all ETA's set to 0 is using `method.sim=NMsim:::NMsim_typical`.
+all ETA's set to 0 is using `method.sim=NMsim_typical`.
 
 ```{r,eval=TRUE}
 p.typ <- ggplot(simres.typ,aes(TIME,IPRED,color=trt))+geom_line()+
