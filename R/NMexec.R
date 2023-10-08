@@ -166,7 +166,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     if(missing(args.psn.execute)) args.psn.execute <- NULL
     args.psn.execute <- simpleCharArg("args.psn.execute"
                                      ,args.psn.execute
-                                     ,default="-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi"
+                                     ,default="-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi,shk"
                                      ,accepted=NULL
                                      ,clean=FALSE
                                      ,lower=FALSE)

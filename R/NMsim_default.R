@@ -53,8 +53,8 @@ NMsim_default <- function(file.sim,file.mod,data.sim,nsims=1,replace.sim=TRUE,re
 
         ## define the $SIM section to insert
         ## section.sim <- sprintf("$SIMULATION ONLYSIM (%s)",seed)
-        section.sim <- "$SIMULATION ONLYSIM"
-        ## section.sim <- "$SIMULATION"
+        ## section.sim <- "$SIMULATION ONLYSIM"
+        section.sim <- "$SIMULATION"
 
         ## remove any existing $SIM
         lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="$SIMULATION",

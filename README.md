@@ -37,6 +37,10 @@ methods are currently provided:
 - Simulation with parameter uncertainty based on a Nonmem covariance step (`method.sim=NMsim_VarCov`)
 - Simulation "as is" in case you already prepared a simulation control stream and just want to automate the use of it in combination with simulation data sets (`method.sim=NMsim_asis`)
 
+To learn how to run these simulations on your Nonmem models, get
+started with
+[`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html). It
+is really easy.
 
 In addition, `NMsim` can simulate multiple models at a time. E.g., if a
 bootstrap run of a model is available, NMsim can run the simulation
@@ -49,25 +53,25 @@ Nonmem-based simulation (or other job) you want to automate using
 `NMsim`.
 
 Many features are available. Prominent ones are:
-- Can use submit jobs to clusters (so running the simulation on say
+
+* Can use submit jobs to clusters (so running the simulation on say
 1,000 model estimates from a bootstrap is actually not that hard).
-- Simulation replicates using Nonmem `SUBPROBLEMS` feature avaible
+* Simulation replicates using Nonmem `SUBPROBLEMS` feature avaible
   through the `subproblems` argument
-- Can modify the simulation control stream on the fly - a powerful
+* Can modify the simulation control stream on the fly - a powerful
   feature for studying the effect of varying model parameters
-- Simulations of models on transformed observations can be
+* Simulations of models on transformed observations can be
   automatically transformed back using the `transform` argument.
 
-If residual variability is not implemented in the simulated model, `NMsim` provides a way (`addResVar()`) to
-add residual variability in R after the simulation has been run. 
+If residual variability is not implemented in the simulated model,
+`NMsim` provides a way (`addResVar()`) to add residual variability in
+R after the simulation has been run.
 
-To learn how to run these simulations on your Nonmem models, get started with 
-[`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html). It
-is really easy. 
+
 
 ## How NMsim works 
 One strength of `NMsim` is that it does not simulate, translate or
-otherwise interpret the model. Instead, it automates the simulation
+otherwise interpret a Nonmem model. Instead, it automates the simulation
 workflow with Nonmem and wraps it all into one R function. In the example given above, 
 `NMsim` will do the following:
 
@@ -83,11 +87,10 @@ workflow with Nonmem and wraps it all into one R function. In the example given 
 
 
 This
-eliminates the need for re-implementation of a model. On the other
-hand, this also means that `NMsim` can't work without Nonmem, and that
-it does not provide anything beyond what is in the model.
+eliminates the need for re-implementation of a model for simulation purposes. On the other
+hand, this also means that `NMsim` can't work without Nonmem.
 
-`NMsim` can use Nonmem directly or via `PSN`. If `NMsim` is run on a
+`NMsim` can call Nonmem directly or via `PSN`. If `NMsim` is run on a
 system where Nonmem cannot be executed, `NMsim` can still prepare the
 simulation control stream and datafile.
 
