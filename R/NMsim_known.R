@@ -39,6 +39,10 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
+    if(missing(file.phi)||is.null(file.phi)){
+        file.phi <- fnExtension(file.mod,".phi")
+    }
+
     path.phi.sim <- fnAppend(fnExtension(file.sim,".phi"),"input")
     files.needed.def <- NMsim_default(file.sim=file.sim,file.mod=file.mod,data.sim=data.sim)
 
@@ -70,14 +74,14 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
 
     ## phi file required
 ### read estimation phi file and select subjects to be simulated
-    path.phi <- fnExtension(file.mod,".phi")
 
 ### generate new phi file
     data.sim[,rowtmp:=.I]
     dt.id.order <- data.sim[,.SD[1],by=.(ID=as.character(ID)),.SDcols=cc(rowtmp)]
 
-    phi.lines <- data.table(text=readLines(path.phi))
-    phi.lines[,n:=.I]        
+    phi.lines <- data.table(text=readLines(file.phi))
+    phi.lines[,n:=.I]
+    ## Accepting E and R which can be in numbers (R?)
     phi.lines[,is.data:=!grepl("[a-zABCDFGHIJKLMNOPQSTUVWXYZ]",x=text)]
     phi.lines[is.data==TRUE,textmod:=gsub(" +"," ",text)]
     phi.lines[is.data==TRUE,textmod:=gsub("^ +","",textmod)]
