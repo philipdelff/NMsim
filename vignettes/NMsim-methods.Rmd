@@ -139,7 +139,7 @@ ids <- data.frame(ID=unique(res.mod$ID))
 
 ## Repeat the simulation data set for each ID and order accordingly
 dat.sim.known <- merge(ids,
-                       dat.sim[,setdiff(colnames(base.sim.known),c("ID")),with=FALSE]
+                       dat.sim[,setdiff(colnames(dat.sim),c("ID")),with=FALSE]
                        )
 setorder(dat.sim.known,ID,TIME,EVID)
 ## check data
@@ -147,9 +147,10 @@ NMcheckData(dat.sim.known,type.data="sim")
 
 simres.known <- NMsim(file.mod=file.mod,
                       data=dat.sim.known,
+                      method.sim=NMsim_known,
+                      text.table="PRED IPRED CL V2 KA",
                       name.sim="known1",
-                      text.table="PRED IPRED CL V2 KA"
-                     ,method.sim=NMsim_known
+                      dir.sims="~/NMsim_vignette/"
                       )
 ```
 
