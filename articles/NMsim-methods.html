@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4.902</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4.911</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,7 +79,7 @@
 
     
     
-<p>Built 2023-10-08 using NMsim 0.0.4.902.</p>
+<p>Built 2023-10-15 using NMsim 0.0.4.911.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -330,7 +330,8 @@ this vignette. We used <code>PSN</code>’s bootstrap. We can run the
 simulation on all the models this way:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## generate a vector with paths to all the input control streams</span></span>
-<span><span class="va">mods.bootstrap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path<span class="op">=</span><span class="st">"~/NMsim_vignette_work/bs1_021_N1000/m1"</span>,pattern<span class="op">=</span><span class="st">".+\\.mod$"</span>,full.names <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">mods.bootstrap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path<span class="op">=</span><span class="st">"~/NMsim_vignette_work/bs1_021_N1000/m1"</span>,</span>
+<span>                             pattern<span class="op">=</span><span class="st">".+\\.mod$"</span>,full.names <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="co">## number of models to be run</span></span>
 <span><span class="co">## length(mods.bootstrap)</span></span>
 <span></span>
