@@ -1,10 +1,13 @@
 library(devtools)
 load_all()
 getwd()
+setwd("~/wdirs/NMsim")
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 
 NMexec("inst/examples/nonmem/xgxr014.mod",sge=FALSE)
 
 NMexec("inst/examples/nonmem/xgxr114.mod",sge=FALSE)
+NMexec("inst/examples/nonmem/xgxr021.mod",sge=FALSE)
 
 setwd("~/wdirs/NMsim/inst/examples/nonmem/")
 list.files()

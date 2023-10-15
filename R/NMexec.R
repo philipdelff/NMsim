@@ -31,7 +31,7 @@
 ##'     to be available for further processing.
 ##' @param args.psn.execute A character string with arguments passed
 ##'     to execute. Default is
-##'     "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi".
+##'     "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi,shk".
 ##' @param update.only Only run model(s) if control stream or data
 ##'     updated since last run?
 ##' @param nmquiet Suppress terminal output from `Nonmem`. This is

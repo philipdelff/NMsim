@@ -106,7 +106,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     meta.tables <- NMscanTables(file.mod.tmp,meta.only=TRUE,as.fun="data.table")
 
 ### execute nonmem
-    exts.cp <- c("lst","xml","ext","cov","cor","coi","phi","msf","msfi","msfo" )
+    exts.cp <- c("lst","xml","ext","cov","cor","coi","phi","msf","msfi","msfo","shk" )
 
     dir.mod.abs <- getAbsolutePath(dir.mod)
     lines.bash <- c(
@@ -123,9 +123,10 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     )
     
     path.script <- file.path(dir.tmp,"run_nonmem.sh")
-    con.newfile <- file(path.script,"wb")
-    writeLines(lines.bash,con=con.newfile)
-    close(con.newfile)
+    ## con.newfile <- file(path.script,"wb")
+    ## writeLines(lines.bash,con=con.newfile)
+    ## close(con.newfile)
+    writeTextFile(lines.bash,path.script)
     Sys.chmod(path.script,mode="0577")
 
     ## system(path.script)

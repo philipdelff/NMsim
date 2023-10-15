@@ -1,5 +1,5 @@
 ---
-title: "NMsim -- Additional Simulation Methods"
+title: "NMsim - Additional Simulation Methods"
 output:
 rmarkdown::html_vignette:
     toc: true
@@ -324,7 +324,9 @@ if(run.simuls){
 }
 ```
 
-We now have simulation results from 1000 sampled models collected. We shall do the same with the models sampled in a bootstrap, and then we will calculate confidence intervals based on both methods.
+We now have simulation results from 1000 sampled models collected. We
+shall do the same with the models sampled in a bootstrap, and then we
+will calculate confidence intervals based on both methods.
 
 
 
@@ -340,7 +342,8 @@ vignette. We used `PSN`'s bootstrap. We can run the simulation on all the models
 
 ```{r,bootstrap-execute,eval=FALSE}
 ## generate a vector with paths to all the input control streams
-mods.bootstrap <- list.files(path="~/NMsim_vignette_work/bs1_021_N1000/m1",pattern=".+\\.mod$",full.names = T)
+mods.bootstrap <- list.files(path="~/NMsim_vignette_work/bs1_021_N1000/m1",
+                             pattern=".+\\.mod$",full.names = T)
 ## number of models to be run
 ## length(mods.bootstrap)
 
