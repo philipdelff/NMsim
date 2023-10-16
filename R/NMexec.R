@@ -114,7 +114,7 @@
 NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                    nc=64,dir.data=NULL,wait=FALSE, args.psn.execute,
                    update.only=FALSE,nmquiet=FALSE,
-                   method.execute="psn",dir.psn,path.nonmem,
+                   method.execute="psn",dir.psn,path.nonmem,system.type,
                    files.needed){
     
     
@@ -162,6 +162,13 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         input.archive <- function(file) FALSE
     }
 
+    if(missing(system.type) || is.null(system.type)){
+        system.type <- Sys.info()['sysname']
+    }
+    system.type <- tolower(system.type)
+    if(!system.type%in%c("","windows")){
+        stop("system.type must be either linux or windows")
+    }
     ## args.psn.execute
     if(missing(args.psn.execute)) args.psn.execute <- NULL
     args.psn.execute <- simpleCharArg("args.psn.execute"
@@ -222,9 +229,15 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
 
+
         if(method.execute=="psn"){
-            ## string.cmd <- paste0("cd ",rundir,"; ",cmd.execute ,args.execute)
-            string.cmd <- sprintf("cd %s; %s %s",rundir,cmd.execute ,args.psn.execute)
+            ##if(system.tpe=="linux"){
+            
+            string.cmd <- sprintf('cd "%s"; "%s" %s',rundir,cmd.execute ,args.psn.execute)
+            ##}
+            ## if(system.type=="windows"){
+            ##     pas
+            ## }
             if(sge){
                 string.cmd <- paste0(string.cmd," -run_on_sge")
                 if(nc>1){
@@ -262,8 +275,21 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
         
         if(!wait) string.cmd <- paste(string.cmd,"&")
-        
-        system(string.cmd,ignore.stdout=nmquiet)
+
+        if(system.type=="windows"){
+            
+            ## contents.bat <- gsub(";","\n",string.cmd)
+            ## cat(contents.bat,file=path.script)
+            path.script <- file.path(dirname(file.mod),"NMsim_exec.bat")
+            contents.bat <-
+                strsplit(string.cmd,split=";")[[1]]
+            writeTextFile(contents.bat,file=path.script)
+
+            shell(shQuote(path.script,type="cmd") )
+        }
+        if(system.type==""){
+            system(string.cmd,ignore.stdout=nmquiet)
+        }
     }
 
     return(invisible(NULL))

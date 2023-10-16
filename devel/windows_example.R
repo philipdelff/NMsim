@@ -7,7 +7,7 @@ NMdataConf(dir.psn="C:/Users/Philip Delff/software/PsN-5.3.1/strawberry/perl/bin
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 file.mod <- file.project("nonmem/xgxr021.mod")
 
-
+library(devtools)
 
 ### multiple dose regimens with loading are easily created with NMcreateDoses too
 ## We use ADDL+II (either method easy)
@@ -25,7 +25,24 @@ dat.sim$ROW <- 1:nrow(dat.sim)
 
 
 
+load_all("C://Users/Philip Delff/wdirs/NMsim")
 simres <- NMsim(file.mod=file.mod,
                 data=dat.sim,
-                dir.sims="~/winex_NMsim")
+                dir.sims="~/winex_NMsim",
+                method.update.inits="nmsim")
 
+
+
+
+dir.psn <- "C:/Users/Philip Delff/software/PsN-5.3.1/strawberry/perl/bin"
+dir.sims <- "~/winex_NMsim/xgxr021_noname/"
+dir.sims <- normalizePath(dir.sims)
+list.files(dir.sims)
+dir.sims
+
+## system("cmd.exe cd ~/winex_NMsim/xgxr021_noname; C:/Users/Philip Delff/software/PsN-5.3.1/strawberry/perl/bin/execute NMsim_xgxr021_noname.mod")
+## system("cmd.exe execute_sim.bat")
+shell.exec("execute_sim.bat")
+shell("execute_sim.bat")
+
+sysname <- Sys.info()['sysname']

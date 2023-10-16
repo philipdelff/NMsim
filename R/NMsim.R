@@ -526,12 +526,13 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 
     dt.models[,{
+        
         nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
         ## input 
-        NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["input"],backup=FALSE,quiet=TRUE)
+        NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["INPUT"],backup=FALSE,quiet=TRUE)
         ## data
         if(rewrite.data.section){
-            NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["data"],backup=FALSE,quiet=TRUE)    
+            NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["DATA"],backup=FALSE,quiet=TRUE)    
         } else {
             ## replace data file only
             NMreplaceDataFile(files=path.sim,path.data=basename(path.data))
