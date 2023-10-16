@@ -1,4 +1,4 @@
-##' Read information from Nonmem ext files
+##' Read information from Nonmem phi files
 ##'
 ##' @param file Path to the phi file
 ##'

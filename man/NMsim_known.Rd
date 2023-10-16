@@ -4,7 +4,7 @@
 \alias{NMsim_known}
 \title{Known subject simulation method}
 \usage{
-NMsim_known(file.sim, file.mod, data.sim, return.text = FALSE)
+NMsim_known(file.sim, file.mod, data.sim, file.phi, return.text = FALSE)
 }
 \arguments{
 \item{file.sim}{See \code{?NMsim}.}
@@ -12,6 +12,11 @@ NMsim_known(file.sim, file.mod, data.sim, return.text = FALSE)
 \item{file.mod}{See \code{?NMsim}.}
 
 \item{data.sim}{See \code{?NMsim}.}
+
+\item{file.phi}{A phi file to take the known subjects from. The
+default is to replace the filename extension on file.mod with
+.phi. A different .phi file would be used if you want to reuse
+subjects simulated in a previous simulation.}
 
 \item{return.text}{If TRUE, just the text will be returned, and
 resulting control stream is not written to file.}

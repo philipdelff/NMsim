@@ -2,7 +2,7 @@
 % Please edit documentation in R/NMreadPhi.R
 \name{NMreadPhi}
 \alias{NMreadPhi}
-\title{Read information from Nonmem ext files}
+\title{Read information from Nonmem phi files}
 \usage{
 NMreadPhi(file)
 }
@@ -13,6 +13,6 @@ NMreadPhi(file)
 A list with a final parameter table and a table of the iterations
 }
 \description{
-Read information from Nonmem ext files
+Read information from Nonmem phi files
 }
 \keyword{internal}

@@ -17,6 +17,7 @@ NMsim(
   args.psn.execute,
   nmquiet = FALSE,
   text.table,
+  text.sim = "ONLYSIM",
   method.sim = NMsim_default,
   execute = TRUE,
   sge = FALSE,
@@ -27,6 +28,7 @@ NMsim(
   dir.psn,
   list.sections,
   sim.dir.from.scratch = TRUE,
+  args.NMscanData,
   path.nonmem = NULL,
   as.fun,
   suffix.sim,
@@ -66,9 +68,9 @@ simulations will still be rerun.}
 
 \item{seed}{Seed to pass to Nonmem. Default is to draw one betwen
 0 and 2147483647 (the values supported by Nonmem) for each
-simulation. In case type.sim=known, seed is not used and will
-be set to 1. You can pass a function that will be evaluated
-(say to choose a different pool of seeds to draw from).}
+simulation. You can pass a function that will be evaluated
+(say to choose a different pool of seeds to draw from). In
+case type.sim=known, seed is not used and will be set to 1.}
 
 \item{args.psn.execute}{A charachter string that will be passed as
 arguments PSN's `execute`.}
@@ -83,6 +85,11 @@ significantly to only export what is needed (sometimes this is
 as little as "PRED IPRED"). Nonmem writes data slowly so
 reducing output data from say 100 columns to a handful makes a
 big difference.}
+
+\item{text.sim}{A character string to be pasted into
+$SIMULATION. This must not contain seed or SUBPROBLEM which
+are handled separately. Default is to include "ONLYSIM". To
+avoid that, use text.sim="".}
 
 \item{method.sim}{A function (not quoted) that creates the
 simulation control stream and other necessary files for a
