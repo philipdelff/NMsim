@@ -166,7 +166,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         system.type <- Sys.info()['sysname']
     }
     system.type <- tolower(system.type)
-    if(!system.type%in%c("","windows")){
+    if(system.type=="darwin") system.type <- "linux"
+    if(!system.type%in%c("linux","windows")){
         stop("system.type must be either linux or windows")
     }
     ## args.psn.execute
@@ -287,7 +288,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 
             shell(shQuote(path.script,type="cmd") )
         }
-        if(system.type==""){
+        if(system.type=="linux"){
             system(string.cmd,ignore.stdout=nmquiet)
         }
     }
