@@ -20,7 +20,7 @@ this."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4.911</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4.912</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,6 +99,7 @@ this.</p>
 <span>  path.nonmem <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">as.fun</span>,</span>
 <span>  <span class="va">suffix.sim</span>,</span>
+<span>  system.type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -286,6 +287,15 @@ choose FALSE here, you can end up with the results of 500 new
 and 500 old simulations.</p></dd>
 
 
+<dt>args.NMscanData</dt>
+<dd><p>If <code>wait=TRUE</code>, NMsim will normally
+read the results using NMdata::NMscanData. Use this argument
+to pass additional arguments (in a list) to that function if
+you want the results to be read in a specific way. You can
+also use <code>wait=FALSE</code> and read the data with
+NMdata::NMscanData as you like.</p></dd>
+
+
 <dt>path.nonmem</dt>
 <dd><p>The path to the Nonmem executable to use. The
 could be something like "/usr/local/NONMEM/run/nmfe75" (which
@@ -304,6 +314,12 @@ NMdataConf.</p></dd>
 
 <dt>suffix.sim</dt>
 <dd><p>Deprecated. Use name.sim instead.</p></dd>
+
+
+<dt>system.type</dt>
+<dd><p>A charachter string, either \"windows\" or
+\"linux\" - case insensitive. Windows is only experimentally
+supported. Default is to use <code>Sys.info()[["sysname"]]</code>.</p></dd>
 
 
 <dt>...</dt>
@@ -333,7 +349,7 @@ NMdataConf.</p></dd>
 <p>Notice, the following functions are internally available to
 `NMsim` so you can run them by say <code>method.sim=NMsim_known</code>
 without quotes. To see the code of that method, type
-<code>NMsim:::NMsim_known</code>.</p>
+<code>NMsim_known</code>.</p>
 <ul><li><p><code>NMsim_default</code> The default behaviour. Replaces any
 $ESTIMATION and $COVARIANCE sections by a $SIMULATION section.</p></li>
 <li><p><code>NMsim_asis</code> The simplest of all method. It does nothing (but
