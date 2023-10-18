@@ -1,3 +1,6 @@
+path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
+
+
 library(NMdata)
 NMdataConf(as.fun="data.table")
 library(NMsim)
@@ -82,7 +85,7 @@ test_that("basic - spaces in paths",{
                     text.table="PRED IPRED",
                     dir.sims="testOutput",
                     name.sim="default_01",
-                    path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
+                    path.nonmem=path.nonmem,
                     method.update.inits="nmsim"
                     )
 
