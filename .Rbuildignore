@@ -49,5 +49,5 @@ LINK.LNK
 ^inst/examples/R/NMexec_run_estimates.R
 ^vignettes$
 .*_dir.*
-^R/needRun.R
 ^R/NMwritePreamble.R
+^tests_manual

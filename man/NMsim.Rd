@@ -32,6 +32,7 @@ NMsim(
   path.nonmem = NULL,
   as.fun,
   suffix.sim,
+  system.type = NULL,
   ...
 )
 }
@@ -171,6 +172,13 @@ further. An example where it is important is if you first ran
 choose FALSE here, you can end up with the results of 500 new
 and 500 old simulations.}
 
+\item{args.NMscanData}{If \code{wait=TRUE}, NMsim will normally
+read the results using NMdata::NMscanData. Use this argument
+to pass additional arguments (in a list) to that function if
+you want the results to be read in a specific way. You can
+also use \code{wait=FALSE} and read the data with
+NMdata::NMscanData as you like.}
+
 \item{path.nonmem}{The path to the Nonmem executable to use. The
 could be something like "/usr/local/NONMEM/run/nmfe75" (which
 is a made up example). No default is available. You should be
@@ -184,6 +192,10 @@ as.fun="data.table". The default can be configured using
 NMdataConf.}
 
 \item{suffix.sim}{Deprecated. Use name.sim instead.}
+
+\item{system.type}{A charachter string, either \"windows\" or
+\"linux\" - case insensitive. Windows is only experimentally
+supported. Default is to use \code{Sys.info()[["sysname"]]}.}
 
 \item{...}{Additional arguments passed to \code{method.sim}.}
 }
@@ -215,7 +227,7 @@ Loosely speaking, the argument \code{method.sim} defines
 Notice, the following functions are internally available to
 `NMsim` so you can run them by say \code{method.sim=NMsim_known}
 without quotes. To see the code of that method, type
-\code{NMsim:::NMsim_known}.
+\code{NMsim_known}.
 
 \itemize{
 

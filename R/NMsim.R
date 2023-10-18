@@ -129,6 +129,15 @@
 ##'     something else. If data.tables are wanted, use
 ##'     as.fun="data.table". The default can be configured using
 ##'     NMdataConf.
+##' @param args.NMscanData If \code{wait=TRUE}, NMsim will normally
+##'     read the results using NMdata::NMscanData. Use this argument
+##'     to pass additional arguments (in a list) to that function if
+##'     you want the results to be read in a specific way. You can
+##'     also use \code{wait=FALSE} and read the data with
+##'     NMdata::NMscanData as you like.
+##' @param system.type A charachter string, either \"windows\" or
+##'     \"linux\" - case insensitive. Windows is only experimentally
+##'     supported. Default is to use \code{Sys.info()[["sysname"]]}.
 ##' @param suffix.sim Deprecated. Use name.sim instead.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
@@ -148,7 +157,7 @@
 ##' Notice, the following functions are internally available to
 ##' `NMsim` so you can run them by say \code{method.sim=NMsim_known}
 ##' without quotes. To see the code of that method, type
-##' \code{NMsim:::NMsim_known}.
+##' \code{NMsim_known}.
 ##' 
 ##' \itemize{
 ##' 
@@ -204,7 +213,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   list.sections,sim.dir.from.scratch=TRUE,
                   args.NMscanData,
                   path.nonmem=NULL,as.fun
-                 ,suffix.sim
+                 ,suffix.sim,system.type=NULL
                  ,...
                   ){#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
     
@@ -502,7 +511,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         cmd.update.inits <- file.psn(dir.psn,"update_inits")
         dt.models[,{
             ## cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim.tmp,seed,file.mod)
-            cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,fn.sim.tmp,file.mod)
+            cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",cmd.update.inits,fn.sim.tmp,file.mod)
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
             
@@ -745,7 +754,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 unlink(path.sim.lst)
 
             }
-            NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed.n,input.archive=input.archive)
+            NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
             
             if(wait){
                 args.NMscanData <- c(args.NMscanData,args.NMscanData.default)
