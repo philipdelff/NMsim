@@ -20,7 +20,7 @@ this."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4.912</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4.913</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,8 +82,8 @@ this.</p>
 <span>  reuse.results <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">seed</span>,</span>
 <span>  <span class="va">args.psn.execute</span>,</span>
-<span>  nmquiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">text.table</span>,</span>
+<span>  <span class="va">table.vars</span>,</span>
+<span>  <span class="va">table.options</span>,</span>
 <span>  text.sim <span class="op">=</span> <span class="st">"ONLYSIM"</span>,</span>
 <span>  method.sim <span class="op">=</span> <span class="va">NMsim_default</span>,</span>
 <span>  execute <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -95,10 +95,13 @@ this.</p>
 <span>  <span class="va">dir.psn</span>,</span>
 <span>  <span class="va">list.sections</span>,</span>
 <span>  sim.dir.from.scratch <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">col.row</span>,</span>
 <span>  <span class="va">args.NMscanData</span>,</span>
 <span>  path.nonmem <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nmquiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">as.fun</span>,</span>
 <span>  <span class="va">suffix.sim</span>,</span>
+<span>  <span class="va">text.table</span>,</span>
 <span>  system.type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -165,19 +168,28 @@ case type.sim=known, seed is not used and will be set to 1.</p></dd>
 arguments PSN's `execute`.</p></dd>
 
 
-<dt>nmquiet</dt>
-<dd><p>Silent messages from Nonmem.</p></dd>
+<dt>table.vars</dt>
+<dd><p>Variables to be printed in output table as a
+character vector or a space-separated string of variable
+names. The default is to export the same tables as listed in
+the input control stream. If <code>table.vars</code> is provided,
+all output tables in estimation control streams are dropped
+and replaced by a new one with just the provided variables. If
+many variables are exported, and much fewer are used, it can
+speed up NMsim significantly to only export what is needed
+(sometimes this is as little as "PRED IPRED"). Nonmem writes
+data slowly so reducing output data can make a big difference
+in execution time. See <code>table.options</code> too.</p></dd>
 
 
-<dt>text.table</dt>
-<dd><p>A character string including the variables to
-export from Nonmem. The default is to export the same tables
-as listed in the input control stream. But if many variables
-are exported, and much fewer are used, it can speed up NMsim
-significantly to only export what is needed (sometimes this is
-as little as "PRED IPRED"). Nonmem writes data slowly so
-reducing output data from say 100 columns to a handful makes a
-big difference.</p></dd>
+<dt>table.options</dt>
+<dd><p>A character vector or a string of
+space-separated options. Only used if <code>table.vars</code> is
+provided. If constructing a new output table with
+<code>table.vars</code> the default is to add two options,
+<code>NOAPPEND</code> and <code>NOPRINT</code>. You can modeify that with
+<code>table.options</code>. Do not try to modify output filename -
+<code>NMsim</code> takes care of that.</p></dd>
 
 
 <dt>text.sim</dt>
@@ -287,6 +299,13 @@ choose FALSE here, you can end up with the results of 500 new
 and 500 old simulations.</p></dd>
 
 
+<dt>col.row</dt>
+<dd><p>Only used if data is not supplied (which is most
+likely for simulations for VPCs) A column name to use for a
+row identifier. If none is supplied,
+<code>NMdataConf()[['col.row']]</code> will be used. If the column already exists in the data set, it will be used as is, if not it will be added.</p></dd>
+
+
 <dt>args.NMscanData</dt>
 <dd><p>If <code>wait=TRUE</code>, NMsim will normally
 read the results using NMdata::NMscanData. Use this argument
@@ -304,6 +323,10 @@ able to figure this out through how you normally execute
 Nonmem, or ask a colleague.</p></dd>
 
 
+<dt>nmquiet</dt>
+<dd><p>Silent messages from Nonmem.</p></dd>
+
+
 <dt>as.fun</dt>
 <dd><p>The default is to return data as a data.frame. Pass
 a function (say tibble::as_tibble) in as.fun to convert to
@@ -314,6 +337,11 @@ NMdataConf.</p></dd>
 
 <dt>suffix.sim</dt>
 <dd><p>Deprecated. Use name.sim instead.</p></dd>
+
+
+<dt>text.table</dt>
+<dd><p>A character string including the variables to
+export from Nonmem.</p></dd>
 
 
 <dt>system.type</dt>
