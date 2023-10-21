@@ -55,7 +55,7 @@ test_that("basic - spaces in paths",{
 
     fileRef <- "testReference/NMsim_04.rds"
 
-    file.mod <- "../../tests/testthat/testData/nonmem/folder with space/xgxr025.mod"
+    file.mod <- "testData/nonmem/folder with space/xgxr025.mod"
 
     set.seed(43)
     simres <- NMsim(file.mod,
@@ -67,7 +67,7 @@ test_that("basic - spaces in paths",{
 
     expect_equal_to_reference(simres,fileRef)
 
-    file.mod <- "../../tests/testthat/testData/nonmem/folder with space/xgxr021.mod"
+    file.mod <- "testData/nonmem/folder with space/xgxr021.mod"
 
     ## using PSN 
     set.seed(43)

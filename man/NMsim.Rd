@@ -15,8 +15,8 @@ NMsim(
   reuse.results = FALSE,
   seed,
   args.psn.execute,
-  nmquiet = FALSE,
-  text.table,
+  table.vars,
+  table.options,
   text.sim = "ONLYSIM",
   method.sim = NMsim_default,
   execute = TRUE,
@@ -28,10 +28,13 @@ NMsim(
   dir.psn,
   list.sections,
   sim.dir.from.scratch = TRUE,
+  col.row,
   args.NMscanData,
   path.nonmem = NULL,
+  nmquiet = FALSE,
   as.fun,
   suffix.sim,
+  text.table,
   system.type = NULL,
   ...
 )
@@ -76,16 +79,25 @@ case type.sim=known, seed is not used and will be set to 1.}
 \item{args.psn.execute}{A charachter string that will be passed as
 arguments PSN's `execute`.}
 
-\item{nmquiet}{Silent messages from Nonmem.}
+\item{table.vars}{Variables to be printed in output table as a
+character vector or a space-separated string of variable
+names. The default is to export the same tables as listed in
+the input control stream. If \code{table.vars} is provided,
+all output tables in estimation control streams are dropped
+and replaced by a new one with just the provided variables. If
+many variables are exported, and much fewer are used, it can
+speed up NMsim significantly to only export what is needed
+(sometimes this is as little as "PRED IPRED"). Nonmem writes
+data slowly so reducing output data can make a big difference
+in execution time. See \code{table.options} too.}
 
-\item{text.table}{A character string including the variables to
-export from Nonmem. The default is to export the same tables
-as listed in the input control stream. But if many variables
-are exported, and much fewer are used, it can speed up NMsim
-significantly to only export what is needed (sometimes this is
-as little as "PRED IPRED"). Nonmem writes data slowly so
-reducing output data from say 100 columns to a handful makes a
-big difference.}
+\item{table.options}{A character vector or a string of
+space-separated options. Only used if \code{table.vars} is
+provided. If constructing a new output table with
+\code{table.vars} the default is to add two options,
+\code{NOAPPEND} and \code{NOPRINT}. You can modeify that with
+\code{table.options}. Do not try to modify output filename -
+\code{NMsim} takes care of that.}
 
 \item{text.sim}{A character string to be pasted into
 $SIMULATION. This must not contain seed or SUBPROBLEM which
@@ -172,6 +184,11 @@ further. An example where it is important is if you first ran
 choose FALSE here, you can end up with the results of 500 new
 and 500 old simulations.}
 
+\item{col.row}{Only used if data is not supplied (which is most
+likely for simulations for VPCs) A column name to use for a
+row identifier. If none is supplied,
+\code{NMdataConf()[['col.row']]} will be used. If the column already exists in the data set, it will be used as is, if not it will be added.}
+
 \item{args.NMscanData}{If \code{wait=TRUE}, NMsim will normally
 read the results using NMdata::NMscanData. Use this argument
 to pass additional arguments (in a list) to that function if
@@ -185,6 +202,8 @@ is a made up example). No default is available. You should be
 able to figure this out through how you normally execute
 Nonmem, or ask a colleague.}
 
+\item{nmquiet}{Silent messages from Nonmem.}
+
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say tibble::as_tibble) in as.fun to convert to
 something else. If data.tables are wanted, use
@@ -192,6 +211,9 @@ as.fun="data.table". The default can be configured using
 NMdataConf.}
 
 \item{suffix.sim}{Deprecated. Use name.sim instead.}
+
+\item{text.table}{A character string including the variables to
+export from Nonmem.}
 
 \item{system.type}{A charachter string, either \"windows\" or
 \"linux\" - case insensitive. Windows is only experimentally

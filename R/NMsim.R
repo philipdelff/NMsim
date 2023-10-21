@@ -40,14 +40,26 @@
 ##'     case type.sim=known, seed is not used and will be set to 1.
 ##' @param args.psn.execute A charachter string that will be passed as
 ##'     arguments PSN's `execute`.
+##' @param table.vars Variables to be printed in output table as a
+##'     character vector or a space-separated string of variable
+##'     names. The default is to export the same tables as listed in
+##'     the input control stream. If \code{table.vars} is provided,
+##'     all output tables in estimation control streams are dropped
+##'     and replaced by a new one with just the provided variables. If
+##'     many variables are exported, and much fewer are used, it can
+##'     speed up NMsim significantly to only export what is needed
+##'     (sometimes this is as little as "PRED IPRED"). Nonmem writes
+##'     data slowly so reducing output data can make a big difference
+##'     in execution time. See \code{table.options} too.
+##' @param table.options A character vector or a string of
+##'     space-separated options. Only used if \code{table.vars} is
+##'     provided. If constructing a new output table with
+##'     \code{table.vars} the default is to add two options,
+##'     \code{NOAPPEND} and \code{NOPRINT}. You can modeify that with
+##'     \code{table.options}. Do not try to modify output filename -
+##'     \code{NMsim} takes care of that.
 ##' @param text.table A character string including the variables to
-##'     export from Nonmem. The default is to export the same tables
-##'     as listed in the input control stream. But if many variables
-##'     are exported, and much fewer are used, it can speed up NMsim
-##'     significantly to only export what is needed (sometimes this is
-##'     as little as "PRED IPRED"). Nonmem writes data slowly so
-##'     reducing output data from say 100 columns to a handful makes a
-##'     big difference.
+##'     export from Nonmem.
 ##' @param text.sim A character string to be pasted into
 ##'     $SIMULATION. This must not contain seed or SUBPROBLEM which
 ##'     are handled separately. Default is to include "ONLYSIM". To
@@ -68,6 +80,10 @@
 ##'     useful if creating a large number of simulations,
 ##'     e.g. simulate with all parameter estimates from a bootstrap
 ##'     result.
+##' @param col.row Only used if data is not supplied (which is most
+##'     likely for simulations for VPCs) A column name to use for a
+##'     row identifier. If none is supplied,
+##'     \code{NMdataConf()[['col.row']]} will be used. If the column already exists in the data set, it will be used as is, if not it will be added.
 ##' @param method.execute Specify how to call Nonmem. Options are
 ##'     "psn" (PSN's execute), "nmsim" (an internal method similar to
 ##'     PSN's execute), and "direct" (just run Nonmem directly and
@@ -206,14 +222,20 @@
 NMsim <- function(file.mod,data,dir.sims, name.sim,
                   order.columns=TRUE,script=NULL,subproblems=NULL,
                   reuse.results=FALSE,seed,args.psn.execute,
-                  nmquiet=FALSE,text.table,text.sim="ONLYSIM",
+                  table.vars,
+                  table.options,
+                  text.sim="ONLYSIM",
                   method.sim=NMsim_default,
                   execute=TRUE,sge=FALSE,transform=NULL,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
                   list.sections,sim.dir.from.scratch=TRUE,
+                  col.row,
                   args.NMscanData,
-                  path.nonmem=NULL,as.fun
-                 ,suffix.sim,system.type=NULL
+                  path.nonmem=NULL,
+                  nmquiet=FALSE,
+                  as.fun
+                 ,suffix.sim,text.table,
+                  system.type=NULL
                  ,...
                   ){#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
     
@@ -397,6 +419,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,transform=transform
                  ,method.sim=method.sim
                  ,path.nonmem=path.nonmem
+                 ,col.row=col.row
+                 ,args.NMscanData=args.NMscanData
                  ,dir.psn=dir.psn
                  ,...
                   ))
@@ -407,8 +431,23 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         return(rbindlist(allres.l,fill=TRUE))
     }
 
-
-
+    if(missing(table.vars)) table.vars <- NULL
+    if(missing(table.options)) table.options <- NULL
+### generate text.table as the combination of table.vars and table.options
+    if(is.null(text.table)){
+        if(missing()||is.null(table.options)){
+            table.options <- c("NOPRINT","NOAPPEND")
+        }
+        if(!is.null(table.vars)){
+            text.table <- paste(paste(table.vars,collapse=" "),paste(table.options,collapse=" "))
+        }
+    } else{
+        if(!is.null(table.vars) || !is.null(table.options)){
+            stop("argument \'text.table\' is deprecated. Please use \'table.vars\' and/or \'table.options\' instead.")
+        }
+        message("argument \'text.table\' is deprecated. Please use \'table.vars\' and/or \'table.options\' instead.")
+    }
+    
     
 #### Section start: Defining additional paths based on arguments ####
 
@@ -472,8 +511,13 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(is.null(data)){
         if(!packageVersion("NMdata")>"0.1.1") stop("data has to be supplied. Starting with NMdata 0.1.2 it will be possible not to supply data which is intented for simulations for VPCs.")
         data <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
-        col.row <- tmpcol(data,base="ROW")
-        data[,(col.row):=.I]
+        ## col.row <- tmpcol(data,base="ROW")
+        if(missing(col.row)) col.row <- NULL
+        col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
+        if(!col.row %in% colnames(data)){
+            data[,(col.row):=.I]
+            message(paste0("Row counter was added in column",col.row,". Use this to merge output and input data."))
+        }
         args.NMscanData.default$merge.by.row <- TRUE
         args.NMscanData.default$col.row <- col.row
         rewrite.data.section <- FALSE
