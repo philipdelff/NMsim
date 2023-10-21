@@ -434,8 +434,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(missing(table.vars)) table.vars <- NULL
     if(missing(table.options)) table.options <- NULL
 ### generate text.table as the combination of table.vars and table.options
-    if(is.null(text.table)){
-        if(missing()||is.null(table.options)){
+    if(missing(text.table) || is.null(text.table)){
+        if(missing(table.options)||is.null(table.options)){
             table.options <- c("NOPRINT","NOAPPEND")
         }
         if(!is.null(table.vars)){
@@ -468,6 +468,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     
     ## seed
+    arg.seed <- seed
     if(is.null(seed)){
         seed <- function()round(runif(n=1)*2147483647)
     } 
@@ -555,7 +556,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         cmd.update.inits <- file.psn(dir.psn,"update_inits")
         dt.models[,{
             ## cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim.tmp,seed,file.mod)
-            cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",cmd.update.inits,fn.sim.tmp,file.mod)
+            cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",cmd.update.inits,fn.sim.tmp,normalizePath(file.mod))
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
             
@@ -588,6 +589,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["DATA"],backup=FALSE,quiet=TRUE)    
         } else {
             ## replace data file only
+            
             NMreplaceDataFile(files=path.sim,path.data=basename(path.data))
         }
     },by=.(ROWMODEL)]
@@ -741,7 +743,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             all.sections.sim <- NMreadSection(lines=lines.sim)
             names.sections <- names(all.sections.sim)
             n.sim.sections <- sum(grepl("^(SIM|SIMULATION)$",names.sections))
-            if(n.sim.sections == 0){
+            if(n.sim.sections == 0 && (!is.null(arg.seed) || subproblems>1) ){
                 warning("No simulation section found. Subproblems and seed will not be applied.")
             }
             if(n.sim.sections > 1 ){

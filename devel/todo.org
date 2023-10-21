@@ -64,6 +64,7 @@ NMsim we restrict to nc=1.
 *** TODO Intro arg return
 Align with NMdata
 ** NMsim
+*** TODO [#B] option to clean temp dirs
 *** DONE Support args.NMscanData 
 *** DONE Split text.table into table.vars and table.options
 **** DONE table.options="NOPRINT NOAPPEND" should be default - at least
