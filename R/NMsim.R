@@ -316,6 +316,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(any(names(args.NMscanData)=="")) stop("All elements in args.NMscanData must be named.")
     }
     args.NMscanData.default <- list(merge.by.row=FALSE)
+
+    if(missing(system.type)) system.type <- NULL
+    system.type <- getSystemType(system.type)
+
     
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL
@@ -348,10 +352,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         
         ## check if update_inits is avail
         ## if(suppressWarnings(system(paste(cmd.update.inits,"-h"),show.output.on.console=FALSE)!=0)){
-        which.found <- system(paste("which",cmd.update.inits),ignore.stdout=T)
-        if(which.found!=0){
-            method.update.inits <- "nmsim"
-            rm(cmd.update.inits)
+        if(system.type=="linux"){
+            which.found <- system(paste("which",cmd.update.inits),ignore.stdout=T)
+            if(which.found!=0){
+                method.update.inits <- "nmsim"
+                rm(cmd.update.inits)
+            }
         }
     }
     method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim,none))
