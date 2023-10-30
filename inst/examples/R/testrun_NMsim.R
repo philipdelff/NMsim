@@ -6,7 +6,7 @@ res.req <- require(NMsim)
 if(!res.req) stop("NMsim could not be loaded. Please make sure it's installed.")
 
 file.mod <- system.file("examples/nonmem/xgxr021.mod",package="NMsim")
-if(!file.exists(file.mod0)) stop("the test control stream wasn't found")
+if(!file.exists(file.mod)) stop("the test control stream wasn't found")
 
 dt.dos <- NMcreateDoses(TIME=0,AMT=100)
 dt.sim <- addEVID2(dt.dos,time.sim=1,CMT=2)
@@ -33,7 +33,10 @@ simres.1 <- NMsim(file.mod,
                 data=dt.sim,
                 dir.sims="~/simulations",
                 method.execute="PSN",
-                dir.psn="/dir/with/psn")
+                dir.psn="c:/Users/Philip Delff/software/PsN-5.3.1/strawberry/perl/bin",
+                method.update.inits="nmsim"
+                ## dir.psn="/dir/with/psn"
+                )
 
 simres.1
 stopifnot(sum((simres.1[,PRED]-c(0,.96356))^2)<.001)
