@@ -333,6 +333,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(method.execute%in%cc(direct,nmsim) && is.null(path.nonmem)){
         stop("When method.execute is direct or nmsim, path.nonmem must be provided.")
     }
+
+    if(system.type=="windows" && method.execute != "psn"){
+        stop('On windows, only method.execute=\"psn\" is supported.')
+    }
     
     ## args.psn.execute
     if(missing(args.psn.execute)) args.psn.execute <- NULL
@@ -364,7 +368,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## if update.inits with psn, it needs to be available
     if(method.update.inits=="psn"){
         cmd.update.inits <- file.psn(dir.psn,"update_inits")        
-        if(suppressWarnings(system(paste(cmd.update.inits,"-h"),ignore.stdout = TRUE)!=0)){
+        if(system.type=="linux" && suppressWarnings(system(paste(cmd.update.inits,"-h"),ignore.stdout = TRUE)!=0)){
             stop('Attempting to use PSN\'s update_inits but it was not found. Look at the dir.psn argument or use method.update.inits="nmsim"')
         }
     }
@@ -559,18 +563,25 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
     if(method.update.inits=="psn"){
+### this next line is done already. I think it should be removed but testing needed.
         cmd.update.inits <- file.psn(dir.psn,"update_inits")
-        dt.models[,{
-            ## cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim.tmp,seed,file.mod)
+
+        dt.models[,
+        {
             cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",cmd.update.inits,fn.sim.tmp,normalizePath(file.mod))
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
-            
-            sys.res <- system(cmd.update,wait=TRUE)
-            
-            if(sys.res!=0){
-                stop("update_inits failed. Please look into this. Is the output control stream available? Is it in a directory where you have write-access?")
-            }            
+
+            if(system.type=="linux"){
+                sys.res <- system(cmd.update,wait=TRUE)
+                
+                if(sys.res!=0){
+                    stop("update_inits failed. Please look into this. Is the output control stream available? Is it in a directory where you have write-access?")
+                }
+            }
+            if(system.type=="windows"){
+                sys.res <- shell(shQuote(cmd.update,type="cmd") )
+            }
             
             file.rename(file.path(dirname(file.mod),fn.sim.tmp),path.sim)
         },by=ROWMODEL]
