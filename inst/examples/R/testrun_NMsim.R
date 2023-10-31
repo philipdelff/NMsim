@@ -10,7 +10,7 @@ if(!file.exists(file.mod)) stop("the test control stream wasn't found")
 
 dt.dos <- NMcreateDoses(TIME=0,AMT=100)
 dt.sim <- addEVID2(dt.dos,time.sim=1,CMT=2)
-dt.sim[,ROW:=.I]
+dt.sim$ROW <- 1:nrow(dt.sim)
 
 #### 1. using PSN's execute
 simres.1 <- NMsim(file.mod,
@@ -28,14 +28,17 @@ stopifnot(sum((simres.1[,PRED]-c(0,.96356))^2)<.001)
 ## directory in which `execute` and `update_inits` are found like
 ## this:
 
+### I have an installation like this. Notice you have to provide a
+### directory that contains files called "execute" and "update_inits",
+### as far as I can see without file name extension.
+## dir.psn="c:/Users/me/software/PsN-5.3.1/strawberry/perl/bin"
 
 simres.1 <- NMsim(file.mod,
                 data=dt.sim,
                 dir.sims="~/simulations",
                 method.execute="PSN",
-                dir.psn="c:/Users/Philip Delff/software/PsN-5.3.1/strawberry/perl/bin",
-                method.update.inits="nmsim"
-                ## dir.psn="/dir/with/psn"
+                ## method.update.inits="nmsim"
+                dir.psn="/dir/with/psn"
                 )
 
 simres.1

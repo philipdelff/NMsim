@@ -568,7 +568,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
         dt.models[,
         {
-            cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",cmd.update.inits,fn.sim.tmp,normalizePath(file.mod))
+            cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",normalizePath(cmd.update.inits),fn.sim.tmp,normalizePath(file.mod))
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
 
@@ -580,7 +580,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 }
             }
             if(system.type=="windows"){
-                sys.res <- shell(shQuote(cmd.update,type="cmd") )
+                cmd.update <- sprintf("\"%s\" --output_model=\"%s\" \"%s\"",normalizePath(cmd.update.inits),fn.sim.tmp,normalizePath(file.mod))
+                script.update.inits <- file.path(dirname(file.mod),"script_update_inits.bat")
+                writeTextFile(cmd.update,script.update.inits)
+                sys.res <- shell(shQuote("tmp.bat",type="cmd") )
             }
             
             file.rename(file.path(dirname(file.mod),fn.sim.tmp),path.sim)
