@@ -165,14 +165,9 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         input.archive <- function(file) FALSE
     }
 
-    if(missing(system.type) || is.null(system.type)){
-        system.type <- Sys.info()['sysname']
-    }
-    system.type <- tolower(system.type)
-    if(system.type=="darwin") system.type <- "linux"
-    if(!system.type%in%c("linux","windows")){
-        stop("system.type must be either linux or windows")
-    }
+    if(missing(system.type)) system.type <- NULL
+    system.type <- getSystemType(system.type)
+
     ## args.psn.execute
     if(missing(args.psn.execute)) args.psn.execute <- NULL
     args.psn.execute <- simpleCharArg("args.psn.execute"
@@ -198,6 +193,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                                  ,accepted=NULL
                                  ,clean=FALSE
                                  ,lower=FALSE)
+
+    
     
     if(is.null(files) && is.null(file.pattern)) file.pattern <- ".+\\.mod"
     files.all <- NMdata:::getFilePaths(files=files,file.pattern=file.pattern,dir=dir,quiet=TRUE)

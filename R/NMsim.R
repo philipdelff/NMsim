@@ -316,6 +316,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(any(names(args.NMscanData)=="")) stop("All elements in args.NMscanData must be named.")
     }
     args.NMscanData.default <- list(merge.by.row=FALSE)
+
+    if(missing(system.type)) system.type <- NULL
+    system.type <- getSystemType(system.type)
+
     
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL
@@ -328,6 +332,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     method.execute <- simpleCharArg("method.execute",method.execute,method.execute.def,cc(psn,direct,nmsim))
     if(method.execute%in%cc(direct,nmsim) && is.null(path.nonmem)){
         stop("When method.execute is direct or nmsim, path.nonmem must be provided.")
+    }
+
+    if(system.type=="windows" && method.execute != "psn"){
+        stop('On windows, only method.execute=\"psn\" is supported.')
     }
     
     ## args.psn.execute
@@ -348,17 +356,19 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         
         ## check if update_inits is avail
         ## if(suppressWarnings(system(paste(cmd.update.inits,"-h"),show.output.on.console=FALSE)!=0)){
-        which.found <- system(paste("which",cmd.update.inits),ignore.stdout=T)
-        if(which.found!=0){
-            method.update.inits <- "nmsim"
-            rm(cmd.update.inits)
+        if(system.type=="linux"){
+            which.found <- system(paste("which",cmd.update.inits),ignore.stdout=T)
+            if(which.found!=0){
+                method.update.inits <- "nmsim"
+                rm(cmd.update.inits)
+            }
         }
     }
     method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim,none))
     ## if update.inits with psn, it needs to be available
     if(method.update.inits=="psn"){
         cmd.update.inits <- file.psn(dir.psn,"update_inits")        
-        if(suppressWarnings(system(paste(cmd.update.inits,"-h"),ignore.stdout = TRUE)!=0)){
+        if(system.type=="linux" && suppressWarnings(system(paste(cmd.update.inits,"-h"),ignore.stdout = TRUE)!=0)){
             stop('Attempting to use PSN\'s update_inits but it was not found. Look at the dir.psn argument or use method.update.inits="nmsim"')
         }
     }
@@ -553,18 +563,28 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
     if(method.update.inits=="psn"){
+### this next line is done already. I think it should be removed but testing needed.
         cmd.update.inits <- file.psn(dir.psn,"update_inits")
-        dt.models[,{
-            ## cmd.update <- sprintf("%s --output_model=%s --seed=%s %s",cmd.update.inits,fn.sim.tmp,seed,file.mod)
-            cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",cmd.update.inits,fn.sim.tmp,normalizePath(file.mod))
+
+        dt.models[,
+        {
+            cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",normalizePath(cmd.update.inits),fn.sim.tmp,normalizePath(file.mod))
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
-            
-            sys.res <- system(cmd.update,wait=TRUE)
-            
-            if(sys.res!=0){
-                stop("update_inits failed. Please look into this. Is the output control stream available? Is it in a directory where you have write-access?")
-            }            
+
+            if(system.type=="linux"){
+                sys.res <- system(cmd.update,wait=TRUE)
+                
+                if(sys.res!=0){
+                    stop("update_inits failed. Please look into this. Is the output control stream available? Is it in a directory where you have write-access?")
+                }
+            }
+            if(system.type=="windows"){
+                cmd.update <- sprintf("\"%s\" --output_model=\"%s\" \"%s\"",normalizePath(cmd.update.inits),fn.sim.tmp,normalizePath(file.mod))
+                script.update.inits <- file.path(dirname(file.mod),"script_update_inits.bat")
+                writeTextFile(cmd.update,script.update.inits)
+                sys.res <- shell(shQuote("tmp.bat",type="cmd") )
+            }
             
             file.rename(file.path(dirname(file.mod),fn.sim.tmp),path.sim)
         },by=ROWMODEL]
@@ -800,7 +820,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 unlink(path.sim.lst)
 
             }
-            NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
+            NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
             
             if(wait){
                 args.NMscanData <- c(args.NMscanData,args.NMscanData.default)

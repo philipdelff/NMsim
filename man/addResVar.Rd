@@ -80,3 +80,24 @@ An updated data.frame
 \description{
 Add residual variability based on parameter estimates
 }
+\examples{
+\dontrun{
+## based on SIGMA
+simres.var <- addResVar(data=simres,
+                        path.ext = "path/to/model.ext"
+                        prop = 1,
+                        add = 2,
+                        par.type = "SIGMA",
+                        log = FALSE)
+
+## If implemented using THETAs
+simres.var <- addResVar(data=simres,
+                        path.ext = "path/to/model.ext"
+                        prop = 8, ## point to elements in THETA
+                        add = 9,  ## point to elements in THETA
+                        par.type = "THETA",
+                        log = FALSE)
+
+}
+
+}
