@@ -6,13 +6,14 @@
 
 library(ggplot2)
 library(XML)
-
+library(data.table)
 
 library(devtools)
-load_all("~/wdirs/NMdata")
-load_all("~/wdirs/NMsim")
+load_all("~/wdirs/NMdata",export_all=FALSE)
+load_all("~/wdirs/NMsim",export_all=FALSE)
 
-NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
+           as.fun="data.table")
 
 file.mod <- "~/wdirs/NMsim/inst/examples/nonmem/xgxr021.mod"
 file.ext <- fnExtension(file.mod,"ext")
@@ -42,20 +43,32 @@ for (i in seq_along(seq.ka)){
 lsts <- list.files("~/NMsim_loglikprof",pattern=".*lst",recursive=TRUE,full.names=TRUE)
 ## avoid reading from temporary directories created by NMsim
 lsts <- lsts[!grepl(".*_dir[0-9]+/",lsts)]
+
+
+## using ext files
+exts <- fnExtension(lsts,"ext")
+objvs.l <- lapply(exts,function(x)NMreadExt(x,return="iterations")[variable%in%c("OBJ","THETA1"),last(value),by=.(model,variable)])
+objvs <- rbindlist(objvs.l)
+dt.obj <- dcast(objvs,model~variable,value.var="V1")
+
+## 2.17 is quick and dirty the maxlik estimate
+ggplot(dt.obj,aes(THETA1,OBJ))+
+    geom_point()+
+    geom_vline(xintercept=2.17)
+
+
+## same thing using xml files
 xmls <- fnExtension(lsts,"xml")
-
-
 xmlres <- lapply(xmls,function(xml){
     XML::xmlParse(xml) |> xmlToList()
 })
 
 objv <- sapply(xmlres,function(x)x$nonmem$problem$estimation$final_objective_function |>
                                  as.numeric())
-
 ## collect KA and conditional likelihood
 dt.res <- data.table(ka=seq.ka,objv=objv)
-
 ## 2.17 is quick and dirty the maxlik estimate
 ggplot(dt.res,aes(ka,objv))+
     geom_point()+
     geom_vline(xintercept=2.17)
+
