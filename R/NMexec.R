@@ -266,8 +266,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             if(sge) {
                 
                 ## string.cmd <- sprintf("cd %s; qsub -terse -wd \'%s\' %s",getwd(),dirname(string.cmd),string.cmd)
-#### I am not sure if absolute path is needed here.
-                string.cmd <- sprintf("cd %s; qsub -terse -wd \'%s\' %s",
+                ## I am not sure if absolute path is needed here.
+                string.cmd <- sprintf('cd "%s"; qsub -terse -wd \'%s\' %s',
                                       getwd(),getAbsolutePath(dirname(string.cmd)),string.cmd)
                 ## string.cmd <- paste0("CURWD=",getwd()," ",string.cmd)
                 wait <- TRUE
@@ -276,10 +276,6 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             }
         }
         
-        if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
-        
-        if(!wait) string.cmd <- paste(string.cmd,"&")
-
         if(system.type=="windows"){
             
             ## contents.bat <- gsub(";","\n",string.cmd)
@@ -292,6 +288,9 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             shell(shQuote(path.script,type="cmd") )
         }
         if(system.type=="linux"){
+            if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
+            if(!wait) string.cmd <- paste(string.cmd,"&")
+            
             system(string.cmd,ignore.stdout=nmquiet)
         }
     }
