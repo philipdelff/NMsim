@@ -224,7 +224,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   reuse.results=FALSE,seed,args.psn.execute,
                   table.vars,
                   table.options,
-                  text.sim="ONLYSIM",
+                  text.sim="",
                   method.sim=NMsim_default,
                   execute=TRUE,sge=FALSE,transform=NULL,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
@@ -673,7 +673,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     
     ## fun simulation method
-    
     dt.models.gen <- dt.models[,
                                method.sim(file.sim=path.sim,file.mod=file.mod,data.sim=data,...)
                               ,by=.(ROWMODEL)]

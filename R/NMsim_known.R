@@ -57,7 +57,7 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="TABLE",location="before",
                                    newlines=lines.new,backup=FALSE,quiet=TRUE)
-
+    
 ### $SIM ONLYSIM does not work in combination with $ESTIM, so we have to drop ONLYSIM
     lines.section.sim <- NMreadSection(lines=lines.sim,section="SIM")
     lines.section.sim <- sub("ONLYSIM(ULATION)*","",lines.section.sim)
@@ -87,8 +87,15 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     phi.lines[is.data==TRUE,textmod:=gsub("^ +","",textmod)]
     phi.lines[is.data==TRUE,ID:=strsplit(textmod,split=" ")[[1]][2],by=.(n)]
     ## phi.lines
-
+    ## picking last table - for SAEM+IMP that means we use IMP phi's
+    phi.lines[,tableStart:=FALSE]
+    phi.lines[grepl("^ *TABLE NO\\..*",text),tableStart:=TRUE]
+    phi.lines[,TABLE.NO:=cumsum(tableStart)]
+    phi.lines <- phi.lines[TABLE.NO==max(TABLE.NO)]
+        
     phi.use <- mergeCheck(dt.id.order[,.(ID)],phi.lines[,.(ID,text)],by=cc(ID),all.x=TRUE)
+
+
 ### Error if subjects in data are not found in phi
     if(phi.use[,any(is.na(text))]){
         message("IDs not found in nonmem results (phi file):", paste(phi.use[is.na(text),ID],collapse=", "))
@@ -108,6 +115,8 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     
     writeTextFile(lines.phi,path.phi.sim)
 
+    
+    
     files.needed <- data.table(path.sim=file.sim,files.needed=path.phi.sim)
     files.needed
 }
