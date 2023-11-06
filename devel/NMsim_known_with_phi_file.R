@@ -34,11 +34,8 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
     ID <- NULL
     n <- NULL
     is.data <- NULL
-    TABLE.NO <- NULL
-    tableStart <- NULL
     text <- NULL
-    textmod <- NULL
-    par.type <- NULL
+    textmod <- NULL    
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
@@ -55,13 +52,19 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
     ## get rid of any $ETAS sections
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="$ETAS",newlines="",backup=FALSE,quiet=TRUE)
     
+    lines.new <- sprintf("$ETAS FILE=%s  FORMAT=s1pE15.8 TBLN=1
+$ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.sim))
+    
+    lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="TABLE",location="before",
+                                   newlines=lines.new,backup=FALSE,quiet=TRUE)
     
 ### $SIM ONLYSIM does not work in combination with $ESTIM, so we have to drop ONLYSIM
     lines.section.sim <- NMreadSection(lines=lines.sim,section="SIM")
     lines.section.sim <- sub("ONLYSIM(ULATION)*","",lines.section.sim)
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="SIM",newlines=lines.section.sim,backup=FALSE,quiet=FALSE)
-
     
+#### .mod done
+ 
     
 ###### todo
     ## cant allow disjoint id's in data
@@ -76,27 +79,6 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
     data.sim[,rowtmp:=.I]
     dt.id.order <- data.sim[,.SD[1],by=.(ID=as.character(ID)),.SDcols=cc(rowtmp)]
 
-#### try to read phi file to see if it reads and has ETAs
-    etasFromTabs <- FALSE
-    ## res.phi <- try(NMreadPhi(file.phi,as.fun="data.table"))
-    res.phi <- try(NMreadPhi(file.phi))
-    
-    if(inherits(res.phi,"try-error")) {
-        etasFromTabs <- TRUE
-    } else {
-        if(res.phi[par.type=="ETA",.N]==0){
-            etasFromTabs <- TRUE
-        }
-    }
-    if(etasFromTabs){
-        ## Could we just read tables and assume we can find an ID? Or how can NMscanData be informed with col.row etc?
-        dt.res <- NMscanData(file.mod)
-        file.phi <- tempfile()
-        genPhiFile(data=dt.res,file=file.phi)
-    }
-
-
-###### using the last table found in .phi to generate lines for a new .phi file. Reading this should be done with NMreadPhi.
     phi.lines <- data.table(text=readLines(file.phi))
     phi.lines[,n:=.I]
     ## Accepting E and R which can be in numbers (R?)
@@ -110,9 +92,9 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
     phi.lines[grepl("^ *TABLE NO\\..*",text),tableStart:=TRUE]
     phi.lines[,TABLE.NO:=cumsum(tableStart)]
     phi.lines <- phi.lines[TABLE.NO==max(TABLE.NO)]
-    
+        
     phi.use <- mergeCheck(dt.id.order[,.(ID)],phi.lines[,.(ID,text)],by=cc(ID),all.x=TRUE)
-    
+
 
 ### Error if subjects in data are not found in phi
     if(phi.use[,any(is.na(text))]){
@@ -124,17 +106,6 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
     lines.phi <- phi.use[,text]
     path.phi.sim <- fnAppend(fnExtension(file.sim,".phi"),"input")
 
-
-### udpate simulation control stream
-    lines.new <- sprintf("$ETAS FILE=%s FORMAT=s1pE15.8 TBLN=1
-$ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.sim))
-    
-    lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="TABLE",location="before",
-                                            newlines=lines.new,backup=FALSE,quiet=TRUE)
-
-#### .mod done
-
-    
     if(return.text){
         return(list(mod=lines.sim,
                     phi=lines.phi))

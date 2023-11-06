@@ -42,3 +42,5 @@ NMexec("xgxr022.mod",sge=FALSE)
 NMexec("~/wdirs/NMsim/tests/testthat/testData/nonmem/xgxr021.mod",sge=FALSE)
 NMexec("~/wdirs/NMsim/tests/testthat/testData/nonmem/xgxr025.mod",sge=FALSE)
 NMexec("~/wdirs/NMsim/tests_manual/testthat/testData/nonmem/xgxr032.mod",sge=FALSE)
+
+    

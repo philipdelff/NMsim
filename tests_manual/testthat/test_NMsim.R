@@ -1,10 +1,13 @@
-path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
+##path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 path.nonmem <- "/opt/nonmem/nm751/run/nmfe75" 
 
 
 library(NMdata)
 NMdataConf(as.fun="data.table")
-library(NMsim)
+packageVersion("NMdata")
+## library(NMsim)
+library(devtools)
+load_all()
 dt.dos <- NMcreateDoses(AMT=300,TIME=0)
 dt.sim <- addEVID2(doses=dt.dos,time.sim=c(1,6,12),CMT=2)
 dt.sim[,BBW:=40][,ROW:=.I]
@@ -60,6 +63,32 @@ test_that("basic - typical",{
 
 
 })
+
+test_that("basic - known",{
+
+    fileRef <- "testReference/NMsim_03.rds"
+
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+
+    dt.sim.known <- egdt(dt.sim[,!("ID")],data.table(ID=101:105))
+    setorder(dt.sim.known,ID,TIME,EVID,CMT)
+    
+    set.seed(43)
+    simres <- NMsim(file.mod,
+                    data=dt.sim.known,
+                    text.table="PRED IPRED" ,
+                    dir.sims="testOutput",
+                    method.sim=NMsim_known,
+                    name.sim="known_01",
+                    method.execute="nmsim",
+                    path.nonmem=path.nonmem
+                    )
+
+    expect_equal_to_reference(simres,fileRef)
+    simres3. <- simres
+
+})
+
 
 
 test_that("basic - spaces in paths",{
@@ -120,20 +149,25 @@ test_that("SAEM - default",{
                     )
 
     expect_equal_to_reference(simres,fileRef)
-}
+})
+
 
 test_that("SAEM - known",{
 
-    fileRef <- "testReference/NMsim_05.rds"
+    fileRef <- "testReference/NMsim_06.rds"
 
     file.mod <- "testData/nonmem/xgxr032.mod"
     NMreadPhi(fnExtension(file.mod,"phi"))[,unique(ID)]
 
+    ## source("~/wdirs/NMsim/devel/genPhiFile.R")
+    ## res <- NMscanData(file.mod)
+    ## genPhiFile(res,file="testOutput/tmp_etas.phi")
+    
     dt.sim.known <- egdt(dt.sim[,!("ID")],data.table(ID=101:105))
     setorder(dt.sim.known,ID,TIME,EVID,CMT)
     
     set.seed(43)
-    simres <- NMsim(file.mod,
+    simres.5 <- NMsim(file.mod,
                     data=dt.sim.known,
                     text.table="PRED IPRED",
                     dir.sims="testOutput",
@@ -143,7 +177,13 @@ test_that("SAEM - known",{
                    ,path.nonmem=path.nonmem
                     )
 
-    simres
-    
-    expect_equal_to_reference(simres,fileRef)
-}
+    simres.5
+
+    expect_equal_to_reference(simres.5,fileRef)
+})
+
+
+
+## rbind(simres.3,simres.5) |>
+## ggplot(aes(TIME,IPRED,colour=model))+geom_line()+
+## facet_wrap(~ID,scales="free")

@@ -7,6 +7,12 @@
 ##' @import data.table
 ##' @keywords internal
 dt2mat <- function(pars){
+
+    . <- NULL
+    est <- NULL
+    i <- NULL
+    j <- NULL
+
     pars.mat <- rbind(pars,
                       pars[i!=j]
                       [,.(i=j,j=i,est)]

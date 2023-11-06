@@ -17,7 +17,7 @@ NMsim(
   args.psn.execute,
   table.vars,
   table.options,
-  text.sim = "ONLYSIM",
+  text.sim = "",
   method.sim = NMsim_default,
   execute = TRUE,
   sge = FALSE,

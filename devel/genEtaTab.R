@@ -1,4 +1,4 @@
-function(file.mod,file.ext){
+genEtaTab <- function(file.mod,file.ext){
 
     ## determine number of etas based on ext file
     ext <- NMreadExt(file.ext)
