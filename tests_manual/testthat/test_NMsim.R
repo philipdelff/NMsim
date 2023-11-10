@@ -47,7 +47,7 @@ test_that("basic - typical",{
     fileRef <- "testReference/NMsim_02.rds"
 
     file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
- 
+    
     set.seed(43)
     simres <- NMsim(file.mod,
                     data=dt.sim,
@@ -168,14 +168,14 @@ test_that("SAEM - known",{
     
     set.seed(43)
     simres.5 <- NMsim(file.mod,
-                    data=dt.sim.known,
-                    text.table="PRED IPRED",
-                    dir.sims="testOutput",
-                    name.sim="known_01"
-                   ,method.sim=NMsim_known
-                   ,method.execute="nmsim"
-                   ,path.nonmem=path.nonmem
-                    )
+                      data=dt.sim.known,
+                      text.table="PRED IPRED",
+                      dir.sims="testOutput",
+                      name.sim="known_01"
+                     ,method.sim=NMsim_known
+                     ,method.execute="nmsim"
+                     ,path.nonmem=path.nonmem
+                      )
 
     simres.5
 
@@ -187,3 +187,27 @@ test_that("SAEM - known",{
 ## rbind(simres.3,simres.5) |>
 ## ggplot(aes(TIME,IPRED,colour=model))+geom_line()+
 ## facet_wrap(~ID,scales="free")
+
+
+test_that("VPC",{
+
+    
+    file.mod <- "testData/nonmem/xgxr032.mod"
+
+    
+    set.seed(43)
+    simres.vpc <- NMsim(file.mod,
+                        table.vars="PRED IPRED Y",
+                        dir.sims="testOutput",
+                        name.sim="vpc_01"
+                       ,nsims=10
+                       ,method.execute="nmsim"
+                       ,path.nonmem=path.nonmem
+                        )
+
+    library(ggplot2)
+
+    ## derive PIs
+
+
+})

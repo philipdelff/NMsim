@@ -14,7 +14,13 @@ NMupdateInits <- function(file.mod,newfile,fix){
     
     ext <- NMreadExt(fnExtension(file.mod,"ext"))
     pars.est <- ext$pars
+
+### making sure to only use the last value provided
+    pars.est <- unique(pars.est[.N:1],by="parameter")[.N:1]
+
     setnames(pars.est,"est","value")
-    res <- NMreplaceInits(files=file.mod,newfile=newfile,inits=ext$pars,fix=fix,quiet=TRUE)
+    
+    ## res <- NMreplaceInits(files=file.mod,newfile=newfile,inits=ext$pars,fix=fix,quiet=TRUE)
+    res <- NMreplaceInits(files=file.mod,newfile=newfile,inits=pars.est,fix=fix,quiet=TRUE)
     invisible(res)
 }

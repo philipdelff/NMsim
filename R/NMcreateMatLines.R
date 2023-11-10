@@ -8,7 +8,6 @@
 ##' @keywords internal
 
 NMcreateMatLines <- function(omegas,type){
-
     . <- NULL
     j <- NULL
     i <- NULL

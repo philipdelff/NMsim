@@ -1,4 +1,16 @@
+##' Generate a .phi file for further simulation with Nonmem
+##'
+##' This will typically be used in a couple of different
+##' situations. One is if a number of new subjects have been simulated
+##' and their ETAs should be reused in subsequent simulations. Another
+##' is internally by NMsim when simulating new subjects from models
+##' estimated with SAEM.
+##' 
+##' @param data A dataset that contains "ID" and all ETAs. This can be
+##'     obtained by `NMdata::NMscanData`.
+##' @param file Path to the .phi file to be written.
 ##' @import data.table
+##' @export
 
 genPhiFile <- function(data,file){
 ##     if(missing(file)) file <- NULL
@@ -25,8 +37,7 @@ genPhiFile <- function(data,file){
     lines.phi <- readLines(file)
     lines.phi <- paste(" ",lines.phi)
 
-#### Could this say "Derived from output tables by NMsim"?
-    ## lines.phi <- c("TABLE NO.     1: First Order Conditional Estimation with Interaction: Problem=1 Subproblem=0 Superproblem1=0 Iteration1=0 Superproblem2=0 Iteration2=0",lines.phi)
+
     lines.phi <- c("TABLE NO.     1: Derived from output tables by NMsim",lines.phi)
 
     writeTextFile(lines.phi,file)
