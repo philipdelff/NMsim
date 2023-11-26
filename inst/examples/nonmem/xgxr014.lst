@@ -1,4 +1,3 @@
-Wed Dec 14 11:21:08 EST 2022
 $PROBLEM    Like 001,with xgxr2,advan2
 $INPUT      ROW ID NOMTIME TIME EVID CMT AMT DV FLAG STUDY BLQ CYCLE
             DOSE PART PROFDAY PROFTIME WEIGHTB eff0
@@ -18,7 +17,7 @@ $ERROR
   IRES=DV-IPRED
 
   IF (IPRED.GT.1) THEN
-    W = SQRT(IPRED**2*SIGMA(1,1)**2 + SIGMA(2,2)**2)
+    W = SQRT(IPRED**2*SIGMA(1,1) + SIGMA(2,2))
   ELSE
     W=1
   ENDIF
@@ -60,10 +59,7 @@ NM-TRAN MESSAGES
  * THE MAXIMUM NUMBER OF WARNINGS OF ONE OR MORE TYPES WAS REACHED.
  IT IS POSSIBLE THAT SOME WARNING MESSAGES WERE SUPPRESSED.
 
-License Registered to: Vertex
-Expiration Date:    14 JAN 2023
-Current Date:       14 DEC 2022
-Days until program expires :  35
+
 1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.5.0
  ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
  CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
@@ -275,8 +271,8 @@ Days until program expires :  35
  TOTAL EFFECTIVE ETAS (NIND*NETA):                           393
   
  #TERE:
- Elapsed estimation  time in seconds:     2.13
- Elapsed postprocess time in seconds:     0.04
+ Elapsed estimation  time in seconds:     3.53
+ Elapsed postprocess time in seconds:     0.05
 1
  
  
@@ -387,7 +383,3 @@ Days until program expires :  35
  EPS2
 +        0.00E+00  2.02E-02
  
- Elapsed finaloutput time in seconds:     0.03
- #CPUT: Total CPU Time in Seconds,        2.368
-Stop Time:
-Wed Dec 14 11:21:16 EST 2022

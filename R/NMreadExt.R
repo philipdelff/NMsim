@@ -1,16 +1,30 @@
-##' @export
+##' Read information from Nonmem ext files
+##'
+##' @param path.ext Path to the ext file
+##'
+##' @return A list with a final parameter table and a table of the iterations
+##' @keywords internal
 
-## Netas <- pars[par.type=="OMEGA",max(i)]
-## Nomega.diag <- pars[par.type=="OMEGA",.N]
+NMreadExt <- function(path.ext){
 
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
-NMreadExt <- function(file.ext){
+    ITERATION <- NULL
+    variable <- NULL
+    NMREP <- NULL
+    par.type <- NULL
+    parameter <- NULL
+    i <- NULL
+    j <- NULL
+    
+### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
-    res.NMdat <- NMreadTab(file.ext,as.fun="data.table")
+    
+    res.NMdat <- NMreadTab(path.ext,as.fun="data.table",quiet=TRUE)
     ## compareCols(
     ##     res.NMdat
     ##    ,
-    ##           fread(file.ext)
+    ##           fread(path.ext)
     ##           )
     ## res.NMdat
     ## res.NMdat[,sprintf("%d",ITERATION)]
@@ -29,6 +43,7 @@ NMreadExt <- function(file.ext){
 -1000000003,cond
 -1000000004,stdDevCor
 -1000000005,seStdDevCor
+-1000000006,FIX
 -1000000007,termStat
 -1000000008,partLik")
 
@@ -38,9 +53,9 @@ NMreadExt <- function(file.ext){
     ## res.NMdat
 
     
-    pars <- res.NMdat[variable%in%dt.codes$variable,setdiff(colnames(res.NMdat),"OBJ"),with=FALSE]|>
-        melt(id.vars=cc(ITERATION,variable,NMREP),variable.name="parameter")|>
-        dcast(NMREP+parameter~variable,value.var="value")
+    pars <- res.NMdat[variable%in%dt.codes$variable,setdiff(colnames(res.NMdat),"OBJ"),with=FALSE]
+    pars <- melt(pars,id.vars=cc(ITERATION,variable,NMREP),variable.name="parameter")
+    pars <- dcast(pars,NMREP+parameter~variable,value.var="value")
 
     pars[,par.type:=NA_character_]
     pars[grepl("^THETA",parameter),par.type:="THETA"]
@@ -55,8 +70,8 @@ NMreadExt <- function(file.ext){
     pars[,(cols):=lapply(.SD,as.integer),.SDcols=cols]
 
     ## what to do about OBJ? Disregard? And keep in a iteration table instead?
-    iterations <- res.NMdat[as.numeric(ITERATION)>(-1e9),!("variable")] |>
-        melt(id.vars=cc(ITERATION,NMREP))
+    iterations <- res.NMdat[as.numeric(ITERATION)>(-1e9),!("variable")] 
+    iterations <- melt(iterations,id.vars=cc(ITERATION,NMREP))
 
     list(pars=pars,iterations=iterations)
 }

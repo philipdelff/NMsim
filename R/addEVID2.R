@@ -9,10 +9,18 @@
 ##' @param CMT The compartment in which to insert the EVID=2
 ##'     records. If longer than one, the records will be repeated in
 ##'     all the specified compartments. If a data.frame, covariates
-##'     can be specified. 
+##'     can be specified.
+##' @param as.fun The default is to return data as a data.frame. Pass
+##'     a function (say tibble::as_tibble) in as.fun to convert to
+##'     something else. If data.tables are wanted, use
+##'     as.fun="data.table". The default can be configured using
+##'     NMdataConf.
 ##' @details The resulting data set is ordered by ID, TIME, and
 ##'     EVID. You may have to reorder for your specific needs.
 ##' @examples
+##' library(data.table)
+##' ## Users should not use setDTthreads. This is for CRAN to only use 1 core.
+##' data.table::setDTthreads(1) 
 ##' (doses1 <- NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1)))
 ##' addEVID2(doses1,time.sim=seq(0,28,by=4),CMT=2)
 ##'
@@ -32,6 +40,7 @@
 ##' addEVID2(dt.doses,time.sim=seq.time,CMT=2)
 ##' @import data.table
 ##' @import NMdata
+##' @return A data.frame with dosing records
 ##' @export 
 
 

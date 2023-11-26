@@ -1,7 +1,21 @@
+##' Test if file modification times indicate that Nonmem models should
+##' be re-run
+##' @param file.lst The output control stream.
+##' @param use.input Scan input data for updates too? Default is TRUE.
+##' @param nminfo.input If you do want to take into account input data
+##'     but avoid re-reading the information, you can pass the NMdata
+##'     meta data object.
+##' @param file.mod The input control stream
+##' @param tz.lst If files are moved around on or between file
+##'     systems, the file modification time may not be reflective of
+##'     the Nonmem runtime. In that case, you can choose to extract
+##'     the time stamp from the output control stream. The issue is
+##'     that Nonmem does not write the time zone, so you have to pass
+##'     that to checkTimes if this is wanted.
 ##' @import NMdata
 ##' @keywords internal
 
-checkTimes <- function(file.lst,use.input,nminfo.input=NULL,file.mod,tz.lst=NULL){
+checkTimes <- function(file.lst,use.input=TRUE,nminfo.input=NULL,file.mod,tz.lst=NULL){
 
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -30,7 +44,7 @@ checkTimes <- function(file.lst,use.input,nminfo.input=NULL,file.mod,tz.lst=NULL
     if(use.input){
         if(is.null(nminfo.input)){
             
-            dt.input <- NMscanInput(file.lst,file.mod=file.mod)
+            dt.input <- NMscanInput(file.lst,file.mod=file.mod,quiet=TRUE)
             nminfo.input <- NMinfo(dt.input)
         }
         logtime.inp <- max(nminfo.input$tables$file.logtime)

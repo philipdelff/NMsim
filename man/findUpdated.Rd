@@ -4,10 +4,13 @@
 \alias{findUpdated}
 \title{Filter control streams to only those updated since last run}
 \usage{
-findUpdated(lsts)
+findUpdated(mods)
 }
 \arguments{
-\item{lstsd}{list of (input or output) control streams to consider}
+\item{mods}{list of (input or output) control streams to consider}
+}
+\value{
+character vector of paths found models
 }
 \description{
 Filter control streams to only those updated since last run

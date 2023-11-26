@@ -21,7 +21,7 @@ $ERROR
   IRES=DV-IPRED
 
   IF (IPRED.GT.1) THEN
-    W = SQRT(IPRED**2*SIGMA(1,1)**2 + SIGMA(2,2)**2)
+    W = SQRT(IPRED**2*SIGMA(1,1) + SIGMA(2,2))
   ELSE
     W=1
   ENDIF
@@ -31,8 +31,8 @@ $ERROR
 
 ;-----------------------INITIAL ESTIMATES---------------------------------
 $THETA  (0,0.9)             ; POPKA
-$THETA  (0,4.2)             ; POPCL
-$THETA  (0,3.6)             ; POPV2
+$THETA  (0,4.2)             ; POPV2
+$THETA  (0,3.6)             ; POPCL
 
 $OMEGA 0.1
 $OMEGA 0.1

@@ -1,15 +1,141 @@
 * NMsim todo
+
+** general
+
+*** DONE Export simulation methods
+*** DONE Add @return to all functions
+
+*** DONE Clean up code files
+
+*** DONE Rename method.execute="directory" to method.execute="nmsim"
+
+*** TODO [#A] Warn against method.execute="nmsim" for NMexec directly
+
+*** CANCELED Disable method.update.inits="nmsim". 
+Wrote NMcreateMatLines instead which uses BLOCK structures as
+needed. I was concerned if VarCov is similarly affected
+*** pkgdown
+
+*** DONE goathunter
+*** DONE Setting for paths to executables
+Path to nonmem, psn, other ways to exec.
+
+*** DONE Fork NMwriteSection from NMdata
+
+*** DONE Vignette: Get started
+
+**** Explain Nonmem is needed.
+
+**** How to use psn and not.
+
+***** execution
+
+***** Updating parameter initial values
+
+**** Benefits/downsides of different methods
+
+*** TODO [#B] Vignette: How NMsim works
+
+**** Automates data handling and calls Nonmem
+
+**** The steps done by NMsim - and the order of them
+
+**** Writing new methods
+
+** NMexec
+
+*** DONE if using path.nonmem, test that it exists
+*** TODO [#B] Check for existence of input data
+Currently, we get an error from NMscanInput. It would be clearer if
+this was checked by NMexec as a prerequisite.
+*** TODO [#B] Move existing results files to backup before running nonmem
+If this is not resolved, it is important. But right now NMsim is the
+priority, and NMsim already clears this before running.
+*** TODO Rename sge to parallel/cluster?
+It means if we send to the cluster. There is a slight difference of
+the implication in NMexec and NMsim. In NMexec, if we send to cluster
+the default is to parellellize each job on nc=64 cores or threads. In
+NMsim we restrict to nc=1.
+** NMexecDirectory
+*** DONE Clean up after switching to absolute paths
+** NMreadExt - Integrated in NMdata
+*** CANCELED Include model column same way as NMscanData
+*** CANCELED Support multiple files
+*** TODO Intro arg return
+Align with NMdata
 ** NMsim
-*** TODO [#A] Support non-data.table workflows
-**** TODO [#A] use NMdata's as.fun
-*** TODO Rename type.input to type.mod
-*** TODO Revise input data paths
+*** TODO [#B] option to clean temp dirs
+*** DONE Support args.NMscanData 
+*** DONE Split text.table into table.vars and table.options
+**** DONE table.options="NOPRINT NOAPPEND" should be default - at least
+There is one to avoid repeated writing of TABLE NO in table files too
+that can be included to speed up fread.
+*** DONE Remove documentation of type.mod
+It has no effect in model
+*** DONE Remove type.mod from documentation too
+*** DONE If PSN is not available, make method.update.inits="nmsim"
+*** DONE Limit seed function to what Nonmem can use
+0:2147483647
+*** TODO [#B] save data fewer times
+Save only for each unique path.data. Merge in the nmtext somehow? It's
+a list so it's not that simple.
+*** DONE Delete existing results prior to running
+It does for single simulations. But when spawning mutiple inside a
+folder it does not. It should by default delete everything.
+*** DONE Support for modifications to control stream(s).
+Like insert lines to $PK or $ERROR. The best would be to extend
+NMwriteSection to support a function as argument. Then it would be like
+list(PK=function(text) c(text,"KA=KA*KASCALE"))
+or something like that
+*** DONE Check for existance of estimate files
+NMsim will run even if only .mod exists. But it is natural to expect
+the model estimate to be used. Hence, checks for existence of at least
+.ext file should be done. Issue warning if something missing. 
+**** DONE What if .phi or others needed?
+**** TODO [#B] Check for existence of ext file before attempting parameter initial vals update
+*** DONE Support method.sim="asis" for doing nothing to the control stream.
+*** DONE Support additional args to methods
+For now, ellipses used
+*** DONE Support submitting jobs to queue system
+*** DONE Go through selection of execution method
+**** DONE all columns which names start by file.needed used
+*** CANCELED Use dt list elements for multiple files.needed
+*** TODO [#B] Use meaningful by in execute part
+*** DONE Modularize simulation methods
+**** DONE Handle seed and subproblems outside modules
+**** DONE How to handle replace.sim?
+Only be available for the default method. In fact, method.sim="asis"
+may be what the user wants.
+*** DONE Support simulation of new models from covariance step
+method.sim="VarCov"
+*** DONE path.mod should be file.mod
+Or files?
+To align with argument naming in NMdata
+
+Decided to call it file.mod. file.mod indicates that an input control
+stream is wanted. For NMscanData, files makes sense because it will
+work on both input and output control streams.
+*** DONE If path.nonmem is not supplied, use psn?
+*** TODO [#B] Fix broken reuse.results
+*** DONE Reduce number of needed arguments
+**** DONE seed
+**** DONE suffix.sim
+*** DONE Use NMdataConf for dir.psn and path.nonmem
+*** DONE reuse.results should not depend on itself
+*** DONE Create simulations dir if create.dir=TRUE
+If not, throw error if dir.sim does not exist
+*** DONE Support non-data.table workflows
+**** DONE use NMdata's as.fun
+*** DONE Rename type.input to type.mod
+*** TODO [#B] Revise input data paths
 Currently, NMsimData... goes together with NMsim....  It would be
 better for svn if the first part of the filenames were aligned. Also,
 do we need to archive input data as _input as well in this case?
-*** TODO Test if control stream exists
-Currently, the error comes from NMextractDataFile which is not
-intuitive to the user.
+**** DONE should _input.rds be read by NMsim?
+Now it should use the archived input
+*** DONE Test if control stream exists
+The error used to come from NMextractDataFile which is not intuitive
+to the user. Now a check is included in both NMexec and NMsim.
 *** DONE support multiple models
 *** DONE arg for transformation of sim results
 *** DONE Arg to control whether simulation is run
@@ -22,13 +148,42 @@ $COV $COVARIANCE $EST $ESTIMATION $SIM $SIMULATION
 Maybe this should be done in NMwriteSection/NMreadSection instead.
 *** DONE Support using a ready-made sim model
 No modifications needed to control stream except $INPUT and $TABLE
-*** TODO Improve reuse.results
+*** DONE Improve reuse.results
 to method to compare all arguments to what's on file
+
+The implementation compares all explicitly given arguments. E.g. if
+a=1 by default and it was explicitly given in previous run but not in
+the new one, it will be a difference.
 *** DONE Support multiple $TABLE blocks
+** VPC sims - no new method needed
+*** DONE By default, reuse $INPUT and $DATA sections, with updated data path
+Normally, one would simply reuse the estimation input data set for this
+*** NMsim needs to not handle $DATA section if data=NULL
+*** NMscanData should ideally merge.by.row to allow for custom IGN/ACCEPT statements
+But what if there is no row counter in input data? Read data, add a
+row counter and otherwise resave data without any modifications. Add
+row counter in $INPUT.
+
+Or we read and write data applying filters? But that has limitations
+to what filters are supported.
+*** Use NMsim_default for VPC's
+The vpc sim is about sim of the orig dataset with SUBPROBLEM
+** NMsim_typical
+*** TODO [#C] Use $ETAS rather than $OMEGA
+Just repeat 0 for as many ETAS as used
+$ETAS 0 0 0 
+https://nmhelp.tingjieguo.com/$etasphis.htm
+** NMsim_VarCov
+*** DONE Issue with varCov for n=1 repetitions.
+As if submodel structure does not support n=1. For now, just give an
+error to avoid some weird message.
 ** NMcreateDoses
 *** TODO II/ADDL should only be applied to last event.
 addl.lastonly argument?
-*** DONE TIME must be full length
+*** TODO [#B] TIME must be full length
+## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2))
+## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2),CMT=1)
+
 *** TODO No NA's should be allowed anywhere? Or?
 *** TODO if a cov is found in multiple arguments, it must span same values
 
@@ -37,7 +192,7 @@ For now, required
 
 *** TODO avoid hard coding variable names
 
-*** TODO N is another arg 
+*** TODO N is another arg
 If ID not in covs, everything is replicated. It can be a data.table
 too, meaning that we replicate within covariates. Maybe we have to be
 able to use a known set of ID's and covs? Or use ID?
@@ -46,3 +201,17 @@ able to use a known set of ID's and covs? Or use ID?
 ** addEVID2
 *** TODO Order the same way as NMdata::addTAPD?
 currently, addEVID2 does not order rows after adding simulation records
+** plain nonmem run
+*** DONE Create dir, Copy files into it
+Called NMexecDirectory
+** DONE NMupdateInitsFix
+New function that fixes THETA, OMEGA, SIGMA based on ext.
+With this, there is no dependency on PSN 
+** Residual variability with nonmem
+IF (ICALL.EQ.4) THEN
+DV=Y
+ENDIF
+** addResidVar
+*** DONE Make sure data is not edited
+*** DONE col.ipre and col.iprevar
+*** TODO Support custom errors functions

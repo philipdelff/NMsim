@@ -31,14 +31,33 @@ EVID=1, but EVID might also be wanted.}
 
 \item{addl}{Optinal. A list of ADDL and II that will be applied to
 last dose}
+
+\item{as.fun}{The default is to return data as a data.frame. Pass
+a function (say tibble::as_tibble) in as.fun to convert to
+something else. If data.tables are wanted, use
+as.fun="data.table". The default can be configured using
+NMdataConf.}
+}
+\value{
+A data.frame with dosing events
 }
 \description{
 Combinations of different columns can be generated. Columns will
 be extended by repeating last value of the column if needed in
 order to match length of other columns.
 }
+\details{
+Experimental. Please check output before use. AMT, RATE,
+    SS, II, CMT are vectors of length 1 or longer. Those not of
+    max length 1 are repeated.  If TIME is longer than those, they
+    are extended to match length of TIME. Allowed combinations of
+    AMT, RATE, SS, II here:
+    \url{https://ascpt.onlinelibrary.wiley.com/doi/10.1002/psp4.12404}
+}
 \examples{
 library(data.table)
+## Users should not use setDTthreads. This is for CRAN to only use 1 core.
+data.table::setDTthreads(1) 
 ## arguments are expanded - makes loading easy
 NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1))
 ## Different doses by covariate
@@ -49,22 +68,21 @@ dt.amt <- data.table(DOSE=c(100,400))
 dt.amt[,AMT:=DOSE*1000]
 dt.amt
 doses.sd <- NMcreateDoses(TIME=0,AMT=dt.amt)
-doses.sd[,dose:=paste(DOSE,"mg")]
-doses.sd[,regimen:="SD"]
+doses.sd$dose <- paste(doses.sd$DOSE,"mg")
+doses.sd$regimen <- "SD"
 doses.sd
 
 ### multiple dose regimens with loading are easily created with NMcreateDoses too
 ## Specifying the time points explicitly
 dt.amt <- data.table(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
 doses.md.1 <- NMcreateDoses(TIME=seq(0,by=24,length.out=7),AMT=dt.amt)
-doses.md.1[,dose:=paste(DOSE,"mg")]
-doses.md.1[,regimen:="QD"]
+doses.md.1$dose <- paste(doses.md.1$DOSE,"mg")
+doses.md.1$regimen <- "QD"
 doses.md.1
 ## or using ADDL+II
 dt.amt <- data.table(AMT=c(200,100,800,400)*1000,DOSE=c(100,100,400,400))
 doses.md.2 <- NMcreateDoses(TIME=c(0,24),AMT=dt.amt,addl=data.table(ADDL=c(0,5),II=c(0,24)))
-doses.md.2[,dose:=paste(DOSE,"mg")]
-doses.md.2[,regimen:="QD"]
+doses.md.2$dose <- paste(doses.md.2$DOSE,"mg")
+doses.md.2$regimen <- "QD"
 doses.md.2
-
 }

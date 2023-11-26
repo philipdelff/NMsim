@@ -4,19 +4,55 @@
 \alias{addEVID2}
 \title{Add simulation records to dosing records}
 \usage{
-addEVID2(doses, time.sim, CMT)
+addEVID2(doses, time.sim, CMT, as.fun)
 }
 \arguments{
 \item{doses}{dosing records Nonmem style}
 
 \item{time.sim}{A numerical vector with simulation times}
 
-\item{CMT}{The compartment in which to insert the EVID=2 records}
+\item{CMT}{The compartment in which to insert the EVID=2
+records. If longer than one, the records will be repeated in
+all the specified compartments. If a data.frame, covariates
+can be specified.}
+
+\item{as.fun}{The default is to return data as a data.frame. Pass
+a function (say tibble::as_tibble) in as.fun to convert to
+something else. If data.tables are wanted, use
+as.fun="data.table". The default can be configured using
+NMdataConf.}
+}
+\value{
+A data.frame with dosing records
 }
 \description{
-Add simulation records to dosing records
+Performs the simple job of adding simulation events to all
+subjects in a data set. Copies over columns that are not varying
+at subject level (i.e. non-variying covariates).
+}
+\details{
+The resulting data set is ordered by ID, TIME, and
+    EVID. You may have to reorder for your specific needs.
 }
 \examples{
+library(data.table)
+## Users should not use setDTthreads. This is for CRAN to only use 1 core.
+data.table::setDTthreads(1) 
 (doses1 <- NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1)))
 addEVID2(doses1,time.sim=seq(0,28,by=4),CMT=2)
+
+## two named compartments
+dt.doses <- NMcreateDoses(TIME=c(0,12),AMT=10,CMT=1)
+seq.time <- c(0,4,12,24)
+dt.cmt <- data.table(CMT=c(2,3),analyte=c("parent","metabolite"))
+res <- addEVID2(dt.doses,time.sim=seq.time,CMT=dt.cmt)
+
+## Separate sampling schemes depending on covariate values
+dt.doses <- NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1)
+
+seq.time.sd <- data.table(regimen="SD",TIME=seq(0,6))
+seq.time.md <- data.table(regimen="MD",TIME=c(0,4,12,24))
+seq.time <- rbind(seq.time.sd,seq.time.md)
+
+addEVID2(dt.doses,time.sim=seq.time,CMT=2)
 }
