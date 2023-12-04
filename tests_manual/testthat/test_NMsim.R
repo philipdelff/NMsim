@@ -193,22 +193,26 @@ test_that("VPC",{
 
     
     file.mod <- "testData/nonmem/xgxr032.mod"
-
+    nsims <- 10
     
     set.seed(43)
     simres.vpc <- NMsim(file.mod,
                         table.vars="PRED IPRED Y",
                         dir.sims="testOutput",
                         name.sim="vpc_01"
-                       ,nsims=10
+                       ,nsims=nsims
                        ,method.execute="nmsim"
                        ,path.nonmem=path.nonmem
                         )
 
-    library(ggplot2)
+    ## library(ggplot2)
+    
+    expect_equal(length(unique(simres.vpc$model)),nsims)
+
+    expect_equal(nrow(simres.vpc),nsims*731)    
 
     ## derive PIs
-
+    expect_equal(as.numeric(simres.vpc[EVID==0,quantile(Y,probs=.25)]),0.15568)
 
 })
 
@@ -217,6 +221,7 @@ test_that("VPC with complicated INPUT",{
 
     
     file.mod <- "testData/nonmem/xgxr033.mod"
+    nsims <- 2
     ## NMexec(file.mod,sge=FALSE)
     
     set.seed(43)
@@ -224,14 +229,16 @@ test_that("VPC with complicated INPUT",{
                         table.vars="PRED IPRED Y",
                         dir.sims="testOutput",
                         name.sim="vpc_01"
-                       ,nsims=1
+                       ,nsims=nsims
                        ,method.execute="nmsim"
                        ,path.nonmem=path.nonmem
                         )
 
-    library(ggplot2)
+    ## library(ggplot2)
+    ## dims(simres.vpc)
+    expect_equal(length(unique(simres.vpc$model)),nsims)
 
-    ## derive PIs
+    expect_equal(nrow(simres.vpc),nsims*731)    
 
 
 })
