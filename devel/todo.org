@@ -164,8 +164,8 @@ the new one, it will be a difference.
 ** VPC sims - no new method needed
 *** DONE By default, reuse $INPUT and $DATA sections, with updated data path
 Normally, one would simply reuse the estimation input data set for this
-*** NMsim needs to not handle $DATA section if data=NULL
-*** NMscanData should ideally merge.by.row to allow for custom IGN/ACCEPT statements
+*** DONE NMsim needs to not handle $DATA section if data=NULL
+**** NMscanData should ideally merge.by.row to allow for custom IGN/ACCEPT statements
 But what if there is no row counter in input data? Read data, add a
 row counter and otherwise resave data without any modifications. Add
 row counter in $INPUT.

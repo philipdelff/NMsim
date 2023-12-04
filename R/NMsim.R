@@ -522,35 +522,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## path.sim: full path to simulation control stream
     dt.models[,path.sim:=NMdata:::filePathSimple(file.path(dir.sim,fn.sim))]
     
-### note: insert test for whether run is needed here
-    ## if data is NULL, we will re-use data used in file.mod
-    rewrite.data.section <- TRUE
-    if(is.null(data)){
-        if(!packageVersion("NMdata")>"0.1.1") stop("data has to be supplied. Starting with NMdata 0.1.2 it will be possible not to supply data which is intented for simulations for VPCs.")
-        data <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
-        ## col.row <- tmpcol(data,base="ROW")
-        if(missing(col.row)) col.row <- NULL
-        col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
-        if(!col.row %in% colnames(data)){
-            data[,(col.row):=.I]
-            setcolorder(data,col.row)
-            message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
-            section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE)
-            section.input <- paste("$INPUT",col.row,section.input)
-        } else {
-            section.input <- FALSE
-        }
-        add.var.table <- col.row
-        args.NMscanData.default$merge.by.row <- TRUE
-        args.NMscanData.default$col.row <- col.row
-        rewrite.data.section <- FALSE
-        order.columns <- FALSE
-    } else {
-        data <- copy(as.data.table(data))
-    }
-    ## if(!col.row%in%colnames(data)) data[,(col.row):=.I]
 
-    if(order.columns) data <- NMorderColumns(data)
 ### save input data to be read by simulation control stream
     ## fn.data is the data file name, no path
     dt.models[,fn.data:=paste0("NMsimData_",fnExtension(fnAppend(basename(file.mod),name.sim),".csv"))]
@@ -607,6 +579,36 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
 
+
+### note: insert test for whether run is needed here
+    ## if data is NULL, we will re-use data used in file.mod
+    rewrite.data.section <- TRUE
+    if(is.null(data)){
+        if(!packageVersion("NMdata")>"0.1.1") stop("data has to be supplied. Starting with NMdata 0.1.2 it will be possible not to supply data which is intented for simulations for VPCs.")
+        data <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
+        ## col.row <- tmpcol(data,base="ROW")
+        if(missing(col.row)) col.row <- NULL
+        col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
+        if(!col.row %in% colnames(data)){
+            data[,(col.row):=.I]
+            setcolorder(data,col.row)
+            message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
+            section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE)
+            section.input <- paste("$INPUT",col.row,section.input)
+        } else {
+            section.input <- FALSE
+        }
+        add.var.table <- col.row
+        args.NMscanData.default$merge.by.row <- TRUE
+        args.NMscanData.default$col.row <- col.row
+        rewrite.data.section <- FALSE
+        order.columns <- FALSE
+    } else {
+        data <- copy(as.data.table(data))
+    }
+    ## if(!col.row%in%colnames(data)) data[,(col.row):=.I]
+
+    if(order.columns) data <- NMorderColumns(data)
 ### save data and replace $input and $data
 #### multiple todo: save only for each unique path.data
 
