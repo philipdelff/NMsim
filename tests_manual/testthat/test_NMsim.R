@@ -1,5 +1,3 @@
-##path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
-path.nonmem <- "/opt/nonmem/nm751/run/nmfe75" 
 
 
 library(NMdata)
@@ -15,7 +13,11 @@ dt.sim[,BBW:=40][,ROW:=.I]
 
 library(data.table)
 
-NMdataConf(dir.psn="/opt/psn")
+## NMdataConf(dir.psn="/opt/psn")
+## path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
+NMdataConf(dir.psn=NULL)
+path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
+
 
 
 context("NMsim")
