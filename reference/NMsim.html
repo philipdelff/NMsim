@@ -20,7 +20,7 @@ this."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.4.916</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.901</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,6 +88,7 @@ this.</p>
 <span>  method.sim <span class="op">=</span> <span class="va">NMsim_default</span>,</span>
 <span>  execute <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  sge <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  nc <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  transform <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">method.execute</span>,</span>
 <span>  <span class="va">method.update.inits</span>,</span>
@@ -223,6 +224,11 @@ e.g. simulate with all parameter estimates from a bootstrap
 result.</p></dd>
 
 
+<dt>nc</dt>
+<dd><p>Number of cores used in parallelization. This is so far
+only supported with <code>method.execute="psn"</code>.</p></dd>
+
+
 <dt>transform</dt>
 <dd><p>A list defining transformations to be applied
 after the Nonmem simulations and before plotting. For each
@@ -303,7 +309,9 @@ and 500 old simulations.</p></dd>
 <dd><p>Only used if data is not supplied (which is most
 likely for simulations for VPCs) A column name to use for a
 row identifier. If none is supplied,
-<code>NMdataConf()[['col.row']]</code> will be used. If the column already exists in the data set, it will be used as is, if not it will be added.</p></dd>
+<code>NMdataConf()[['col.row']]</code> will be used. If the column
+already exists in the data set, it will be used as is, if not
+it will be added.</p></dd>
 
 
 <dt>args.NMscanData</dt>
