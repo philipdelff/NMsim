@@ -26,7 +26,7 @@
 
 
 NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
-
+    
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     . <- NULL
@@ -96,11 +96,11 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
     }
 
 
-###### using the last table found in .phi to generate lines for a new .phi file. Reading this should be done with NMreadPhi.
+###### using the last table found in .phi to generate lines for a new .phi file. 
     phi.lines <- data.table(text=readLines(file.phi))
     phi.lines[,n:=.I]
     ## Accepting E and R which can be in numbers (R?)
-    phi.lines[,is.data:=!grepl("[a-zABCDFGHIJKLMNOPQSTUVWXYZ]",x=text)]
+    phi.lines[,is.data:=!grepl("[abcdfghijklmnopqrstuvwxyzABCDFGHIJKLMNOPQSTUVWXYZ]",x=text)]
     phi.lines[is.data==TRUE,textmod:=gsub(" +"," ",text)]
     phi.lines[is.data==TRUE,textmod:=gsub("^ +","",textmod)]
     phi.lines[is.data==TRUE,ID:=strsplit(textmod,split=" ")[[1]][2],by=.(n)]
@@ -111,12 +111,12 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
     phi.lines[,TABLE.NO:=cumsum(tableStart)]
     phi.lines <- phi.lines[TABLE.NO==max(TABLE.NO)]
     
-    phi.use <- mergeCheck(dt.id.order[,.(ID)],phi.lines[,.(ID,text)],by=cc(ID),all.x=TRUE)
+    phi.use <- mergeCheck(dt.id.order[,.(ID)],phi.lines[,.(ID,text)],by=cc(ID),all.x=TRUE,quiet=TRUE)
     
 
 ### Error if subjects in data are not found in phi
     if(phi.use[,any(is.na(text))]){
-        message("IDs not found in nonmem results (phi file):", paste(phi.use[is.na(text),ID],collapse=", "))
+        message("IDs not found in nonmem results (phi file): ", paste(phi.use[is.na(text),ID],collapse=", "))
         phi.use <- phi.use[!is.na(text)]
     }
     phi.use <- rbind(phi.lines[is.data==FALSE,.(text)],phi.use,fill=TRUE)

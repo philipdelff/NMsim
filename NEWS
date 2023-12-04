@@ -1,3 +1,16 @@
+# 0.0.6
+## New features
+
+* Support for parallelization of simulations added when using PSN. It
+used to be possible to run multiple simulations simultaneously in
+separate threads. Now single simulation runs can be parallelized on
+`sge` type clusters (using `qsub`). See arguments `sge` and `nc`.
+
+## Bugfixes
+
+* A simple mistake would create problems in `genPhiFile()` when having
+  more than 10 ETAs in a model. Now fixed.
+
 # 0.0.5
 ## New features
 

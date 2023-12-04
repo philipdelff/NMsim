@@ -64,7 +64,13 @@ NMsim we restrict to nc=1.
 *** TODO Intro arg return
 Align with NMdata
 ** NMsim
+*** TODO [#A] BUG in handling no data
+It must add col.row to output table. And NMscanData arguments
+collected dont seem to be used when running NMscanData.
 *** TODO [#B] option to clean temp dirs
+*** TODO [#B] Support list of data sets
+*** TODO [#B] Function to read and save results
+And clean up?
 *** DONE Support args.NMscanData 
 *** DONE Split text.table into table.vars and table.options
 **** DONE table.options="NOPRINT NOAPPEND" should be default - at least

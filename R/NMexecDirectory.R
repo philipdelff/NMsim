@@ -80,9 +80,11 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
         file.copy(extr.data$path.csv,dir.tmp)
 ### modify .mod to use local copy of input data. Notice the newfile
 ### arg to NMwriteSection creating file.mod.tmp.
+        
         sec.data.new <- paste("$DATA",sub(extr.data$string,basename(extr.data$path.csv),extr.data$DATA,fixed=TRUE))
     } else {
-### This works with NMsim but not with estimation. 
+### This works with NMsim but not with estimation.
+        
         sec.data.new <- sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE)
         ### this is a different interpretation of dir.data - ie. the relative change of path. It does not work.
         ## sec.data.new <- sub(extr.data$string,file.path(dir.data,extr.data$path.csv),extr.data$DATA,fixed=TRUE)

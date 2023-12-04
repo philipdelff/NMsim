@@ -21,6 +21,7 @@ NMsim(
   method.sim = NMsim_default,
   execute = TRUE,
   sge = FALSE,
+  nc = 1,
   transform = NULL,
   method.execute,
   method.update.inits,
@@ -122,6 +123,9 @@ useful if creating a large number of simulations,
 e.g. simulate with all parameter estimates from a bootstrap
 result.}
 
+\item{nc}{Number of cores used in parallelization. This is so far
+only supported with \code{method.execute="psn"}.}
+
 \item{transform}{A list defining transformations to be applied
 after the Nonmem simulations and before plotting. For each
 list element, its name refers to the name of the column to
@@ -187,7 +191,9 @@ and 500 old simulations.}
 \item{col.row}{Only used if data is not supplied (which is most
 likely for simulations for VPCs) A column name to use for a
 row identifier. If none is supplied,
-\code{NMdataConf()[['col.row']]} will be used. If the column already exists in the data set, it will be used as is, if not it will be added.}
+\code{NMdataConf()[['col.row']]} will be used. If the column
+already exists in the data set, it will be used as is, if not
+it will be added.}
 
 \item{args.NMscanData}{If \code{wait=TRUE}, NMsim will normally
 read the results using NMdata::NMscanData. Use this argument

@@ -211,3 +211,27 @@ test_that("VPC",{
 
 
 })
+
+
+test_that("VPC with complicated INPUT",{
+
+    
+    file.mod <- "testData/nonmem/xgxr033.mod"
+    NMexec(file.mod,sge=FALSE)
+    
+    set.seed(43)
+    simres.vpc <- NMsim(file.mod,
+                        table.vars="PRED IPRED Y",
+                        dir.sims="testOutput",
+                        name.sim="vpc_01"
+                       ,nsims=1
+                       ,method.execute="nmsim"
+                       ,path.nonmem=path.nonmem
+                        )
+
+    library(ggplot2)
+
+    ## derive PIs
+
+
+})

@@ -45,7 +45,7 @@
 
 
 addEVID2 <- function(doses,time.sim,CMT,as.fun){
-
+    
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     EVID <- NULL
@@ -91,7 +91,7 @@ addEVID2 <- function(doses,time.sim,CMT,as.fun){
         CMT <- as.data.table(CMT)
     }
     
-    
+    dt.obs <- dt.obs[,setdiff(colnames(dt.obs),colnames(CMT)),with=FALSE]
     dt.obs <- egdt(dt.obs,CMT,quiet=TRUE)
     
     

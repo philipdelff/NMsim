@@ -83,7 +83,9 @@
 ##' @param col.row Only used if data is not supplied (which is most
 ##'     likely for simulations for VPCs) A column name to use for a
 ##'     row identifier. If none is supplied,
-##'     \code{NMdataConf()[['col.row']]} will be used. If the column already exists in the data set, it will be used as is, if not it will be added.
+##'     \code{NMdataConf()[['col.row']]} will be used. If the column
+##'     already exists in the data set, it will be used as is, if not
+##'     it will be added.
 ##' @param method.execute Specify how to call Nonmem. Options are
 ##'     "psn" (PSN's execute), "nmsim" (an internal method similar to
 ##'     PSN's execute), and "direct" (just run Nonmem directly and
@@ -94,6 +96,8 @@
 ##'     is in the system search path. So as long as you know where
 ##'     your Nonmem executable is, "nmsim" is recommended. The default
 ##'     is "nmsim" if path.nonmem is specified, and "psn" if not.
+##' @param nc Number of cores used in parallelization. This is so far
+##'     only supported with \code{method.execute="psn"}.
 ##' @param method.update.inits The initial estimates must be updated
 ##'     from the estimated model before running the simulation. NMsim
 ##'     supports two ways of doing this: "psn" which uses PSN's
@@ -226,7 +230,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   table.options,
                   text.sim="",
                   method.sim=NMsim_default,
-                  execute=TRUE,sge=FALSE,transform=NULL,
+                  execute=TRUE,sge=FALSE,
+                  nc=1,transform=NULL,
                   method.execute,method.update.inits,create.dir=TRUE,dir.psn,
                   list.sections,sim.dir.from.scratch=TRUE,
                   col.row,
@@ -425,6 +430,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   text.sim=text.sim,
                   execute=execute,
                   sge=sge
+                 ,nc=nc
                   ## ,modelname=modelname
                  ,transform=transform
                  ,method.sim=method.sim
@@ -527,7 +533,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
         if(!col.row %in% colnames(data)){
             data[,(col.row):=.I]
-            message(paste0("Row counter was added in column",col.row,". Use this to merge output and input data."))
+            message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
         }
         args.NMscanData.default$merge.by.row <- TRUE
         args.NMscanData.default$col.row <- col.row
@@ -568,7 +574,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
         dt.models[,
         {
-            cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",normalizePath(cmd.update.inits),fn.sim.tmp,normalizePath(file.mod))
+            cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",normalizePath(cmd.update.inits,mustWork=FALSE),fn.sim.tmp,normalizePath(file.mod))
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
 
@@ -602,10 +608,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,{
         
         nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
+        
         ## input 
-        NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["INPUT"],backup=FALSE,quiet=TRUE)
-        ## data
+            NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["INPUT"],backup=FALSE,quiet=TRUE)
         if(rewrite.data.section){
+            ## data
             NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["DATA"],backup=FALSE,quiet=TRUE)    
         } else {
             ## replace data file only
@@ -819,7 +826,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 unlink(path.sim.lst)
 
             }
-            NMexec(files=path.sim,sge=sge,nc=1,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
+            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
             
             if(wait){
                 args.NMscanData <- c(args.NMscanData,args.NMscanData.default)
