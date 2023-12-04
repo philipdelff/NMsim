@@ -217,7 +217,7 @@ test_that("VPC with complicated INPUT",{
 
     
     file.mod <- "testData/nonmem/xgxr033.mod"
-    NMexec(file.mod,sge=FALSE)
+    ## NMexec(file.mod,sge=FALSE)
     
     set.seed(43)
     simres.vpc <- NMsim(file.mod,

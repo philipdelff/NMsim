@@ -533,8 +533,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
         if(!col.row %in% colnames(data)){
             data[,(col.row):=.I]
+            setcolorder(data,col.row)
             message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
+            section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE)
+            section.input <- paste("$INPUT",col.row,section.input)
+        } else {
+            section.input <- FALSE
         }
+        add.var.table <- col.row
         args.NMscanData.default$merge.by.row <- TRUE
         args.NMscanData.default$col.row <- col.row
         rewrite.data.section <- FALSE
@@ -609,14 +615,19 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         
         nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
         
-        ## input 
+        ## input
+        if(exists("section.input")){
+            if(!isFALSE(section.input)){
+                NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = list(input=section.input),backup=FALSE,quiet=TRUE)
+            }
+        } else {
             NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["INPUT"],backup=FALSE,quiet=TRUE)
+        }
         if(rewrite.data.section){
             ## data
             NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["DATA"],backup=FALSE,quiet=TRUE)    
         } else {
             ## replace data file only
-            
             NMreplaceDataFile(files=path.sim,path.data=basename(path.data))
         }
     },by=.(ROWMODEL)]
@@ -649,9 +660,13 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         } else {
             lines.tables.new <- list(paste("$TABLE",text.table,fn.tab.base))
         }
-        
         fun.paste <- function(...) paste(...,sep="\n")
         lines.tables.new <- do.call(fun.paste,lines.tables.new)
+        if(exists("add.var.table")){
+            
+            lines.tables.new <- gsub("\\$TABLE",paste("$TABLE",add.var.table),lines.tables.new)
+        }
+
         ## if no $TABLE found already, just put it last
         if(length(lines.tables)){
             location <- "replace"
@@ -831,7 +846,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             if(wait){
                 args.NMscanData <- c(args.NMscanData,args.NMscanData.default)
                 args.NMscanData <- args.NMscanData[unique(names(args.NMscanData))]
-                simres.n <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive))
+                
+                ## simres.n <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive))
+                simres.n <- try(do.call(NMscanData,c(file=path.sim.lst,as.fun="data.table",file.data=input.archive,args.NMscanData)))
+                
+
                 if(inherits(simres.n,"try-error")){
                     message("Results could not be read.")
                     simres.n <- NULL
