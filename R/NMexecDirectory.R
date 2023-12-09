@@ -125,9 +125,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     )
     
     path.script <- file.path(dir.tmp,"run_nonmem.sh")
-    ## con.newfile <- file(path.script,"wb")
-    ## writeLines(lines.bash,con=con.newfile)
-    ## close(con.newfile)
+
     writeTextFile(lines.bash,path.script)
     Sys.chmod(path.script,mode="0577")
 

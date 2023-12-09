@@ -29,7 +29,7 @@ genPhiFile <- function(data,file){
     dt.names <- data.table(
         name.tab = cnames.covs[grepl(pattern="ET[A]*[1-9][0-9]*",cnames.covs)]
     )
-    dt.names[,I:=sub("ET[A]*([1-9][0-9]*)","\\1",name.tab) |> as.numeric()]
+    dt.names[,I:=as.numeric(sub("ET[A]*([1-9][0-9]*)","\\1",name.tab))]
     dt.names[,name.eta.phi:=sprintf("ETA(%s)",I)]
     setorder(dt.names,I)
     

@@ -184,6 +184,8 @@ https://nmhelp.tingjieguo.com/$etasphis.htm
 As if submodel structure does not support n=1. For now, just give an
 error to avoid some weird message.
 ** NMcreateDoses
+*** TODO No CMT by default?
+Not all models use CMT so it shouldnt be required
 *** TODO II/ADDL should only be applied to last event.
 addl.lastonly argument?
 *** TODO [#B] TIME must be full length
