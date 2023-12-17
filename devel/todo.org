@@ -64,11 +64,13 @@ NMsim we restrict to nc=1.
 *** TODO Intro arg return
 Align with NMdata
 ** NMsim
-*** TODO [#A] BUG in handling no data
+*** TODO [#A] Work with output control streams
+At least be able to identify and throw error
+*** DONE BUG in handling no data
 It must add col.row to output table. And NMscanData arguments
 collected dont seem to be used when running NMscanData.
 *** TODO [#B] option to clean temp dirs
-*** TODO [#B] Support list of data sets
+*** TODO [#A] Support list of data sets
 *** TODO [#B] Function to read and save results
 And clean up?
 *** DONE Support args.NMscanData 

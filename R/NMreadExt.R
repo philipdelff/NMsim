@@ -7,6 +7,8 @@
 
 NMreadExt <- function(path.ext){
 
+    .Deprecated("NMdata::NMreadExt")
+    
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     ITERATION <- NULL

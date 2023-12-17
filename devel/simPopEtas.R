@@ -19,6 +19,9 @@ simPopEtas <- function(file.mod,N,seed){
 
     pars <- NMdata:::NMreadExt(fnExtension(file.mod,"ext"),return="pars")
     Netas <- pars[par.type=="OMEGA",max(i)]
+    ## wiping $PK. We should do the same for $PRED. However, this
+    ## doesn't work for say an ADVAN2 model where certain PK
+    ## parameters must be assigned.
     lines.pk <- c("$PK",sprintf("var%s=ETA(%s)",1:Netas,1:Netas))
     
     

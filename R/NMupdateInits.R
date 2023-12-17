@@ -3,6 +3,7 @@
 ##' @param newfile New file to generate
 ##' @param fix Fix the values? Probably only TRUE is supported.
 ##' @return The resulting control stream contents as text
+##' @import NMdata
 ##' @keywords internal
 
 NMupdateInits <- function(file.mod,newfile,fix){
@@ -12,15 +13,14 @@ NMupdateInits <- function(file.mod,newfile,fix){
     est <- NULL
     j <- NULL
     
-    ext <- NMreadExt(fnExtension(file.mod,"ext"))
-    pars.est <- ext$pars
+    pars.est <- NMdata::NMreadExt(fnExtension(file.mod,"ext"),return="pars",as.fun="data.table")
+    ## pars.est <- ext$pars
 
 ### making sure to only use the last value provided
     pars.est <- unique(pars.est[.N:1],by="parameter")[.N:1]
 
     setnames(pars.est,"est","value")
     
-    ## res <- NMreplaceInits(files=file.mod,newfile=newfile,inits=ext$pars,fix=fix,quiet=TRUE)
     res <- NMreplaceInits(files=file.mod,newfile=newfile,inits=pars.est,fix=fix,quiet=TRUE)
     invisible(res)
 }

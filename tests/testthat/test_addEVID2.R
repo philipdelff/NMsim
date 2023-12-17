@@ -1,4 +1,4 @@
-context("NMscanTables")
+context("addEVID2")
 library(data.table)
 data.table::setDTthreads(1) 
 library(NMdata)

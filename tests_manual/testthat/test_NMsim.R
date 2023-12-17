@@ -159,7 +159,7 @@ test_that("SAEM - known",{
     fileRef <- "testReference/NMsim_06.rds"
 
     file.mod <- "testData/nonmem/xgxr032.mod"
-    NMreadPhi(fnExtension(file.mod,"phi"))[,unique(ID)]
+    ## NMreadPhi(fnExtension(file.mod,"phi"))[,unique(ID)]
 
     ## source("~/wdirs/NMsim/devel/genPhiFile.R")
     ## res <- NMscanData(file.mod)
@@ -241,6 +241,24 @@ test_that("VPC with complicated INPUT",{
     expect_equal(length(unique(simres.vpc$model)),nsims)
 
     expect_equal(nrow(simres.vpc),nsims*731)    
+
+
+})
+
+
+test_that("multiple data sets",{
+    data.multiple <- split(dt.sim.known,by="ID")
+    data.multiple
+
+    set.seed(43)
+    simres.multidata <- NMsim(file.mod,
+                              data=data.multiple
+                              ,table.vars="PRED IPRED Y",
+                              dir.sims="testOutput"
+                              ,name.sim="datalist_01"
+                             ,method.execute="nmsim"
+                             ,path.nonmem=path.nonmem
+                              )
 
 
 })

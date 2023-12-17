@@ -7,6 +7,8 @@
 
 NMreadPhi <- function(file){
 
+.Deprecated("NMdata::NMreadPhi")
+
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     par.type <- NULL

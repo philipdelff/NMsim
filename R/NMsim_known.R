@@ -79,7 +79,8 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
 #### try to read phi file to see if it reads and has ETAs
     etasFromTabs <- FALSE
     ## res.phi <- try(NMreadPhi(file.phi,as.fun="data.table"))
-    res.phi <- try(NMreadPhi(file.phi))
+    ## res.phi <- try(NMreadPhi(file.phi))
+    res.phi <- try(NMdata::NMreadPhi(file.phi,as.fun="data.table"))
     
     if(inherits(res.phi,"try-error")) {
         etasFromTabs <- TRUE

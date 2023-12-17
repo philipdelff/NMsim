@@ -1,3 +1,10 @@
+# 0.0.7
+## New features
+
+* Function `simPopEtas()` to generate a population from a model. The
+  population can be saved as a `phi` file to be reused in subsequent
+  simulations.
+
 # 0.0.6
 ## New features
 

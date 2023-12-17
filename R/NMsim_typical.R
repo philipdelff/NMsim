@@ -29,8 +29,9 @@ NMsim_typical <- function(file.sim,file.mod,data.sim,return.text=FALSE){
     files.needed.def <- NMsim_default(file.sim=file.sim,file.mod,data.sim)
     lines.sim <- readLines(file.sim)
     
-    extres <- NMreadExt(fnExtension(file.mod,"ext"))
-    Netas <- extres$pars[par.type=="OMEGA",max(i)]
+    ## extres <- NMreadExt(fnExtension(file.mod,"ext"))
+    extres <- NMdata::NMreadExt(fnExtension(file.mod,"ext"),return="pars",as.fun="data.table")
+    Netas <- extres[par.type=="OMEGA",max(i)]
 
     lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas,"")),collapse="\n")
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="omega",newlines=lines.omega,backup=FALSE,quiet=TRUE)

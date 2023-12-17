@@ -242,7 +242,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,suffix.sim,text.table,
                   system.type=NULL
                  ,...
-                  ){#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+                  ){
+
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
     
     est <- NULL
     dir.sim <- NULL
@@ -427,6 +429,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   args.psn.execute=args.psn.execute,
                   nmquiet=nmquiet,
                   text.table=text.table,
+                  table.vars=table.vars,
+                  table.options=table.options,
                   text.sim=text.sim,
                   execute=execute,
                   sge=sge
@@ -480,7 +484,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         dir.create(dir.sims)
     }
     
-
+    if(missing(text.table)) text.table <- NULL
     
     
     ## seed
@@ -493,8 +497,22 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     dt.models <- data.table(file.mod=file.mod)
     dt.models[,ROWMODEL:=.I]
+
+
+    if(F){
+        if(!is.null(data) && is.list(data) && !is.data.frame(data)) {
+            names.data <- names(data)
+            if(is.null(names.data)) {
+                names.data <- as.character(1:length(data))
+            } else if(""%in%names.data) {
+                names.data[names.data==""] <- as.character(which(names.data==""))
+            }
+            
+            dt.data <- data.table(DATAROW=1:length(data),data.name=names.data)
+            dt.models <- egdt(dt.models,dt.data)
+        }
+    }
     
-    if(missing(text.table)) text.table <- NULL
     
 
     ## fn.sim is the file name of the simulation control stream created by NMsim
@@ -578,42 +596,52 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         dt.models[,NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE),by=.(ROWMODEL)]
     }
     
+    
 
-
-### note: insert test for whether run is needed here
-    ## if data is NULL, we will re-use data used in file.mod
-    rewrite.data.section <- TRUE
-    if(is.null(data)){
-        if(!packageVersion("NMdata")>"0.1.1") stop("data has to be supplied. Starting with NMdata 0.1.2 it will be possible not to supply data which is intented for simulations for VPCs.")
-        data <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
-        ## col.row <- tmpcol(data,base="ROW")
-        if(missing(col.row)) col.row <- NULL
-        col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
-        if(!col.row %in% colnames(data)){
-            data[,(col.row):=.I]
-            setcolorder(data,col.row)
-            message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
-            section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE)
-            section.input <- paste("$INPUT",col.row,section.input)
-        } else {
-            section.input <- FALSE
-        }
-        add.var.table <- col.row
-        args.NMscanData.default$merge.by.row <- TRUE
-        args.NMscanData.default$col.row <- col.row
-        rewrite.data.section <- FALSE
-        order.columns <- FALSE
-    } else {
-        data <- copy(as.data.table(data))
-    }
-    ## if(!col.row%in%colnames(data)) data[,(col.row):=.I]
-
-    if(order.columns) data <- NMorderColumns(data)
-### save data and replace $input and $data
-#### multiple todo: save only for each unique path.data
 
 
     dt.models[,{
+### note: insert test for whether run is needed here
+        ## if data is NULL, we will re-use data used in file.mod
+        rewrite.data.section <- TRUE
+        if(is.null(data)){
+            if(!packageVersion("NMdata")>"0.1.1") stop("data has to be supplied. Starting with NMdata 0.1.2 it will be possible not to supply data which is intented for simulations for VPCs.")
+            data <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
+            ## col.row <- tmpcol(data,base="ROW")
+            if(missing(col.row)) col.row <- NULL
+            col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
+            if(!col.row %in% colnames(data)){
+                data[,(col.row):=.I]
+                setcolorder(data,col.row)
+                message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
+                section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE)
+                section.input <- paste("$INPUT",col.row,section.input)
+            } else {
+                section.input <- FALSE
+            }
+            add.var.table <- col.row
+            args.NMscanData.default$merge.by.row <- TRUE
+            args.NMscanData.default$col.row <- col.row
+            rewrite.data.section <- FALSE
+            order.columns <- FALSE
+        } else {
+            
+            if(is.data.frame(data)){
+                data <- copy(as.data.table(data))
+            } else if(is.list(data)){
+                data <- lapply(data,as.data.table)
+            }
+        }
+        ## if(!col.row%in%colnames(data)) data[,(col.row):=.I]
+        if(is.data.frame(data)){
+            data <- list(data)
+        }
+        
+        if(order.columns) data <- lapply(data,NMorderColumns)
+### save data and replace $input and $data
+#### multiple todo: save only for each unique path.data
+        
+        
         
         nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
         

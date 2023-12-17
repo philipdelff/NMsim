@@ -15,6 +15,7 @@
 ##'     greater, multiple control streams will be generated.
 ##' @import NMdata
 ##' @import data.table
+##' @importFrom MASS mvrnorm
 ##' @return Character vector of simulation control stream paths
 ##' @export
 
@@ -63,7 +64,8 @@ NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
     
     ## nonmem2rx::nmcov(path.cov)
     covmat <- NMreadCov(path.cov)
-    ests <- NMreadExt(path.ext)$pars[NMREP==1,.(parameter,par.type,i,j,est,FIX)]
+    ests <- NMdata::NMreadExt(path.ext,as.fun="data.table")[NMREP==1,.(parameter,par.type,i,j,est,FIX)]
+    ## ests <- NMreadExt(path.ext)$pars[NMREP==1,.(parameter,par.type,i,j,est,FIX)]
     ests <- ests[match(ests$parameter,colnames(covmat))]
 
     
