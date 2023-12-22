@@ -1,11 +1,11 @@
 ##' Run simulations from an estimated Nonmem model
 ##'
-##' Supply a data set and an input control stream, and NMsim can
-##' create neccesary files, run the simulation and read the
-##' results. It has additional methods for other siulation types
-##' available, can do multiple simulations at once and more. Please
-##' see vignettes for an introcution to how to get the most out of
-##' this.
+##' Supply a data set and an estimation input control stream, and
+##' NMsim can create neccesary files (control stream, data files), run
+##' the simulation and read the results. It has additional methods for
+##' other simulation types available, can do multiple simulations at
+##' once and more. Please see vignettes for an introduction to how to
+##' get the most out of this.
 ##'
 ##' @param file.mod Path(s) to the input control stream(s) to run the
 ##'     simulation on. The outpult control stream is for now assumed
@@ -402,7 +402,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         file.mod.named <- TRUE
     }
     
+    if(missing(col.row)) col.row <- NULL
+    col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
+
     ## as.fun
+
+
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
     
@@ -417,39 +422,39 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
 
-    if(length(file.mod)>1){
-        allres.l <- lapply(1:length(file.mod),function(x)
-            NMsim(file.mod=file.mod[[x]],
-                 ,data=data
-                 ,dir.sims=dir.sims,
-                  name.sim=name.sim,
-                  order.columns=order.columns,script=script,
-                  subproblems=subproblems,
-                  reuse.results=reuse.results,seed=seed,
-                  args.psn.execute=args.psn.execute,
-                  nmquiet=nmquiet,
-                  text.table=text.table,
-                  table.vars=table.vars,
-                  table.options=table.options,
-                  text.sim=text.sim,
-                  execute=execute,
-                  sge=sge
-                 ,nc=nc
-                  ## ,modelname=modelname
-                 ,transform=transform
-                 ,method.sim=method.sim
-                 ,path.nonmem=path.nonmem
-                 ,col.row=col.row
-                 ,args.NMscanData=args.NMscanData
-                 ,dir.psn=dir.psn
-                 ,...
-                  ))
-        if(file.mod.named){
-            names.mod <- names(file.mod)
-            allres.l <- lapply(1:length(allres.l),function(I) allres.l[[I]][,model:=names.mod[[I]]])
-        }
-        return(rbindlist(allres.l,fill=TRUE))
-    }
+    ## if(length(file.mod)>1){
+    ##     allres.l <- lapply(1:length(file.mod),function(x)
+    ##         NMsim(file.mod=file.mod[[x]],
+    ##              ,data=data
+    ##              ,dir.sims=dir.sims,
+    ##               name.sim=name.sim,
+    ##               order.columns=order.columns,script=script,
+    ##               subproblems=subproblems,
+    ##               reuse.results=reuse.results,seed=seed,
+    ##               args.psn.execute=args.psn.execute,
+    ##               nmquiet=nmquiet,
+    ##               text.table=text.table,
+    ##               table.vars=table.vars,
+    ##               table.options=table.options,
+    ##               text.sim=text.sim,
+    ##               execute=execute,
+    ##               sge=sge
+    ##              ,nc=nc
+    ##               ## ,modelname=modelname
+    ##              ,transform=transform
+    ##              ,method.sim=method.sim
+    ##              ,path.nonmem=path.nonmem
+    ##              ,col.row=col.row
+    ##              ,args.NMscanData=args.NMscanData
+    ##              ,dir.psn=dir.psn
+    ##              ,...
+    ##               ))
+    ##     if(file.mod.named){
+    ##         names.mod <- names(file.mod)
+    ##         allres.l <- lapply(1:length(allres.l),function(I) allres.l[[I]][,model:=names.mod[[I]]])
+    ##     }
+    ##     return(rbindlist(allres.l,fill=TRUE))
+    ## }
 
     if(missing(table.vars)) table.vars <- NULL
     if(missing(table.options)) table.options <- NULL
@@ -467,7 +472,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         }
         message("argument \'text.table\' is deprecated. Please use \'table.vars\' and/or \'table.options\' instead.")
     }
-    
+
+    if(missing(modelname)) modelname <- NULL
+    ## modelname <- NMdataDecideOption("modelname",modelname)
+    if(is.null(modelname)) modelname <- function(fn) fnExtension(basename(fn),"")
+
     
 #### Section start: Defining additional paths based on arguments ####
 
@@ -494,56 +503,77 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     } 
     
     if(missing(subproblems)|| is.null(subproblems)) subproblems <- 0
-    
+
     dt.models <- data.table(file.mod=file.mod)
+    dt.models[,run.mod:=fnExtension(basename(file.mod),"")]
+    dt.models[,name.mod:=run.mod]
+    if(!is.null(names(file.mod))){
+        names.mod <- names(file.mod)
+        names.mod[names.mod==""] <- file.mod[names.mod==""]
+        dt.models[,name.mod:=names.mod]
+        rm(names.mod)
+    }
     dt.models[,ROWMODEL:=.I]
 
 
-    if(F){
-        if(!is.null(data) && is.list(data) && !is.data.frame(data)) {
-            names.data <- names(data)
-            if(is.null(names.data)) {
-                names.data <- as.character(1:length(data))
-            } else if(""%in%names.data) {
-                names.data[names.data==""] <- as.character(which(names.data==""))
-            }
-            
-            dt.data <- data.table(DATAROW=1:length(data),data.name=names.data)
-            dt.models <- egdt(dt.models,dt.data)
+
+    
+
+### prepare data sets
+    if(!is.null(data) && is.data.frame(data)) {
+        data <- list(data)
+        data <- lapply(data,as.data.table)
+        if(order.columns) data <- lapply(data,NMorderColumns)
+    }
+    if(!is.null(data) && is.list(data) && !is.data.frame(data)) {
+        names.data <- names(data)
+        if(is.null(names.data)) {
+            names.data <- as.character(1:length(data))
+        } else if(""%in%names.data) {
+            names.data[names.data==""] <- as.character(which(names.data==""))
         }
+        
+        dt.data <- data.table(DATAROW=1:length(data),data.name=names.data)
+        if(dt.data[,.N]==1) dt.data[,data.name:=""]
+        dt.models <- egdt(dt.models,dt.data,quiet=TRUE)
+        
+        dt.models[,ROWMODEL:=.I]
+    }
+    if(is.null(data)){
+        dt.models[,data.name:=""]
     }
     
     
-
+    ### name.mod and name.sim are confusing. name.mod is the name
+    ### specified for the mod, like
+    ### file.mod=c(ref="run01.mod"). name.sim is the name that was
+    ### given for the who sim.
+    
     ## fn.sim is the file name of the simulation control stream created by NMsim
     ## fn.sim <- sub("^run","NMsim",basename(file.mod))
     dt.models[,fn.mod:=basename(file.mod)]
-    dt.models[,fn.sim:=paste0("NMsim_",fn.mod)]
+    dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
     ## dt.models[,fn.sim:=paste0(fn.mod)]
     dt.models[,fn.sim:=fnAppend(fn.sim,name.sim)]
-
-    if(missing(modelname)) modelname <- NULL
-    ## modelname <- NMdataDecideOption("modelname",modelname)
-    if(is.null(modelname)) modelname <- function(fn) fnExtension(basename(fn),"")
-
-    dt.models[,run.mod:=fnExtension(basename(file.mod),"")]
+    dt.models[,fn.sim:=fnAppend(fn.sim,as.character(data.name)),by=.(ROWMODEL)]
     dt.models[,run.sim:=modelname(fn.sim)]
-    
 
+    
+### todo name by data set
     ## dir.sim is the model-individual directory in which the model will be run
     dt.models[,
-              dir.sim:=file.path(dir.sims,paste(run.mod,name.sim,sep="_"))]
+              dir.sim:=file.path(dir.sims,paste(name.mod,name.sim,sep="_"))]
     
-    ## path.sim.0 is a temporary path to the sim control stream - it
+    ## path.sim.tmp is a temporary path to the sim control stream - it
     ## will be moved to path.sim once created.
     dt.models[,fn.sim.tmp:=fnAppend(fn.sim,"tmp")]
     ## path.sim: full path to simulation control stream
     dt.models[,path.sim:=NMdata:::filePathSimple(file.path(dir.sim,fn.sim))]
     
 
-### save input data to be read by simulation control stream
+    ## where tosave input data to be read by simulation control stream
     ## fn.data is the data file name, no path
-    dt.models[,fn.data:=paste0("NMsimData_",fnExtension(fnAppend(basename(file.mod),name.sim),".csv"))]
+    dt.models[,fn.data:=paste0("NMsimData_",fnExtension(fnAppend(name.mod,name.sim),".csv"))]
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
     
 ### clear simulation directories so user does not end up with old results
@@ -559,7 +589,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     
 
-########## this is used to generate the first version of file.sim. It would not need to, but beware PSN's update_inits needs to create a new file - don't try to overwrite an existing one.
+### Generate the first version of file.sim.
+    ## It would not need to, but beware PSN's update_inits needs to
+    ## create a new file - don't try to overwrite an existing one.
     if(method.update.inits=="none"){
         dt.models[,file.copy(file.mod,path.sim),by=ROWMODEL]
     }
@@ -597,22 +629,17 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
     
-
-
-
     dt.models[,{
 ### note: insert test for whether run is needed here
         ## if data is NULL, we will re-use data used in file.mod
         rewrite.data.section <- TRUE
         if(is.null(data)){
             if(!packageVersion("NMdata")>"0.1.1") stop("data has to be supplied. Starting with NMdata 0.1.2 it will be possible not to supply data which is intented for simulations for VPCs.")
-            data <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
+            data.this <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
             ## col.row <- tmpcol(data,base="ROW")
-            if(missing(col.row)) col.row <- NULL
-            col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
-            if(!col.row %in% colnames(data)){
-                data[,(col.row):=.I]
-                setcolorder(data,col.row)
+            if(!col.row %in% colnames(data.this)){
+                data.this[,(col.row):=.I]
+                setcolorder(data.this,col.row)
                 message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
                 section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE)
                 section.input <- paste("$INPUT",col.row,section.input)
@@ -625,25 +652,23 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             rewrite.data.section <- FALSE
             order.columns <- FALSE
         } else {
-            
-            if(is.data.frame(data)){
-                data <- copy(as.data.table(data))
-            } else if(is.list(data)){
-                data <- lapply(data,as.data.table)
-            }
+            data.this <- data[[DATAROW]]
+
         }
         ## if(!col.row%in%colnames(data)) data[,(col.row):=.I]
-        if(is.data.frame(data)){
-            data <- list(data)
-        }
+
+        ## if(is.data.frame(data)){
+        ##     data <- list(data)
+        ## }
         
-        if(order.columns) data <- lapply(data,NMorderColumns)
+        ## if(order.columns) data <- lapply(data,NMorderColumns)
+        ##data <- NMorderColumns(data)
 ### save data and replace $input and $data
 #### multiple todo: save only for each unique path.data
         
         
         
-        nmtext <- NMwriteData(data,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
+        nmtext <- NMwriteData(data.this,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
         
         ## input
         if(exists("section.input")){
@@ -726,10 +751,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ### Section end: Additional control stream modifications specified by user - list.sections
 
     
-    
     ## fun simulation method
     dt.models.gen <- dt.models[,
-                               method.sim(file.sim=path.sim,file.mod=file.mod,data.sim=data,...)
+                               method.sim(file.sim=path.sim,file.mod=file.mod,data.sim=data[[DATAROW]],...)
                               ,by=.(ROWMODEL)]
     
     

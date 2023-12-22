@@ -44,9 +44,10 @@ $IDRANGES ; USED IF PARSE_TYPE=3
 1:1,50
 2:51,100",as.character(nc),as.character(nc-1))
 
-    con.newfile <- file(file, "wb")
-    writeLines(text, con = con.newfile)
-    close(con.newfile)
+    ## con.newfile <- file(file, "wb")
+    ## writeLines(text, con = con.newfile)
+    ## close(con.newfile)
+    writeTextFile(lines=text,file=file)
     
     return(file)
     

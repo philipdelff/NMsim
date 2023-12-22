@@ -182,6 +182,7 @@ test_that("SAEM - known",{
     simres.5
 
     expect_equal_to_reference(simres.5,fileRef)
+
 })
 
 
@@ -253,11 +254,66 @@ test_that("multiple data sets",{
     set.seed(43)
     simres.multidata <- NMsim(file.mod,
                               data=data.multiple
-                              ,table.vars="PRED IPRED Y",
+                             ,table.vars="PRED IPRED Y",
                               dir.sims="testOutput"
-                              ,name.sim="datalist_01"
+                             ,name.sim="datalist_01"
                              ,method.execute="nmsim"
                              ,path.nonmem=path.nonmem
+                              )
+
+
+})
+
+test_that("multiple data sets on cluster",{
+    data.multiple <- split(dt.sim.known,by="ID")
+    data.multiple
+
+    set.seed(43)
+    simres.multidata <- NMsim(file.mod,
+                              data=data.multiple
+                             ,table.vars="PRED IPRED Y",
+                              dir.sims="testOutput"
+                             ,name.sim="datalist_01"
+                             ,method.execute="nmsim"
+                             ,path.nonmem=path.nonmem
+                              ,sge=T
+                              )
+
+
+})
+
+test_that("default with renaming",{
+
+    fileRef <- "testReference/NMsim_01.rds"
+
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+
+
+    set.seed(43)
+    simres <- NMsim(file.mod=c("ref"=file.mod),
+                    data=dt.sim,
+                    text.table="PRED IPRED",
+                    dir.sims="testOutput",
+                    name.sim="default_01"
+                    )
+
+    ## expect_equal_to_reference(simres,fileRef)
+    
+})
+
+test_that("multiple data sets with renaming",{
+    data.multiple <- split(dt.sim.known[ID<=103],by="ID")
+    data.multiple
+
+    set.seed(43)
+    simres.multidata <- NMsim(c(ref=file.mod),
+                              data=data.multiple
+                             ,table.vars="PRED IPRED Y",
+                              dir.sims="testOutput"
+                             ,name.sim="datalist_01"
+                             ,method.execute="nmsim"
+                             ,path.nonmem=path.nonmem
+                              ,sge=T
                               )
 
 
