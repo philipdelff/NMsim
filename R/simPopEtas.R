@@ -17,13 +17,18 @@
 
 simPopEtas <- function(file.mod,N,seed,file.phi,as.fun){
 
+    par.type <- NULL
+    i <- NULL
+    ID <- NULL
+    dt.res <- NULL
+    
     if(!missing(seed)) set.seed(seed)
     if(missing(file.phi)) file.phi <- NULL
     
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
     
-    pars <- NMdata:::NMreadExt(fnExtension(file.mod,"ext"),return="pars",as.fun="data.table")
+    pars <- NMdata::NMreadExt(file=fnExtension(file.mod,"ext"),return="pars",as.fun="data.table")
     Netas <- pars[par.type=="OMEGA",max(i)]
 
     Sigma <- dt2mat(pars[par.type=="OMEGA"])

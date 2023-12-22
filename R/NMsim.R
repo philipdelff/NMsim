@@ -245,8 +245,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   ){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
-    
+
     est <- NULL
+    DATAROW <- NULL
+    data.name <- NULL
+    direct <- NULL
+    directory <- NULL
     dir.sim <- NULL
     f.exists <- NULL
     files.needed <- NULL
@@ -265,9 +269,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     default <- NULL
     known <- NULL
     model <- NULL
+    name.mod <- NULL
     psn <- NULL
-    direct <- NULL
-    directory <- NULL
     nmsim <- NULL
     ROWMODEL <- NULL
     fn.mod <- NULL

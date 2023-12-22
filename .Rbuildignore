@@ -51,3 +51,4 @@ LINK.LNK
 .*_dir.*
 ^R/NMwritePreamble.R
 ^tests_manual
+^tests/testthat/simulations
