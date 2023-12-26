@@ -872,10 +872,20 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
 ### files needed can vary, so NMexec must be run for one model at a time
     simres <- NULL
+
     if(execute){
-        
+
         ## run sim
         wait <- !sge
+
+        if(wait){
+            
+            args.NMscanData.list <- c(args.NMscanData,args.NMscanData.default)
+            args.NMscanData.list <- args.NMscanData.list[unique(names(args.NMscanData.list))]
+            dt.models[,args.NMscanData:=vector("list", .N)]
+            dt.models[,args.NMscanData:=list(list(args.NMscanData.list))]
+
+        }
         
         simres <- dt.models[,{
             simres.n <- NULL
@@ -901,11 +911,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             NMexec(files=path.sim,sge=sge,nc=nc,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
             
             if(wait){
-                args.NMscanData <- c(args.NMscanData,args.NMscanData.default)
-                args.NMscanData <- args.NMscanData[unique(names(args.NMscanData))]
                 
                 ## simres.n <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive))
-                simres.n <- try(do.call(NMscanData,c(file=path.sim.lst,as.fun="data.table",file.data=input.archive,args.NMscanData)))
+                simres.n <- try(do.call(NMscanData,c(file=path.sim.lst,as.fun="data.table",file.data=input.archive,args.NMscanData[[1]])))
                 
 
                 if(inherits(simres.n,"try-error")){
@@ -931,7 +939,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         simres[,ROWMODEL2:=NULL]
     }
 ###  Section end: Execute
-
+    dt.models.save <- split(dt.models,by="dir.sim")
+    lapply(1:length(dt.models.save),function(I){
+        fn.rds <- file.path(unique(dt.models.save[[I]][,dir.sim]),"NMsim_paths.rds")
+        saveRDS(dt.models.save[[I]],file=fn.rds)
+    })
     ## if(!wait) return(simres$lst)
     as.fun(simres)
 

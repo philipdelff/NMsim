@@ -248,6 +248,8 @@ test_that("VPC with complicated INPUT",{
 
 
 test_that("multiple data sets",{
+
+    file.mod <- "testData/nonmem/xgxr032.mod"
     data.multiple <- split(dt.sim.known,by="ID")
     data.multiple
 
@@ -262,6 +264,9 @@ test_that("multiple data sets",{
                               )
 
 
+    ## tab.paths <- readRDS("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
+    ## simres <- NMscanMultiple(tab.paths$path.sim.lst)
+    simres <- NMscanSim("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
 })
 
 test_that("multiple data sets on cluster",{
@@ -276,7 +281,7 @@ test_that("multiple data sets on cluster",{
                              ,name.sim="datalist_01"
                              ,method.execute="nmsim"
                              ,path.nonmem=path.nonmem
-                              ,sge=T
+                             ,sge=T
                               )
 
 
@@ -313,8 +318,30 @@ test_that("multiple data sets with renaming",{
                              ,name.sim="datalist_01"
                              ,method.execute="nmsim"
                              ,path.nonmem=path.nonmem
-                              ,sge=T
+                             ,sge=T
                               )
 
+
+})
+
+test_that("default with nc>1",{
+
+    ## fileRef <- "testReference/NMsim_01.rds"
+
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+
+    set.seed(43)
+    simres <- NMsim(file.mod,
+                    data=dt.sim,
+                    text.table="PRED IPRED",
+                    dir.sims="testOutput",
+                    name.sim="default_01"
+                   ,method.execute="nmsim"
+                   ,nc=72
+                   ,sge=TRUE
+                   ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                    )
+
+    expect_equal_to_reference(simres,fileRef)
 
 })

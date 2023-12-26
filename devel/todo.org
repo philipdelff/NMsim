@@ -61,16 +61,19 @@ NMsim we restrict to nc=1.
 ** NMreadExt - Integrated in NMdata
 *** CANCELED Include model column same way as NMscanData
 *** CANCELED Support multiple files
-*** TODO Intro arg return
+*** CANCELED Intro arg return
 Align with NMdata
 ** NMsim
+*** TODO [#A] Save dt of models
+Can be used to read all results later. And see what has been done in
+the individual runs.
 *** TODO [#A] Work with output control streams
 At least be able to identify and throw error
 *** DONE BUG in handling no data
 It must add col.row to output table. And NMscanData arguments
 collected dont seem to be used when running NMscanData.
 *** TODO [#B] option to clean temp dirs
-*** TODO [#A] Support list of data sets
+*** DONE Support list of data sets
 *** TODO [#B] Function to read and save results
 And clean up?
 *** DONE Support args.NMscanData 

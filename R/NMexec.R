@@ -231,6 +231,13 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         }
 
 
+        if((sge && nc > 1)||(sge && method.execute=="psn")){
+            if(nc>1){
+                file.pnm <- file.path(rundir,"NMexec.pnm")
+                pnm <- NMgenPNM(nc=nc,file=file.pnm)
+            }
+        }
+
         if(method.execute=="psn"){
             ##if(system.tpe=="linux"){
             
@@ -242,8 +249,6 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             if(sge){
                 string.cmd <- paste0(string.cmd," -run_on_sge")
                 if(nc>1){
-                    file.pnm <- file.path(rundir,"NMexec.pnm")
-                    pnm <- NMgenPNM(nc=nc,file=file.pnm)
                     string.cmd <- paste0(string.cmd," -sge_prepend_flags=\"-pe orte ",nc," -V\" -parafile=",basename(pnm)," -nodes=",nc)
                 }
             }
@@ -270,8 +275,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 
 ##### for nc>1 this can be used <nc> is nc evaluated
                 ## qsub -pe orte <nc> -V -N <name for qstat> -j y -cwd -b y /opt/NONMEM/nm75/run/nmfe75 psn.mod psn.lst -background -parafile=/path/to/pnm [nodes]=<nc>
-
-
+                string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
                 wait <- TRUE
             } else {
                 string.cmd <- sprintf("cd %s; ./%s",dirname(string.cmd),basename(string.cmd))
@@ -290,6 +294,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             shell(shQuote(path.script,type="cmd") )
         }
         if(system.type=="linux"){
+            
             if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
             if(!wait) string.cmd <- paste(string.cmd,"&")
             
