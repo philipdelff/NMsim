@@ -5,6 +5,11 @@
   population can be saved as a `phi` file to be reused in subsequent
   simulations.
 
+* Function NMreadSim provides a very simple interface to reading
+  simulation results. Especailly in cases where the simulation is
+  being parallelized or otherwise spawns multiple Nonmem jobs, this is
+  a useful feature.
+
 # 0.0.6
 ## New features
 

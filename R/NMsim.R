@@ -577,6 +577,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## where tosave input data to be read by simulation control stream
     ## fn.data is the data file name, no path
     dt.models[,fn.data:=paste0("NMsimData_",fnExtension(fnAppend(name.mod,name.sim),".csv"))]
+    dt.models[,fn.data:=fnAppend(fn.data,data.name),by=.(ROWMODEL)]
+    
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
     
 ### clear simulation directories so user does not end up with old results
