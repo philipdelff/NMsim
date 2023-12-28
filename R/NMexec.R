@@ -266,16 +266,19 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             }
             string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed)
             if(sge) {
-                
-                ## string.cmd <- sprintf("cd %s; qsub -terse -wd \'%s\' %s",getwd(),dirname(string.cmd),string.cmd)
-                ## I am not sure if absolute path is needed here.
-                string.cmd <- sprintf('cd "%s"; qsub -terse -wd \'%s\' %s',
-                                      getwd(),getAbsolutePath(dirname(string.cmd)),string.cmd)
-                ## string.cmd <- paste0("CURWD=",getwd()," ",string.cmd)
+
+                if(nc==1){
+                    ## string.cmd <- sprintf("cd %s; qsub -terse -wd \'%s\' %s",getwd(),dirname(string.cmd),string.cmd)
+                    ## I am not sure if absolute path is needed here.
+                    string.cmd <- sprintf('cd "%s"; qsub -terse -wd \'%s\' %s',
+                                          getwd(),getAbsolutePath(dirname(string.cmd)),string.cmd)
+                    ## string.cmd <- paste0("CURWD=",getwd()," ",string.cmd)
 
 ##### for nc>1 this can be used <nc> is nc evaluated
-                ## qsub -pe orte <nc> -V -N <name for qstat> -j y -cwd -b y /opt/NONMEM/nm75/run/nmfe75 psn.mod psn.lst -background -parafile=/path/to/pnm [nodes]=<nc>
-                string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
+                    ## qsub -pe orte <nc> -V -N <name for qstat> -j y -cwd -b y /opt/NONMEM/nm75/run/nmfe75 psn.mod psn.lst -background -parafile=/path/to/pnm [nodes]=<nc>
+                } else {
+                    string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
+                }
                 wait <- TRUE
             } else {
                 string.cmd <- sprintf("cd %s; ./%s",dirname(string.cmd),basename(string.cmd))

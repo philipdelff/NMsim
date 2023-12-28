@@ -281,8 +281,11 @@ test_that("multiple data sets on cluster",{
                              ,name.sim="datalist_01"
                              ,method.execute="nmsim"
                              ,path.nonmem=path.nonmem
-                             ,sge=T
+                             ,sge=TRUE
                               )
+
+    class(simres.multidata)
+    NMreadSim()
 
 
 })
@@ -318,7 +321,7 @@ test_that("multiple data sets with renaming",{
                              ,name.sim="datalist_01"
                              ,method.execute="nmsim"
                              ,path.nonmem=path.nonmem
-                             ,sge=T
+                             ,sge=TRUE
                               )
 
 

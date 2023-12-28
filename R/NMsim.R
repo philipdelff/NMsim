@@ -942,9 +942,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models.save <- split(dt.models,by="dir.sim")
     lapply(1:length(dt.models.save),function(I){
         fn.rds <- file.path(unique(dt.models.save[[I]][,dir.sim]),"NMsim_paths.rds")
+        message(sprintf("\nWriting simulation info to %s\n",fn.rds))
         saveRDS(dt.models.save[[I]],file=fn.rds)
     })
     ## if(!wait) return(simres$lst)
-    as.fun(simres)
-
+    if(wait){
+        return(as.fun(simres))
+    } else {
+        addClass(dt.models,"NMsimTab")
+        return(dt.models)
+    }
 }
