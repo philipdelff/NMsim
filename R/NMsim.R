@@ -547,10 +547,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
     
-    ### name.mod and name.sim are confusing. name.mod is the name
-    ### specified for the mod, like
-    ### file.mod=c(ref="run01.mod"). name.sim is the name that was
-    ### given for the who sim.
+### name.mod and name.sim are confusing. name.mod is the name
+### specified for the mod, like
+### file.mod=c(ref="run01.mod"). name.sim is the name that was
+### given for the who sim.
     
     ## fn.sim is the file name of the simulation control stream created by NMsim
     ## fn.sim <- sub("^run","NMsim",basename(file.mod))
@@ -580,7 +580,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,fn.data:=fnAppend(fn.data,data.name),by=.(ROWMODEL)]
     
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
-    
+
+    ## fn.rds - Where to save table of runs
+    dt.models[,fn.rds:=file.path(dir.sim,"NMsim_paths.rds")]
+
+
 ### clear simulation directories so user does not end up with old results
     if(sim.dir.from.scratch){
         dt.models[,if(dir.exists(dir.sim)) unlink(dir.sim),by=.(ROWMODEL)]
@@ -877,6 +881,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     if(execute){
 
+        dt.models[,unlink(fn.rds)]
+
         ## run sim
         wait <- !sge
 
@@ -916,7 +922,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 
                 ## simres.n <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive))
                 simres.n <- try(do.call(NMscanData,c(file=path.sim.lst,as.fun="data.table",file.data=input.archive,args.NMscanData[[1]])))
-                
 
                 if(inherits(simres.n,"try-error")){
                     message("Results could not be read.")
@@ -941,11 +946,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         simres[,ROWMODEL2:=NULL]
     }
 ###  Section end: Execute
+
+    
     dt.models.save <- split(dt.models,by="dir.sim")
     lapply(1:length(dt.models.save),function(I){
-        fn.rds <- file.path(unique(dt.models.save[[I]][,dir.sim]),"NMsim_paths.rds")
-        saveRDS(dt.models.save[[I]],file=fn.rds)
+####### notify user where to find rds files
+        fn.this.rds <- unique(dt.models.save[[I]][,fn.rds])
+        saveRDS(dt.models.save[[I]],file=fn.this.rds)
     })
+
     ## if(!wait) return(simres$lst)
     as.fun(simres)
 
