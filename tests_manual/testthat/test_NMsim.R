@@ -284,7 +284,7 @@ test_that("multiple data sets on cluster",{
                               )
 
     class(simres.multidata)
-    NMreadSim()
+    res <- NMreadSim(simres.multidata)
 
 
 })

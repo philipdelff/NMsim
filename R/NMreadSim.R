@@ -29,13 +29,13 @@ NMreadSim <- function(path,as.fun){
     ## if an rds, just read it
     if(!is.list(path) && is.character(path)) {
         tab.paths <- readRDS(path)
-    }
-    if(!inherits(tab.paths,"NMsimTab")) {
-        stop("The provided rds file does not contain a NMsimRes object")
+        
+        if(!inherits(tab.paths,"NMsimTab")) {
+            stop("The provided rds file does not contain a NMsimRes object")
+        }
     }
 
-
-    ## simres <- NMscanMultiple(tab.paths$path.sim.lst)
+### read all sim results
     res <- tab.paths[,{
         args.NM <- args.NMscanData[[1]]
         if(! "quiet" %in% names(args.NM)){
