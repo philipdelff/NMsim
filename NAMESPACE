@@ -2,6 +2,7 @@
 
 export(NMcreateDoses)
 export(NMexec)
+export(NMreadSim)
 export(NMsim)
 export(NMsim_VarCov)
 export(NMsim_asis)

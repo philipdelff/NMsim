@@ -10,13 +10,17 @@ dt.dos <- NMcreateDoses(AMT=300,TIME=0)
 dt.sim <- addEVID2(doses=dt.dos,time.sim=c(1,6,12),CMT=2)
 dt.sim[,BBW:=40][,ROW:=.I]
 
+dt.sim.known <- egdt(dt.sim[,!("ID")],data.table(ID=101:105))
+setorder(dt.sim.known,ID,TIME,EVID,CMT)
+
+
 
 library(data.table)
 
 ## NMdataConf(dir.psn="/opt/psn")
-## path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
+path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
 NMdataConf(dir.psn=NULL)
-path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
+## path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 
 
 
@@ -71,9 +75,6 @@ test_that("basic - known",{
     fileRef <- "testReference/NMsim_03.rds"
 
     file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
-
-    dt.sim.known <- egdt(dt.sim[,!("ID")],data.table(ID=101:105))
-    setorder(dt.sim.known,ID,TIME,EVID,CMT)
     
     set.seed(43)
     simres <- NMsim(file.mod,
@@ -165,8 +166,6 @@ test_that("SAEM - known",{
     ## res <- NMscanData(file.mod)
     ## genPhiFile(res,file="testOutput/tmp_etas.phi")
     
-    dt.sim.known <- egdt(dt.sim[,!("ID")],data.table(ID=101:105))
-    setorder(dt.sim.known,ID,TIME,EVID,CMT)
     
     set.seed(43)
     simres.5 <- NMsim(file.mod,
@@ -251,7 +250,7 @@ test_that("multiple data sets",{
 
     file.mod <- "testData/nonmem/xgxr032.mod"
     data.multiple <- split(dt.sim.known,by="ID")
-    data.multiple
+    ## data.multiple
 
     set.seed(43)
     simres.multidata <- NMsim(file.mod,
@@ -260,13 +259,13 @@ test_that("multiple data sets",{
                               dir.sims="testOutput"
                              ,name.sim="datalist_01"
                              ,method.execute="nmsim"
-                             ,path.nonmem=path.nonmem
+                               ,path.nonmem=path.nonmem
                               )
 
 
     ## tab.paths <- readRDS("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
     ## simres <- NMscanMultiple(tab.paths$path.sim.lst)
-    simres <- NMscanSim("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
+    simres <- NMreadSim("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
 })
 
 test_that("multiple data sets on cluster",{

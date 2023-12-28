@@ -233,12 +233,12 @@ A data.frame with simulation results (same number of rows
     to simulation control streams.
 }
 \description{
-Supply a data set and an input control stream, and NMsim can
-create neccesary files, run the simulation and read the
-results. It has additional methods for other siulation types
-available, can do multiple simulations at once and more. Please
-see vignettes for an introcution to how to get the most out of
-this.
+Supply a data set and an estimation input control stream, and
+NMsim can create neccesary files (control stream, data files), run
+the simulation and read the results. It has additional methods for
+other simulation types available, can do multiple simulations at
+once and more. Please see vignettes for an introduction to how to
+get the most out of this.
 }
 \details{
 Loosely speaking, the argument \code{method.sim} defines
