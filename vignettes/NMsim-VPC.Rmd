@@ -16,7 +16,7 @@ header-includes:
 ```{r,include = FALSE}
 library(tidyvpc)
 library(NMdata)
-## library()
+library(fst)
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
                       collapse = TRUE
@@ -43,10 +43,15 @@ control stream (`file.mod`) and the simulation input data set
 re-use the estimation data for the simulation. That is the simulation
 we need for a VPC. We will use an example model included with NMsim:
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
+
+
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 file.mod <- file.project("nonmem/xgxr022.mod")
 
+```
+
+```{r,eval=FALSE}
 set.seed(43)
 ## notice the data argument is not used.
 simres.vpc <- NMsim(file.mod,
