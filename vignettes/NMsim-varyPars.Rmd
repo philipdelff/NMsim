@@ -1,0 +1,77 @@
+## Vary parameter values
+Sometimes we want to simulate with some modification to the estimated model. NMsim can make such user-specified modifications to the model before simulating through the `list.sections` argument. 
+
+The SAD study was run with a fast solution formulation. We want to see how a slower absorption rate would affect the PK prediction for the multiple dose regimen. In the model estimate, `TVKA=2.17`. We now try with a four times slower absorption:
+
+```{r,eval=FALSE}
+simres <- NMsim(file.mod=file.mod
+               ,data=dat.sim
+               ,dir.sims="~/NMsim_vignette" ## where to store simulation files
+               ,seed=12345
+                )
+
+simres.slowabs <- NMsim(file.mod=file.mod,
+                        data=dat.sim
+                       ,dir.sims="~/NMsim_vignette" ## where to store simulation files
+                       ,name.sim="slower_abs"
+                       ,seed=12345
+                       ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/4","KA=KA/4"))
+                        )
+
+```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_slowabs.fst"
+if(run.simuls){
+    write_fst(simres.slowabs,path=file.fst)
+} else {
+    simres.slowabs <- read_fst(file.fst,as.data.table=TRUE)
+}
+simres <- read_fst("simulate-results/simres.fst",as.data.table=TRUE)
+```
+
+```{r,eval=TRUE}
+rbind(simres,simres.slowabs) |>
+    ggplot(aes(TIME,PRED,colour=model))+
+    geom_line()
+
+```
+
+We used `list.sections` to modify the `$PK` section. We used it to
+append two lines. We could use it to modify any section in the model,
+and we could essentially do any modification. However, appending to
+`$PK` or `$PRED` is simple and often both robust and flexible enough.
+
+That was a very spcific analysis of one specific `KA` value. It is often more convenient to control the numeric changes to the model using the simulation input data set rather than hard-coding numerical values into `list.sections`. The following tries a number of fold changes to `KA`.
+
+```{r,include=TRUE,eval=FALSE}
+NMdataConf(as.fun="data.table")
+dat.sim.varka <- egdt(dat.sim,data.table(KASCALE=c(1,4,10)))
+dat.sim.varka[,ID:=.GRP,by=.(KASCALE,ID)]
+setorder(dat.sim.varka,ID,TIME,EVID)
+
+simres.varka <- NMsim(file.mod=file.mod,
+                      data=dat.sim.varka
+                     ,dir.sims="~/NMsim_vignette" ## where to store simulation files
+                     ,name.sim="varka"
+                     ,seed=12345
+                     ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
+                      )
+
+```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_varka.fst"
+if(run.simuls){
+    write_fst(simres.varka,path=file.fst)
+} else {
+    simres.varka <- read_fst(file.fst,as.data.table=TRUE)
+}
+```
+
+```{r,eval=TRUE}
+ggplot(simres.varka[simres.varka$EVID==2,],aes(TIME,PRED,colour=factor(KASCALE)))+geom_line()+labs(colour="Fold absorption prolongation")
+```
+
+
+
+<!-- ## Using NMsim to validate reimplementations of models -->
+

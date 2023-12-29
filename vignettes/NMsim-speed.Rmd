@@ -1,0 +1,3 @@
+## Reduce amount of data written to file
+
+## Break the simulation into multiple Nonmem runs

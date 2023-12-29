@@ -1,5 +1,5 @@
 ---
-title: "VPC simulations with NMsim"
+title: "VPC simulations"
 output:
 rmarkdown::html_vignette:
     toc: true

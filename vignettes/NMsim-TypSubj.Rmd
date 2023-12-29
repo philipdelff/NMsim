@@ -1,0 +1,37 @@
+## Simulation of a typical subject
+A typical subject is here understood as a subject without random
+effects, i.e. all ETA's equal zero. It is important to realize that
+"typical" does not have to do with covariates which the user will
+still need to control in the model, in the simulation input data, or
+by a combination of these. Getting `NMsim` to run with all ETA's
+equaling zero is this easy:
+
+```{r,eval=FALSE}
+simres.typ <- NMsim(file.mod=file.mod,
+                    data=dat.sim,
+                    name.sim="typSubj",
+                    method.sim=NMsim_typical)
+
+```
+
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_typ.fst"
+if(run.simuls){
+    write_fst(simres.typ,path=file.fst)
+} else {
+    simres.typ <- read_fst(file.fst,as.data.table=TRUE)
+}
+```
+
+
+In the first simulation we used `PRED` from the default simulation
+method to get a typical subject simulation. That will work in many
+cases, but that depends on the model. The way to run a simulation with
+all ETA's set to 0 is using `method.sim=NMsim_typical`.
+
+```{r,eval=TRUE}
+p.typ <- ggplot(simres.typ,aes(TIME,IPRED,color=trt))+geom_line()+
+    geom_line(aes(y=PRED))
+p.typ
+
+```
