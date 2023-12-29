@@ -1,0 +1,198 @@
+---
+title: "VPC simulations with NMsim"
+output:
+rmarkdown::html_vignette:
+    toc: true
+Suggests: markdown
+VignetteBuilder: knitr
+vignette: >
+  %\VignetteIndexEntry{Configuration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+header-includes:
+- \usepackage{ae}
+---
+
+```{r,include = FALSE}
+##knitr::opts_chunk$set(dev = "cairo_pdf")
+knitr::opts_chunk$set(
+                      collapse = TRUE
+                     ,comment = "#>"
+                     ,fig.width=7
+                     ,cache=FALSE
+                  )
+
+## NMdataConf(dir.psn="/opt/psn")
+
+## this changes data.table syntax. I think we can do without.
+## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+```
+## Simulations for Visual Predictive Checks (VPC)
+This vignette shows how to generate simulations for generation of VPC
+plots. While `NMsim` does not include any functionality for summarizing quantiles or plotting, it provides powerful ways to obtain the simulated data needed. We shall see how the `tidyvpc` package easily creates VPC plots based on the simulation results.
+
+## Default option: reuse estimation data for simulation
+Normally, the two main arguments to NMsim are the path to the input
+control stream (`file.mod`) and the simulation input data set
+(`data`). But if we leave out the the `data` argument, NMsim will
+re-use the estimation data for the simulation. That is the simulation
+we need for a VPC. We will use an example model included with NMsim:
+
+```{r,eval=FALSE}
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+file.mod <- file.project("nonmem/xgxr022.mod")
+
+set.seed(43)
+## notice the data argument is not used.
+simres.vpc <- NMsim(file.mod,
+                    table.vars=c("PRED","IPRED", "Y"),
+                    dir.sims="testOutput",
+                    name.sim="vpc_01"
+                   ,nsims=500
+                    )
+
+```
+
+Similar to PSN VPC
+
+Allows for table.vars
+
+Simulation with modified input uses same code
+
+### Make use of the cluster
+```{r,eval=FALSE}
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+file.mod <- file.project("nonmem/xgxr022.mod")
+
+set.seed(43)
+## notice the data argument is not used.
+simres.vpc.sge <- NMsim(file.mod,
+                        table.vars=c("PRED","IPRED", "Y"),
+                        dir.sims="testOutput",
+                        name.sim="vpc_01"
+                       ,nsims=5
+                       ,sge=TRUE
+                       ,nc=1
+                       ## ,method.execute="nmsim"
+                       ## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"
+                        )
+
+```
+
+## reuse estimation data or supply new simulation input data?
+
+
+## Notice: These features are only available in the NMsim development version 
+In NMsim 0.0.4 and earlier versions NMsim required a data set to be
+supplied using the `data` argument. The steps shown in this vignette
+do work with those versions if you do that, but it is better to avoid
+it. The way the new versions of NMsim does this if no data set is
+supplied is safer because it does not process the input data at
+all. It reruns the estimated model on the estimation input data set
+the exactly as specified in the estimation control stream. Once one
+reads the data set, applies filters like specified in Nonmem, renames
+columns like Nonmem does, mistakes can be made. The new versions avoid
+this risk.
+
+## Including simulated residual error 
+The simulations in this vignette are based on using a Nonmem variable `Y` 
+evaluates prediction plus simulated residual error. The variable
+does not need to be called `Y`, Whether the variability (variance or std. deviation) is estimated using `$SIGMA` or `$THETA` does not matter. One example of a combined error model (here, `$SIGMA` is used) is:
+
+```
+Y=F+F*ERR(1)+ERR(2)
+```
+
+## Running NMsim
+Normally, the two main arguments to NMsim are the path to the input
+control stream (`file.mod`) and the simulation input data set
+(`data`). But if we leave out the the `data` argument, NMsim will
+re-use the estimation data for the simulation. That is the simulation
+we need for a VPC. We will use an example model included with NMsim:
+
+```{r}
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+file.mod <- file.project("nonmem/xgxr022.mod")
+
+set.seed(43)
+## notice the data argument is not used.
+simres.vpc <- NMsim(file.mod,
+                    ## we don't need much for the output table. Notice
+                    ## Y is sim with residual variability
+                    table.vars=c("PRED","IPRED", "Y"),
+                    dir.sims="testOutput",
+                    name.sim="vpc_01"
+                   ,nsims=3
+                   ,method.execute="nmsim"
+                   ,path.nonmem=path.nonmem
+                    )
+
+```
+
+
+```{r}
+simdir <- file.path("simulations",paste(fnExtension(basename(file.mod),""),"vpc3",sep="_"))
+simres <- NMscanMultiple(dir=simdir,quiet=TRUE,use.input=FALSE)
+simres <- NMreadSim("simulations/xgxr0 )
+
+cols.trans <- cc(Y,IPRED,PRED)
+simres[,(cols.trans):=lapply(.SD,fun.trans),.SDcols=cols.trans]
+dims(simres)
+
+```
+
+
+## Plotting using `tidyvpc` 
+```{r}
+res <- NMscanData(file.lst)
+data.obs <- res[EVID==0]
+
+## ggplot(data.obs,aes(TIME,DV))+
+##     geom_point()+
+##     facet_wrap(~ID)
+
+### for stratification, we need to make sure to add those variables to the sim data. 
+## in case we need to create a new grouping
+data.obs[,groupDose:=paste(STUDY,"-",DOSE,"mg")]
+data.obs[,.N,by=.(groupDose)]
+
+## get group into sim data
+simres <- mergeCheck(simres,
+                     findCovs(data.obs,by="ID")[,.(ID,groupDose,STUDY,DOSE)]
+                    ,by="ID")
+
+
+## run vpc
+vpc1 <-
+    observed(data.obs[EVID==0], x = TIME, y = DV) |>
+    simulated(simres[EVID==0], y = Y) |>
+    stratify(~groupDose+STUDY+DOSE) |>
+    binning(bin = "ntile", nbins = 9) |>
+    vpcstats()
+
+```
+
+
+
+## Parallelized simulation
+Running 500 or 1000 simulations may take a while if your data set is
+large. The following example runs only ten repetitions in a Nonmem
+runs, but it runs 100 of those. 
+
+
+```{r}
+set.seed(9857)    
+simpaths <- NMsim(file.mod,
+                  ## we don't need much for the output table. Notice
+                  ## Y is sim with residual variability
+                  table.vars="TIME PRED IPRED Y",
+                  dir.sims="simulations",
+                  name.sim="vpc3",
+                  ## We do 1000 reps but its slow. So just 10 on
+                  ## each run and 100 runs.
+                  subproblems=10,
+                  nsims=100
+                  ## run on the cluster
+                 ,sge=TRUE
+                  )
+```
