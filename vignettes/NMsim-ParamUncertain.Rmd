@@ -82,7 +82,7 @@ simlsts.VarCov <- NMsim(
     file.mod=file.mod,          ## Path to estimation input control stream
     data=dat.sim                ## simulation input data
    ,dir.sims="~/NMsim_vignette" ## where to store simulation files
-   ,text.table="PRED IPRED"     ## Let Nonmem write a minimum output table
+   ,table.vars="PRED IPRED"     ## Let Nonmem write a minimum output table
    ,method.sim=NMsim_VarCov     ## Var-Cov parameter sampling
    ,name.sim="VarCov"           ## a recognizable directory name
    ,nsims=1000                  ## sampling 500 models

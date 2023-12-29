@@ -1,3 +1,69 @@
+---
+title: "Simulation of typical subjects"
+output:
+rmarkdown::html_vignette:
+    toc: true
+    code_folding: show
+Suggests: markdown
+VignetteBuilder: knitr
+vignette: >
+  %\VignetteIndexEntry{Typical}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+header-includes:
+- \usepackage{ae}
+---
+
+```{r,include = FALSE}
+##knitr::opts_chunk$set(dev = "cairo_pdf")
+knitr::opts_chunk$set(
+                      collapse = TRUE
+                     ,comment = "#>"
+                     ,fig.width=7
+                     ,cache=FALSE
+                  )
+
+## this changes data.table syntax. I think we can do without.
+## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+```
+
+```{r,setup,include=F}
+## library(devtools)
+## unloadNamespace("NMsim")
+## unloadNamespace("NMdata")
+
+## load_all("~/wdirs/NMdata")
+## load_all()
+library(NMsim)
+library(data.table)
+library(NMdata)
+## library(dplyr)
+library(tibble)
+library(ggplot2)
+library(patchwork)
+library(tracee)
+## library(tidyr)
+library(fst)
+library(knitr)
+## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+## NMdataConf(path.nonmem="/opt/nonmem/nm751/run/nmfe75")
+## NMdataConf(dir.psn=NULL)
+
+theme_set(theme_bw())
+this.script <- "NMsim-simulate.Rmd"
+writeOutput <- TRUE
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+## file.project <- function(...)file.path("../inst/examples",...)
+## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
+
+found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)",full.names=TRUE)
+unlink(found.files)
+
+run.simuls <- FALSE
+NMdataConf(as.fun="data.table")
+```
+
+
 ## Simulation of a typical subject
 A typical subject is here understood as a subject without random
 effects, i.e. all ETA's equal zero. It is important to realize that
