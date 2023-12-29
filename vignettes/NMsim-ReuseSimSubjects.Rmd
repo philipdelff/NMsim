@@ -1,0 +1,36 @@
+---
+title: "Reuse simulated subjects"
+output:
+rmarkdown::html_vignette:
+    toc: true
+Suggests: markdown
+VignetteBuilder: knitr
+vignette: >
+  %\VignetteIndexEntry{ParameterUncertainty}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+header-includes:
+- \usepackage{ae}
+---
+
+```{r,include = FALSE}
+library(tidyvpc)
+library(NMdata)
+library(fst)
+##knitr::opts_chunk$set(dev = "cairo_pdf")
+knitr::opts_chunk$set(
+                      collapse = TRUE
+                     ,comment = "#>"
+                     ,fig.width=7
+                     ,cache=FALSE
+                  )
+
+## NMdataConf(dir.psn="/opt/psn")
+
+## this changes data.table syntax. I think we can do without.
+## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+run.simuls <- FALSE
+```
+
+
+Look at `?simPopEtas()`.

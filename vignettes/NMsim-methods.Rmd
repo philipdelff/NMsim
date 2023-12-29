@@ -1,5 +1,5 @@
 ---
-title: "NMsim - Additional Simulation Methods"
+title: "Simulate subjects using Emperical Bayes Estimates (Etas/Phis)"
 output:
 rmarkdown::html_vignette:
     toc: true
@@ -7,7 +7,7 @@ rmarkdown::html_vignette:
 Suggests: markdown
 VignetteBuilder: knitr
 vignette: >
-  %\VignetteIndexEntry{Simulation Methods}
+  %\VignetteIndexEntry{Known}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 header-includes:
@@ -37,12 +37,12 @@ knitr::opts_chunk$set(
 library(NMsim)
 library(data.table)
 library(NMdata)
-library(dplyr)
+## library(dplyr)
 library(tibble)
 library(ggplot2)
 library(patchwork)
 library(tracee)
-library(tidyr)
+## library(tidyr)
 library(fst)
 library(knitr)
 ## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
