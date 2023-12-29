@@ -6,7 +6,7 @@ rmarkdown::html_vignette:
 Suggests: markdown
 VignetteBuilder: knitr
 vignette: >
-  %\VignetteIndexEntry{Configuration}
+  %\VignetteIndexEntry{VPC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 header-includes:
@@ -16,7 +16,7 @@ header-includes:
 ```{r,include = FALSE}
 library(tidyvpc)
 library(NMdata)
-library()
+## library()
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
                       collapse = TRUE
@@ -29,7 +29,9 @@ knitr::opts_chunk$set(
 
 ## this changes data.table syntax. I think we can do without.
 ## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+run.simuls <- FALSE
 ```
+
 ## Simulations for Visual Predictive Checks (VPC)
 This vignette shows how to generate simulations for generation of VPC
 plots. While `NMsim` does not include any functionality for summarizing quantiles or plotting, it provides powerful ways to obtain the simulated data needed. We shall see how the `tidyvpc` package easily creates VPC plots based on the simulation results.
@@ -92,7 +94,7 @@ simres.vpc <- NMreadSim(sim.vpc.sge)
 ```
 
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "VPC-results/simres-vpc.fst"
+file.fst <- "simulate-results/simres-vpc.fst"
 if(run.simuls){
     write_fst(simres.vpc,path=file.fst)
 } else {
