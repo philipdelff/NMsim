@@ -25,7 +25,8 @@ Suggests:
   patchwork,
   tibble,
   tracee,
-  tidyr
+  tidyr,
+  tidyvpc
 Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/philipdelff/NMsim/issues
