@@ -10,6 +10,18 @@
     <loc>https://philipdelff.github.io/NMsim/LICENSE-text.html</loc>
   </url>
   <url>
+    <loc>https://philipdelff.github.io/NMsim/articles/NMsim-ParamUncertain.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/articles/NMsim-ResidVar.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/articles/NMsim-ReuseSimSubjects.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/articles/NMsim-TypSubj.html</loc>
+  </url>
+  <url>
     <loc>https://philipdelff.github.io/NMsim/articles/NMsim-VPC.html</loc>
   </url>
   <url>
@@ -20,6 +32,12 @@
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/articles/NMsim-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/articles/NMsim-speed.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/articles/NMsim-varyPars.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/articles/index.html</loc>
