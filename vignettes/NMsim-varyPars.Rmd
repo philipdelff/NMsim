@@ -17,6 +17,7 @@ header-includes:
 library(tidyvpc)
 library(NMdata)
 library(fst)
+library(ggplot2)
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
                       collapse = TRUE
@@ -103,7 +104,9 @@ if(run.simuls){
 ```
 
 ```{r,eval=TRUE}
-ggplot(simres.varka[simres.varka$EVID==2,],aes(TIME,PRED,colour=factor(KASCALE)))+geom_line()+labs(colour="Fold absorption prolongation")
+ggplot(simres.varka[simres.varka$EVID==2,],aes(TIME,PRED,colour=factor(KASCALE)))+
+geom_line()+
+labs(colour="Fold absorption prolongation")
 ```
 
 
