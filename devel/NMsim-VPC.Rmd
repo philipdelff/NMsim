@@ -14,6 +14,7 @@ header-includes:
 ---
 
 ```{r,include = FALSE}
+library(tidyvpc)
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
                       collapse = TRUE
@@ -60,24 +61,67 @@ Allows for table.vars
 Simulation with modified input uses same code
 
 ### Make use of the cluster
+We will repeat the same as above, but now 500 times (`nsims`). We make
+use of a few more arguments for efficiency. `sge` means that the jobs
+will be sent to the cluster. The `nc` argument is now used meaning
+only one core will be used per job. If each node on the cluster has 16
+cores, this could engage 500/16 ~ 32 nodes in parallel, with all jobs
+executed at the same time. We supply the path to the Nonmem executable. With PSN this should work without specifying the Nonmem path, but PSN for some reason takes more time submitting the jobs to the cluster. If nodes are available, the following simulation should not take more than a couple of minutes to execute.
+
 ```{r,eval=FALSE}
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 file.mod <- file.project("nonmem/xgxr022.mod")
 
 set.seed(43)
 ## notice the data argument is not used.
-simres.vpc.sge <- NMsim(file.mod,
-                        table.vars=c("PRED","IPRED", "Y"),
-                        dir.sims="testOutput",
-                        name.sim="vpc_01"
-                       ,nsims=5
-                       ,sge=TRUE
-                       ,nc=1
-                       ## ,method.execute="nmsim"
-                       ## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"
-                        )
+sim.vpc.sge <- NMsim(file.mod,
+                     table.vars=c("PRED","IPRED", "Y"),
+                     dir.sims="testOutput",
+                     name.sim="vpc_01"
+                    ,nsims=500
+                    ,sge=TRUE
+                    ## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"
+                    ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                     )
+
+simres.vpc <- NMreadSim(sim.vpc.sge)
+```
+
+
+
+## Plotting using `tidyvpc` 
+```{r}
+res <- NMscanData(file.mod,as.fun="data.table")
+data.obs <- res[EVID==0]
+
+## ggplot(data.obs,aes(TIME,DV))+
+##     geom_point()+
+##     facet_wrap(~ID)
+
+### for stratification, we need to make sure to add those variables to the sim data. 
+## in case we need to create a new grouping
+## data.obs[,groupDose:=paste(STUDY,"-",DOSE,"mg")]
+## data.obs[,.N,by=.(groupDose)]
+
+## get group into sim data
+## simres <- mergeCheck(simres,
+##                      findCovs(data.obs,by="ID")[,.(ID,groupDose,STUDY,DOSE)]
+##                     ,by="ID")
+
+
+## run vpc
+vpc1 <-
+    observed(data.obs[EVID==0], x = TIME, y = DV) |>
+    simulated(simres.vpc[EVID==0], y = Y) |>
+    stratify(~DOSE) |>
+    binning(bin = "ntile", nbins = 9) |>
+    vpcstats()
+
+
+plot(vpc1)
 
 ```
+
 
 ## reuse estimation data or supply new simulation input data?
 
@@ -141,36 +185,6 @@ dims(simres)
 
 ```
 
-
-## Plotting using `tidyvpc` 
-```{r}
-res <- NMscanData(file.lst)
-data.obs <- res[EVID==0]
-
-## ggplot(data.obs,aes(TIME,DV))+
-##     geom_point()+
-##     facet_wrap(~ID)
-
-### for stratification, we need to make sure to add those variables to the sim data. 
-## in case we need to create a new grouping
-data.obs[,groupDose:=paste(STUDY,"-",DOSE,"mg")]
-data.obs[,.N,by=.(groupDose)]
-
-## get group into sim data
-simres <- mergeCheck(simres,
-                     findCovs(data.obs,by="ID")[,.(ID,groupDose,STUDY,DOSE)]
-                    ,by="ID")
-
-
-## run vpc
-vpc1 <-
-    observed(data.obs[EVID==0], x = TIME, y = DV) |>
-    simulated(simres[EVID==0], y = Y) |>
-    stratify(~groupDose+STUDY+DOSE) |>
-    binning(bin = "ntile", nbins = 9) |>
-    vpcstats()
-
-```
 
 
 

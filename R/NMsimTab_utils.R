@@ -1,71 +1,71 @@
-##' Remove NMsimRes class and discard NMsimRes meta data
-##' @param x An 'NMsimRes' object.
-##' @return x stripped from the 'NMsimRes' class
+##' Remove NMsimTab class and discard NMsimTab meta data
+##' @param x An 'NMsimTab' object.
+##' @return x stripped from the 'NMsimTab' class
 ##' @export
-unNMsimRes <- function(x){
-    setattr(x,"NMsimRes",NULL)
-    setattr(x,"class",setdiff(class(x),"NMsimRes"))
+unNMsimTab <- function(x){
+    setattr(x,"NMsimTab",NULL)
+    setattr(x,"class",setdiff(class(x),"NMsimTab"))
 }
 
 
-##' Check if an object is 'NMsimRes'
+##' Check if an object is 'NMsimTab'
 ##' @param x Any object
-##' @return logical if x is an 'NMsimRes' object
+##' @return logical if x is an 'NMsimTab' object
 ##' @export
-is.NMsimRes <- function(x){
-    inherits(x,"NMsimRes")
+is.NMsimTab <- function(x){
+    inherits(x,"NMsimTab")
 }
 
 
-##' Basic arithmetic on NMsimRes objects
+##' Basic arithmetic on NMsimTab objects
 ##'
-##' @param x an NMsimRes object
+##' @param x an NMsimTab object
 ##' @param ... arguments passed to other methods.
 ##' @details When 'dimnames', 'merge', 'cbind', 'rbind', or 't' is
-##'     called on an 'NMsimRes' object, the 'NMsimRes' class is dropped,
-##'     and then the operation is performed. So if and 'NMsimRes' object
+##'     called on an 'NMsimTab' object, the 'NMsimTab' class is dropped,
+##'     and then the operation is performed. So if and 'NMsimTab' object
 ##'     inherits from 'data.frame' and no other classes (which is
 ##'     default), these operations will be performed using the
 ##'     'data.frame' methods. But for example, if you use 'as.fun' to
 ##'     get a 'data.table' or 'tbl', their respective methods are used
 ##'     instead.
-##' @return An object that is not of class 'NMsimRes'.
-##' @name NMsimResOperations
+##' @return An object that is not of class 'NMsimTab'.
+##' @name NMsimTabOperations
 NULL
 
-##' @rdname NMsimResOperations
+##' @rdname NMsimTabOperations
 ##' @export
-merge.NMsimRes <- function(x,...){
-    unNMsimRes(x)
+merge.NMsimTab <- function(x,...){
+    unNMsimTab(x)
     merge(x,...)
 }
 
-##' @rdname NMsimResOperations
+##' @rdname NMsimTabOperations
 ##' @export
-t.NMsimRes <- function(x,...){
-    unNMsimRes(x)
+t.NMsimTab <- function(x,...){
+    unNMsimTab(x)
     t(x,...)
 }
 
-##' @rdname NMsimResOperations
+##' @rdname NMsimTabOperations
 ##' @export
-dimnames.NMsimRes <- function(x,...){
-    unNMsimRes(x)
+dimnames.NMsimTab <- function(x,...){
+    unNMsimTab(x)
     dimnames(x,...)
 }
 
-##' @rdname NMsimResOperations
+##' @rdname NMsimTabOperations
 ##' @export
-rbind.NMsimRes <- function(x,...){
+rbind.NMsimTab <- function(x,...){
     
-    unNMsimRes(x)
+    unNMsimTab(x)
     rbind(x,...)
 }
 
-##' @rdname NMsimResOperations
+##' @rdname NMsimTabOperations
 ##' @export
-cbind.NMsimRes <- function(x,...){
-    unNMsimRes(x)
+cbind.NMsimTab <- function(x,...){
+    unNMsimTab(x)
     cbind(x,...)
 }
 
