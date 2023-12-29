@@ -6,7 +6,7 @@ rmarkdown::html_vignette:
 Suggests: markdown
 VignetteBuilder: knitr
 vignette: >
-  %\VignetteIndexEntry{VPC}
+  %\VignetteIndexEntry{02VPC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 header-includes:

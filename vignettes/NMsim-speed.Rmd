@@ -1,3 +1,39 @@
+---
+title: "NMsim and speed"
+output:
+rmarkdown::html_vignette:
+    toc: true
+Suggests: markdown
+VignetteBuilder: knitr
+vignette: >
+  %\VignetteIndexEntry{Speed}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+header-includes:
+- \usepackage{ae}
+---
+
+```{r,include = FALSE}
+library(tidyvpc)
+library(NMdata)
+library(fst)
+library(ggplot2)
+##knitr::opts_chunk$set(dev = "cairo_pdf")
+knitr::opts_chunk$set(
+                      collapse = TRUE
+                     ,comment = "#>"
+                     ,fig.width=7
+                     ,cache=FALSE
+                  )
+
+## NMdataConf(dir.psn="/opt/psn")
+
+## this changes data.table syntax. I think we can do without.
+## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+run.simuls <- FALSE
+```
+
+
 ## Reduce amount of data written to file
 
 ## Break the simulation into multiple Nonmem runs

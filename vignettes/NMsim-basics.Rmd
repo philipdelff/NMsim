@@ -1,5 +1,5 @@
 ---
-title: "NMsim - Simulation of New Subjects"
+title: "Simulation of New Subjects"
 output:
 rmarkdown::html_vignette:
     toc: true
@@ -7,7 +7,7 @@ rmarkdown::html_vignette:
 Suggests: markdown
 VignetteBuilder: knitr
 vignette: >
-  %\VignetteIndexEntry{Simulation -- Basic}
+  %\VignetteIndexEntry{01BASIC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 header-includes:
