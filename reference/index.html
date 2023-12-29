@@ -24,6 +24,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/NMsim-VPC.html">VPC simulations with NMsim</a>
     <a class="dropdown-item" href="../articles/NMsim-basics.html">NMsim -- Simulation of New Subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-config.html">NMsim Configuration</a>
     <a class="dropdown-item" href="../articles/NMsim-methods.html">NMsim - Additional Simulation Methods</a>
@@ -81,6 +82,11 @@
         <dd>Run simulations from an estimated Nonmem model</dd>
       </dl><dl><dt>
           
+          <code><a href="NMsimTabOperations.html">merge(<i>&lt;NMsimTab&gt;</i>)</a></code> <code><a href="NMsimTabOperations.html">t(<i>&lt;NMsimTab&gt;</i>)</a></code> <code><a href="NMsimTabOperations.html">dimnames(<i>&lt;NMsimTab&gt;</i>)</a></code> <code><a href="NMsimTabOperations.html">rbind(<i>&lt;NMsimTab&gt;</i>)</a></code> <code><a href="NMsimTabOperations.html">cbind(<i>&lt;NMsimTab&gt;</i>)</a></code> 
+        </dt>
+        <dd>Basic arithmetic on NMsimTab objects</dd>
+      </dl><dl><dt>
+          
           <code><a href="NMsim_VarCov.html">NMsim_VarCov()</a></code> 
         </dt>
         <dd>Simulate with parameter values sampled from a covariance step</dd>
@@ -127,9 +133,19 @@ stream</dd>
         <dd>Default location of input archive file</dd>
       </dl><dl><dt>
           
+          <code><a href="is.NMsimTab.html">is.NMsimTab()</a></code> 
+        </dt>
+        <dd>Check if an object is 'NMsimTab'</dd>
+      </dl><dl><dt>
+          
           <code><a href="simPopEtas.html">simPopEtas()</a></code> 
         </dt>
         <dd>Generate a population based on a Nonmem model</dd>
+      </dl><dl><dt>
+          
+          <code><a href="unNMsimTab.html">unNMsimTab()</a></code> 
+        </dt>
+        <dd>Remove NMsimTab class and discard NMsimTab meta data</dd>
       </dl></div>
   </main></div>
 
