@@ -17,6 +17,8 @@ header-includes:
 library(tidyvpc)
 library(NMdata)
 library(fst)
+library(ggplot2)
+
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
                       collapse = TRUE
