@@ -32,6 +32,10 @@ knitr::opts_chunk$set(
 ## this changes data.table syntax. I think we can do without.
 ## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
 run.simuls <- FALSE
+
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+file.mod <- file.project("nonmem/xgxr021.mod")
+dat.sim <- read_fst("simulate-results/dat_sim.fst")
 ```
 
 
@@ -97,7 +101,13 @@ You may get messages like "Unable to run job" and that the job "is not
 allowed to run in any queue". Contra-intuitively to most, these
 messages do not mean that the job isn't run.
 
-We used `sge=TRUE` which means we are sending the 1000 generated jobs to the queuing system. In this case, `NMsim` does not track the execution of the jobs and does hence not collect the results once they are done. Instead it returns a small data.frame with the paths to where all the simulation output control streams will be written. You have to check the status of the jobs manually, and once they are all done, you can read all the results using `NMdata::NMscanMultiple`:
+We used `sge=TRUE` which means we are sending the 1000 generated jobs
+to the queuing system. In this case, `NMsim` does not track the
+execution of the jobs and does hence not collect the results once they
+are done. Instead it returns a small data.frame with the paths to
+where all the simulation output control streams will be written. You
+have to check the status of the jobs manually, and once they are all
+done, you can read all the results using `NMdata::NMscanMultiple`:
 
 ```{r,VarCov-collect,eval=FALSE}
 simres.VarCov <- NMscanMultiple(
