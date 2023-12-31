@@ -27,7 +27,9 @@ knitr::opts_chunk$set(
                      ,cache=FALSE
                   )
 
-## NMdataConf(dir.psn="/opt/psn")
+NMdataConf(dir.psn="/opt/psn")
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+NMdataConf(as.fun="data.table")
 
 ## this changes data.table syntax. I think we can do without.
 ## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
@@ -84,6 +86,12 @@ another one.
 Anyway, getting `NMsim` to do the work is as simple as this:
 
 ```{r,VarCov,eval=FALSE}
+## library(devtools)
+## load_all("~/wdirs/NMdata")
+file.mod <- "../tests_manual/testthat/testData/nonmem/xgxr032.mod"
+file.res.VarCov <- "simulate-results/simres_VarCov_032.rds"
+
+set.seed(552)
 simlsts.VarCov <- NMsim(
     file.mod=file.mod,          ## Path to estimation input control stream
     data=dat.sim                ## simulation input data
@@ -91,9 +99,23 @@ simlsts.VarCov <- NMsim(
    ,table.vars="PRED IPRED"     ## Let Nonmem write a minimum output table
    ,method.sim=NMsim_VarCov     ## Var-Cov parameter sampling
    ,name.sim="VarCov"           ## a recognizable directory name
-   ,nsims=1000                  ## sampling 500 models
+   ,nsims=500                   ## sampling 500 models
    ,sge=TRUE                    ## run simulations in parallel please
+   ,file.res=file.res.VarCov
 )
+
+
+## readRDS("~/NMsim_vignette/xgxr021_VarCov/NMsim_xgxr021_VarCov.rds")
+## readRDS("~/NMsim_vignette/xgxr021_VarCov/NMsim_.rds")
+## tab <- readRDS("~/NMsim_vignette/xgxr021_VarCov/NMsim_paths.rds")
+## tab <- readRDS("~/NMsim_vignette/xgxr021_VarCov2/NMsim_paths.rds")
+## class(tab)
+
+## simres.VarCov <- NMreadSim("~/NMsim_vignette/xgxr021_VarCov/NMsim_paths.rds")
+#~/NMsim_vignette/xgxr032_VarCov/
+## simres.VarCov <- NMreadSim(file.rds)
+
+
 
 ```
 
@@ -109,21 +131,10 @@ where all the simulation output control streams will be written. You
 have to check the status of the jobs manually, and once they are all
 done, you can read all the results using `NMdata::NMscanMultiple`:
 
-```{r,VarCov-collect,eval=FALSE}
-simres.VarCov <- NMscanMultiple(
-    files=simlsts.VarCov$lst
-   ,merge.by.row=FALSE,quiet=T
-   ,as.fun="data.table")
+```{r,VarCov-collect,eval=TRUE}
+simres.VarCov <- NMreadSim(file.res.VarCov)
+```
 
-```
-```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres_VarCov.fst"
-if(run.simuls){
-    write_fst(simres.VarCov,path=file.fst)
-} else {
-    simres.VarCov <- read_fst(file.fst,as.data.table=TRUE)
-}
-```
 
 We now have simulation results from 1000 sampled models collected. We
 shall do the same with the models sampled in a bootstrap, and then we
@@ -145,6 +156,7 @@ vignette. We used `PSN`'s bootstrap. We can run the simulation on all the models
 ## generate a vector with paths to all the input control streams
 mods.bootstrap <- list.files(path="~/NMsim_vignette_work/bs1_021_N1000/m1",
                              pattern=".+\\.mod$",full.names = T)
+
 ## number of models to be run
 ## length(mods.bootstrap)
 
@@ -154,28 +166,20 @@ simlsts.bootstrap <- NMsim(
    ,method.sim=NMsim_default  ## a single simulation with each sampled model
    ,dir.sims="~/NMsim_vignette/bootstrap" ## Where to save simulation results
    ,text.table="PRED IPRED"   ## Let Nonmem write a minimum output table
-   ,sge=TRUE                  ## run simulations in parallel 
+   ,sge=TRUE                  ## run simulations in parallel
+   ,file.res="simulate-results/simres_bootstrap.rds"
 )
 
 ```
 
 ```{r,bootstrap-collect,eval=FALSE}
-simres.bootstrap <- NMscanMultiple(files=simlsts.bootstrap$lst
-                                  ,merge.by.row=FALSE
-                                  ,quiet=T
-                                  ,as.fun="data.table")
+simres.bootstrap <- NMreadSim("simulate-results/simres_bootstrap.rds")
+## dims(simres.bootstrap)
+## NMwriteData(simres.bootstrap,file="~/NMsim_vignette/bootstrap_res.fst",formats.write="fst",genText=F)
+
 ```
 
-```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres_bootstrap.fst"
-if(run.simuls){
-    write_fst(simres.bootstrap,path=file.fst)
-} else {
-    simres.bootstrap <- read_fst(file.fst,as.data.table=TRUE)
-}
-```
-
-`NMdata::NMscanMultiple` is a wrapper of `NMdata::NMscanData`, and just like `NMdata::NMscanData` it keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples). 
+Using `NMdata::NMscanData`, `NMsim` keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples). 
 
 
 ### The confidence intervals

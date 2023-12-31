@@ -241,6 +241,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   as.fun
                  ,suffix.sim,text.table,
                   system.type=NULL
+                  ,file.res
                  ,...
                   ){
 
@@ -558,6 +559,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,fn.mod:=basename(file.mod)]
     dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
     ## dt.models[,fn.sim:=paste0(fn.mod)]
+    
     dt.models[,fn.sim:=fnAppend(fn.sim,name.sim)]
     dt.models[,fn.sim:=fnAppend(fn.sim,as.character(data.name)),by=.(ROWMODEL)]
     dt.models[,run.sim:=modelname(fn.sim)]
@@ -584,7 +586,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
 
     ## fn.rds - Where to save table of runs
-    dt.models[,fn.rds:=file.path(dir.sim,"NMsim_paths.rds")]
+if(missing(file.res)) file.res <- NULL
+    if(is.null(file.res)){
+        dt.models[,fn.rds:=file.path(dir.sim,"NMsim_paths.rds")]
+    } else {
+        dt.models[,fn.rds:=fnExtension(file.res,"rds")]
+    }
 
 
 ### clear simulation directories so user does not end up with old results
@@ -909,7 +916,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 message("Existing output control stream found. Removing.")
                 
                 dt.outtabs <- try(NMscanTables(path.sim.lst,meta.only=TRUE,as.fun="data.table",quiet=TRUE),silent=TRUE)
-                if(!inherits(dt.outtabs,"try-error") && nrow(dt.outtabs)){
+                if(!inherits(dt.outtabs,"try-error") && is.data.table(dt.outtabs) && nrow(dt.outtabs)>0){
                     
                     file.remove(
                         dt.outtabs[file.exists(file),file]
@@ -950,11 +957,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ###  Section end: Execute
 
     
-    dt.models.save <- split(dt.models,by="dir.sim")
+    dt.models.save <- split(dt.models,by="fn.rds")
     lapply(1:length(dt.models.save),function(I){
 
 ####### notify user where to find rds files
         fn.this.rds <- unique(dt.models.save[[I]][,fn.rds])
+        addClass(dt.models.save[[I]],"NMsimTab")
         message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))
         saveRDS(dt.models.save[[I]],file=fn.this.rds)
     })

@@ -16,13 +16,14 @@ NMreadSim <- function(x,as.fun){
     ROWMODEL2 <- NULL
     args.NMscanData <- NULL
     path.sim.lst <- NULL
-    simres <- NULL
+
+    file.res.data <- NULL
 
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
 
-
     ## when to look for combined and saved results?
+    
 
 
     ## if path is a dir, search for rds
@@ -34,26 +35,33 @@ NMreadSim <- function(x,as.fun){
         if(!inherits(tab.paths,"NMsimTab")) {
             stop("The provided rds file does not contain a NMsimTab object")
         }
+        file.res.data <- fnAppend(fnExtension(x,"fst"),"res")
     } else if(is.NMsimTab(x)){
         tab.paths <- x
     }
     
     ## if an lst, read it
 
-
+    if(!is.null(file.res.data) && file.exists(file.res.data)){
+        res <- read_fst(file.res.data)
+    } else {
 ### read all sim results
-    res <- tab.paths[,{
-    ## the rds table must keep NMscanData arguments
-        args.NM <- args.NMscanData[[1]]
-        if(! "quiet" %in% names(args.NM)){
-            args.NM$quiet <- TRUE
+        res <- tab.paths[,{
+            ## the rds table must keep NMscanData arguments
+            args.NM <- args.NMscanData[[1]]
+            if(! "quiet" %in% names(args.NM)){
+                args.NM$quiet <- TRUE
+            }
+            
+            do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
+        },keyby=.(ROWMODEL2)]
+        res[,ROWMODEL2:=NULL]
+
+        if(!is.null(file.res.data)){
+            NMwriteData(res,file=file.res.data,formats.write="fst",genText=F)
         }
-        
-        do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
-    },keyby=.(ROWMODEL2)]
-    return(res)
-    
+    }
 
-
-    return(as.fun(simres))
+    setattr(res,"NMsim-models",tab.paths)
+    return(as.fun(res))
 }

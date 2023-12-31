@@ -35,5 +35,13 @@ run.simuls <- FALSE
 
 
 ## Reduce amount of data written to file
+Almost always use the `table.vars` argument
 
 ## Break the simulation into multiple Nonmem runs
+
+## Use `data.table`
+
+## Use `method.execute="nmsim"`
+
+## Parellilize individual runs
+NMsim does support parellilization (performing a Nonmem run using multiple cores). However, this is rarely worth it for simulations. Most of the time, input/output (reading/writing to disk) is the bottleneck, and splitting the data set into multiple runs will most often reduce run times more.
