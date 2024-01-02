@@ -159,6 +159,14 @@
 ##'     \"linux\" - case insensitive. Windows is only experimentally
 ##'     supported. Default is to use \code{Sys.info()[["sysname"]]}.
 ##' @param suffix.sim Deprecated. Use name.sim instead.
+##' @param file.res Path to an rds file that will contain a table of
+##'     the simulated models. This is useful for subsequently
+##'     retrieving all the results using `NMreadSim()`. The default is
+##'     to create a file called `NMsim_paths.rds` under the model
+##'     simulation directory. However, if multiple models are
+##'     simulated, this will result in multiple rds files. Specifying
+##'     a path ensures that one rds file containing information about
+##'     all simulated models will be created.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
 ##'     as input data). If `wait=FALSE` a character vector with paths
@@ -559,6 +567,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,fn.mod:=basename(file.mod)]
     dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
     ## dt.models[,fn.sim:=paste0(fn.mod)]
+
     
     dt.models[,fn.sim:=fnAppend(fn.sim,name.sim)]
     dt.models[,fn.sim:=fnAppend(fn.sim,as.character(data.name)),by=.(ROWMODEL)]

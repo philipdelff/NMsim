@@ -5,4 +5,12 @@ template:
     after_body: |-
       <script data-goatcounter="https://nmsim.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
-
+navbar:
+  type: default
+  left:
+    - text: Reference
+      href: reference/index.html
+    - text: Articles
+      menu:
+      - text: Simulation of new subjects
+        href: articles/NMsim-basics.html

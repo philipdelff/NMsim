@@ -37,6 +37,7 @@ NMsim(
   suffix.sim,
   text.table,
   system.type = NULL,
+  file.res,
   ...
 )
 }
@@ -224,6 +225,15 @@ export from Nonmem.}
 \item{system.type}{A charachter string, either \"windows\" or
 \"linux\" - case insensitive. Windows is only experimentally
 supported. Default is to use \code{Sys.info()[["sysname"]]}.}
+
+\item{file.res}{Path to an rds file that will contain a table of
+the simulated models. This is useful for subsequently
+retrieving all the results using `NMreadSim()`. The default is
+to create a file called `NMsim_paths.rds` under the model
+simulation directory. However, if multiple models are
+simulated, this will result in multiple rds files. Specifying
+a path ensures that one rds file containing information about
+all simulated models will be created.}
 
 \item{...}{Additional arguments passed to \code{method.sim}.}
 }

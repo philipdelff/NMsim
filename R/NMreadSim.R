@@ -8,6 +8,8 @@
 ##'     as.fun="data.table". The default can be configured using
 ##'     NMdataConf.
 ##' @return A data set of class defined by as.fun
+##' @import NMdata
+##' @import fst
 ##' @export
 
 NMreadSim <- function(x,as.fun){
@@ -41,20 +43,42 @@ NMreadSim <- function(x,as.fun){
     }
     
     ## if an lst, read it
+####  must read each model into list elements. Then rbind(fill=T)
+### this is to make sure results from different models with
+### incompatible columns can be combined.
 
-    if(!is.null(file.res.data) && file.exists(file.res.data)){
+    if(!is.null(file.res.data) &&
+       file.exists(file.res.data) &&
+       file.mtime(file.res.data)>file.mtime(x)){
         res <- read_fst(file.res.data)
     } else {
 ### read all sim results
-        res <- tab.paths[,{
-            ## the rds table must keep NMscanData arguments
-            args.NM <- args.NMscanData[[1]]
-            if(! "quiet" %in% names(args.NM)){
-                args.NM$quiet <- TRUE
-            }
-            
-            do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
-        },keyby=.(ROWMODEL2)]
+        if(F){
+            res <- tab.paths[,{
+                cat(ROWMODEL2," ")
+                ## the rds table must keep NMscanData arguments
+                args.NM <- args.NMscanData[[1]]
+                if(! "quiet" %in% names(args.NM)){
+                    args.NM$quiet <- TRUE
+                }
+                
+                do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
+            },keyby=.(ROWMODEL2)]
+        }
+        
+        res.list <- lapply(split(tab.paths,by="ROWMODEL2"),function(dat){
+            dat[,{
+                ## cat(ROWMODEL2," ")     
+                ## the rds table must keep NMscanData arguments
+                args.NM <- args.NMscanData[[1]]
+                if(! "quiet" %in% names(args.NM)){
+                    args.NM$quiet <- TRUE
+                }
+                
+                do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
+            },by=.(ROWMODEL2)]
+        })
+        res <- rbindlist(res.list,fill=TRUE)
         res[,ROWMODEL2:=NULL]
 
         if(!is.null(file.res.data)){

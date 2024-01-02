@@ -71,13 +71,13 @@ R after the simulation has been run.
 
 ## How NMsim works 
 One strength of `NMsim` is that it does not simulate, translate or
-otherwise interpret a Nonmem model. Instead, it automates the simulation
-workflow with Nonmem and wraps it all into one R function. In the example given above, 
+otherwise interpret a Nonmem model. Instead, it automates the Nonmem simulation
+workflow (including execution of Nonmem) and wraps it all into one R function. In the example given above, 
 `NMsim` will do the following:
 
-* Save the simulation input data for Nonmem
+* Save the simulation input data in a csv file for Nonmem
 * Create a simulation input control stream based on `file.mod` ($INPUT
-  and $DATA matching simulation data set, $SIMULATE instead of
+  and $DATA matching the saved simulation data set; $SIMULATE instead of
   $ESTIMATION and $COVARIANCE)
 * Update and fix initial values based on estimate (from `file.ext`)
 * Run Nonmem on the generated simulation control stream

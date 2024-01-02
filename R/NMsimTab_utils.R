@@ -2,6 +2,7 @@
 ##' @param x An 'NMsimTab' object.
 ##' @return x stripped from the 'NMsimTab' class
 ##' @export
+##' @rdname NMsimTabOperations
 unNMsimTab <- function(x){
     setattr(x,"NMsimTab",NULL)
     setattr(x,"class",setdiff(class(x),"NMsimTab"))
@@ -12,6 +13,7 @@ unNMsimTab <- function(x){
 ##' @param x Any object
 ##' @return logical if x is an 'NMsimTab' object
 ##' @export
+##' @rdname NMsimTabOperations
 is.NMsimTab <- function(x){
     inherits(x,"NMsimTab")
 }

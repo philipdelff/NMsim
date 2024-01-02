@@ -16,8 +16,9 @@ header-includes:
 ```{r,include = FALSE}
 library(tidyvpc)
 library(NMdata)
-library(fst)
+library(NMsim)
 library(ggplot2)
+library(fst)
 
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
@@ -27,7 +28,7 @@ knitr::opts_chunk$set(
                      ,cache=FALSE
                   )
 
-NMdataConf(dir.psn="/opt/psn")
+## NMdataConf(dir.psn=NULL)
 NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 NMdataConf(as.fun="data.table")
 
@@ -36,7 +37,7 @@ NMdataConf(as.fun="data.table")
 run.simuls <- FALSE
 
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
-file.mod <- file.project("nonmem/xgxr021.mod")
+file.mod <- file.project("nonmem/xgxr032.mod")
 dat.sim <- read_fst("simulate-results/dat_sim.fst")
 ```
 
@@ -85,11 +86,13 @@ another one.
 
 Anyway, getting `NMsim` to do the work is as simple as this:
 
-```{r,VarCov,eval=FALSE}
-## library(devtools)
-## load_all("~/wdirs/NMdata")
-file.mod <- "../tests_manual/testthat/testData/nonmem/xgxr032.mod"
+
+```{r}
 file.res.VarCov <- "simulate-results/simres_VarCov_032.rds"
+```
+
+```{r,VarCov,eval=FALSE}
+## file.mod <- "../tests_manual/testthat/testData/nonmem/xgxr032.mod"
 
 set.seed(552)
 simlsts.VarCov <- NMsim(
@@ -114,8 +117,6 @@ simlsts.VarCov <- NMsim(
 ## simres.VarCov <- NMreadSim("~/NMsim_vignette/xgxr021_VarCov/NMsim_paths.rds")
 #~/NMsim_vignette/xgxr032_VarCov/
 ## simres.VarCov <- NMreadSim(file.rds)
-
-
 
 ```
 
@@ -154,7 +155,9 @@ vignette. We used `PSN`'s bootstrap. We can run the simulation on all the models
 
 ```{r,bootstrap-execute,eval=FALSE}
 ## generate a vector with paths to all the input control streams
-mods.bootstrap <- list.files(path="~/NMsim_vignette_work/bs1_021_N1000/m1",
+## mods.bootstrap <- list.files(path="~/NMsim_vignette_work/bs1_032_N1000/m1",
+##                              pattern=".+\\.mod$",full.names = T)
+mods.bootstrap <- list.files(path=file.project("nonmem/bs1_032_N1000/m1"),
                              pattern=".+\\.mod$",full.names = T)
 
 ## number of models to be run
@@ -165,8 +168,9 @@ simlsts.bootstrap <- NMsim(
    ,data=dat.sim              ## Simulation input data
    ,method.sim=NMsim_default  ## a single simulation with each sampled model
    ,dir.sims="~/NMsim_vignette/bootstrap" ## Where to save simulation results
-   ,text.table="PRED IPRED"   ## Let Nonmem write a minimum output table
+   ,table.vars="PRED IPRED"   ## Let Nonmem write a minimum output table
    ,sge=TRUE                  ## run simulations in parallel
+   ,method.update.inits="nmsim"
    ,file.res="simulate-results/simres_bootstrap.rds"
 )
 
@@ -174,9 +178,6 @@ simlsts.bootstrap <- NMsim(
 
 ```{r,bootstrap-collect,eval=FALSE}
 simres.bootstrap <- NMreadSim("simulate-results/simres_bootstrap.rds")
-## dims(simres.bootstrap)
-## NMwriteData(simres.bootstrap,file="~/NMsim_vignette/bootstrap_res.fst",formats.write="fst",genText=F)
-
 ```
 
 Using `NMdata::NMscanData`, `NMsim` keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples). 
