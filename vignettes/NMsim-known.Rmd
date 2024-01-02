@@ -1,0 +1,210 @@
+---
+title: "Simulate Known Subjects Using Emperical Bayes Estimates (Etas/Phis)"
+output:
+rmarkdown::html_vignette:
+    toc: true
+    code_folding: show
+Suggests: markdown
+VignetteBuilder: knitr
+vignette: >
+  %\VignetteIndexEntry{Known}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+header-includes:
+- \usepackage{ae}
+---
+
+```{r,include = FALSE}
+##knitr::opts_chunk$set(dev = "cairo_pdf")
+knitr::opts_chunk$set(
+                      collapse = TRUE
+                     ,comment = "#>"
+                     ,fig.width=7
+                     ,cache=FALSE
+                  )
+
+## this changes data.table syntax. I think we can do without.
+## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+```
+
+```{r,setup,include=F}
+## library(devtools)
+## unloadNamespace("NMsim")
+## unloadNamespace("NMdata")
+
+## load_all("~/wdirs/NMdata")
+## load_all()
+library(NMsim)
+library(data.table)
+library(NMdata)
+## library(dplyr)
+library(tibble)
+library(ggplot2)
+library(patchwork)
+library(tracee)
+## library(tidyr)
+library(fst)
+library(knitr)
+## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+## NMdataConf(path.nonmem="/opt/nonmem/nm751/run/nmfe75")
+## NMdataConf(dir.psn=NULL)
+
+theme_set(theme_bw())
+this.script <- "NMsim-methods.Rmd"
+writeOutput <- TRUE
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+## file.project <- function(...)file.path("../inst/examples",...)
+## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
+
+found.files <- list.files(file.project("nonmem/NMsim"),pattern="noname\\.(lst|xml|ext|cov|cor|coi|phi|msf|msfi|msfo|tab)",full.names=TRUE)
+unlink(found.files)
+
+run.simuls <- FALSE
+NMdataConf(as.fun="data.table")
+
+dat.sim <- read_fst("simulate-results/dat_sim.fst",as.data.table=TRUE)
+```
+
+
+Built `r Sys.Date()` using NMsim `r packageVersion("NMsim")`.
+
+
+## Objectives
+This vignettes aims at enabling you to use `NMsim` for the following purposes
+
+* Simulation of typical subjects, 
+* Simualation of known subjects (estimated random effects), 
+* Simulation with parameter uncertainty
+  - By sampling for a successful covariance step
+  - By using models from bootstrap sampling
+* Simulation with parameters modified from the estimated values
+
+## Prerequisites
+You should have configured `NMsim` with the path to the Nonmem
+installation and maybe also PSN. See
+[`NMsim-config.html`](https://philipdelff.github.io/NMsim/articles/NMsim-config.html). Don't
+worry - it is very easy. 
+
+You should be familiar with basic `NMsim` arguments as described in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html). In that vignette you should have learned to use the default simulation method. This vignette will be using the same model and simulation input data as in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html) to demonstrate how to use additional methods and features of `NMsim`.
+
+```{r}
+file.mod <- file.project("nonmem/xgxr021.mod")
+```
+
+
+## Simulation of known subjects
+We sometimes want to simulate the already observed subjects. This means we want to reuse the estimated random effects (ETA's) given the subject ID's. `NMsim` has a method for this. The restriction is that all subjects (values of `ID`) in the simulation input data must have been used in the estimation input data.
+
+```{r,eval=FALSE}
+## read model results just to extract the observed ID's
+res.mod <- NMscanData(file.mod,quiet=TRUE)
+ids <- data.frame(ID=unique(res.mod$ID))
+
+## Repeat the simulation data set for each ID and order accordingly
+dat.sim.known <- merge(ids,
+                       dat.sim[,setdiff(colnames(dat.sim),c("ID")),with=FALSE]
+                       )
+setorder(dat.sim.known,ID,TIME,EVID)
+## check data
+NMcheckData(dat.sim.known,type.data="sim")
+
+simres.known <- NMsim(file.mod=file.mod,
+                      data=dat.sim.known,
+                      method.sim=NMsim_known,
+                      text.table="PRED IPRED CL V2 KA",
+                      name.sim="known1",
+                      dir.sims="~/NMsim_vignette/"
+                      )
+```
+
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_known.fst"
+if(run.simuls){
+    write_fst(simres.known,path=file.fst)
+} else {
+    simres.known <- read_fst(file.fst,as.data.table=TRUE)
+}
+```
+
+And the simulation results are plotted for each subject.
+```{r,eval=TRUE}
+ggplot(as.data.table(simres.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
+    geom_line()+
+    theme(legend.position="none")
+```
+
+<!-- Show a plot of the individual parameters in estimate and in sim -->
+
+### Known subjects: Simulate individual PK at PD sampling times for a PK/PD dataset
+We also connected some PK data. We want to plot the PD data angainst
+PK. However, PD was sampled differnetly than PK, and we want to
+evaluate the individual predictions of the PK model at the individual
+PD samplng times.
+
+Currently, there is no PD data in the example data used to build this
+vignette. For a PK model without time-varying covariates, the steps to
+to generate the data for the simulation are:
+
+```{r,pddata,include=FALSE,eval=TRUE}
+pd <- readRDS(file.project("data/xgxr_pd.rds")) |> as.data.table()
+```
+
+* Take dose records from PK model estimation input data (`pkdos`). Just keep necessary columns like `ID`, `TIME`, `EVID`, `CMT`, `AMT`, `ADDL`, `II`, and any necessary covariates
+* Take PD data observation records (`pdsamples`). Just keep `ID`, `TIME`, and set `EVID=2`.
+* Add a unique row identifier to `pdsamples` (an integer row counter, like `ROW=1:nrow(pdsamples)`)
+* Stack (`rbind` for data.tables or `bind_rows` in tidyverse) `pkdos` and `pdsamples` to one data set (`pdsim`)
+* In `pdsim`, set `DV=NA`
+* Sort `pdsim` at least by `ID`, `TIME` and `EVID`. There could be more depending on trial design
+
+In case of time-varying covariates, you can keep all data records from the PK data (without `DV`), but change observation records to simulation records (`EVID=2` instead of `EVID=0`).
+
+```{r,known-pkpd,eval=TRUE}
+## Take dose records from PK model estimation input data
+pkres <- NMscanData(file.mod,quiet=TRUE)
+pkdos <- pkres[EVID==1,.(ID, TIME, EVID, CMT, AMT)]
+## Take PD data observation records (`pdsamples`)
+pd[,ROWPD:=.I]
+pdsamples <- pd[EVID==0,.(ROWPD,ID,TIME,EVID=2)]
+## Stack `pkdos` and `pdsamples` to one data set (`pdsim`)
+pdsim <- rbind(pkdos,pdsamples,fill=TRUE)
+pdsim[,DV:=NA]
+pdsim <- pdsim[ID%in%pkres$ID]
+setorder(pdsim,ID,TIME,EVID)
+```
+
+Then run `NMsim` like this:
+
+```{r,known-pkpd-run,eval=FALSE}
+
+simres.pksim <- NMsim(file.mod,
+                      data=pdsim,
+                      name.sim="pkpd",
+                     ,method.sim=NMsim_known
+                     ,text.table="IPRED PRED"
+                      )
+
+```
+```{r,include=FALSE,eval=TRUE}
+file.fst <- "simulate-results/simres_pksim.fst"
+if(run.simuls){
+    write_fst(simres.pksim,path=file.fst)
+} else {
+    simres.pksim <- read_fst(file.fst,as.data.table=TRUE)
+}
+```
+
+
+Now rename `res.pksim$IPRED` to something meaningfull like `res.pksim$PKIPRED`, and you can merge `res.pksim` onto the PD data by the unique row identifier. 
+
+```{r,merge-pdres,eval=TRUE}
+setnames(simres.pksim,"IPRED","PKIPRED")
+pd2 <- mergeCheck(pd,simres.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
+```
+
+```{r,eval=TRUE}
+ggplot(pd2[!is.na(LIDV)&!is.na(PKIPRED)],aes(PKIPRED,LIDV))+
+    geom_point()+
+    labs(x="Individual PK prediction",y="Observed PD value") ## +
+``` 
+
+
