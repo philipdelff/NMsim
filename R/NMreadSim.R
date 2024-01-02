@@ -43,17 +43,15 @@ NMreadSim <- function(x,as.fun){
     }
     
     ## if an lst, read it
-####  must read each model into list elements. Then rbind(fill=T)
-### this is to make sure results from different models with
-### incompatible columns can be combined.
-
     if(!is.null(file.res.data) &&
        file.exists(file.res.data) &&
        file.mtime(file.res.data)>file.mtime(x)){
         res <- read_fst(file.res.data)
     } else {
+        
 ### read all sim results
         if(F){
+            ## this simple approach may fail if the models return incompatible columns
             res <- tab.paths[,{
                 cat(ROWMODEL2," ")
                 ## the rds table must keep NMscanData arguments
@@ -65,7 +63,11 @@ NMreadSim <- function(x,as.fun){
                 do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
             },keyby=.(ROWMODEL2)]
         }
-        
+
+####  must read each model into list elements. Then rbind(fill=T)
+### this is to make sure results from different models with
+### incompatible columns can be combined.
+
         res.list <- lapply(split(tab.paths,by="ROWMODEL2"),function(dat){
             dat[,{
                 ## cat(ROWMODEL2," ")     
