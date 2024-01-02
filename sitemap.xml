@@ -31,7 +31,7 @@
     <loc>https://philipdelff.github.io/NMsim/articles/NMsim-config.html</loc>
   </url>
   <url>
-    <loc>https://philipdelff.github.io/NMsim/articles/NMsim-methods.html</loc>
+    <loc>https://philipdelff.github.io/NMsim/articles/NMsim-known.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/articles/NMsim-speed.html</loc>
@@ -47,6 +47,9 @@
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/index.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/news/index.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/NMcreateDoses.html</loc>
