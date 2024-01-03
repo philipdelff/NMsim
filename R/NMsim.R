@@ -249,7 +249,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   as.fun
                  ,suffix.sim,text.table,
                   system.type=NULL
-                  ,file.res
+                 ,file.res
                  ,...
                   ){
 
@@ -595,7 +595,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
 
     ## fn.rds - Where to save table of runs
-if(missing(file.res)) file.res <- NULL
+    if(missing(file.res)) file.res <- NULL
     if(is.null(file.res)){
         dt.models[,fn.rds:=file.path(dir.sim,"NMsim_paths.rds")]
     } else {
@@ -908,7 +908,12 @@ if(missing(file.res)) file.res <- NULL
             
             args.NMscanData.list <- c(args.NMscanData,args.NMscanData.default)
             args.NMscanData.list <- args.NMscanData.list[unique(names(args.NMscanData.list))]
-            dt.models[,args.NMscanData:=vector("list", .N)]
+            ## if(!is.null(args.NMscanData.list)){
+            if(nrow(dt.models)==1){
+                dt.models[,args.NMscanData:=list()]
+            } else {
+                dt.models[,args.NMscanData:=vector("list", .N)]
+            }
             dt.models[,args.NMscanData:=list(list(args.NMscanData.list))]
 
         }

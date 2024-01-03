@@ -20,7 +20,8 @@ library(data.table)
 ## NMdataConf(dir.psn="/opt/psn")
 path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
 NMdataConf(dir.psn=NULL)
-## path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
+##
+path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 
 
 
@@ -283,6 +284,8 @@ test_that("multiple data sets on cluster",{
                              ,sge=TRUE
                               )
 
+    list.files("testOutput/xgxr032_datalist_01")
+    ## NMreadSim("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
     class(simres.multidata)
     res <- NMreadSim(simres.multidata)
 
