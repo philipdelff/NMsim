@@ -46,7 +46,7 @@ NMreadSim <- function(x,as.fun){
     if(!is.null(file.res.data) &&
        file.exists(file.res.data) &&
        file.mtime(file.res.data)>file.mtime(x)){
-        res <- read_fst(file.res.data)
+        res <- read_fst(file.res.data,as.data.table=TRUE)
     } else {
         
 ### read all sim results
