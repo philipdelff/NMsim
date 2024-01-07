@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.921</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.932</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -119,7 +119,7 @@ included with NMsim:</p>
 <code class="sourceCode R"><span></span>
 <span></span>
 <span><span class="va">file.project</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span>,<span class="va">...</span><span class="op">)</span></span>
-<span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr022.mod"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr032.mod"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">43</span><span class="op">)</span></span>
 <span><span class="co">## notice the data argument is not used.</span></span>
@@ -148,10 +148,9 @@ reason takes more time submitting the jobs to the cluster. If nodes are
 available, the following simulation should not take more than a couple
 of minutes to execute.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">file.project</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span>,<span class="va">...</span><span class="op">)</span></span>
-<span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr022.mod"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">43</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">file.res</span> <span class="op">&lt;-</span> <span class="st">"simulate-results/simpaths-vpc.rds"</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">43</span><span class="op">)</span></span>
 <span><span class="co">## notice the data argument is not used.</span></span>
 <span><span class="va">sim.vpc.sge</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span><span class="va">file.mod</span>,</span>
 <span>                     table.vars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PRED"</span>,<span class="st">"IPRED"</span>, <span class="st">"Y"</span><span class="op">)</span>,</span>
@@ -161,23 +160,25 @@ of minutes to execute.</p>
 <span>                    ,sge<span class="op">=</span><span class="cn">TRUE</span></span>
 <span>                    <span class="co">## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"</span></span>
 <span>                    ,path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe75"</span></span>
-<span>                     <span class="op">)</span></span>
-<span></span>
-<span><span class="va">simres.vpc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMreadSim.html">NMreadSim</a></span><span class="op">(</span><span class="va">sim.vpc.sge</span><span class="op">)</span></span></code></pre></div>
+<span>                    ,file.res<span class="op">=</span><span class="va">file.res</span></span>
+<span>                     <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simres.vpc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMreadSim.html">NMreadSim</a></span><span class="op">(</span><span class="va">file.res</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="plotting-using-tidyvpc">Plotting using <code>tidyvpc</code><a class="anchor" aria-label="anchor" href="#plotting-using-tidyvpc"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">NMscanData</span><span class="op">(</span><span class="va">file.mod</span>,as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Model:  xgxr022 </span></span>
+<span><span class="co">#&gt; Model:  xgxr032 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Used tables, contents shown as used/total:</span></span>
 <span><span class="co">#&gt;               file     rows columns   IDs</span></span>
-<span><span class="co">#&gt;    xgxr022_res.txt  731/731   16/16 90/90</span></span>
+<span><span class="co">#&gt;    xgxr032_res.txt  731/731   12/12 90/90</span></span>
+<span><span class="co">#&gt;   xgxr032_etas.txt  731/731     5/5 90/90</span></span>
 <span><span class="co">#&gt;  xgxr2.rds (input) 731/1502   22/24 90/90</span></span>
-<span><span class="co">#&gt;           (result)      731    38+2    90</span></span>
+<span><span class="co">#&gt;           (result)      731    39+2    90</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Input and output data merged by: ROW </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -187,33 +188,19 @@ of minutes to execute.</p>
 <span><span class="co">#&gt;     1   1     90     90</span></span>
 <span><span class="co">#&gt;   All All    731    731</span></span>
 <span><span class="va">data.obs</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co">## ggplot(data.obs,aes(TIME,DV))+</span></span>
-<span><span class="co">##     geom_point()+</span></span>
-<span><span class="co">##     facet_wrap(~ID)</span></span>
-<span></span>
-<span><span class="co">### for stratification, we need to make sure to add those variables to the sim data. </span></span>
-<span><span class="co">## in case we need to create a new grouping</span></span>
-<span><span class="co">## data.obs[,groupDose:=paste(STUDY,"-",DOSE,"mg")]</span></span>
-<span><span class="co">## data.obs[,.N,by=.(groupDose)]</span></span>
-<span></span>
-<span><span class="co">## get group into sim data</span></span>
-<span><span class="co">## simres &lt;- mergeCheck(simres,</span></span>
-<span><span class="co">##                      findCovs(data.obs,by="ID")[,.(ID,groupDose,STUDY,DOSE)]</span></span>
-<span><span class="co">##                     ,by="ID")</span></span>
-<span></span>
+<span><span class="va">data.sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">simres.vpc</span>,<span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## run vpc</span></span>
 <span><span class="va">vpc1</span> <span class="op">&lt;-</span></span>
-<span>    <span class="fu">observed</span><span class="op">(</span><span class="va">data.obs</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">]</span>, x <span class="op">=</span> <span class="va">TIME</span>, y <span class="op">=</span> <span class="va">DV</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">simulated</span><span class="op">(</span><span class="va">simres.vpc</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">Y</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">observed</span><span class="op">(</span><span class="va">data.obs</span>, x <span class="op">=</span> <span class="va">TIME</span>, y <span class="op">=</span> <span class="va">DV</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">simulated</span><span class="op">(</span><span class="va">data.sim</span>, y <span class="op">=</span> <span class="va">Y</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">stratify</span><span class="op">(</span><span class="op">~</span><span class="va">DOSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">binning</span><span class="op">(</span>bin <span class="op">=</span> <span class="st">"ntile"</span>, nbins <span class="op">=</span> <span class="fl">9</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">vpcstats</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vpc1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-VPC_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<p><img src="NMsim-VPC_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

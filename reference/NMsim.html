@@ -20,7 +20,7 @@ get the most out of this."><!-- mathjax --><script src="https://cdnjs.cloudflare
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.921</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.932</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,6 +122,7 @@ get the most out of this.</p>
 <span>  <span class="va">suffix.sim</span>,</span>
 <span>  <span class="va">text.table</span>,</span>
 <span>  system.type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">dir.res</span>,</span>
 <span>  <span class="va">file.res</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -144,7 +145,8 @@ simulating known subjects, the .phi is necessary too.</p></dd>
 
 <dt>dir.sims</dt>
 <dd><p>The directory in which NMsim will store all
-generated files.</p></dd>
+generated files. Default is to create a folder called `NMsim`
+next to `file.mod`.</p></dd>
 
 
 <dt>name.sim</dt>
@@ -376,6 +378,21 @@ export from Nonmem.</p></dd>
 <dd><p>A charachter string, either \"windows\" or
 \"linux\" - case insensitive. Windows is only experimentally
 supported. Default is to use <code>Sys.info()[["sysname"]]</code>.</p></dd>
+
+
+<dt>dir.res</dt>
+<dd><p>Provide a path to a directory in which to save rds
+files with paths to results. Default is to use dir.sims. After
+running `NMreadSim()` on these files, the original simulation
+files can be deleted. Hence, providing both `dir.sims` and
+`dir.res` provides a structure that is simple to
+clean. `dir.sims` can be purged when `NMreadSim` has been run
+and only small `rds` and `fst` files will be kept in
+`dir.res`. Notice, in case multiple models are simulated,
+multiple `rds` (to be read with `NMreadSim()`) files will be
+created by default. In cases where multiple models are
+simulated, see `file.res` to get just one file refering to all
+simulation results.</p></dd>
 
 
 <dt>file.res</dt>
