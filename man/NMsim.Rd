@@ -38,6 +38,7 @@ NMsim(
   text.table,
   system.type = NULL,
   file.res,
+  quiet = FALSE,
   ...
 )
 }
@@ -234,6 +235,9 @@ simulation directory. However, if multiple models are
 simulated, this will result in multiple rds files. Specifying
 a path ensures that one rds file containing information about
 all simulated models will be created.}
+
+\item{quiet}{If TRUE, messages from what is going on will be
+suppressed to the extend implemented.}
 
 \item{...}{Additional arguments passed to \code{method.sim}.}
 }

@@ -167,6 +167,8 @@
 ##'     simulated, this will result in multiple rds files. Specifying
 ##'     a path ensures that one rds file containing information about
 ##'     all simulated models will be created.
+##' @param quiet If TRUE, messages from what is going on will be
+##'     suppressed to the extend implemented.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
 ##'     as input data). If `wait=FALSE` a character vector with paths
@@ -250,6 +252,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,suffix.sim,text.table,
                   system.type=NULL
                  ,file.res
+                 ,quiet=FALSE
                  ,...
                   ){
 
@@ -435,40 +438,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     
 
-    ## if(length(file.mod)>1){
-    ##     allres.l <- lapply(1:length(file.mod),function(x)
-    ##         NMsim(file.mod=file.mod[[x]],
-    ##              ,data=data
-    ##              ,dir.sims=dir.sims,
-    ##               name.sim=name.sim,
-    ##               order.columns=order.columns,script=script,
-    ##               subproblems=subproblems,
-    ##               reuse.results=reuse.results,seed=seed,
-    ##               args.psn.execute=args.psn.execute,
-    ##               nmquiet=nmquiet,
-    ##               text.table=text.table,
-    ##               table.vars=table.vars,
-    ##               table.options=table.options,
-    ##               text.sim=text.sim,
-    ##               execute=execute,
-    ##               sge=sge
-    ##              ,nc=nc
-    ##               ## ,modelname=modelname
-    ##              ,transform=transform
-    ##              ,method.sim=method.sim
-    ##              ,path.nonmem=path.nonmem
-    ##              ,col.row=col.row
-    ##              ,args.NMscanData=args.NMscanData
-    ##              ,dir.psn=dir.psn
-    ##              ,...
-    ##               ))
-    ##     if(file.mod.named){
-    ##         names.mod <- names(file.mod)
-    ##         allres.l <- lapply(1:length(allres.l),function(I) allres.l[[I]][,model:=names.mod[[I]]])
-    ##     }
-    ##     return(rbindlist(allres.l,fill=TRUE))
-    ## }
-
     if(missing(table.vars)) table.vars <- NULL
     if(missing(table.options)) table.options <- NULL
 ### generate text.table as the combination of table.vars and table.options
@@ -615,14 +584,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ]
     
     
-
+    
 ### Generate the first version of file.sim.
     ## It would not need to, but beware PSN's update_inits needs to
     ## create a new file - don't try to overwrite an existing one.
     if(method.update.inits=="none"){
         dt.models[,file.copy(file.mod,path.sim),by=ROWMODEL]
     }
-    
+
     if(method.update.inits=="psn"){
 ### this next line is done already. I think it should be removed but testing needed.
         cmd.update.inits <- file.psn(dir.psn,"update_inits")
@@ -733,7 +702,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 ## notice, this must capture zero and 1.
                 lines.tables.new <- list(gsub(paste0("FILE *= *[^ ]+"),replacement=fn.tab.base,lines.tables[[1]]))
             } else {
-                
+                warning("text.table is of length>1. Trying, but retrieving results may fail.")
                 lines.tables.new <- lapply(seq_along(lines.tables),function(n){
                     fn.tab <- fnAppend(fn.tab.base,n)
                     gsub(paste0("FILE *= *[^ ]+"),replacement=fn.tab,lines.tables[[n]])
@@ -900,6 +869,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(execute){
 
         dt.models[,unlink(fn.rds)]
+        file.res.data <- fnAppend(fnExtension(dt.models[,fn.rds],"fst"),"res")
+        if(file.exists(file.res.data)){
+            unlink(file.res.data)
+        }
 
         ## run sim
         wait <- !sge
@@ -927,7 +900,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ### run.extension. run_input.extension kept.
             ## files.unwanted <- list.files(
             if(file.exists(path.sim.lst)){
-                message("Existing output control stream found. Removing.")
+                ## message("Existing output control stream found. Removing.")
                 
                 dt.outtabs <- try(NMscanTables(path.sim.lst,meta.only=TRUE,as.fun="data.table",quiet=TRUE),silent=TRUE)
                 if(!inherits(dt.outtabs,"try-error") && is.data.table(dt.outtabs) && nrow(dt.outtabs)>0){
@@ -977,7 +950,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ####### notify user where to find rds files
         fn.this.rds <- unique(dt.models.save[[I]][,fn.rds])
         addClass(dt.models.save[[I]],"NMsimTab")
-        message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))
+        if(!quiet){
+            message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))
+        }
         saveRDS(dt.models.save[[I]],file=fn.this.rds)
     })
 

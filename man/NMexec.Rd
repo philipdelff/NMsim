@@ -20,7 +20,8 @@ NMexec(
   dir.psn,
   path.nonmem,
   system.type,
-  files.needed
+  files.needed,
+  quiet = FALSE
 )
 }
 \arguments{
@@ -117,6 +118,9 @@ supported. Default is to use \code{Sys.info()[["sysname"]]}.}
 specifies files to be copied into the temporary directory
 before Nonmem is run. Input control stream and simulation
 input data does not need to be specified.}
+
+\item{quiet}{Suppress messages on what NMexec is doing? Default is
+FALSE.}
 }
 \value{
 NULL (invisibly)
