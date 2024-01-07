@@ -81,8 +81,6 @@ cores, this could engage 500/16 ~ 32 nodes in parallel, with all jobs
 executed at the same time. We supply the path to the Nonmem executable. With PSN this should work without specifying the Nonmem path, but PSN for some reason takes more time submitting the jobs to the cluster. If nodes are available, the following simulation should not take more than a couple of minutes to execute.
 
 ```{r,eval=TRUE}
-file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
-file.mod <- file.project("nonmem/xgxr032.mod")
 file.res <- "simulate-results/simpaths-vpc.rds"
 ```
 
@@ -112,12 +110,12 @@ simres.vpc <- NMreadSim(file.res)
 ```{r}
 res <- NMscanData(file.mod,as.fun="data.table")
 data.obs <- res[EVID==0]
-
+data.sim <- subset(simres.vpc,EVID==0)
 
 ## run vpc
 vpc1 <-
-    observed(data.obs[EVID==0], x = TIME, y = DV) |>
-    simulated(simres.vpc[EVID==0], y = Y) |>
+    observed(data.obs, x = TIME, y = DV) |>
+    simulated(data.sim, y = Y) |>
     stratify(~DOSE) |>
     binning(bin = "ntile", nbins = 9) |>
     vpcstats()
