@@ -96,7 +96,8 @@ still be reproduced if the input data files should be updated.</p>
 <span>  <span class="va">dir.psn</span>,</span>
 <span>  <span class="va">path.nonmem</span>,</span>
 <span>  <span class="va">system.type</span>,</span>
-<span>  <span class="va">files.needed</span></span>
+<span>  <span class="va">files.needed</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -217,6 +218,11 @@ supported. Default is to use <code>Sys.info()[["sysname"]]</code>.</p></dd>
 specifies files to be copied into the temporary directory
 before Nonmem is run. Input control stream and simulation
 input data does not need to be specified.</p></dd>
+
+
+<dt>quiet</dt>
+<dd><p>Suppress messages on what NMexec is doing? Default is
+FALSE.</p></dd>
 
 </dl></div>
     <div class="section level2">
