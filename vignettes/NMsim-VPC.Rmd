@@ -83,7 +83,7 @@ executed at the same time. We supply the path to the Nonmem executable. With PSN
 ```{r,eval=TRUE}
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 file.mod <- file.project("nonmem/xgxr032.mod")
-file.res="simulate-results/simpaths-vpc.rds"
+file.res <- "simulate-results/simpaths-vpc.rds"
 ```
 
 ```{r,eval=FALSE}
@@ -102,7 +102,7 @@ sim.vpc.sge <- NMsim(file.mod,
 
 ```
 
-```{r,include=FALSE,eval=TRUE}
+```{r,include=TRUE,eval=TRUE}
 simres.vpc <- NMreadSim(file.res)
 ```
 
