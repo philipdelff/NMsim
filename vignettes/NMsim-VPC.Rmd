@@ -17,6 +17,7 @@ header-includes:
 library(tidyvpc)
 library(NMdata)
 library(fst)
+library(NMsim)
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
                       collapse = TRUE
