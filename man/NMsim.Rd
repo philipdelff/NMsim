@@ -37,6 +37,7 @@ NMsim(
   suffix.sim,
   text.table,
   system.type = NULL,
+  dir.res,
   file.res,
   quiet = FALSE,
   ...
@@ -52,7 +53,8 @@ simulating known subjects, the .phi is necessary too.}
 \item{data}{The simulation data as a data.frame.}
 
 \item{dir.sims}{The directory in which NMsim will store all
-generated files.}
+generated files. Default is to create a folder called `NMsim`
+next to `file.mod`.}
 
 \item{name.sim}{Give all filenames related to the simulation a
 suffix. A short string describing the sim is recommended like
@@ -226,6 +228,19 @@ export from Nonmem.}
 \item{system.type}{A charachter string, either \"windows\" or
 \"linux\" - case insensitive. Windows is only experimentally
 supported. Default is to use \code{Sys.info()[["sysname"]]}.}
+
+\item{dir.res}{Provide a path to a directory in which to save rds
+files with paths to results. Default is to use dir.sims. After
+running `NMreadSim()` on these files, the original simulation
+files can be deleted. Hence, providing both `dir.sims` and
+`dir.res` provides a structure that is simple to
+clean. `dir.sims` can be purged when `NMreadSim` has been run
+and only small `rds` and `fst` files will be kept in
+`dir.res`. Notice, in case multiple models are simulated,
+multiple `rds` (to be read with `NMreadSim()`) files will be
+created by default. In cases where multiple models are
+simulated, see `file.res` to get just one file refering to all
+simulation results.}
 
 \item{file.res}{Path to an rds file that will contain a table of
 the simulated models. This is useful for subsequently

@@ -47,7 +47,7 @@ we need for a VPC. We will use an example model included with NMsim:
 
 
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
-file.mod <- file.project("nonmem/xgxr022.mod")
+file.mod <- file.project("nonmem/xgxr032.mod")
 
 ```
 
@@ -79,10 +79,13 @@ only one core will be used per job. If each node on the cluster has 16
 cores, this could engage 500/16 ~ 32 nodes in parallel, with all jobs
 executed at the same time. We supply the path to the Nonmem executable. With PSN this should work without specifying the Nonmem path, but PSN for some reason takes more time submitting the jobs to the cluster. If nodes are available, the following simulation should not take more than a couple of minutes to execute.
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
-file.mod <- file.project("nonmem/xgxr022.mod")
+file.mod <- file.project("nonmem/xgxr032.mod")
+file.res="simulate-results/simpaths-vpc.rds"
+```
 
+```{r,eval=FALSE}
 set.seed(43)
 ## notice the data argument is not used.
 sim.vpc.sge <- NMsim(file.mod,
@@ -93,18 +96,13 @@ sim.vpc.sge <- NMsim(file.mod,
                     ,sge=TRUE
                     ## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"
                     ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                    ,file.res=file.res
                      )
 
-simres.vpc <- NMreadSim(sim.vpc.sge)
 ```
 
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres-vpc.fst"
-if(run.simuls){
-    write_fst(simres.vpc,path=file.fst)
-} else {
-    simres.vpc <- read_fst(file.fst,as.data.table=TRUE)
-}
+simres.vpc <- NMreadSim(file.res)
 ```
 
 
@@ -113,20 +111,6 @@ if(run.simuls){
 ```{r}
 res <- NMscanData(file.mod,as.fun="data.table")
 data.obs <- res[EVID==0]
-
-## ggplot(data.obs,aes(TIME,DV))+
-##     geom_point()+
-##     facet_wrap(~ID)
-
-### for stratification, we need to make sure to add those variables to the sim data. 
-## in case we need to create a new grouping
-## data.obs[,groupDose:=paste(STUDY,"-",DOSE,"mg")]
-## data.obs[,.N,by=.(groupDose)]
-
-## get group into sim data
-## simres <- mergeCheck(simres,
-##                      findCovs(data.obs,by="ID")[,.(ID,groupDose,STUDY,DOSE)]
-##                     ,by="ID")
 
 
 ## run vpc

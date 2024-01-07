@@ -43,6 +43,7 @@ LINK.LNK
 ^inst/examples/nonmem/NMexec.pnm
 ^inst/examples/nonmem/xgxr01.+
 ^inst/examples/nonmem/xgxr1.+
+^inst/examples/nonmem/xgxr022.+
 ^inst/examples/nonmem/bs.+
 ^inst/examples/nonmem/NMsim
 ^inst/examples/simulations/.+

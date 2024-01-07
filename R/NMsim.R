@@ -315,6 +315,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ROW <- NULL
     ROWMODEL <- NULL
     ROWMODEL2 <- NULL
+    ..dir.res <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
@@ -894,8 +895,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
         dt.models[,unlink(path.rds)]
         file.res.data <- fnAppend(fnExtension(dt.models[,path.rds],"fst"),"res")
-        if(file.exists(file.res.data)){
-            unlink(file.res.data)
+        if(any(file.exists(file.res.data))){
+            unlink(file.res.data[file.exists(file.res.data)])
         }
 
         ## run sim
