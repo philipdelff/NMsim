@@ -14,7 +14,8 @@
 ##'     simulating known subjects, the .phi is necessary too.
 ##' @param data The simulation data as a data.frame.
 ##' @param dir.sims The directory in which NMsim will store all
-##'     generated files.
+##'     generated files. Default is to create a folder called `NMsim`
+##'     next to `file.mod`.
 ##' @param name.sim Give all filenames related to the simulation a
 ##'     suffix. A short string describing the sim is recommended like
 ##'     "ph3_regimens".
@@ -159,6 +160,18 @@
 ##'     \"linux\" - case insensitive. Windows is only experimentally
 ##'     supported. Default is to use \code{Sys.info()[["sysname"]]}.
 ##' @param suffix.sim Deprecated. Use name.sim instead.
+##' @param dir.res Provide a path to a directory in which to save rds
+##'     files with paths to results. Default is to use dir.sims. After
+##'     running `NMreadSim()` on these files, the original simulation
+##'     files can be deleted. Hence, providing both `dir.sims` and
+##'     `dir.res` provides a structure that is simple to
+##'     clean. `dir.sims` can be purged when `NMreadSim` has been run
+##'     and only small `rds` and `fst` files will be kept in
+##'     `dir.res`. Notice, in case multiple models are simulated,
+##'     multiple `rds` (to be read with `NMreadSim()`) files will be
+##'     created by default. In cases where multiple models are
+##'     simulated, see `file.res` to get just one file refering to all
+##'     simulation results.
 ##' @param file.res Path to an rds file that will contain a table of
 ##'     the simulated models. This is useful for subsequently
 ##'     retrieving all the results using `NMreadSim()`. The default is
@@ -251,6 +264,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   as.fun
                  ,suffix.sim,text.table,
                   system.type=NULL
+                 ,dir.res
                  ,file.res
                  ,quiet=FALSE
                  ,...
@@ -270,7 +284,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     fn.sim.tmp <- NULL
     fn <- NULL
     fn.mod <- NULL
-    fn.rds <- NULL
+    path.rds <- NULL
     fn.sim <- NULL
     i <- NULL
     par.type <- NULL
@@ -563,12 +577,22 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
 
-    ## fn.rds - Where to save table of runs
-    if(missing(file.res)) file.res <- NULL
-    if(is.null(file.res)){
-        dt.models[,fn.rds:=file.path(dir.sim,"NMsim_paths.rds")]
+    ## path.rds - Where to save table of runs
+    if(missing(dir.res)) {
+        dt.models[,dir.res:=dir.sim]
     } else {
-        dt.models[,fn.rds:=fnExtension(file.res,"rds")]
+        dt.models[,dir.res:=..dir.res]
+    }
+    
+    if(missing(file.res)) file.res <- NULL
+    
+
+    if(is.null(file.res)){
+        
+        ## dt.models[,path.rds:=file.path(dir.res,"NMsim_paths.rds")]
+        dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim,"rds"),"paths"))]
+    } else {
+        dt.models[,path.rds:=fnExtension(file.res,"rds")]
     }
 
 
@@ -868,8 +892,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     if(execute){
 
-        dt.models[,unlink(fn.rds)]
-        file.res.data <- fnAppend(fnExtension(dt.models[,fn.rds],"fst"),"res")
+        dt.models[,unlink(path.rds)]
+        file.res.data <- fnAppend(fnExtension(dt.models[,path.rds],"fst"),"res")
         if(file.exists(file.res.data)){
             unlink(file.res.data)
         }
@@ -944,11 +968,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ###  Section end: Execute
 
     
-    dt.models.save <- split(dt.models,by="fn.rds")
+    dt.models.save <- split(dt.models,by="path.rds")
     lapply(1:length(dt.models.save),function(I){
 
 ####### notify user where to find rds files
-        fn.this.rds <- unique(dt.models.save[[I]][,fn.rds])
+        fn.this.rds <- unique(dt.models.save[[I]][,path.rds])
         addClass(dt.models.save[[I]],"NMsimTab")
         if(!quiet){
             message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))

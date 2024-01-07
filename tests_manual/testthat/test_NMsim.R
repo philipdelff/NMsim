@@ -133,8 +133,6 @@ test_that("basic - spaces in paths",{
                     method.update.inits="nmsim"
                     )
 
-    
-
 })
 
 
@@ -260,7 +258,7 @@ test_that("multiple data sets",{
                               dir.sims="testOutput"
                              ,name.sim="datalist_01"
                              ,method.execute="nmsim"
-                               ,path.nonmem=path.nonmem
+                             ,path.nonmem=path.nonmem
                               )
 
 
