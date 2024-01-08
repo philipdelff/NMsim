@@ -129,8 +129,8 @@
 ##'     of analyses, like modifying parameter values. See vignettes
 ##'     for further information. Documentation still under
 ##'     development.
-##' @param create.dir If the directory specified in dir.sims does not
-##'     exists, should it be created? Default is TRUE.
+##' @param create.dirs If the directories specified in dir.sims and
+##'     dir.res do not exists, should it be created? Default is TRUE.
 ##' @param sim.dir.from.scratch If TRUE (default) this will wipe the
 ##'     simulation directory before running new simulations. The
 ##'     directory that will be emptied is _not_ dir.sims where you may
@@ -255,7 +255,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   method.sim=NMsim_default,
                   execute=TRUE,sge=FALSE,
                   nc=1,transform=NULL,
-                  method.execute,method.update.inits,create.dir=TRUE,dir.psn,
+                  method.execute,method.update.inits,
+                  create.dirs=TRUE,dir.psn,
                   list.sections,sim.dir.from.scratch=TRUE,
                   col.row,
                   args.NMscanData,
@@ -484,10 +485,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dir.sims <- simpleCharArg("dir.sims",dir.sims,file.path(dirname(file.mod),"NMsim"),accepted=NULL,lower=FALSE)
     
     if(!dir.exists(dir.sims)){
-        if(!create.dir){
+        if(!create.dirs){
             stop(paste("dir.sims does not point to an existing directory. dir.sims is\n",NMdata:::filePathSimple(dir.sims)))
         }
         dir.create(dir.sims)
+    }
+    if(!dir.exists(dir.res)){
+        if(!create.dirs){
+            stop(paste("dir.res does not point to an existing directory. dir.res is\n",NMdata:::filePathSimple(dir.res)))
+        }
+        dir.create(dir.res)
     }
     
     if(missing(text.table)) text.table <- NULL
