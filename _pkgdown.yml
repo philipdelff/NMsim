@@ -32,6 +32,8 @@ navbar:
         href: articles/NMsim-known.html
       - text: Simulate typical subjects
         href: articles/NMsim-TypSubj.html
+      - text: Simulations with parameter uncertainty
+        href: articles/NMsim-ParamUncertain.html
       - text: Simulation with residual variability
         href: articles/NMsim-ResidVar.html
       - text: Varying parameter values

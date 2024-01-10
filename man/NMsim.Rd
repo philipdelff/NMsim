@@ -25,7 +25,7 @@ NMsim(
   transform = NULL,
   method.execute,
   method.update.inits,
-  create.dir = TRUE,
+  create.dirs = TRUE,
   dir.psn,
   list.sections,
   sim.dir.from.scratch = TRUE,
@@ -159,8 +159,8 @@ control streams less easy to read. On the other hand, this
 method is robust because it avoids any interpretation of BLOCK
 structure or other code in the control streams.}
 
-\item{create.dir}{If the directory specified in dir.sims does not
-exists, should it be created? Default is TRUE.}
+\item{create.dirs}{If the directories specified in dir.sims and
+dir.res do not exists, should it be created? Default is TRUE.}
 
 \item{dir.psn}{The directory in which to find PSN's executables
 ('execute' and 'update_inits'). The default is to rely on the
