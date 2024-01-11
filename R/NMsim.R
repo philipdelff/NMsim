@@ -1,4 +1,4 @@
-##' Run simulations from an estimated Nonmem model
+##' Simulate from an estimated Nonmem model
 ##'
 ##' Supply a data set and an estimation input control stream, and
 ##' NMsim can create neccesary files (control stream, data files), run

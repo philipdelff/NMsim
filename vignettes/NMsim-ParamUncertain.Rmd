@@ -41,6 +41,12 @@ file.mod <- file.project("nonmem/xgxr032.mod")
 dat.sim <- read_fst("simulate-results/dat_sim.fst")
 ```
 
+## Objectives
+This vignettes aims at enabling you to use `NMsim` for the following purposes
+
+* Simulation with parameter uncertainty
+  - By sampling for a successful covariance step
+  - By using models from bootstrap sampling
 
 ## Simulation of parameter uncertainty
 We already saw how `NMsim` can easily be used to generate new subjects

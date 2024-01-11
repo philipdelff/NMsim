@@ -3,9 +3,10 @@
 
 * Function `simPopEtas()` to generate a population from a model. The
   population can be saved as a `phi` file to be reused in subsequent
-  simulations.
+  simulations. The function is by mistake not exported in 0.0.7 so for
+  now you must use `NMsim:::simPopEtas()` to use it.
 
-* Function NMreadSim provides a very simple interface to reading
+* Function `NMreadSim()` provides a very simple interface to reading
   simulation results. Especailly in cases where the simulation is
   being parallelized or otherwise spawns multiple Nonmem jobs, this is
   a useful feature.

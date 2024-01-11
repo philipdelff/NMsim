@@ -74,10 +74,7 @@ This vignettes aims at enabling you to use `NMsim` for the following purposes
 
 * Simulation of typical subjects, 
 * Simualation of known subjects (estimated random effects), 
-* Simulation with parameter uncertainty
-  - By sampling for a successful covariance step
-  - By using models from bootstrap sampling
-* Simulation with parameters modified from the estimated values
+
 
 ## Prerequisites
 You should have configured `NMsim` with the path to the Nonmem
@@ -93,7 +90,15 @@ file.mod <- file.project("nonmem/xgxr021.mod")
 
 
 ## Simulation of known subjects
-We sometimes want to simulate the already observed subjects. This means we want to reuse the estimated random effects (ETA's) given the subject ID's. `NMsim` has a method for this. The restriction is that all subjects (values of `ID`) in the simulation input data must have been used in the estimation input data.
+We sometimes want to simulate the already observed subjects. This
+means we want to reuse the estimated random effects (ETA's) given the
+subject ID's. `NMsim` has a method for this. The restriction is that
+all subjects (values of `ID`) in the simulation input data must have
+been used in the estimation input data.
+
+The following code takes an already created simulation data set with a
+single ID, and merges all other columns than `ID` onto the observed
+`ID`s. That gives the same simulation data for all subjects. 
 
 ```{r,eval=FALSE}
 ## read model results just to extract the observed ID's
@@ -111,7 +116,7 @@ NMcheckData(dat.sim.known,type.data="sim")
 simres.known <- NMsim(file.mod=file.mod,
                       data=dat.sim.known,
                       method.sim=NMsim_known,
-                      text.table="PRED IPRED CL V2 KA",
+                      table.vars="PRED IPRED CL V2 KA",
                       name.sim="known1",
                       dir.sims="~/NMsim_vignette/"
                       )
@@ -180,7 +185,7 @@ simres.pksim <- NMsim(file.mod,
                       data=pdsim,
                       name.sim="pkpd",
                      ,method.sim=NMsim_known
-                     ,text.table="IPRED PRED"
+                     ,table.vars="IPRED PRED"
                       )
 
 ```

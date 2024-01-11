@@ -32,7 +32,12 @@ knitr::opts_chunk$set(
 ## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
 run.simuls <- FALSE
 ```
+Built `r Sys.Date()` using NMsim `r packageVersion("NMsim")`.
 
+## Objectives
+This vignettes aims at enabling you to use `NMsim` for the following purposes
+
+* Simulation with parameters modified from the estimated values
 
 ## Vary parameter values
 Sometimes we want to simulate with some modification to the estimated model. NMsim can make such user-specified modifications to the model before simulating through the `list.sections` argument. 

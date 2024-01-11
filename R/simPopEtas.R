@@ -13,7 +13,7 @@
 ##' @import data.table
 ##' @import NMdata
 ##' @importFrom MASS mvrnorm
-
+##' @export 
 
 simPopEtas <- function(file.mod,N,seed,file.phi,as.fun){
 
