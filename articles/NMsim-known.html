@@ -98,7 +98,7 @@
 
     
     
-<p>Built 2024-01-10 using NMsim 0.0.7.</p>
+<p>Built 2024-01-11 using NMsim 0.0.7.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -107,13 +107,6 @@ following purposes</p>
 <ul>
 <li>Simulation of typical subjects,</li>
 <li>Simualation of known subjects (estimated random effects),</li>
-<li>Simulation with parameter uncertainty
-<ul>
-<li>By sampling for a successful covariance step</li>
-<li>By using models from bootstrap sampling</li>
-</ul>
-</li>
-<li>Simulation with parameters modified from the estimated values</li>
 </ul>
 </div>
 <div class="section level2">
@@ -140,6 +133,10 @@ means we want to reuse the estimated random effects (ETA’s) given the
 subject ID’s. <code>NMsim</code> has a method for this. The restriction
 is that all subjects (values of <code>ID</code>) in the simulation input
 data must have been used in the estimation input data.</p>
+<p>The following code takes an already created simulation data set with
+a single ID, and merges all other columns than <code>ID</code> onto the
+observed <code>ID</code>s. That gives the same simulation data for all
+subjects.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## read model results just to extract the observed ID's</span></span>
 <span><span class="va">res.mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMscanData</a></span><span class="op">(</span><span class="va">file.mod</span>,quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
@@ -156,7 +153,7 @@ data must have been used in the estimation input data.</p>
 <span><span class="va">simres.known</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                      data<span class="op">=</span><span class="va">dat.sim.known</span>,</span>
 <span>                      method.sim<span class="op">=</span><span class="va">NMsim_known</span>,</span>
-<span>                      text.table<span class="op">=</span><span class="st">"PRED IPRED CL V2 KA"</span>,</span>
+<span>                      table.vars<span class="op">=</span><span class="st">"PRED IPRED CL V2 KA"</span>,</span>
 <span>                      name.sim<span class="op">=</span><span class="st">"known1"</span>,</span>
 <span>                      dir.sims<span class="op">=</span><span class="st">"~/NMsim_vignette/"</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
@@ -220,7 +217,7 @@ records to simulation records (<code>EVID=2</code> instead of
 <span>                      data<span class="op">=</span><span class="va">pdsim</span>,</span>
 <span>                      name.sim<span class="op">=</span><span class="st">"pkpd"</span>,</span>
 <span>                     ,method.sim<span class="op">=</span><span class="va">NMsim_known</span></span>
-<span>                     ,text.table<span class="op">=</span><span class="st">"IPRED PRED"</span></span>
+<span>                     ,table.vars<span class="op">=</span><span class="st">"IPRED PRED"</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
 <p>Now rename <code>res.pksim$IPRED</code> to something meaningfull like
 <code>res.pksim$PKIPRED</code>, and you can merge <code>res.pksim</code>

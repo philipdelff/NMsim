@@ -98,7 +98,7 @@
 
     
     
-<p>Built 2024-01-10 using NMsim 0.0.7.</p>
+<p>Built 2024-01-11 using NMsim 0.0.7.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -358,7 +358,7 @@ data).</li>
 <code>name.sim</code> Give your simulation a meaningfull name. We
 did not do this above, so <code>NMsim</code> called it “noname”.</li>
 <li>
-<code>text.table</code> Very important. This redefines the output
+<code>table.vars</code> Very important. This redefines the output
 table section from the estimation control stream to the simulation
 control stream. The estimation control stream may have too many
 variables printed (which will make Nonmem slow), or it may not have some
@@ -370,54 +370,6 @@ frequently.</li>
 $SIMULATION section</li>
 </ul>
 <p>You will learn about a few more arguments in the next examples.</p>
-</div>
-<div class="section level2">
-<h2 id="most-common-reasons-for-nmsim-to-fail-or-be-slow">Most common reasons for <code>NMsim</code> to fail or be slow<a class="anchor" aria-label="anchor" href="#most-common-reasons-for-nmsim-to-fail-or-be-slow"></a>
-</h2>
-<p>If <code>NMsim</code> can find the Nonmem executable and/or PSN, it
-should work on basically any models where where it makes sense to
-replace the <code>$ESTIMATION</code> by a <code>$SIMULATION</code>. If
-<code>NMsim</code> fails or behaves unexpectedly, make sure to read the
-output from Nonmem in the R console. If <code>NMsim</code> complains it
-cannot find the output tables, it is likely because Nonmem failed and
-did not generate them.</p>
-<p>There is one thing about the Nonmem model evaluation you have to
-remember. Nonmem cannot run a model if it uses variables that are
-unavailable. It may be a covariate in the model that you did not include
-in your data set. And often the estimation models include variables in
-output tables that were not used for anything else by Nonmem than being
-read from the input data set and printed in output tables. In fact, this
-was exactly why we included a row identifier calle <code>ROW</code> when
-generating the simulation data set. If we do not do that, we get this
-error:</p>
-<pre><code>Starting NMTRAN
- 
- AN ERROR WAS FOUND IN THE CONTROL STATEMENTS.
- 
-AN ERROR WAS FOUND ON LINE 60 AT THE APPROXIMATE POSITION NOTED:
- $TABLE ROW TVKA TVV2 TVV3 TVCL KA V2 V3 CL Q PRED IPRED Y NOPRINT FILE=NMsim_xgxr021_noname.tab
-         X  
- THE CHARACTERS IN ERROR ARE: ROW
-  479  THIS ITEM IS NOT LISTED IN MODULE NMPRD4 AND MAY NOT BE DISPLAYED.
-cp: cannot stat 'NMsim_xgxr021_noname.tab': No such file or directory
-Error in NMscanTables(file, quiet = TRUE, as.fun = "data.table", col.row = col.row,  : 
-  NMscanTables: File not found: /home/philip/R/x86_64-pc-linux-gnu-library/4.2/NMsim/examples/nonmem/NMsim/xgxr021_noname/NMsim_xgxr021_noname.tab. Did you copy the lst file but forgot table file?
-Results could not be read.</code></pre>
-<p>Nonmem gets to writing the <code>$TABLE</code> but cannot find a
-variable called <code>ROW</code>. Again, we fixed that by including
-<code>ROW</code>. In many cases, the best way to fix this is to reduce
-the <code>$TABLE</code> section using the <code>text.table</code>
-argument. All we need from the simulation results are population and
-individual predictions anyway. We could have omitted <code>ROW</code> in
-the input data set and done something as simple as</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
-<span>                data<span class="op">=</span><span class="va">dat.sim</span>,</span>
-<span>                text.table<span class="op">=</span><span class="st">"PRED IPRED Y"</span><span class="op">)</span></span></code></pre></div>
-<p><code>text.table</code> can help avoid many of these problems. And if
-<code>NMsim</code> is slow, this is a potentially a very large
-low-hanging fruit. In a benchmark example, I reduced a (very large)
-simulation run time from ~1.5 hours to ~7 minutes this way.</p>
 </div>
 <div class="section level2">
 <h2 id="more-subjects-and-prediction-intervals">More subjects and prediction intervals<a class="anchor" aria-label="anchor" href="#more-subjects-and-prediction-intervals"></a>
@@ -434,7 +386,7 @@ dataset, one repetetion per new subject, and then update the
 <code>data.table</code>. (I use <code>data.table</code> a lot, if you
 can provide a good way to do this without, I am happy to include
 that).</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat.sim.1000</span> <span class="op">&lt;-</span> <span class="fu">NMdata</span><span class="fu">::</span><span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/egdt.html" class="external-link">egdt</a></span><span class="op">(</span></span>
 <span>                            <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">dat.sim</span><span class="op">)</span><span class="op">[</span>,<span class="op">!</span><span class="op">(</span><span class="st">"ID"</span><span class="op">)</span><span class="op">]</span></span>
 <span>                           ,</span>
@@ -446,7 +398,7 @@ that).</p>
 <span><span class="co">## check dataset</span></span>
 <span><span class="fu">NMcheckData</span><span class="op">(</span><span class="va">dat.sim.1000</span>,type.data<span class="op">=</span><span class="st">"sim"</span><span class="op">)</span></span></code></pre></div>
 <p>We now simulate 1000 subjects by plugging in this data object:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simres.n1000.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                        data<span class="op">=</span><span class="va">dat.sim.1000</span>,</span>
 <span>                        dir.sims<span class="op">=</span><span class="st">"~/NMsim_vignette"</span>, <span class="co">## where to store simulation files</span></span>
@@ -463,13 +415,13 @@ the <code>dat.sim</code> data without the 1000 replications. We then
 make use of the NMREP column generated by
 <code><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMdata::NMscanData</a></code> to redefine the <code>ID</code>
 column:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>simres.n1000<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">NMsim</span>(<span class="at">file.mod=</span>file.mod,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data=</span>dat.sim,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">subproblems=</span><span class="dv">1000</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">dir.sims=</span><span class="st">"~/NMsim_vignette"</span>, <span class="do">## where to store simulation files</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">name.sim=</span><span class="st">"N1000_subproblems"</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                        )</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>simres.n1000<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">as.data.table</span>(simres.n1000<span class="fl">.2</span>)[,ID<span class="sc">:</span><span class="er">=</span>.GRP,by<span class="ot">=</span>.(NMREP,ID,trt)]</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>simres.n1000<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">NMsim</span>(<span class="at">file.mod=</span>file.mod,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data=</span>dat.sim,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">subproblems=</span><span class="dv">1000</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">dir.sims=</span><span class="st">"~/NMsim_vignette"</span>, <span class="do">## where to store simulation files</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">name.sim=</span><span class="st">"N1000_subproblems"</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                        )</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>simres.n1000<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">as.data.table</span>(simres.n1000<span class="fl">.2</span>)[,ID<span class="sc">:</span><span class="er">=</span>.GRP,by<span class="ot">=</span>.(NMREP,ID,trt)]</span></code></pre></div>
 <p>The two approaches are computationally about equally fast, the most
 significant difference probably being in Nonmem reading a smaller or
 larger simulation input data file. Unless the input dataset becomes very
@@ -484,7 +436,7 @@ because it’s not a straightforward replication.</p>
 <p>We now plot a prediction interval - in this case based on the results
 of the simulation using <code>SUBPROBLEMS</code>; this makes no
 difference to how to derive the prediction interval.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simres.pi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">simres.n1000.2</span><span class="op">)</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">IPRED</span>,probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.05</span>,<span class="fl">.5</span>,<span class="fl">.95</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,<span class="fu">cc</span><span class="op">(</span><span class="va">ll</span>,<span class="va">median</span>,<span class="va">ul</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>                                           by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">trt</span>,<span class="va">TIME</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">simres.pi</span><span class="op">$</span><span class="va">type</span> <span class="op">&lt;-</span> <span class="st">"pi"</span></span>
@@ -510,7 +462,7 @@ meaningful structure for the generated files. Then read the results with
 <code><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMdata::NMscanData</a></code>. <code>merge.by.row=FALSE</code> because
 there is no reason to combine <code>NMsim</code> datasets using a row
 identifier.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://philipdelff.github.io/NMdata/" class="external-link">NMdata</a></span><span class="op">)</span></span>
 <span><span class="va">simres.n1000.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMscanData</a></span><span class="op">(</span><span class="st">"~/NMsim_vignette/xgxr021_N1000_datarep/NMsim_xgxr021_N1000_datarep.lst"</span>,merge.by.row<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>In fact, that is also what <code>NMsim</code> does once Nonmem has

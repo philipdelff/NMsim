@@ -72,8 +72,8 @@
 <h2 class="pkg-version" data-toc-text="0.0.7" id="nmsim-007">NMsim 0.0.7<a class="anchor" aria-label="anchor" href="#nmsim-007"></a></h2><p class="text-muted">CRAN release: 2024-01-08</p>
 <div class="section level3">
 <h3 id="new-features-0-0-7">New features<a class="anchor" aria-label="anchor" href="#new-features-0-0-7"></a></h3>
-<ul><li><p>Function <code><a href="../reference/simPopEtas.html">simPopEtas()</a></code> to generate a population from a model. The population can be saved as a <code>phi</code> file to be reused in subsequent simulations.</p></li>
-<li><p>Function NMreadSim provides a very simple interface to reading simulation results. Especailly in cases where the simulation is being parallelized or otherwise spawns multiple Nonmem jobs, this is a useful feature.</p></li>
+<ul><li><p>Function <code><a href="../reference/simPopEtas.html">simPopEtas()</a></code> to generate a population from a model. The population can be saved as a <code>phi</code> file to be reused in subsequent simulations. The function is by mistake not exported in 0.0.7 so for now you must use <code>NMsim:::simPopEtas()</code> to use it.</p></li>
+<li><p>Function <code><a href="../reference/NMreadSim.html">NMreadSim()</a></code> provides a very simple interface to reading simulation results. Especailly in cases where the simulation is being parallelized or otherwise spawns multiple Nonmem jobs, this is a useful feature.</p></li>
 <li><p>A list of simulation data sets will now be simulated with separate Nonmem runs. This is an efficient way to parellelize large simulation runs.</p></li>
 </ul></div>
 </div>
