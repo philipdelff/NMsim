@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.901</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,14 +98,13 @@
 
     
     
-<p>Built 2024-01-11 using NMsim 0.0.7.</p>
+<p>Built 2024-01-12 using NMsim 0.0.7.901.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
 <p>This vignettes aims at enabling you to use <code>NMsim</code> for the
 following purposes</p>
 <ul>
-<li>Simulation of typical subjects,</li>
 <li>Simualation of known subjects (estimated random effects),</li>
 </ul>
 </div>
@@ -122,6 +121,8 @@ method. This vignette will be using the same model and simulation input
 data as in <a href="https://philipdelff.github.io/NMsim/articles/NMsim-basics.html"><code>NMsim-basics.html</code></a>
 to demonstrate how to use additional methods and features of
 <code>NMsim</code>.</p>
+<p>First thing, we decide on a model (an input control stream of an
+estimated model) to use for the example:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr021.mod"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -130,14 +131,58 @@ to demonstrate how to use additional methods and features of
 </h2>
 <p>We sometimes want to simulate the already observed subjects. This
 means we want to reuse the estimated random effects (ETA’s) given the
-subject ID’s. <code>NMsim</code> has a method for this. The restriction
-is that all subjects (values of <code>ID</code>) in the simulation input
-data must have been used in the estimation input data.</p>
+subject ID’s. <code>NMsim</code> has a method for this called
+<code>NMsim_known</code>. The restriction is that all subjects (values
+of <code>ID</code>) in the simulation input data must have been used in
+the estimation input data.</p>
+<p>Let’s think about that one more time before we go on. For
+<code>NMsim_known</code> to work, <code>ID</code> values in the
+simulation data set must be identical to <code>ID</code> values used in
+the estimation. This is how <code>NMsim_known</code> will find the EBE’s
+(ETAs) that define the subject. For models estimated with FOCEI,
+<code>NMsim_known</code> will take the ETAs from the <code>.phi</code>
+file produced by Nonmem. For SAEM/IMP-based estimation this file cannot
+be used, and the user must have stored the ETAs in output table files
+for the method to work. It does not matter where in the table files they
+are, they just all need to be there. You can write all of them like it
+is done in the example model provided with <code>NMsim</code> called
+<code>xgxr032.mod</code>.</p>
+<pre><code>$TABLE ETAS(1:LAST) NOAPPEND NOPRINT FILE=xgxr032_etas.txt</code></pre>
+<p>So a “subject” essentially means a set of ETAs. Covariates must still
+be provided in the input data set and can be modified if wanted. Notice,
+<code>NMsim_known</code> does nothing to restore covariates - you must
+define covariates in input data as needed.</p>
+</div>
+<div class="section level2">
+<h2 id="individual-dosing-history-sample-times-or-both">Individual dosing history, sample times or both<a class="anchor" aria-label="anchor" href="#individual-dosing-history-sample-times-or-both"></a>
+</h2>
+<p>Individual simulations are useful for several purposes. Examples</p>
+<ul>
+<li><p>Reuse individual dosing history and use a new common sample
+scheme. This could be for homogeneous evaluation of exposure metrics
+such as Cmax, AUC, or just to show concentration-time profiles at
+identical sampling times based on a model estimated on data with
+heterogeneos sampling. Currently, there is no example of this in this
+vignette but see the other examples, and it should be pretty clear how
+to do this.</p></li>
+<li><p>Reuse dosing history and use individual sampling scheme from a
+different data set, e.g. PD.</p></li>
+<li><p>Simulate a new common dosing and sampling scheme to simulate
+already observed subjects on a new regimen. This is sometimes done if
+for one reason or the other the model is not considered reliable for
+simulation of new subjects but the individual parameter estimates are
+trusted.</p></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="simulate-known-subjects-on-a-new-dosing-regimen-and-new-sample-schedule">Simulate known subjects on a new dosing regimen and new sample
+schedule<a class="anchor" aria-label="anchor" href="#simulate-known-subjects-on-a-new-dosing-regimen-and-new-sample-schedule"></a>
+</h2>
 <p>The following code takes an already created simulation data set with
 a single ID, and merges all other columns than <code>ID</code> onto the
 observed <code>ID</code>s. That gives the same simulation data for all
 subjects.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## read model results just to extract the observed ID's</span></span>
 <span><span class="va">res.mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMscanData</a></span><span class="op">(</span><span class="va">file.mod</span>,quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>ID<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">res.mod</span><span class="op">$</span><span class="va">ID</span><span class="op">)</span><span class="op">)</span></span>
@@ -158,23 +203,23 @@ subjects.</p>
 <span>                      dir.sims<span class="op">=</span><span class="st">"~/NMsim_vignette/"</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
 <p>And the simulation results are plotted for each subject.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">simres.known</span><span class="op">)</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span><span class="op">]</span>,<span class="fu">aes</span><span class="op">(</span><span class="va">TIME</span>,<span class="va">IPRED</span>,colour<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu">theme</span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="NMsim-known_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 <!-- Show a plot of the individual parameters in estimate and in sim -->
 <div class="section level3">
-<h3 id="known-subjects-simulate-individual-pk-at-pd-sampling-times-for-a-pkpd-dataset">Known subjects: Simulate individual PK at PD sampling times for a
-PK/PD dataset<a class="anchor" aria-label="anchor" href="#known-subjects-simulate-individual-pk-at-pd-sampling-times-for-a-pkpd-dataset"></a>
+<h3 id="simulate-individual-dosing-history-at-new-individual-sampling-times-for-a-pkpd-dataset">Simulate individual dosing history at new individual sampling times
+for a PK/PD dataset<a class="anchor" aria-label="anchor" href="#simulate-individual-dosing-history-at-new-individual-sampling-times-for-a-pkpd-dataset"></a>
 </h3>
-<p>We also connected some PK data. We want to plot the PD data angainst
-PK. However, PD was sampled differnetly than PK, and we want to evaluate
-the individual predictions of the PK model at the individual PD samplng
-times.</p>
-<p>Currently, there is no PD data in the example data used to build this
-vignette. For a PK model without time-varying covariates, the steps to
-to generate the data for the simulation are:</p>
+<p>We want to plot some PD data angainst PK. However, PD was sampled
+differnetly than PK, and we want to evaluate the individual predictions
+of the PK model at the individual PD samplng times - reusing the
+individual dosing history.</p>
+<p>Reading some example PD data:</p>
+<p>For a PK model without time-varying covariates, suggested steps to
+generate the data for the simulation are:</p>
 <ul>
 <li>Take dose records from PK model estimation input data
 (<code>pkdos</code>). Just keep necessary columns like <code>ID</code>,
@@ -198,7 +243,7 @@ on trial design</li>
 from the PK data (without <code>DV</code>), but change observation
 records to simulation records (<code>EVID=2</code> instead of
 <code>EVID=0</code>).</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Take dose records from PK model estimation input data</span></span>
 <span><span class="va">pkres</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMscanData</a></span><span class="op">(</span><span class="va">file.mod</span>,quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">pkdos</span> <span class="op">&lt;-</span> <span class="va">pkres</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">1</span>,<span class="fu">.</span><span class="op">(</span><span class="va">ID</span>, <span class="va">TIME</span>, <span class="va">EVID</span>, <span class="va">CMT</span>, <span class="va">AMT</span><span class="op">)</span><span class="op">]</span></span>
@@ -211,7 +256,7 @@ records to simulation records (<code>EVID=2</code> instead of
 <span><span class="va">pdsim</span> <span class="op">&lt;-</span> <span class="va">pdsim</span><span class="op">[</span><span class="va">ID</span><span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span><span class="va">pkres</span><span class="op">$</span><span class="va">ID</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">pdsim</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span></code></pre></div>
 <p>Then run <code>NMsim</code> like this:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">simres.pksim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span><span class="va">file.mod</span>,</span>
 <span>                      data<span class="op">=</span><span class="va">pdsim</span>,</span>
@@ -222,11 +267,11 @@ records to simulation records (<code>EVID=2</code> instead of
 <p>Now rename <code>res.pksim$IPRED</code> to something meaningfull like
 <code>res.pksim$PKIPRED</code>, and you can merge <code>res.pksim</code>
 onto the PD data by the unique row identifier.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setattr.html" class="external-link">setnames</a></span><span class="op">(</span><span class="va">simres.pksim</span>,<span class="st">"IPRED"</span>,<span class="st">"PKIPRED"</span><span class="op">)</span></span>
 <span><span class="va">pd2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/mergeCheck.html" class="external-link">mergeCheck</a></span><span class="op">(</span><span class="va">pd</span>,<span class="va">simres.pksim</span><span class="op">[</span>,<span class="fu">.</span><span class="op">(</span><span class="va">ROWPD</span>,<span class="va">PKIPRED</span><span class="op">)</span><span class="op">]</span>,by<span class="op">=</span><span class="st">"ROWPD"</span>,all.x<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Column(s) added: PKIPRED</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">pd2</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">LIDV</span><span class="op">)</span><span class="op">&amp;</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">PKIPRED</span><span class="op">)</span><span class="op">]</span>,<span class="fu">aes</span><span class="op">(</span><span class="va">PKIPRED</span>,<span class="va">LIDV</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu">labs</span><span class="op">(</span>x<span class="op">=</span><span class="st">"Individual PK prediction"</span>,y<span class="op">=</span><span class="st">"Observed PD value"</span><span class="op">)</span> <span class="co">## +</span></span></code></pre></div>
