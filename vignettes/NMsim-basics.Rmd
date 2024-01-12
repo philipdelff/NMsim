@@ -97,9 +97,13 @@ worry - it is very easy.
 
 ## Estimation based on single dose, simulation of multiple doses
 The situation is like this: We collected PK and PD data from a single ascending dose 
-trial on a drug candidate. The following plot shows the data for no other reason than pointing out clearly that the data informing the model was single dose, and we will be simulating a different dosing regimen.
+trial on a drug candidate. A PK model was estimated using Nonmem. We have on file
+the model input and output control streams (here with extensions `.mod`
+and `.lst` respetively), parameter estimates (`.ext`) and estimated
+random effects (`.phi`). 
+<!-- The following plot shows the data for no other reason than pointing out clearly that the data informing the model was single dose, and we will be simulating a different dosing regimen. -->
 
-```{r,include=TRUE,echo=FALSE}
+```{r,include=FALSE,echo=FALSE}
 file.mod <- file.project("nonmem/xgxr021.mod")
 res <- NMscanInput(file.mod,quiet=TRUE)
 ggplot(res[!is.na(DV)],aes(TIME,DV))+
@@ -108,10 +112,6 @@ ggplot(res[!is.na(DV)],aes(TIME,DV))+
 
 ```
 
-A PK model was estimated using Nonmem. We have on file
-the model input and output control streams (here with extensions `.mod`
-and `.lst` respetively), parameter estimates (`.ext`) and estimated
-random effects (`.phi`). 
 
 We want to predict concentrations in a multiple dose regimen. This is a regimen that we have not
 studied in clinical trials so far, and we have decided to use
