@@ -63,6 +63,10 @@ run.simuls <- FALSE
 NMdataConf(as.fun="data.table")
 ```
 
+## Objectives
+This vignettes aims at enabling you to use `NMsim` for the following purposes
+
+* Simulation of typical subjects
 
 ## Simulation of a typical subject
 A typical subject is here understood as a subject without random

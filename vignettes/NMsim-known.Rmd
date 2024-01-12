@@ -72,7 +72,6 @@ Built `r Sys.Date()` using NMsim `r packageVersion("NMsim")`.
 ## Objectives
 This vignettes aims at enabling you to use `NMsim` for the following purposes
 
-* Simulation of typical subjects, 
 * Simualation of known subjects (estimated random effects), 
 
 
@@ -84,18 +83,52 @@ worry - it is very easy.
 
 You should be familiar with basic `NMsim` arguments as described in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html). In that vignette you should have learned to use the default simulation method. This vignette will be using the same model and simulation input data as in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html) to demonstrate how to use additional methods and features of `NMsim`.
 
+First thing, we decide on a model (an input control stream of an estimated model) to use for the example:
 ```{r}
 file.mod <- file.project("nonmem/xgxr021.mod")
 ```
 
 
-## Simulation of known subjects
+
+## Simulation of known subjects 
 We sometimes want to simulate the already observed subjects. This
 means we want to reuse the estimated random effects (ETA's) given the
-subject ID's. `NMsim` has a method for this. The restriction is that
+subject ID's. `NMsim` has a method for this called `NMsim_known`. The restriction is that
 all subjects (values of `ID`) in the simulation input data must have
 been used in the estimation input data.
 
+Let's think about that one more time before we go on. For `NMsim_known` to work, `ID` values in the simulation data set must be identical to `ID` values used in the estimation. This is how `NMsim_known` will find the EBE's (ETAs) that define the subject. For models estimated with FOCEI, `NMsim_known` will take the ETAs from the `.phi` file produced by Nonmem. For SAEM/IMP-based estimation this file cannot be used, and the user must have stored the ETAs in output table files for the method to work. It does not matter where in the table files they are, they just all need to be there. You can write all of them like it is done in the example model provided with `NMsim` called `xgxr032.mod`.
+
+```
+$TABLE ETAS(1:LAST) NOAPPEND NOPRINT FILE=xgxr032_etas.txt
+```
+
+So a "subject" essentially means a set of ETAs. Covariates must still
+be provided in the input data set and can be modified if
+wanted. Notice, `NMsim_known` does nothing to restore covariates - you
+must define covariates in input data as needed.
+
+## Individual dosing history, sample times or both
+Individual simulations are useful for several purposes. Examples
+
+* Reuse individual dosing history and use a new common sample
+  scheme. This could be for homogeneous evaluation of exposure metrics
+  such as Cmax, AUC, or just to show concentration-time profiles at
+  identical sampling times based on a model estimated on data with
+  heterogeneos sampling. Currently, there is no example of this in
+  this vignette but see the other examples, and it should be pretty
+  clear how to do this.
+
+* Reuse dosing history and use individual sampling scheme from a
+  different data set, e.g. PD.
+
+* Simulate a new common dosing and sampling scheme to simulate already
+  observed subjects on a new regimen. This is sometimes done if for
+  one reason or the other the model is not considered reliable for
+  simulation of new subjects but the individual parameter estimates
+  are trusted. 
+
+## Simulate known subjects on a new dosing regimen and new sample schedule
 The following code takes an already created simulation data set with a
 single ID, and merges all other columns than `ID` onto the observed
 `ID`s. That gives the same simulation data for all subjects. 
@@ -140,19 +173,19 @@ ggplot(as.data.table(simres.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
 
 <!-- Show a plot of the individual parameters in estimate and in sim -->
 
-### Known subjects: Simulate individual PK at PD sampling times for a PK/PD dataset
-We also connected some PK data. We want to plot the PD data angainst
+### Simulate individual dosing history at new individual sampling times for a PK/PD dataset
+We want to plot some PD data angainst
 PK. However, PD was sampled differnetly than PK, and we want to
 evaluate the individual predictions of the PK model at the individual
-PD samplng times.
+PD samplng times - reusing the individual dosing history.
 
-Currently, there is no PD data in the example data used to build this
-vignette. For a PK model without time-varying covariates, the steps to
-to generate the data for the simulation are:
-
+Reading some example PD data:
 ```{r,pddata,include=FALSE,eval=TRUE}
 pd <- readRDS(file.project("data/xgxr_pd.rds")) |> as.data.table()
 ```
+
+For a PK model without time-varying covariates, suggested steps 
+to generate the data for the simulation are:
 
 * Take dose records from PK model estimation input data (`pkdos`). Just keep necessary columns like `ID`, `TIME`, `EVID`, `CMT`, `AMT`, `ADDL`, `II`, and any necessary covariates
 * Take PD data observation records (`pdsamples`). Just keep `ID`, `TIME`, and set `EVID=2`.
