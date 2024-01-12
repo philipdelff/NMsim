@@ -121,10 +121,6 @@ method. This vignette will be using the same model and simulation input
 data as in <a href="https://philipdelff.github.io/NMsim/articles/NMsim-basics.html"><code>NMsim-basics.html</code></a>
 to demonstrate how to use additional methods and features of
 <code>NMsim</code>.</p>
-<p>First thing, we decide on a model (an input control stream of an
-estimated model) to use for the example:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr021.mod"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="simulation-of-known-subjects">Simulation of known subjects<a class="anchor" aria-label="anchor" href="#simulation-of-known-subjects"></a>
@@ -172,6 +168,12 @@ already observed subjects on a new regimen. This is sometimes done if
 for one reason or the other the model is not considered reliable for
 simulation of new subjects but the individual parameter estimates are
 trusted.</p></li>
+<li><p>Reuse a simulated population. One may prefer to reuse the same
+simulated subjects in multiple simulations for reproducibility and to
+have all difference between say simulation results of different regimens
+be driven by differences in the regimen, and not in the populations.
+This use of <code>NMsim_known</code> is on the todo list tog get it’s
+own vignette <a href="https://philipdelff.github.io/NMsim/articles/NMsim-ReuseSimSubjects.html">here</a>.</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -182,6 +184,10 @@ schedule<a class="anchor" aria-label="anchor" href="#simulate-known-subjects-on-
 a single ID, and merges all other columns than <code>ID</code> onto the
 observed <code>ID</code>s. That gives the same simulation data for all
 subjects.</p>
+<p>First thing, we decide on a model (an input control stream of an
+estimated model) to use for the example:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr021.mod"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## read model results just to extract the observed ID's</span></span>
 <span><span class="va">res.mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMscanData</a></span><span class="op">(</span><span class="va">file.mod</span>,quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
