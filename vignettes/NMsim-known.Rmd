@@ -83,10 +83,6 @@ worry - it is very easy.
 
 You should be familiar with basic `NMsim` arguments as described in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html). In that vignette you should have learned to use the default simulation method. This vignette will be using the same model and simulation input data as in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html) to demonstrate how to use additional methods and features of `NMsim`.
 
-First thing, we decide on a model (an input control stream of an estimated model) to use for the example:
-```{r}
-file.mod <- file.project("nonmem/xgxr021.mod")
-```
 
 
 
@@ -127,11 +123,24 @@ Individual simulations are useful for several purposes. Examples
   one reason or the other the model is not considered reliable for
   simulation of new subjects but the individual parameter estimates
   are trusted. 
+  
+* Reuse a simulated population. One may prefer to reuse the same
+  simulated subjects in multiple simulations for reproducibility and to have all difference
+  between say simulation results of different regimens be driven by
+  differences in the regimen, and not in the populations. This
+  use of `NMsim_known` is on the todo list tog get it's own vignette
+  [here](https://philipdelff.github.io/NMsim/articles/NMsim-ReuseSimSubjects.html).
 
 ## Simulate known subjects on a new dosing regimen and new sample schedule
 The following code takes an already created simulation data set with a
 single ID, and merges all other columns than `ID` onto the observed
 `ID`s. That gives the same simulation data for all subjects. 
+
+First thing, we decide on a model (an input control stream of an estimated model) to use for the example:
+```{r}
+file.mod <- file.project("nonmem/xgxr021.mod")
+```
+
 
 ```{r,eval=FALSE}
 ## read model results just to extract the observed ID's
