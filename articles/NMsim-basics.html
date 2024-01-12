@@ -130,16 +130,12 @@ Don’t worry - it is very easy.</p>
 <h2 id="estimation-based-on-single-dose-simulation-of-multiple-doses">Estimation based on single dose, simulation of multiple doses<a class="anchor" aria-label="anchor" href="#estimation-based-on-single-dose-simulation-of-multiple-doses"></a>
 </h2>
 <p>The situation is like this: We collected PK and PD data from a single
-ascending dose trial on a drug candidate. The following plot shows the
-data for no other reason than pointing out clearly that the data
-informing the model was single dose, and we will be simulating a
-different dosing regimen.</p>
-<p><img src="NMsim-basics_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
-<p>A PK model was estimated using Nonmem. We have on file the model
-input and output control streams (here with extensions <code>.mod</code>
-and <code>.lst</code> respetively), parameter estimates
-(<code>.ext</code>) and estimated random effects
-(<code>.phi</code>).</p>
+ascending dose trial on a drug candidate. A PK model was estimated using
+Nonmem. We have on file the model input and output control streams (here
+with extensions <code>.mod</code> and <code>.lst</code> respetively),
+parameter estimates (<code>.ext</code>) and estimated random effects
+(<code>.phi</code>).
+<!-- The following plot shows the data for no other reason than pointing out clearly that the data informing the model was single dose, and we will be simulating a different dosing regimen. --></p>
 <p>We want to predict concentrations in a multiple dose regimen. This is
 a regimen that we have not studied in clinical trials so far, and we
 have decided to use population PK simulations for this purpose.</p>
