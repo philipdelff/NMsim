@@ -77,13 +77,15 @@ This vignettes aims at enabling you to use `NMsim` for the following purposes
 
 ## Prerequisites
 You should have configured `NMsim` with the path to the Nonmem
-installation and maybe also PSN. See
+installation and maybe also PSN (optional). See
 [`NMsim-config.html`](https://philipdelff.github.io/NMsim/articles/NMsim-config.html). Don't
 worry - it is very easy. 
 
-You should be familiar with basic `NMsim` arguments as described in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html). In that vignette you should have learned to use the default simulation method. This vignette will be using the same model and simulation input data as in [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html) to demonstrate how to use additional methods and features of `NMsim`.
-
-
+You should be familiar with basic `NMsim` arguments as described in
+[`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html). In
+that vignette you should have learned to use the default simulation
+method. This vignette will be using the same model and simulation
+input data to demonstrate how to use additional methods and features of `NMsim`.
 
 
 ## Simulation of known subjects 
@@ -93,7 +95,17 @@ subject ID's. `NMsim` has a method for this called `NMsim_known`. The restrictio
 all subjects (values of `ID`) in the simulation input data must have
 been used in the estimation input data.
 
-Let's think about that one more time before we go on. For `NMsim_known` to work, `ID` values in the simulation data set must be identical to `ID` values used in the estimation. This is how `NMsim_known` will find the EBE's (ETAs) that define the subject. For models estimated with FOCEI, `NMsim_known` will take the ETAs from the `.phi` file produced by Nonmem. For SAEM/IMP-based estimation this file cannot be used, and the user must have stored the ETAs in output table files for the method to work. It does not matter where in the table files they are, they just all need to be there. You can write all of them like it is done in the example model provided with `NMsim` called `xgxr032.mod`.
+Let's think about that one more time before we go on. For
+`NMsim_known` to work, `ID` values in the simulation data set must be
+identical to `ID` values used in the estimation. This is how
+`NMsim_known` will find the EBE's (ETAs) that define the subject. For
+models estimated with FOCEI, `NMsim_known` will take the ETAs from the
+`.phi` file produced by Nonmem. For SAEM/IMP-based estimation this
+file cannot be used, and the user must have stored the ETAs in output
+table files for the method to work. It does not matter where in the
+table files they are, they just all need to be there. You can write
+all of them like it is done in the example model provided with `NMsim`
+called `xgxr032.mod`.
 
 ```
 $TABLE ETAS(1:LAST) NOAPPEND NOPRINT FILE=xgxr032_etas.txt
