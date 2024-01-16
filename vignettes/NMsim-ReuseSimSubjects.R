@@ -13,7 +13,7 @@ header-includes:
 - \usepackage{ae}
 ---
 
-```{r,include = FALSE}
+```{r,include = FALSE }
 library(tidyvpc)
 library(NMdata)
 library(fst)
@@ -47,3 +47,11 @@ This vignette still has to be written. The key things to understand are
 *  `simPopEtas()` simulates new phi files
 
 So essentially, create a `phi` file with `simPopEtas()` and then use the `NMsim_known` method to use it in new simulations. The `ID`s in the simulation data set must match simulated `ID`s. See [NMsim-known.html](https://philipdelff.github.io/NMsim/articles/NMsim-known.html) for an introduction to the `NMsim_known` method.
+
+We'll just use the simulation data set created in [`NMsim-DataCreate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-DataCreate.html)
+```{r}
+dat.sim <- read_fst(file="simulate-results/dat_sim.fst")
+```
+
+
+And now we can use `NMsim_known()`.

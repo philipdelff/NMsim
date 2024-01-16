@@ -16,6 +16,7 @@ header-includes:
 ```{r,include = FALSE}
 library(tidyvpc)
 library(NMdata)
+library(NMsim)
 library(fst)
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
@@ -32,5 +33,81 @@ knitr::opts_chunk$set(
 run.simuls <- FALSE
 ```
 
+Simulating new subjects is a very common task, and this is even the
+default simulation method in `NMsim` (because Nonmem does that with in
+a `$SIMULATION` step). However, sometimes one may want to perform
+multiple simulations using the same _simulated_ subjects. So we want
+to simulate new subjects, but only once, and then we want to be able
+to reuse those subjects. This can be wanted for at least these
+reasons:
 
-Look at `?simPopEtas()`.
+* Compare simulations of different scenarios with multiple subjects
+where ensuring that the difference in results isn't caused by
+differences in simulated subjects (less important the more subjects
+that are used in the simulations)
+
+* Ensure reproducibility of results. If the simulation input data is
+modified by say adding a simulation scenario in between two existing
+ones - or even just a sample time, the random number generator will
+be in different state when sampling the subjects the next time it
+runs. Suddenly, an estimated prediction interval comes out a little
+different.
+
+
+`NMsim` has a way to do this. It includes a function, `simPopEtas()`, to generate a
+simulated `.phi` file which is a Nonmem-native format for storing
+emperical Bayes estimates (essentially individual parameters). It does
+so by reading and simulating from the estimated `OMEGA` matrix
+(random-effect variance-covariance matrix - a covariance step is not
+needed to get this). The simulation method called `NMsim_known()` can
+then be used to simulate subjects as stored in this file. See
+[`NMsim-known.html`](https://philipdelff.github.io/NMsim/articles/NMsim-known.html)
+for more information on `NMsim_known`.
+
+### What is a subject?
+What is refered to here by "subject" is really a combination of `ETA`s. Covariates must be handled by the user in the simulation input dataset. This is also discussed in [`NMsim-known.html`](https://philipdelff.github.io/NMsim/articles/NMsim-known.html).
+
+## Example
+
+```{r}
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+file.mod <- file.project("nonmem/xgxr032.mod")
+```
+
+Let's simulate 10,000 ETA combinations and store them in a file called `xgxr032_simEtas.phi`.
+```{r}
+NMsim:::simPopEtas(file.mod=file.mod,
+                   N=1e4,
+                   seed=238861,
+                   file.phi="xgxr032_simEtas.phi"
+                   )
+```
+
+We'll just use the simulation data set created in [`NMsim-DataCreate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-DataCreate.html)
+```{r}
+dat.sim <- read_fst(path="simulate-results/dat_sim.fst",as.data.table=TRUE)
+```
+
+
+And now we can use `NMsim_known()`.
+
+```{r}
+dat.sim.multiple <- egdt(dat.sim[,!("ID")],data.table(ID=c(1,4,89)))
+setorder(dat.sim.multiple,ID,TIME,EVID)
+```
+
+```{r,eval=FALSE}
+simres <- NMsim(
+    file.mod=file.mod,
+    data=dat.sim.multiple,
+    method.sim=NMsim_known,
+    file.phi="xgxr032_simEtas.phi",
+    table.vars="PRED IPRED",
+    path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
+    dir.sims="simulate-tmp",
+    dir.res="simulate-results"
+)
+```
+
+
+## Note on between-occasion variability (supported)

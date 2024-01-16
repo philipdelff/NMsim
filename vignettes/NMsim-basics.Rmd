@@ -117,63 +117,10 @@ We want to predict concentrations in a multiple dose regimen. This is a regimen 
 studied in clinical trials so far, and we have decided to use
 population PK simulations for this purpose. 
 
-### Generating a simulation input data set
-The pop PK model was estimated using an ADVAN subroutine with
-extravascular dosing in compartment 1 and the central compartment is
-compartment 2. This information is needed because the compartment
-numbers in the simulation data set will be created to match this. We
-shall see that this is the only information needed about the model for
-`NMsim` to be able to simulate it.
-
-It does not matter to NMsim how we create a simulation data set as
-long as we get it into a data.frame structure. For the example, we used functions
-included with NMsim, but you can use anything. We
-create a regimen with a loading dose of 300 mg followed by 150 QD for
-6 days. Notice that the compartment numbers match the compartment
-numbers that were used when estimating the model.
-
-```{r,dsCreateSim,include=TRUE}
-### multiple dose regimens with loading are easily created with NMcreateDoses too
-## We use ADDL+II (either method easy)
-doses <- NMcreateDoses(TIME=c(0,24),AMT=c(300,150),addl=data.frame(ADDL=c(0,5),II=c(0,24)),CMT=1)
-doses <- transform(doses,trt="300 mg then 150 mg QD")
-
-## Add simulation records - longer for QD regimens
-dat.sim <- addEVID2(doses,time.sim=0:(24*7),CMT=2)
-
-## sort data set 
-setorder(dat.sim,ID,TIME,EVID)
-
-## Adding a row identifier (generally not necessary)
-dat.sim$ROW <- 1:nrow(dat.sim)
-```
-```{r,save-datsim,eval=FALSE}
-write_fst(dat.sim,"simulate-results/dat_sim.fst")
-```
-
-We check the simulation data set for various potential issues in
-Nonmem data sets using `NMdata::NMcheckData` and summarize the number
-of doses and observations:
-
+### The Simulation data set
+You can create a Nonmem-compatible simulation data set however you want. We will keep that as a separate topic and read one that was already created in [`NMsim-DataCreate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-DataCreate.html) using tools provided with NMsim to make that task simpler and faster to do:
 ```{r}
-NMcheckData(dat.sim,type.data="sim")
-```
-
-A brief overview of the number of events broken down by event type `EVID` and dose amount `AMT`:
-
-```{r,echo=FALSE}
-NMexpandDoses(dat.sim)[,.(Nrows=.N),keyby=.(trt,EVID,AMT)] |>
-    kable()
-```
-
-Showing the top five rows for understanding what the data now looks like. Notice that the following are _not_ issues:
-
-- Data contains a mix of numeric and non-numeric columns
-- Columns are not sorted in Nonmem-friendly style with non-numeric columns to the right
-
-
-```{r,echo=FALSE}
-dat.sim[1:5,]
+dat.sim <- read_fst(path="simulate-results/dat_sim.fst")
 ```
 
 ## Simulation of a new subject
