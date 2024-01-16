@@ -1,3 +1,9 @@
+# NMsim 0.0.8
+## Bugfixes
+
+* In some cases `NMsim` would fail on models with multiple output
+  tables when the `table.vars` argument was not used. Fixed.
+
 # NMsim 0.0.7
 ## New features
 

@@ -14,7 +14,6 @@ header-includes:
 ---
 
 ```{r,include = FALSE}
-library(tidyvpc)
 library(NMdata)
 library(NMsim)
 library(fst)
@@ -96,18 +95,38 @@ dat.sim.multiple <- egdt(dat.sim[,!("ID")],data.table(ID=c(1,4,89)))
 setorder(dat.sim.multiple,ID,TIME,EVID)
 ```
 
+```{r,include=FALSE,eval=FALSE}
+library(devtools)
+unloadNamespace("NMsim")
+unloadNamespace("NMdata")
+load_all("~/wdirs/NMdata")
+load_all("~/wdirs/NMsim")
+```
+
 ```{r,eval=FALSE}
+
 simres <- NMsim(
     file.mod=file.mod,
     data=dat.sim.multiple,
     method.sim=NMsim_known,
     file.phi="xgxr032_simEtas.phi",
+    name.sim="reuseSubjs",
     table.vars="PRED IPRED",
     path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
     dir.sims="simulate-tmp",
     dir.res="simulate-results"
 )
+
 ```
 
+### Simulate the same simulated subjects on multiple regimens 
+
+
+```{r}
+dat.sim.multiple.regs <- lapply(c(100,300,600),function(dose1){
+    transform(dat.sim.multiple,AMT=AMT/300*dose1,trt=sprintf("%d mg then %d mg QD",dose1,dose1/2))
+}) |> rbindlist()
+dat.sim.multiple.regs[,REC:=.I]
+```
 
 ## Note on between-occasion variability (supported)

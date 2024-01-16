@@ -734,7 +734,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 ## notice, this must capture zero and 1.
                 lines.tables.new <- list(gsub(paste0("FILE *= *[^ ]+"),replacement=fn.tab.base,lines.tables[[1]]))
             } else {
-                warning("text.table is of length>1. Trying, but retrieving results may fail.")
+                ## I don't remember the reason for the concern this may fail. It looks OK? I think it was supposed to be a check if text.table was a list, so the user is trying to create multiple tables. I don't know if that would work.
+                ## message("Number of output tables is >1. Trying, but retrieving results may fail.")
                 lines.tables.new <- lapply(seq_along(lines.tables),function(n){
                     fn.tab <- fnAppend(fn.tab.base,n)
                     gsub(paste0("FILE *= *[^ ]+"),replacement=fn.tab,lines.tables[[n]])
@@ -743,8 +744,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         } else {
             lines.tables.new <- list(paste("$TABLE",text.table,fn.tab.base))
         }
-        fun.paste <- function(...) paste(...,sep="\n")
-        lines.tables.new <- do.call(fun.paste,lines.tables.new)
+        ## fun.paste <- function(...) paste(...,sep="\n")
+        ## l.bu <- lines.tables.new
+        ## lines.tables.new <- do.call(fun.paste,lines.tables.new)
+        lines.tables.new <- paste(unlist(lines.tables.new),collapse="\n")
         if(exists("add.var.table")){
             
             lines.tables.new <- gsub("\\$TABLE",paste("$TABLE",add.var.table),lines.tables.new)

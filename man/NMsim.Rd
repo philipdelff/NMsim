@@ -2,7 +2,7 @@
 % Please edit documentation in R/NMsim.R
 \name{NMsim}
 \alias{NMsim}
-\title{Run simulations from an estimated Nonmem model}
+\title{Simulate from an estimated Nonmem model}
 \usage{
 NMsim(
   file.mod,
