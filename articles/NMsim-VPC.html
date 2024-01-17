@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.901</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.902</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -170,38 +170,25 @@ of minutes to execute.</p>
 <div class="section level2">
 <h2 id="plotting-using-tidyvpc">Plotting using <code>tidyvpc</code><a class="anchor" aria-label="anchor" href="#plotting-using-tidyvpc"></a>
 </h2>
+<p>Unfortunately, <code>tidyvpc</code> has been (hopefully temporarily)
+removed from CRAN, so the plot is currently not rendered here. But this
+code will plot it with <code>tidyvpc</code> installed.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">NMscanData</span><span class="op">(</span><span class="va">file.mod</span>,as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Model:  xgxr032 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Used tables, contents shown as used/total:</span></span>
-<span><span class="co">#&gt;               file     rows columns   IDs</span></span>
-<span><span class="co">#&gt;    xgxr032_res.txt  731/731   12/12 90/90</span></span>
-<span><span class="co">#&gt;   xgxr032_etas.txt  731/731     5/5 90/90</span></span>
-<span><span class="co">#&gt;  xgxr2.rds (input) 731/1502   22/24 90/90</span></span>
-<span><span class="co">#&gt;           (result)      731    39+2    90</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Input and output data merged by: ROW </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Distribution of rows on event types in returned data:</span></span>
-<span><span class="co">#&gt;  EVID CMT output result</span></span>
-<span><span class="co">#&gt;     0   2    641    641</span></span>
-<span><span class="co">#&gt;     1   1     90     90</span></span>
-<span><span class="co">#&gt;   All All    731    731</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/certara/tidyvpc" class="external-link">tidyvpc</a></span><span class="op">)</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">NMscanData</span><span class="op">(</span><span class="va">file.mod</span>,as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span>
 <span><span class="va">data.obs</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">]</span></span>
 <span><span class="va">data.sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">simres.vpc</span>,<span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## run vpc</span></span>
 <span><span class="va">vpc1</span> <span class="op">&lt;-</span></span>
-<span>    <span class="fu">observed</span><span class="op">(</span><span class="va">data.obs</span>, x <span class="op">=</span> <span class="va">TIME</span>, y <span class="op">=</span> <span class="va">DV</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">simulated</span><span class="op">(</span><span class="va">data.sim</span>, y <span class="op">=</span> <span class="va">Y</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">stratify</span><span class="op">(</span><span class="op">~</span><span class="va">DOSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">binning</span><span class="op">(</span>bin <span class="op">=</span> <span class="st">"ntile"</span>, nbins <span class="op">=</span> <span class="fl">9</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">vpcstats</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/tidyvpc/man/observed.html" class="external-link">observed</a></span><span class="op">(</span><span class="va">data.obs</span>, x <span class="op">=</span> <span class="va">TIME</span>, y <span class="op">=</span> <span class="va">DV</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/tidyvpc/man/simulated.html" class="external-link">simulated</a></span><span class="op">(</span><span class="va">data.sim</span>, y <span class="op">=</span> <span class="va">Y</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/tidyvpc/man/stratify.html" class="external-link">stratify</a></span><span class="op">(</span><span class="op">~</span><span class="va">DOSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/tidyvpc/man/binning.html" class="external-link">binning</a></span><span class="op">(</span>bin <span class="op">=</span> <span class="st">"ntile"</span>, nbins <span class="op">=</span> <span class="fl">9</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/tidyvpc/man/vpcstats.html" class="external-link">vpcstats</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vpc1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-VPC_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
