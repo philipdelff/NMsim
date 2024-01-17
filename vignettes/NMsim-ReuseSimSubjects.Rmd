@@ -14,6 +14,7 @@ header-includes:
 ---
 
 ```{r,include = FALSE}
+library(data.table)
 library(NMdata)
 library(NMsim)
 library(fst)
