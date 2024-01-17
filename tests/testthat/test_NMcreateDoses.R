@@ -131,7 +131,7 @@ test_that("as.fun",{
     expect_equal_to_reference(res,fileRef)
 
     fileRef <- "testReference/NMcreateDoses_12.rds"
-    res <- NMcreateDoses(TIME=0,AMT=10,as.fun=tibble::as_tibble)
+    res <- NMcreateDoses(TIME=0,AMT=10,as.fun=as.data.frame)
     expect_equal_to_reference(res,fileRef)
 })
 

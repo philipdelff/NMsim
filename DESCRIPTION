@@ -20,13 +20,9 @@ Suggests:
   testthat,
   knitr,
   rmarkdown,
-  dplyr,
   ggplot2,
   patchwork,
-  tibble,
   tracee,
-  tidyr,
-  tidyvpc
 Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/philipdelff/NMsim/issues

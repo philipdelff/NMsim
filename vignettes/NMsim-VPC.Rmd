@@ -14,7 +14,7 @@ header-includes:
 ---
 
 ```{r,include = FALSE}
-library(tidyvpc)
+## library(tidyvpc)
 library(NMdata)
 library(fst)
 library(NMsim)
@@ -106,8 +106,13 @@ simres.vpc <- NMreadSim(file.res)
 
 
 
-## Plotting using `tidyvpc` 
-```{r}
+## Plotting using `tidyvpc`
+Unfortunately, `tidyvpc` has been (hopefully temporarily) removed from
+CRAN, so the plot is currently not rendered here. But this code will
+plot it with `tidyvpc` installed.
+
+```{r,eval=FALSE}
+library(tidyvpc)
 res <- NMscanData(file.mod,as.fun="data.table")
 data.obs <- res[EVID==0]
 data.sim <- subset(simres.vpc,EVID==0)
