@@ -34,6 +34,8 @@ navbar:
         href: articles/NMsim-TypSubj.html
       - text: Simulations with parameter uncertainty
         href: articles/NMsim-ParamUncertain.html
+      - text: Creation of Simulation Data Sets
+        href: articles/NMsim-DataCreate.html
       - text: Simulation with residual variability
         href: articles/NMsim-ResidVar.html
       - text: Varying parameter values
