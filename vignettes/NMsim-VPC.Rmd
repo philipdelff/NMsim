@@ -111,7 +111,8 @@ Unfortunately, `tidyvpc` has been (hopefully temporarily) removed from
 CRAN, so the plot is currently not rendered here. But this code will
 plot it with `tidyvpc` installed.
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
+library(ggplot2)
 library(tidyvpc)
 res <- NMscanData(file.mod,as.fun="data.table")
 data.obs <- res[EVID==0]
