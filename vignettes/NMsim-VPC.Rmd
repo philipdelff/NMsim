@@ -80,6 +80,7 @@ As mentioned, `NMsim` does not postprocess the simulation for generation of a VP
 
 
 ```{r,include=FALSE,eval=TRUE}
+file.res <- "simulate-results/simpaths-vpc.rds"
 simres.vpc <- NMreadSim(file.res)
 ```
 
@@ -93,7 +94,7 @@ res <- NMscanData(file.mod,as.fun="data.table")
 ## only plot observation events from estimation data set
 data.obs <- res[EVID==0]
 ## Only plot simulated observation events
-data.sim <- subset(simres.vpc,EVID==0)
+data.sim <- simres.vpc[EVID==0)
 
 ## run vpc
 vpc1 <-
