@@ -64,13 +64,61 @@ simres.vpc <- NMsim(file.mod,
 
 ```
 
-Similar to PSN VPC
+The performed simulation is similar to the one produced by the `VPC` function in `PSN`. However, there are some important differences.
 
-Simulation results automatically read into R
+* The simulation results are automatically read into R.
 
-Allows for `table.vars`
+* No postprocessing of the results is being done by `NMsim` 
 
-Simulation with modified input uses same code
+* The `table.vars` argument allows the user to narrow down the variables to be written to disk. This can speed up the simulation considerably and reduce the amount of disk space the Nonmem simulation results require.
+
+
+
+
+## Plotting using `tidyvpc`
+As mentioned, `NMsim` does not postprocess the simulation for generation of a VPC plot, nor does it offter any plotting functions. The R package called `tidyvpc` offer those two things and is moreover implemented in `data.table`, so it's fast. The following simple code shows how to get from the results from `NMsim` to the VPC plot with `tidyvpc`.
+
+
+```{r,include=FALSE,eval=TRUE}
+simres.vpc <- NMreadSim(file.res)
+```
+
+
+```{r,eval=TRUE}
+library(ggplot2)
+library(tidyvpc)
+library(NMdata)
+## read the data as it was used in the Nonmem model
+res <- NMscanData(file.mod,as.fun="data.table")
+## only plot observation events from estimation data set
+data.obs <- res[EVID==0]
+## Only plot simulated observation events
+data.sim <- subset(simres.vpc,EVID==0)
+
+## run vpc
+vpc1 <-
+    observed(data.obs, x = TIME, y = DV) |>
+    simulated(data.sim, y = Y) |>
+    stratify(~DOSE) |>
+    binning(bin = "ntile", nbins = 9) |>
+    vpcstats()
+
+
+plot(vpc1)
+
+```
+
+
+### Use a different input data set
+In the first example we used the exact same data as was used for the
+estimation. This is a common way to produce a VPC, and we saw the
+advantage that the user does not risk making mistakes in preparing the
+data set for the simulations. However, it may be of interest to
+include additional data or even a different data set in the
+simulation. It could be including data points that were excluded in
+estimation (like samples below the quantification limit) or a separate
+study that was not included in the model. All you have to do is to
+read the data you want and provide it in `NMsim`'s `data` argument.
 
 ### Make use of the cluster
 We will repeat the same as above, but now 500 times (`nsims`). We make
@@ -100,33 +148,3 @@ sim.vpc.sge <- NMsim(file.mod,
 
 ```
 
-```{r,include=TRUE,eval=TRUE}
-simres.vpc <- NMreadSim(file.res)
-```
-
-
-
-## Plotting using `tidyvpc`
-Unfortunately, `tidyvpc` has been (hopefully temporarily) removed from
-CRAN, so the plot is currently not rendered here. But this code will
-plot it with `tidyvpc` installed.
-
-```{r,eval=TRUE}
-library(ggplot2)
-library(tidyvpc)
-res <- NMscanData(file.mod,as.fun="data.table")
-data.obs <- res[EVID==0]
-data.sim <- subset(simres.vpc,EVID==0)
-
-## run vpc
-vpc1 <-
-    observed(data.obs, x = TIME, y = DV) |>
-    simulated(data.sim, y = Y) |>
-    stratify(~DOSE) |>
-    binning(bin = "ntile", nbins = 9) |>
-    vpcstats()
-
-
-plot(vpc1)
-
-```
