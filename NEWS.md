@@ -4,6 +4,13 @@
 * In some cases `NMsim` would fail on models with multiple output
   tables when the `table.vars` argument was not used. Fixed.
 
+* `NMsim`'s `sim.dir.from.scratch` argument was not respected due to a
+  simple bug, leading to `dir.sims` growing each time a simulation was
+  rerun.
+  
+* In case simulation data is a list of data sets `NMsim` would not
+  order columns when `order.columns` was `TRUE`. Now fixed.
+
 # NMsim 0.0.7
 ## New features
 

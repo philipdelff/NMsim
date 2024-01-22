@@ -65,11 +65,11 @@ NMsim we restrict to nc=1.
 Align with NMdata
 ** NMsim
 *** TODO [#A] Tell more than "Writing"
-*** TODO [#A] dir.res should not be needed when file.res is provided
+*** DONE dir.res should not be needed when file.res is provided
 *** TODO [#A] Create only one rds per .mod
 I think...
-*** TODO [#A] Should invisibly return the table of models
-*** TODO [#A] NMorderColumns must also be appied if data is a list
+*** DONE Should invisibly return the table of models
+*** DONE NMorderColumns must also be appied if data is a list
 *** DONE Save dt of models
 Can be used to read all results later. And see what has been done in
 the individual runs.

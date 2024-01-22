@@ -490,6 +490,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         }
         dir.create(dir.sims)
     }
+    if(missing(file.res)) file.res <- NULL
+    if(is.null(file.res)) {
+        if(missing(dir.res) || is.null(dir.res)) dir.res <- dir.sims
+    } else {
+        dir.res <- dirname(file.res)
+    }
     if(!dir.exists(dir.res)){
         if(!create.dirs){
             stop(paste("dir.res does not point to an existing directory. dir.res is\n",NMdata:::filePathSimple(dir.res)))
@@ -527,7 +533,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(!is.null(data) && is.data.frame(data)) {
         data <- list(data)
         data <- lapply(data,as.data.table)
-        if(order.columns) data <- lapply(data,NMorderColumns)
     }
     if(!is.null(data) && is.list(data) && !is.data.frame(data)) {
         names.data <- names(data)
@@ -545,6 +550,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     if(is.null(data)){
         dt.models[,data.name:=""]
+    } else {
+        if(order.columns) data <- lapply(data,NMorderColumns)
     }
     
     
@@ -594,7 +601,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(missing(file.res)) file.res <- NULL
     
-
+    
     if(is.null(file.res)){
         
         ## dt.models[,path.rds:=file.path(dir.res,"NMsim_paths.rds")]
@@ -606,7 +613,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ### clear simulation directories so user does not end up with old results
     if(sim.dir.from.scratch){
-        dt.models[,if(dir.exists(dir.sim)) unlink(dir.sim),by=.(ROWMODEL)]
+        dt.models[,if(dir.exists(dir.sim)) unlink(dir.sim,recursive=TRUE),by=.(ROWMODEL)]
     }
     dt.models[,if(file.exists(path.sim)) unlink(path.sim),by=.(ROWMODEL)]
     
@@ -996,6 +1003,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         return(as.fun(simres))
     } else {
         addClass(dt.models,"NMsimTab")
-        return(dt.models)
+        return(invisible(dt.models))
     }
 }
