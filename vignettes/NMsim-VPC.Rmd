@@ -69,11 +69,9 @@ The performed simulation is similar to the one produced by the `VPC` function in
 
 * The simulation results are automatically read into R.
 
-* No postprocessing of the results is being done by `NMsim` 
-
 * The `table.vars` argument allows the user to narrow down the variables to be written to disk. This can speed up the simulation considerably and reduce the amount of disk space the Nonmem simulation results require.
 
-
+* No postprocessing of the results is being done by `NMsim`. See below how to easily do that.
 
 
 ## Plotting using `tidyvpc`
