@@ -73,7 +73,9 @@
 <h2 class="pkg-version" data-toc-text="0.0.8" id="nmsim-008">NMsim 0.0.8<a class="anchor" aria-label="anchor" href="#nmsim-008"></a></h2>
 <div class="section level3">
 <h3 id="bugfixes-0-0-8">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-0-0-8"></a></h3>
-<ul><li>In some cases <code>NMsim</code> would fail on models with multiple output tables when the <code>table.vars</code> argument was not used. Fixed.</li>
+<ul><li><p>In some cases <code>NMsim</code> would fail on models with multiple output tables when the <code>table.vars</code> argument was not used. Fixed.</p></li>
+<li><p><code>NMsim</code>’s <code>sim.dir.from.scratch</code> argument was not respected due to a simple bug, leading to <code>dir.sims</code> growing each time a simulation was rerun.</p></li>
+<li><p>In case simulation data is a list of data sets <code>NMsim</code> would not order columns when <code>order.columns</code> was <code>TRUE</code>. Now fixed.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
