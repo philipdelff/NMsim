@@ -91,7 +91,7 @@ library(ggplot2)
 library(tidyvpc)
 library(NMdata)
 ## read the data as it was used in the Nonmem model
-res <- NMscanData(file.mod,as.fun="data.table")
+res <- NMscanData(file.mod,as.fun="data.table",quiet=TRUE)
 ## only plot observation events from estimation data set
 data.obs <- res[EVID==0]
 ## Only plot simulated observation events
