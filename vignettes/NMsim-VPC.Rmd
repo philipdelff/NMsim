@@ -60,6 +60,7 @@ simres.vpc <- NMsim(file.mod,
                     dir.sims="testOutput",
                     name.sim="vpc_01"
                    ,nsims=500
+                   ,as.fun="data.table"
                     )
 
 ```
@@ -81,7 +82,7 @@ As mentioned, `NMsim` does not postprocess the simulation for generation of a VP
 
 ```{r,include=FALSE,eval=TRUE}
 file.res <- "simulate-results/simpaths-vpc.rds"
-simres.vpc <- NMreadSim(file.res)
+simres.vpc <- NMreadSim(file.res,as.fun="data.table")
 ```
 
 
@@ -142,7 +143,7 @@ sim.vpc.sge <- NMsim(file.mod,
                      name.sim="vpc_01"
                     ,nsims=500
                     ,sge=TRUE
-                    ## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"
+                     ## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"
                     ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                     ,file.res=file.res
                      )
