@@ -373,9 +373,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         stop("When method.execute is direct or nmsim, path.nonmem must be provided.")
     }
 
-    if(system.type=="windows" && method.execute != "psn"){
-        stop('On windows, only method.execute=\"psn\" is supported.')
-    }
+    ## if(system.type=="windows" && method.execute != "psn"){
+    ##     stop('On windows, only method.execute=\"psn\" is supported.')
+    ## }
     
     ## args.psn.execute
     if(missing(args.psn.execute)) args.psn.execute <- NULL
@@ -690,11 +690,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             data.this <- data[[DATAROW]]
 
         }
-        ## if(!col.row%in%colnames(data)) data[,(col.row):=.I]
-
-        ## if(is.data.frame(data)){
-        ##     data <- list(data)
-        ## }
         
         ## if(order.columns) data <- lapply(data,NMorderColumns)
         ##data <- NMorderColumns(data)
@@ -795,7 +790,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                               ,by=.(ROWMODEL)]
     
     
-
     ## when methods return just a vector of path.sim, we need to reorganize
     if(ncol(dt.models.gen)==2 && all(colnames(dt.models.gen)%in%c("ROWMODEL","V1"))){
         setnames(dt.models.gen,"V1","path.sim")
@@ -811,7 +805,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     cnames.gen <- colnames(dt.models.gen)
     if(!"path.sim"%in%cnames.gen) stop("path.sim must be in returned data.table")
     
-
+    
     ## if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "nmsim"
     if(nrow(dt.models.gen)>1 && "files.needed"%in%colnames(dt.models.gen)){
         if(method.execute!="nmsim"){

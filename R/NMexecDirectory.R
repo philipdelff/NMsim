@@ -32,7 +32,7 @@ callNonmemDirect <- function(file.mod,path.nonmem){
 
 ## do not export. NMexec will call this.
 
-NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
+NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",system.type){
     
     ## if(missing(method)||is.null(method)) method <- "directory"
     ## if(!(is.characther(method) && length(method)==1)||!method%in%cc(directory,direct)){
@@ -86,7 +86,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
 ### This works with NMsim but not with estimation.
         
         sec.data.new <- sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE)
-        ### this is a different interpretation of dir.data - ie. the relative change of path. It does not work.
+### this is a different interpretation of dir.data - ie. the relative change of path. It does not work.
         ## sec.data.new <- sub(extr.data$string,file.path(dir.data,extr.data$path.csv),extr.data$DATA,fixed=TRUE)
         
         if(length(sec.data.new)>1){
@@ -111,24 +111,33 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
     exts.cp <- c("lst","xml","ext","cov","cor","coi","phi","msf","msfi","msfo","shk" )
 
     dir.mod.abs <- getAbsolutePath(dir.mod)
-    lines.bash <- c(
-        "#!/bin/bash"
-       ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
+    if(system.type=="linux"){
+        lines.bash <- c(
+            "#!/bin/bash"
+           ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
 ### this works when file.mod is a relative path
-        ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
-        ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
+            ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
+            ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
 
 ### copy wanted files back to orig location of file.mod 
-       ,paste("find . -type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} ",dir.mod.abs," \\;")
-       ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),dir.mod.abs)
-       ,""
-    )
+           ,paste("find . -type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} ",dir.mod.abs," \\;")
+           ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),dir.mod.abs)
+           ,""
+        )
+        
+        path.script <- file.path(dir.tmp,"run_nonmem.sh")
+
+        writeTextFile(lines.bash,path.script)
+        Sys.chmod(path.script,mode="0577")
+    }
     
-    path.script <- file.path(dir.tmp,"run_nonmem.sh")
+    if(system.type=="windows"){
+        lines.script <- NMrunWin(fn.mod,dir.mod.abs,exts.cp,meta.tables)
+        path.script <- file.path(dir.tmp,"run_nonmem.bat")
+        writeTextFile(lines.script,path.script)
+    }
 
-    writeTextFile(lines.bash,path.script)
-    Sys.chmod(path.script,mode="0577")
-
+    
     ## system(path.script)
     path.script
 
