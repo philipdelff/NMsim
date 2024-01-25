@@ -72,6 +72,10 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.8" id="nmsim-008">NMsim 0.0.8<a class="anchor" aria-label="anchor" href="#nmsim-008"></a></h2>
 <div class="section level3">
+<h3 id="new-features-0-0-8">New features<a class="anchor" aria-label="anchor" href="#new-features-0-0-8"></a></h3>
+<ul><li>NMsim 0.0.7 would generate an rds file with paths to simulation files and results for each model+data set simulated. This has been changed to now only generate one table per model. This makes it simpler to read simulation results in some cases.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="bugfixes-0-0-8">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-0-0-8"></a></h3>
 <ul><li><p>In some cases <code>NMsim</code> would fail on models with multiple output tables when the <code>table.vars</code> argument was not used. Fixed.</p></li>
 <li><p><code>NMsim</code>’s <code>sim.dir.from.scratch</code> argument was not respected due to a simple bug, leading to <code>dir.sims</code> growing each time a simulation was rerun.</p></li>
