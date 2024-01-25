@@ -265,7 +265,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             if(!file.exists(path.nonmem)){
                 stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
             }
-            string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed)
+            string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed,system.type=system.type)
             if(sge) {
 
                 if(nc==1){
@@ -282,7 +282,12 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                 }
                 wait <- TRUE
             } else {
-                string.cmd <- sprintf("cd %s; ./%s",dirname(string.cmd),basename(string.cmd))
+                if(system.type=="linux"){
+                    string.cmd <- sprintf("cd \"%s\"; \"./%s\"",dirname(string.cmd),basename(string.cmd))
+                } 
+                if(system.type=="windows"){
+                    string.cmd <- sprintf("CD \"%s\";call \"%s\"",dirname(string.cmd),basename(string.cmd))
+                }
             }
         }
         
@@ -291,11 +296,12 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             ## contents.bat <- gsub(";","\n",string.cmd)
             ## cat(contents.bat,file=path.script)
             path.script <- file.path(dirname(file.mod),"NMsim_exec.bat")
+
             contents.bat <-
                 strsplit(string.cmd,split=";")[[1]]
             writeTextFile(contents.bat,file=path.script)
 
-            shell(shQuote(path.script,type="cmd") )
+            shell(shQuote(paste("call", path.script),type="cmd") )
         }
         if(system.type=="linux"){
             
