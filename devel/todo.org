@@ -64,6 +64,7 @@ NMsim we restrict to nc=1.
 *** CANCELED Intro arg return
 Align with NMdata
 ** NMsim
+*** TODO [#A] More useful error than the NMscanTables error
 *** TODO [#A] Tell more than "Writing"
 *** DONE dir.res should not be needed when file.res is provided
 *** TODO [#A] Create only one rds per .mod

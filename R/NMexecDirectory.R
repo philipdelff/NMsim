@@ -86,7 +86,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data=".."){
 ### This works with NMsim but not with estimation.
         
         sec.data.new <- sub(extr.data$string,file.path(dir.data,basename(extr.data$path.csv)),extr.data$DATA,fixed=TRUE)
-        ### this is a different interpretation of dir.data - ie. the relative change of path. It does not work.
+### this is a different interpretation of dir.data - ie. the relative change of path. It does not work.
         ## sec.data.new <- sub(extr.data$string,file.path(dir.data,extr.data$path.csv),extr.data$DATA,fixed=TRUE)
         
         if(length(sec.data.new)>1){

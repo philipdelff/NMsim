@@ -567,8 +567,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## dt.models[,fn.sim:=paste0(fn.mod)]
 
     
-    dt.models[,fn.sim:=fnAppend(fn.sim,name.sim)]
-    dt.models[,fn.sim:=fnAppend(fn.sim,as.character(data.name)),by=.(ROWMODEL)]
+    dt.models[,fn.sim.predata:=fnAppend(fn.sim,name.sim)]
+    dt.models[,fn.sim:=fnAppend(fn.sim.predata,as.character(data.name)),by=.(ROWMODEL)]
     dt.models[,run.sim:=modelname(fn.sim)]
 
     
@@ -605,11 +605,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(is.null(file.res)){
         
         ## dt.models[,path.rds:=file.path(dir.res,"NMsim_paths.rds")]
-        dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim,"rds"),"paths"))]
+        dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"rds"),"paths"))]
     } else {
         dt.models[,path.rds:=fnExtension(file.res,"rds")]
     }
-
 
 ### clear simulation directories so user does not end up with old results
     if(sim.dir.from.scratch){

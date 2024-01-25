@@ -1,4 +1,11 @@
 # NMsim 0.0.8
+
+## New features
+* NMsim 0.0.7 would generate an rds file with paths to simulation
+  files and results for each model+data set simulated. This has been
+  changed to now only generate one table per model. This makes it
+  simpler to read simulation results in some cases.
+  
 ## Bugfixes
 
 * In some cases `NMsim` would fail on models with multiple output
