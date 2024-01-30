@@ -12,7 +12,7 @@
 ##' @import fst
 ##' @export
 
-NMreadSim <- function(x,as.fun){
+NMreadSim <- function(x,as.fun,check.time=FALSE){
 
     . <- NULL
     ROWMODEL2 <- NULL
@@ -43,9 +43,13 @@ NMreadSim <- function(x,as.fun){
     }
     
     ## if an lst, read it
+    time.ok <- TRUE
+    if(check.time){
+        time.ok <- file.mtime(file.res.data)>file.mtime(x)
+    }
     if(!is.null(file.res.data) &&
        file.exists(file.res.data) &&
-       file.mtime(file.res.data)>file.mtime(x)){
+       time.ok){
         res <- read_fst(file.res.data,as.data.table=TRUE)
     } else {
         
