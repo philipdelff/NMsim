@@ -63,6 +63,19 @@ NMsim we restrict to nc=1.
 *** CANCELED Support multiple files
 *** CANCELED Intro arg return
 Align with NMdata
+** NMreadSim
+*** TODO Support transform
+It used to be done in NMsim. But it has to be a list in each row of the NMsimTab object specifying what to transform. Then do someting like this.
+#+begin_src R
+else if(!is.null(transform)){
+## optionally transform results like DV, IPRED, PRED
+for(name in names(transform)){
+simres.n[,(name):=transform[[name]](get(name))]
+}
+#+end_source
+*** TODO Support changing paths after running NMsim
+reading is built on relative paths to wd when NMsim was run. They will
+have to be based on dir.res?
 ** NMsim
 *** TODO [#A] More useful error than the NMscanTables error
 *** TODO [#A] Tell more than "Writing"

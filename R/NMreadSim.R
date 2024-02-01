@@ -9,8 +9,13 @@
 ##'     NMdataConf.
 ##' @return A data set of class defined by as.fun
 ##' @import NMdata
+##' @import data.table
 ##' @import fst
 ##' @export
+
+
+## if path is a dir, search for rds
+## if an lst, read it
 
 NMreadSim <- function(x,as.fun,check.time=FALSE){
 
@@ -24,74 +29,92 @@ NMreadSim <- function(x,as.fun,check.time=FALSE){
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
 
-    ## when to look for combined and saved results?
-    
 
+### rexognized formats:
+    ## NMsimRes - return x
 
-    ## if path is a dir, search for rds
+    ## NMsimTab - read results in tab
+
+    ## path to rds - read rds, then fst or lst
     
-    ## if an rds, just read it
+    
+    ## if mltiple rds are provided, loop over them
     if(!is.list(x) && is.character(x)) {
+        if( length(x)>1 ){
+            res <- lapply(x,NMreadSim) |> rbindlist()
+            ## setattr(res,"NMsim-models",tab.paths)
+            addClass(res,"NMsimRes")
+            return(as.fun(res))
+        }
+    }
+
+    if(!is.list(x) && is.character(x)) {
+        ##  an rds, read it, make sure its NMsimTab, check for fst,  and proceed with NMsimTab
         tab.paths <- readRDS(x)
         
         if(!inherits(tab.paths,"NMsimTab")) {
             stop("The provided rds file does not contain a NMsimTab object")
         }
+        
         file.res.data <- fnAppend(fnExtension(x,"fst"),"res")
+
+### if we have an fst, read it and return results
+        if(!is.null(file.res.data) &&
+           file.exists(file.res.data) ){
+            time.ok <- TRUE
+            if(check.time){
+                time.ok <- file.mtime(file.res.data)>file.mtime(x)
+            }
+            if(time.ok){
+                res <- read_fst(file.res.data,as.data.table=TRUE)
+                addClass(res,"NMsimRes")
+                return(as.fun(res))
+            } 
+        }
     } else if(is.NMsimTab(x)){
+        ## a NMsimTab already, go to procecssing that
         tab.paths <- x
+    } else if (is.NMsimRes(x)){
+        ## NMsimRes - nothing to do at all
+        return(x)
     }
     
-    ## if an lst, read it
-    time.ok <- TRUE
-    if(check.time){
-        time.ok <- file.mtime(file.res.data)>file.mtime(x)
-    }
-    if(!is.null(file.res.data) &&
-       file.exists(file.res.data) &&
-       time.ok){
-        res <- read_fst(file.res.data,as.data.table=TRUE)
-    } else {
-        
+####### Now we have a NMsimTab object to process.
+    
+
+
+
 ### read all sim results
-        if(F){
-            ## this simple approach may fail if the models return incompatible columns
-            res <- tab.paths[,{
-                cat(ROWMODEL2," ")
-                ## the rds table must keep NMscanData arguments
-                args.NM <- args.NMscanData[[1]]
-                if(! "quiet" %in% names(args.NM)){
-                    args.NM$quiet <- TRUE
-                }
-                
-                do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
-            },keyby=.(ROWMODEL2)]
-        }
 
 ####  must read each model into list elements. Then rbind(fill=T)
 ### this is to make sure results from different models with
 ### incompatible columns can be combined.
 
-        res.list <- lapply(split(tab.paths,by="ROWMODEL2"),function(dat){
-            dat[,{
-                ## cat(ROWMODEL2," ")     
-                ## the rds table must keep NMscanData arguments
-                args.NM <- args.NMscanData[[1]]
-                if(! "quiet" %in% names(args.NM)){
-                    args.NM$quiet <- TRUE
-                }
-                
-                do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
-            },by=.(ROWMODEL2)]
-        })
-        res <- rbindlist(res.list,fill=TRUE)
-        res[,ROWMODEL2:=NULL]
+    res.list <- lapply(split(tab.paths,by="ROWMODEL2"),function(dat){
+        dat[,{
+            ## cat(ROWMODEL2," ")     
+            ## the rds table must keep NMscanData arguments
+            args.NM <- args.NMscanData[[1]]
+            if(! "quiet" %in% names(args.NM)){
+                args.NM$quiet <- TRUE
+            }
+            
+            do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
+        },by=.(ROWMODEL2)]
+    })
+    res <- rbindlist(res.list,fill=TRUE)
+    res[,ROWMODEL2:=NULL]
 
-        if(!is.null(file.res.data)){
-            NMwriteData(res,file=file.res.data,formats.write="fst",genText=F)
-        }
+    if(!is.null(file.res.data)){
+        NMwriteData(res,
+                    file=file.res.data,
+                    formats.write="fst",
+                    genText=F,
+                    quiet=TRUE)
     }
 
+
     setattr(res,"NMsim-models",tab.paths)
+    addClass(res,"NMsimRes")
     return(as.fun(res))
 }

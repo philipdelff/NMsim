@@ -24,6 +24,13 @@ NMdataConf(dir.psn=NULL)
 path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 
 
+### broken.
+#### NMreadSim has to be able to read multiple rds files.
+
+#### transform must be in NMreadSim. But info should eventually be kept in model table.
+
+#### get rid of ROWMODEL2. Not needed for NMreadSim.
+
 
 context("NMsim")
 test_that("basic - default",{
@@ -39,7 +46,7 @@ test_that("basic - default",{
     set.seed(43)
     simres <- NMsim(file.mod,
                     data=dt.sim,
-                    text.table="PRED IPRED",
+                    table.var="PRED IPRED",
                     dir.sims="testOutput",
                     name.sim="default_01"
                     )
@@ -48,6 +55,26 @@ test_that("basic - default",{
 
 })
 
+
+test_that("basic - dont wait",{
+
+    fileRef <- "testReference/NMsim_01.rds"
+
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+
+    set.seed(43)
+    simtab <- NMsim(file.mod,
+                    data=dt.sim,
+                    text.table="PRED IPRED",
+                    dir.sims="testOutput",
+                    name.sim="default_01"
+                    ,sge=T
+                    )
+
+    simres <- NMreadSim(simtab)
+    expect_equal_to_reference(simres,fileRef)
+
+})
 
 test_that("basic - typical",{
 
@@ -324,7 +351,7 @@ test_that("multiple data sets with renaming",{
                              ,sge=TRUE
                               )
 
-
+    simres <- NMreadSim(simres.multidata)
 })
 
 test_that("default with nc>1",{

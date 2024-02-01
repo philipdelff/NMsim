@@ -30,7 +30,7 @@
 ##' @param reuse.results If simulation results found on file, should
 ##'     they be used? If TRUE and reading the results fail, the
 ##'     simulations will still be rerun.
-##' @param transform A list defining transformations to be applied
+##' @param transform CURRENTLY DISABLED. A list defining transformations to be applied
 ##'     after the Nonmem simulations and before plotting. For each
 ##'     list element, its name refers to the name of the column to
 ##'     transform, the contents must be the function to apply.
@@ -184,7 +184,7 @@
 ##'     suppressed to the extend implemented.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
-##'     as input data). If `wait=FALSE` a character vector with paths
+##'     as input data). If `sge=TRUE` a character vector with paths
 ##'     to simulation control streams.
 ##' @details Loosely speaking, the argument \code{method.sim} defines
 ##'     _what_ NMsim will do, \code{method.executes} define _how_ it
@@ -447,7 +447,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
 ###  Section end: Checking aguments
 
-    
+    if(!is.null(transform) && !transform!=FALSE) {message("transform is CURRENTLY NOT SUPPORTED. Will be back in the future.")}
     warn.notransform <- function(transform){
         if(is.null(transform)) return(invisible(NULL))
         warning("`transform` (argument) ignored since NMsim is not reading the simulation results.")
@@ -895,6 +895,30 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 
 
+
+
+    
+    args.NMscanData.list <- c(args.NMscanData,args.NMscanData.default)
+    args.NMscanData.list <- args.NMscanData.list[unique(names(args.NMscanData.list))]
+    ## if(!is.null(args.NMscanData.list)){
+    if(nrow(dt.models)==1){
+        dt.models[,args.NMscanData:=list()]
+    } else {
+        dt.models[,args.NMscanData:=vector("list", .N)]
+    }
+    dt.models[,args.NMscanData:=list(list(args.NMscanData.list))]
+
+
+###### store transform
+    if(nrow(dt.models)==1){
+        dt.models[,funs.transform:=list()]
+    } else {
+        dt.models[,funs.transform:=vector("list", .N)]
+    }
+    dt.models[,funs.transform:=transform]
+
+
+    
     
 #### Section start: Execute ####
     
@@ -912,21 +936,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         ## run sim
         wait <- !sge
 
-        if(wait){
-            
-            args.NMscanData.list <- c(args.NMscanData,args.NMscanData.default)
-            args.NMscanData.list <- args.NMscanData.list[unique(names(args.NMscanData.list))]
-            ## if(!is.null(args.NMscanData.list)){
-            if(nrow(dt.models)==1){
-                dt.models[,args.NMscanData:=list()]
-            } else {
-                dt.models[,args.NMscanData:=vector("list", .N)]
-            }
-            dt.models[,args.NMscanData:=list(list(args.NMscanData.list))]
 
-        }
         
-        simres <- dt.models[,{
+        dt.models[,lst:={
             simres.n <- NULL
             files.needed.n <- try(strsplit(files.needed,":")[[1]],silent=TRUE)
             if(inherits(files.needed.n,"try-error")) files.needed.n <- NULL
@@ -949,38 +961,19 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             }
             NMexec(files=path.sim,sge=sge,nc=nc,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
             
-            if(wait){
-                
-                ## simres.n <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive))
-                simres.n <- try(do.call(NMscanData,c(file=path.sim.lst,as.fun="data.table",file.data=input.archive,args.NMscanData[[1]])))
-
-                if(inherits(simres.n,"try-error")){
-                    message("Results could not be read.")
-                    simres.n <- NULL
-                } else if(!is.null(transform)){
-                    ## optionally transform results like DV, IPRED, PRED
-                    for(name in names(transform)){
-                        simres.n[,(name):=transform[[name]](get(name))]
-                    }
-                }
-                ## warn.notransform(transform)
-                simres.n <- as.fun(simres.n)
-            } else {
-                warn.notransform(transform)
-                ## simres.n <- NULL
-                simres.n <- list(lst=path.sim.lst)
-            }
-            simres.n
+            ## simres.n <- list(lst=path.sim.lst)
+            ## simres.n
+            path.sim.lst
         },by=.(ROWMODEL2)]
     }
-    if("ROWMODEL2"%in%colnames(simres)) {
-        simres[,ROWMODEL2:=NULL]
-    }
+
 ###  Section end: Execute
 
-    
+
+
     dt.models.save <- split(dt.models,by="path.rds")
-    lapply(1:length(dt.models.save),function(I){
+    addClass(dt.models,"NMsimTab")
+    files.rds <- lapply(1:length(dt.models.save),function(I){
 
 ####### notify user where to find rds files
         fn.this.rds <- unique(dt.models.save[[I]][,path.rds])
@@ -989,11 +982,28 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))
         }
         saveRDS(dt.models.save[[I]],file=fn.this.rds)
+        fn.this.rds
     })
+
+#### Section start: Read results if requested ####
+
+    if(execute && wait){
+        ## simres <- NMreadSim(dt.models)
+        simres <- NMreadSim(unlist(files.rds))
+    }
+    
+### Section end: Read results if requested
+
+##### return results to user
+    if("ROWMODEL2"%in%colnames(simres)) {
+        simres[,ROWMODEL2:=NULL]
+    }
 
     ## if(!wait) return(simres$lst)
     if(wait){
-        return(as.fun(simres))
+        simres <- as.fun(simres)
+        addClass(simres,"NMsimRes")
+        return(simres)
     } else {
         addClass(dt.models,"NMsimTab")
         return(invisible(dt.models))
