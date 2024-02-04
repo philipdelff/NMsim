@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.912</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.923</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,7 +99,7 @@
 
     
     
-<p>Built 2024-01-29 using NMsim 0.0.7.912.</p>
+<p>Built 2024-02-04 using NMsim 0.0.7.923.</p>
 <div class="section level3">
 <h3 id="generating-a-simulation-input-data-set">Generating a simulation input data set<a class="anchor" aria-label="anchor" href="#generating-a-simulation-input-data-set"></a>
 </h3>
@@ -174,12 +174,20 @@ like. Notice that the following are <em>not</em> issues:</p>
 <li>Columns are not sorted in Nonmem-friendly style with non-numeric
 columns to the right</li>
 </ul>
-<pre><code><span><span class="co">#&gt;    ID TIME EVID CMT AMT II ADDL MDV                   trt DV ROW</span></span>
-<span><span class="co">#&gt; 1:  1    0    1   1 300  0    0   1 300 mg then 150 mg QD NA   1</span></span>
-<span><span class="co">#&gt; 2:  1    0    2   2  NA NA   NA   1 300 mg then 150 mg QD NA   2</span></span>
-<span><span class="co">#&gt; 3:  1    1    2   2  NA NA   NA   1 300 mg then 150 mg QD NA   3</span></span>
-<span><span class="co">#&gt; 4:  1    2    2   2  NA NA   NA   1 300 mg then 150 mg QD NA   4</span></span>
-<span><span class="co">#&gt; 5:  1    3    2   2  NA NA   NA   1 300 mg then 150 mg QD NA   5</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;       ID  TIME  EVID   CMT   AMT    II  ADDL   MDV                   trt    DV</span></span>
+<span><span class="co">#&gt;    &lt;int&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;                &lt;char&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:     1     0     1     1   300     0     0     1 300 mg then 150 mg QD    NA</span></span>
+<span><span class="co">#&gt; 2:     1     0     2     2    NA    NA    NA     1 300 mg then 150 mg QD    NA</span></span>
+<span><span class="co">#&gt; 3:     1     1     2     2    NA    NA    NA     1 300 mg then 150 mg QD    NA</span></span>
+<span><span class="co">#&gt; 4:     1     2     2     2    NA    NA    NA     1 300 mg then 150 mg QD    NA</span></span>
+<span><span class="co">#&gt; 5:     1     3     2     2    NA    NA    NA     1 300 mg then 150 mg QD    NA</span></span>
+<span><span class="co">#&gt;      ROW</span></span>
+<span><span class="co">#&gt;    &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1:     1</span></span>
+<span><span class="co">#&gt; 2:     2</span></span>
+<span><span class="co">#&gt; 3:     3</span></span>
+<span><span class="co">#&gt; 4:     4</span></span>
+<span><span class="co">#&gt; 5:     5</span></span></code></pre>
 </div>
   </main>
 </div>
