@@ -77,11 +77,12 @@ simres.n[,(name):=transform[[name]](get(name))]
 reading is built on relative paths to wd when NMsim was run. They will
 have to be based on dir.res?
 ** NMsim
+*** TODO [#A] No spaces in .mod files
+See test_manual "list of data sets - spaces in data names"
 *** TODO [#A] More useful error than the NMscanTables error
 *** TODO [#A] Tell more than "Writing"
 *** DONE dir.res should not be needed when file.res is provided
-*** TODO [#A] Create only one rds per .mod
-I think...
+*** DONE Create only one rds per .mod
 *** DONE Should invisibly return the table of models
 *** DONE NMorderColumns must also be appied if data is a list
 *** DONE Save dt of models
@@ -186,6 +187,7 @@ The implementation compares all explicitly given arguments. E.g. if
 a=1 by default and it was explicitly given in previous run but not in
 the new one, it will be a difference.
 *** DONE Support multiple $TABLE blocks
+
 ** VPC sims - no new method needed
 *** DONE By default, reuse $INPUT and $DATA sections, with updated data path
 Normally, one would simply reuse the estimation input data set for this

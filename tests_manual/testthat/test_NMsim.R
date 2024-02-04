@@ -22,7 +22,7 @@ path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
 NMdataConf(dir.psn=NULL)
 ##
 path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
-
+file.exists(path.nonmem)
 
 ### broken.
 #### NMreadSim has to be able to read multiple rds files.
@@ -34,7 +34,7 @@ path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75"
 
 context("NMsim")
 test_that("basic - default",{
-
+    
     fileRef <- "testReference/NMsim_01.rds"
 
     ## 025 doesn't seem stable. Got Q~1e7 and Nonmem didn't run
@@ -52,6 +52,7 @@ test_that("basic - default",{
                     )
 
     expect_equal_to_reference(simres,fileRef)
+    
 
 })
 
@@ -65,10 +66,10 @@ test_that("basic - dont wait",{
     set.seed(43)
     simtab <- NMsim(file.mod,
                     data=dt.sim,
-                    text.table="PRED IPRED",
+                    table.vars="PRED IPRED",
                     dir.sims="testOutput",
                     name.sim="default_01"
-                    ,sge=T
+                   ,sge=T
                     )
 
     simres <- NMreadSim(simtab)
@@ -142,16 +143,17 @@ test_that("basic - spaces in paths",{
 
     ## using PSN 
     set.seed(43)
-    simres <- NMsim(file.mod,
+    simres.psn <- NMsim(file.mod,
                     data=dt.sim,
                     text.table="PRED IPRED",
                     dir.sims="testOutput",
-                    name.sim="default_01"
+                    name.sim="default_01",
+                    method.execute="psn"
                     )
 
     ## no psn
     set.seed(43)
-    simres <- NMsim(file.mod,
+    simres.nm <- NMsim(file.mod,
                     data=dt.sim,
                     text.table="PRED IPRED",
                     dir.sims="testOutput",
@@ -159,6 +161,8 @@ test_that("basic - spaces in paths",{
                     path.nonmem=path.nonmem,
                     method.update.inits="nmsim"
                     )
+
+    expect_equal(simres.psn,simres.nm)
 
 })
 
@@ -204,7 +208,7 @@ test_that("SAEM - known",{
                      ,path.nonmem=path.nonmem
                       )
 
-    simres.5
+    ## simres.5
 
     expect_equal_to_reference(simres.5,fileRef)
 
@@ -292,7 +296,30 @@ test_that("multiple data sets",{
     ## tab.paths <- readRDS("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
     ## simres <- NMscanMultiple(tab.paths$path.sim.lst)
     simres <- NMreadSim("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
+   
 })
+
+test_that("list of data sets - spaces in data names",{
+
+    file.mod <- "testData/nonmem/xgxr032.mod"
+    data.multiple <- split(dt.sim.known,by="ID")
+    names(data.multiple) <- paste("1",names(data.multiple))
+
+    set.seed(43)
+    simres.multidata <- NMsim(file.mod,
+                              data=data.multiple
+                             ,table.vars="PRED IPRED Y",
+                              dir.sims="testOutput"
+                             ,name.sim="datalist_02"
+                             ,method.execute="nmsim"
+                             ,path.nonmem=path.nonmem
+                              )
+
+        simres <- NMreadSim("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
+
+    
+})
+
 
 test_that("multiple data sets on cluster",{
     data.multiple <- split(dt.sim.known,by="ID")
@@ -319,7 +346,7 @@ test_that("multiple data sets on cluster",{
 
 test_that("default with renaming",{
 
-    fileRef <- "testReference/NMsim_01.rds"
+    fileRef <- "testReference/NMsim_07.rds"
 
     file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
 
@@ -332,7 +359,7 @@ test_that("default with renaming",{
                     name.sim="default_01"
                     )
 
-    ## expect_equal_to_reference(simres,fileRef)
+    expect_equal_to_reference(simres,fileRef)
     
 })
 
@@ -356,7 +383,7 @@ test_that("multiple data sets with renaming",{
 
 test_that("default with nc>1",{
 
-    ## fileRef <- "testReference/NMsim_01.rds"
+    ## fileRef <- "testReference/NMsim_08.rds"
 
     file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
 
@@ -365,7 +392,7 @@ test_that("default with nc>1",{
                     data=dt.sim,
                     text.table="PRED IPRED",
                     dir.sims="testOutput",
-                    name.sim="default_01"
+                    name.sim="default_nc"
                    ,method.execute="nmsim"
                    ,nc=72
                    ,sge=TRUE
@@ -373,5 +400,53 @@ test_that("default with nc>1",{
                     )
 
     expect_equal_to_reference(simres,fileRef)
+
+})
+
+
+test_that("transform",{
+
+    fileRef <- "testReference/NMsim_09.rds"
+
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+
+    set.seed(43)
+    simres <- NMsim(file.mod,
+                    data=dt.sim,
+                    table.var="PRED IPRED",
+                    dir.sims="testOutput",
+                    name.sim="default_trans"
+                   ,transform=list(IPRED=sqrt,PRED=function(x)x*1000)
+                    )
+
+    simres <- NMreadSim("testOutput/NMsim_xgxr021_default_01_paths.rds")
+    
+    expect_equal_to_reference(simres,fileRef)
+    
+
+})
+
+test_that("dir.sims and dir.res with NMdataConf",{
+
+    NMdataConf(dir.sims="testOutput/NMdataConfSim",
+               dir.res="testOutput/NMdataConfRes",
+               allow.unknown=TRUE)
+    
+    fileRef <- "testReference/NMsim_10.rds"
+
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+    
+    set.seed(43)
+    simres <- NMsim(file.mod,
+                    data=dt.sim,
+                    table.var="PRED IPRED",
+                    name.sim="default_dirconf"
+                    )
+
+    expect_equal_to_reference(simres,fileRef)
+
+    NMdataConf(dir.sims=NULL,
+               dir.res=NULL,
+               allow.unknown=TRUE)
 
 })

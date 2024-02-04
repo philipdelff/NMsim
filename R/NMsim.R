@@ -373,9 +373,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         stop("When method.execute is direct or nmsim, path.nonmem must be provided.")
     }
 
-    ## if(system.type=="windows" && method.execute != "psn"){
-    ##     stop('On windows, only method.execute=\"psn\" is supported.')
-    ## }
+    if(system.type=="windows" && method.execute != "psn"){
+        message('On windows, only method.execute=\"psn\" has been tested to work. This is likely to fail.')
+    }
     
     ## args.psn.execute
     if(missing(args.psn.execute)) args.psn.execute <- NULL
@@ -447,7 +447,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
 ###  Section end: Checking aguments
 
-    if(!is.null(transform) && !transform!=FALSE) {message("transform is CURRENTLY NOT SUPPORTED. Will be back in the future.")}
+    ## if(!is.null(transform) && !transform!=FALSE) {message("transform is CURRENTLY NOT SUPPORTED. Will be back in the future.")}
     warn.notransform <- function(transform){
         if(is.null(transform)) return(invisible(NULL))
         warning("`transform` (argument) ignored since NMsim is not reading the simulation results.")
@@ -480,8 +480,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     ## dir.sim
     
-
     if(missing(dir.sims)) dir.sims <- NULL
+    dir.sims <- try(NMdata:::NMdataDecideOption("dir.sims",dir.sims,allow.unknown=TRUE),silent=TRUE)
+    if(inherits(dir.sims,"try-error")){
+        dir.sims <- NULL
+    }
+    ## dir.sims <- simpleCharArg("dir.sims",dir.sims,default=NULL,accepted=NULL,lower=FALSE)
     dir.sims <- simpleCharArg("dir.sims",dir.sims,file.path(dirname(file.mod),"NMsim"),accepted=NULL,lower=FALSE)
     
     if(!dir.exists(dir.sims)){
@@ -492,7 +496,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     if(missing(file.res)) file.res <- NULL
     if(is.null(file.res)) {
-        if(missing(dir.res) || is.null(dir.res)) dir.res <- dir.sims
+
+        if(missing(dir.res)) dir.res <- NULL
+        dir.res <- try(NMdata:::NMdataDecideOption("dir.res",dir.res,allow.unknown=TRUE),silent=TRUE)
+        if(inherits(dir.res,"try-error")){
+            dir.res <- NULL
+        }
+        dir.res <- simpleCharArg("dir.res",dir.sims,default=NULL,accepted=NULL,lower=FALSE)
+        
+        ## if(missing(dir.res) || is.null(dir.res)) dir.res <- dir.sims
     } else {
         dir.res <- dirname(file.res)
     }
@@ -910,14 +922,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 
 ###### store transform
+    
     if(nrow(dt.models)==1){
         dt.models[,funs.transform:=list()]
     } else {
         dt.models[,funs.transform:=vector("list", .N)]
     }
-    dt.models[,funs.transform:=transform]
+    dt.models[,funs.transform:=list(list(transform))]
 
-
+    
     
     
 #### Section start: Execute ####
@@ -970,7 +983,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ###  Section end: Execute
 
 
-
+    
     dt.models.save <- split(dt.models,by="path.rds")
     addClass(dt.models,"NMsimTab")
     files.rds <- lapply(1:length(dt.models.save),function(I){

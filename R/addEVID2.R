@@ -4,8 +4,12 @@
 ##' subjects in a data set. Copies over columns that are not varying
 ##' at subject level (i.e. non-variying covariates).
 ##' 
-##' @param doses dosing records Nonmem style
-##' @param time.sim A numerical vector with simulation times
+##' @param doses dosing records Nonmem style (EVID==1 records from a
+##'     data set)
+##' @param time.sim A numerical vector with simulation times. Can also
+##'     be a data.frame in which case it must contain a `TIME` column
+##'     and is merged with subjects found in `doses`. The latter
+##'     feature is experimental.
 ##' @param CMT The compartment in which to insert the EVID=2
 ##'     records. If longer than one, the records will be repeated in
 ##'     all the specified compartments. If a data.frame, covariates
@@ -68,13 +72,14 @@ addEVID2 <- function(doses,time.sim,CMT,as.fun){
     
     
     to.use <- setdiff(colnames(doses),c("TIME","EVID","CMT","AMT","RATE","MDV","SS","II","ADDL","DV"))
-    covs.doses <- findCovs(doses[,to.use,with=FALSE],by="ID")
+    covs.doses <- findCovs(doses[,to.use,with=FALSE],by="ID",as.fun="data.table")
 
     if(!is.data.frame(time.sim)){
         dt.obs <- data.table(TIME=time.sim)
         dt.obs <- egdt(dt.obs,covs.doses,quiet=TRUE)
     } else {
         if(!"TIME"%in%colnames(time.sim)) stop("When time.sim is a data.frame, it must contain a column called TIME.")
+        time.sim <- as.data.table(time.sim)
         dt.obs <- merge(time.sim,covs.doses,all.x=TRUE,allow.cartesian = TRUE)
     }
     dt.obs[
