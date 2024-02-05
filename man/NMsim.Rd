@@ -130,7 +130,7 @@ result.}
 \item{nc}{Number of cores used in parallelization. This is so far
 only supported with \code{method.execute="psn"}.}
 
-\item{transform}{A list defining transformations to be applied
+\item{transform}{CURRENTLY DISABLED. A list defining transformations to be applied
 after the Nonmem simulations and before plotting. For each
 list element, its name refers to the name of the column to
 transform, the contents must be the function to apply.}
@@ -258,7 +258,7 @@ suppressed to the extend implemented.}
 }
 \value{
 A data.frame with simulation results (same number of rows
-    as input data). If `wait=FALSE` a character vector with paths
+    as input data). If `sge=TRUE` a character vector with paths
     to simulation control streams.
 }
 \description{

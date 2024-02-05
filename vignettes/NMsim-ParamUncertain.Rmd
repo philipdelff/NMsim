@@ -92,36 +92,19 @@ another one.
 Anyway, getting `NMsim` to do the work is as simple as this:
 
 
-```{r}
-file.res.VarCov <- "simulate-results/simres_VarCov_032.rds"
-```
-
 ```{r,VarCov,eval=FALSE}
-## file.mod <- "../tests_manual/testthat/testData/nonmem/xgxr032.mod"
-
 set.seed(552)
 simlsts.VarCov <- NMsim(
-    file.mod=file.mod,          ## Path to estimation input control stream
-    data=dat.sim                ## simulation input data
-   ,dir.sims="~/NMsim_vignette" ## where to store simulation files
-   ,table.vars="PRED IPRED"     ## Let Nonmem write a minimum output table
-   ,method.sim=NMsim_VarCov     ## Var-Cov parameter sampling
-   ,name.sim="VarCov"           ## a recognizable directory name
-   ,nsims=500                   ## sampling 500 models
-   ,sge=TRUE                    ## run simulations in parallel please
-   ,file.res=file.res.VarCov
+    file.mod=file.mod,              ## Path to estimation input control stream
+    data=dat.sim                    ## simulation input data
+   ,dir.sims="~/NMsim_vignette/tmp" ## where to store temporary simulation files
+   ,dir.res="simulate-results"      ## where to store simulation results files
+   ,table.vars="PRED IPRED"         ## Let Nonmem write a minimum output table
+   ,method.sim=NMsim_VarCov         ## Var-Cov parameter sampling
+   ,name.sim="VarCov"               ## a recognizable directory name
+   ,nsims=500                       ## sampling 500 models
+   ,sge=TRUE                        ## run simulations in parallel please
 )
-
-
-## readRDS("~/NMsim_vignette/xgxr021_VarCov/NMsim_xgxr021_VarCov.rds")
-## readRDS("~/NMsim_vignette/xgxr021_VarCov/NMsim_.rds")
-## tab <- readRDS("~/NMsim_vignette/xgxr021_VarCov/NMsim_paths.rds")
-## tab <- readRDS("~/NMsim_vignette/xgxr021_VarCov2/NMsim_paths.rds")
-## class(tab)
-
-## simres.VarCov <- NMreadSim("~/NMsim_vignette/xgxr021_VarCov/NMsim_paths.rds")
-#~/NMsim_vignette/xgxr032_VarCov/
-## simres.VarCov <- NMreadSim(file.rds)
 
 ```
 
@@ -138,7 +121,7 @@ have to check the status of the jobs manually, and once they are all
 done, you can read all the results using `NMdata::NMscanMultiple`:
 
 ```{r,VarCov-collect,eval=TRUE}
-simres.VarCov <- NMreadSim(file.res.VarCov)
+simres.VarCov <- NMreadSim("simulate-results/NMsim_xgxr032_VarCov_paths.rds")
 ```
 
 
@@ -173,10 +156,10 @@ simlsts.bootstrap <- NMsim(
    ,data=dat.sim              ## Simulation input data
    ,method.sim=NMsim_default  ## a single simulation with each sampled model
    ,dir.sims="~/NMsim_vignette/bootstrap" ## Where to save simulation results
+   ,file.res="simulate-results/simres_bootstrap.rds"
    ,table.vars="PRED IPRED"   ## Let Nonmem write a minimum output table
    ,sge=TRUE                  ## run simulations in parallel
    ,method.update.inits="nmsim"
-   ,file.res="simulate-results/simres_bootstrap.rds"
 )
 
 ```

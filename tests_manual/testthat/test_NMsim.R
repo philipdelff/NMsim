@@ -52,7 +52,7 @@ test_that("basic - default",{
                     )
 
     expect_equal_to_reference(simres,fileRef)
-    
+
 
 })
 

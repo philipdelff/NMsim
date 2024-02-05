@@ -64,8 +64,14 @@ NMsim we restrict to nc=1.
 *** CANCELED Intro arg return
 Align with NMdata
 ** NMreadSim
-*** TODO Support transform
-It used to be done in NMsim. But it has to be a list in each row of the NMsimTab object specifying what to transform. Then do someting like this.
+*** TODO [#A] Argument for path to dir.sims
+Currently, the sim results must be in the same path relative to the
+results files as specified when running NMsim.
+*** DONE Support transform
+It used to be done in NMsim. But it has to be a list in each row of
+the NMsimTab object specifying what to transform. Then do someting
+like this.
+
 #+begin_src R
 else if(!is.null(transform)){
 ## optionally transform results like DV, IPRED, PRED
@@ -73,7 +79,7 @@ for(name in names(transform)){
 simres.n[,(name):=transform[[name]](get(name))]
 }
 #+end_source
-*** TODO Support changing paths after running NMsim
+*** DONE Support changing paths after running NMsim
 reading is built on relative paths to wd when NMsim was run. They will
 have to be based on dir.res?
 ** NMsim

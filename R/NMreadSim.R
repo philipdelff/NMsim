@@ -11,11 +11,10 @@
 ##' @import NMdata
 ##' @import data.table
 ##' @import fst
+##' @importFrom xfun relative_path
 ##' @export
 
 
-## if path is a dir, search for rds
-## if an lst, read it
 
 NMreadSim <- function(x,as.fun,check.time=FALSE){
     . <- NULL
@@ -109,7 +108,7 @@ NMreadSim <- function(x,as.fun,check.time=FALSE){
                 args.NM$quiet <- TRUE
             }
             
-            this.res <- do.call(NMscanData,c(list(file=path.sim.lst),args.NM))
+            this.res <- do.call(NMscanData,c(list(file=file.path(dirname(x),pathResFromSims,relative_path(path.sim.lst,dirname(x)))),args.NM))
             
             if(!is.null(.SD$funs.transform)){
                 this.funs <- .SD[1,funs.transform][[1]]

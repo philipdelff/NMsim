@@ -23,7 +23,11 @@
   `fst` files if it finds any so normally it should not be a problem
   to skip this check.
   
-* The `transform` option has been integrated into 
+* The `transform` option has been integrated into the table of
+  simulations created by `NMsim()`. This means even if the results are
+  not read by `NMsim` (because the simulation is not executed or it is
+  submitted to a cluster), the transformation will still be applied by
+  `NMreadSim()` later.
 
 * `NMsim()'s` `dir.sims` and `dir.res` arguments can be controlled
   using `NMdata::NMdataConf()`. Often these two arguments are used all
@@ -31,6 +35,9 @@
   for all in a script.
 
 ## Bugfixes
+
+* `NMreadSim` was only able to read results if the current working
+  directory was the same as when `NMsim` was executed. Now fixed.
 
 * In some cases `NMsim` would fail on models with multiple output
   tables when the `table.vars` argument was not used. Fixed.

@@ -7,9 +7,13 @@
 addEVID2(doses, time.sim, CMT, as.fun)
 }
 \arguments{
-\item{doses}{dosing records Nonmem style}
+\item{doses}{dosing records Nonmem style (EVID==1 records from a
+data set)}
 
-\item{time.sim}{A numerical vector with simulation times}
+\item{time.sim}{A numerical vector with simulation times. Can also
+be a data.frame in which case it must contain a `TIME` column
+and is merged with subjects found in `doses`. The latter
+feature is experimental.}
 
 \item{CMT}{The compartment in which to insert the EVID=2
 records. If longer than one, the records will be repeated in

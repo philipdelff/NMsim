@@ -4,7 +4,13 @@
 \alias{NMexecDirectory}
 \title{Execute Nonmem inside a dedicated directory}
 \usage{
-NMexecDirectory(file.mod, path.nonmem, files.needed, dir.data = "..")
+NMexecDirectory(
+  file.mod,
+  path.nonmem,
+  files.needed,
+  dir.data = "..",
+  system.type
+)
 }
 \arguments{
 \item{file.mod}{Path to a Nonmem input control stream.}

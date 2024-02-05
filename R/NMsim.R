@@ -241,7 +241,7 @@
 ##' @import NMdata
 ##' @import data.table
 ##' @importFrom stats runif
-
+##' @importFrom xfun relative_path
 ##' @export
 
 
@@ -494,6 +494,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         }
         dir.create(dir.sims)
     }
+    
     if(missing(file.res)) file.res <- NULL
     if(is.null(file.res)) {
 
@@ -502,18 +503,21 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(inherits(dir.res,"try-error")){
             dir.res <- NULL
         }
-        dir.res <- simpleCharArg("dir.res",dir.sims,default=NULL,accepted=NULL,lower=FALSE)
+        dir.res <- simpleCharArg("dir.res",dir.res,default=dir.sims,accepted=NULL,lower=FALSE)
         
         ## if(missing(dir.res) || is.null(dir.res)) dir.res <- dir.sims
     } else {
         dir.res <- dirname(file.res)
     }
+    
     if(!dir.exists(dir.res)){
         if(!create.dirs){
             stop(paste("dir.res does not point to an existing directory. dir.res is\n",NMdata:::filePathSimple(dir.res)))
         }
         dir.create(dir.res)
     }
+
+    relpathResFromSims <- relative_path(dir.res,dir.sims)
     
     if(missing(text.table)) text.table <- NULL
     
@@ -529,6 +533,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models <- data.table(file.mod=file.mod)
     dt.models[,run.mod:=fnExtension(basename(file.mod),"")]
     dt.models[,name.mod:=run.mod]
+    dt.models[,pathResFromSims:=relpathResFromSims]
     if(!is.null(names(file.mod))){
         names.mod <- names(file.mod)
         names.mod[names.mod==""] <- file.mod[names.mod==""]

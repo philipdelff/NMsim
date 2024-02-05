@@ -39,7 +39,7 @@ NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
     value <- NULL
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks 
-
+    
 
     files.needed.def <- NMsim_default(file.sim=file.sim,file.mod,data.sim)
 
