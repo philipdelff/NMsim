@@ -14,7 +14,7 @@ at subject level (i.e. non-variying covariates)."><!-- mathjax --><script src="h
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.923</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.924</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,11 +88,15 @@ at subject level (i.e. non-variying covariates).</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>doses</dt>
-<dd><p>dosing records Nonmem style</p></dd>
+<dd><p>dosing records Nonmem style (EVID==1 records from a
+data set)</p></dd>
 
 
 <dt>time.sim</dt>
-<dd><p>A numerical vector with simulation times</p></dd>
+<dd><p>A numerical vector with simulation times. Can also
+be a data.frame in which case it must contain a `TIME` column
+and is merged with subjects found in `doses`. The latter
+feature is experimental.</p></dd>
 
 
 <dt>CMT</dt>
