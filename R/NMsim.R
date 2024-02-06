@@ -30,7 +30,7 @@
 ##' @param reuse.results If simulation results found on file, should
 ##'     they be used? If TRUE and reading the results fail, the
 ##'     simulations will still be rerun.
-##' @param transform CURRENTLY DISABLED. A list defining transformations to be applied
+##' @param transform A list defining transformations to be applied
 ##'     after the Nonmem simulations and before plotting. For each
 ##'     list element, its name refers to the name of the column to
 ##'     transform, the contents must be the function to apply.
@@ -184,8 +184,8 @@
 ##'     suppressed to the extend implemented.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
-##'     as input data). If `sge=TRUE` a character vector with paths
-##'     to simulation control streams.
+##'     as input data). If `sge=TRUE` a character vector with paths to
+##'     simulation control streams.
 ##' @details Loosely speaking, the argument \code{method.sim} defines
 ##'     _what_ NMsim will do, \code{method.executes} define _how_ it
 ##'     does it. \code{method.sim} takes a function that converts an
@@ -319,6 +319,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ..dir.res <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+
+    returnSimres <- function(simres){
+        simres <- as.fun(simres)
+        addClass(simres,"NMsimRes")
+        return(simres)
+    }
     
 #### Section start: Checking aguments ####
     
@@ -625,6 +631,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"rds"),"paths"))]
     } else {
         dt.models[,path.rds:=fnExtension(file.res,"rds")]
+    }
+    dt.models[,path.rds.exists:=file.exists(path.rds)]
+### reading results from prior run
+    if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
+        if(!quiet) message("Reading from simulation results on file.")
+        simres <- try(NMreadSim(dt.models[,path.rds]))
+        if(!inherits(simres,"try-error")) {
+            return(returnSimres(simres))
+        }
     }
 
 ### clear simulation directories so user does not end up with old results
@@ -1019,11 +1034,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     ## if(!wait) return(simres$lst)
     if(wait){
-        simres <- as.fun(simres)
-        addClass(simres,"NMsimRes")
-        return(simres)
+        return(returnSimres(simres))
     } else {
         addClass(dt.models,"NMsimTab")
-        return(invisible(dt.models))
+        return(invisible(dt.models[,path.rds]))
     }
 }

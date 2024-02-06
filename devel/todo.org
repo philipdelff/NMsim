@@ -83,6 +83,7 @@ simres.n[,(name):=transform[[name]](get(name))]
 reading is built on relative paths to wd when NMsim was run. They will
 have to be based on dir.res?
 ** NMsim
+*** TODO [#A] Add NMsim version and date to table
 *** TODO [#A] No spaces in .mod files
 See test_manual "list of data sets - spaces in data names"
 *** TODO [#A] More useful error than the NMscanTables error
@@ -155,6 +156,8 @@ stream is wanted. For NMscanData, files makes sense because it will
 work on both input and output control streams.
 *** DONE If path.nonmem is not supplied, use psn?
 *** TODO [#B] Fix broken reuse.results
+**** DONE First step is to just trust saved results and read them if reuse.results=TRUE.
+If not, just return a vector of rds files.
 *** DONE Reduce number of needed arguments
 **** DONE seed
 **** DONE suffix.sim

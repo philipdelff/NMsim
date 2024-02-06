@@ -23,6 +23,11 @@
   `fst` files if it finds any so normally it should not be a problem
   to skip this check.
   
+* `NMsim` now tries to reuse stored results if
+  `reuse.results=TRUE`. It does so in a simple way - if they exist,
+  they will be attempted read - so be careful to rerun simulations
+  without this option if you change any arguments.
+  
 * The `transform` option has been integrated into the table of
   simulations created by `NMsim()`. This means even if the results are
   not read by `NMsim` (because the simulation is not executed or it is
@@ -48,6 +53,10 @@
   
 * In case simulation data is a list of data sets `NMsim` would not
   order columns when `order.columns` was `TRUE`. Now fixed.
+
+* Function `simPopEtas()` was not exported, so only available as
+  `NMsim:::simPopEtas()`. Fixed.
+  
 
 # NMsim 0.0.7
 ## New features
