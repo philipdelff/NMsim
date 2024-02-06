@@ -315,7 +315,7 @@ test_that("list of data sets - spaces in data names",{
                              ,path.nonmem=path.nonmem
                               )
 
-        simres <- NMreadSim("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
+    simres <- NMreadSim("testOutput/xgxr032_datalist_01/NMsim_paths.rds")
 
     
 })

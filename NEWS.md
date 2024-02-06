@@ -53,6 +53,13 @@
   
 * In case simulation data is a list of data sets `NMsim` would not
   order columns when `order.columns` was `TRUE`. Now fixed.
+  
+* In case of lists of data sets, and the list element (data set) names
+  included spaces, `NMsim()` would throw and error. Spaces in data set
+  names are now replaced with under scores ("_") to avoid that. It
+  will often happen when data sets are split into lists using
+  `data.table::split.data.table()` - which is an excellent way to do
+  this, by the way.
 
 * Function `simPopEtas()` was not exported, so only available as
   `NMsim:::simPopEtas()`. Fixed.

@@ -540,6 +540,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,run.mod:=fnExtension(basename(file.mod),"")]
     dt.models[,name.mod:=run.mod]
     dt.models[,pathResFromSims:=relpathResFromSims]
+    dt.models[,NMsimVersion:=packageVersion("NMsim")]
+    dt.models[,NMsimTime:=Sys.time()]
     if(!is.null(names(file.mod))){
         names.mod <- names(file.mod)
         names.mod[names.mod==""] <- file.mod[names.mod==""]
@@ -562,6 +564,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(is.null(names.data)) {
             names.data <- as.character(1:length(data))
         } else if(""%in%names.data) {
+            names.data <- gsub(" ","_",names.data)
+            if(any(duplicated(names.data))) stop("If data is a list of data sets, the list elements must be uniquely named.")
             names.data[names.data==""] <- as.character(which(names.data==""))
         }
         
@@ -592,6 +596,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     dt.models[,fn.sim.predata:=fnAppend(fn.sim,name.sim)]
     dt.models[,fn.sim:=fnAppend(fn.sim.predata,as.character(data.name)),by=.(ROWMODEL)]
+    ## spaces not allowed in model names
+    dt.models[,fn.sim:=gsub(" ","_",fn.sim)]
     dt.models[,run.sim:=modelname(fn.sim)]
 
     
@@ -612,6 +618,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     dt.models[,fn.data:=paste0("NMsimData_",fnAppend(fnExtension(name.mod,".csv"),name.sim))]
     dt.models[,fn.data:=fnAppend(fn.data,data.name),by=.(ROWMODEL)]
+    dt.models[,fn.data:=gsub(" ","_",fn.data)]
     
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
 
@@ -992,6 +999,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 unlink(path.sim.lst)
 
             }
+            
             NMexec(files=path.sim,sge=sge,nc=nc,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
             
             ## simres.n <- list(lst=path.sim.lst)

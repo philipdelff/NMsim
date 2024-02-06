@@ -83,8 +83,8 @@ simres.n[,(name):=transform[[name]](get(name))]
 reading is built on relative paths to wd when NMsim was run. They will
 have to be based on dir.res?
 ** NMsim
-*** TODO [#A] Add NMsim version and date to table
-*** TODO [#A] No spaces in .mod files
+*** DONE Add NMsim version and date to table
+*** DONE No spaces in .mod files
 See test_manual "list of data sets - spaces in data names"
 *** TODO [#A] More useful error than the NMscanTables error
 *** TODO [#A] Tell more than "Writing"
