@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.924</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.925</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,6 +86,7 @@
 <li><p>In some cases <code>NMsim</code> would fail on models with multiple output tables when the <code>table.vars</code> argument was not used. Fixed.</p></li>
 <li><p><code>NMsim</code>’s <code>sim.dir.from.scratch</code> argument was not respected due to a simple bug, leading to <code>dir.sims</code> growing each time a simulation was rerun.</p></li>
 <li><p>In case simulation data is a list of data sets <code>NMsim</code> would not order columns when <code>order.columns</code> was <code>TRUE</code>. Now fixed.</p></li>
+<li><p>In case of lists of data sets, and the list element (data set) names included spaces, <code><a href="../reference/NMsim.html">NMsim()</a></code> would throw and error. Spaces in data set names are now replaced with under scores (“_“) to avoid that. It will often happen when data sets are split into lists using <code><a href="https://rdatatable.gitlab.io/data.table/reference/split.html" class="external-link">data.table::split.data.table()</a></code> - which is an excellent way to do this, by the way.</p></li>
 <li><p>Function <code><a href="../reference/simPopEtas.html">simPopEtas()</a></code> was not exported, so only available as <code>NMsim:::simPopEtas()</code>. Fixed.</p></li>
 </ul></div>
 </div>
