@@ -24,10 +24,17 @@ NMdataConf(dir.psn=NULL)
 path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 file.exists(path.nonmem)
 
-### broken.
-#### NMreadSim has to be able to read multiple rds files.
+#### need a function to drop NMsimVersion and NMsimTime from table
+fix.time <- function(x){
+    meta.x <- attr(x,"NMsim-models")
+    ## meta.x$time.call <- as.POSIXct("2020-02-01 00:01:01",tz="UTC")
+    meta.x$NMsimVersion <- NULL
+    meta.x$NMsimTime <- NULL
+    
+    setattr(x,"NMsim-models",meta.x)
+    invisible(x)
+}
 
-#### transform must be in NMreadSim. But info should eventually be kept in model table.
 
 #### get rid of ROWMODEL2. Not needed for NMreadSim.
 
@@ -50,7 +57,8 @@ test_that("basic - default",{
                     dir.sims="testOutput",
                     name.sim="default_01"
                     )
-
+    fix.time(simres)
+    
     expect_equal_to_reference(simres,fileRef)
 
 
@@ -448,5 +456,30 @@ test_that("dir.sims and dir.res with NMdataConf",{
     NMdataConf(dir.sims=NULL,
                dir.res=NULL,
                allow.unknown=TRUE)
+
+})
+
+
+test_that("basic - a model that can't run",{
+    
+    ## fileRef <- "testReference/NMsim_01.rds"
+
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+
+    dt.dos <- NMcreateDoses(AMT=300,TIME=0)
+    dt.sim <- addEVID2(doses=dt.dos,time.sim=c(1,6,12),CMT=2)
+
+    set.seed(43)
+    simres <- NMsim(file.mod,
+                    data=dt.sim,
+                    ## table.var="PRED IPRED",
+                    dir.sims="testOutput",
+                    name.sim="default_01"
+                    ,sge=T
+                    )
+
+    NMreadSim(simres)
+    expect_equal_to_reference(simres,fileRef)
+
 
 })

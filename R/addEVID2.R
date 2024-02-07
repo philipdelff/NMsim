@@ -80,7 +80,14 @@ addEVID2 <- function(doses,time.sim,CMT,as.fun){
     } else {
         if(!"TIME"%in%colnames(time.sim)) stop("When time.sim is a data.frame, it must contain a column called TIME.")
         time.sim <- as.data.table(time.sim)
-        dt.obs <- merge(time.sim,covs.doses,all.x=TRUE,allow.cartesian = TRUE)
+        cols.by <- intersect(colnames(time.sim),colnames(covs.doses))
+        if(length(cols.by) == 0){
+            ## message("time.sim is a data,frame but no column names overlap with column names in doses. Only the TIME column from time.sim used.")
+            ## return(addEVID2(doses,time.sim$TIME,CMT,as.fun))
+            dt.obs <- egdt(time.sim,covs.doses,quiet=TRUE)
+        } else {
+            dt.obs <- merge(time.sim,covs.doses,all.x=TRUE,allow.cartesian = TRUE)
+        }
     }
     dt.obs[
        ,EVID:=2][

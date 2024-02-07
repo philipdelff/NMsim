@@ -1,3 +1,11 @@
+# NMsim 0.0.9
+NMsim 0.0.9 is almost identical to 0.0.8 but ensures compatibility
+with older R versions. 
+
+## Bugfixes
+* In some cases `NMreadSim` would not be able to read and combine
+  results from models that returned different data variables. Fixed.
+
 # NMsim 0.0.8
 
 ## New features

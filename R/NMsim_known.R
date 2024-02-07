@@ -91,7 +91,7 @@ NMsim_known <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
     }
     if(etasFromTabs){
         ## Could we just read tables and assume we can find an ID? Or how can NMscanData be informed with col.row etc?
-        dt.res <- NMscanData(file.mod)
+        dt.res <- NMscanData(file.mod,quiet=TRUE)
         file.phi <- tempfile()
         genPhiFile(data=dt.res,file=file.phi)
     }

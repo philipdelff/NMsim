@@ -317,8 +317,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ROWMODEL <- NULL
     ROWMODEL2 <- NULL
     ..dir.res <- NULL
+    pathResFromists <- NULL
+    funs.transform <- NULL
+    lst <- NULL
+    NMsimTime <- NULL
+    NMsimVersion <- NULL
+    fn.sim.predata <- NULL
+    path.rds.exists <- NULL
+    pathResFromSims <- NULL
     
-### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+## Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
     returnSimres <- function(simres){
         simres <- as.fun(simres)
@@ -1013,12 +1021,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     
     dt.models.save <- split(dt.models,by="path.rds")
-    addClass(dt.models,"NMsimTab")
+    addClass(dt.models,"NMsimModels")
     files.rds <- lapply(1:length(dt.models.save),function(I){
 
 ####### notify user where to find rds files
         fn.this.rds <- unique(dt.models.save[[I]][,path.rds])
-        addClass(dt.models.save[[I]],"NMsimTab")
+        addClass(dt.models.save[[I]],"NMsimModels")
         if(!quiet){
             message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))
         }
@@ -1044,7 +1052,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(wait){
         return(returnSimres(simres))
     } else {
-        addClass(dt.models,"NMsimTab")
+        addClass(dt.models,"NMsimModels")
         return(invisible(dt.models[,path.rds]))
     }
 }

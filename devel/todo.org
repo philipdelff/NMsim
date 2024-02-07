@@ -83,6 +83,17 @@ simres.n[,(name):=transform[[name]](get(name))]
 reading is built on relative paths to wd when NMsim was run. They will
 have to be based on dir.res?
 ** NMsim
+*** TODO [#A] Avoid (OBSERVATIONS ONLY)
+That has to be dropped from $ERROR sections by default
+*** TODO [#B] avoid PRED_IGNORE_DATA_TEST==1
+In $PK. Example
+; include study 4 even though ANP3AC=0
+IF(PRED_IGNORE_DATA_TEST==1) THEN
+  PRED_IGNORE_DATA=0
+  IF(ANP3AC.NE.1.AND.STUDY.NE.4) PRED_IGNORE_DATA=1
+RETURN ;Assures no additional computation code in INFN is executed
+ENDIF
+
 *** DONE Add NMsim version and date to table
 *** DONE No spaces in .mod files
 See test_manual "list of data sets - spaces in data names"
