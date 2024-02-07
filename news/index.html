@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7.925</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,15 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.8" id="nmsim-008">NMsim 0.0.8<a class="anchor" aria-label="anchor" href="#nmsim-008"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.9" id="nmsim-009">NMsim 0.0.9<a class="anchor" aria-label="anchor" href="#nmsim-009"></a></h2><p class="text-muted">CRAN release: 2024-02-07</p>
+<p>NMsim 0.0.9 is almost identical to 0.0.8 but ensures compatibility with older R versions.</p>
+<div class="section level3">
+<h3 id="bugfixes-0-0-9">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-0-0-9"></a></h3>
+<ul><li>In some cases <code>NMreadSim</code> would not be able to read and combine results from models that returned different data variables. Fixed.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.8" id="nmsim-008">NMsim 0.0.8<a class="anchor" aria-label="anchor" href="#nmsim-008"></a></h2><p class="text-muted">CRAN release: 2024-02-07</p>
 <div class="section level3">
 <h3 id="new-features-0-0-8">New features<a class="anchor" aria-label="anchor" href="#new-features-0-0-8"></a></h3>
 <ul><li><p><code>NMsim</code> 0.0.7 would generate an <code>rds</code> file with paths to simulation files and results for each model+data set simulated. This has been changed to now only generate one table per model. This makes it simpler to read simulation results in some cases.</p></li>

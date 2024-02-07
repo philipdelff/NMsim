@@ -88,7 +88,10 @@
     <loc>https://philipdelff.github.io/NMsim/reference/NMsim.html</loc>
   </url>
   <url>
-    <loc>https://philipdelff.github.io/NMsim/reference/NMsimTabOperations.html</loc>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMsimModelsOperations.html</loc>
+  </url>
+  <url>
+    <loc>https://philipdelff.github.io/NMsim/reference/NMsimResOperations.html</loc>
   </url>
   <url>
     <loc>https://philipdelff.github.io/NMsim/reference/NMsim_VarCov.html</loc>
