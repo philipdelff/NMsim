@@ -1,3 +1,7 @@
+# NMsim 0.0.10
+NMsim 0.0.9 had an unfortunate bug in `NMreadSim()` which has been
+fixed. That bugfix is difference between 0.0.9 and 0.0.10.
+
 # NMsim 0.0.9
 NMsim 0.0.9 is almost identical to 0.0.8 but ensures compatibility
 with older R versions. 

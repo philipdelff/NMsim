@@ -199,12 +199,10 @@ row identifier. If none is supplied,
 already exists in the data set, it will be used as is, if not
 it will be added.}
 
-\item{args.NMscanData}{If \code{wait=TRUE}, NMsim will normally
-read the results using NMdata::NMscanData. Use this argument
+\item{args.NMscanData}{If \code{execute=TRUE&sge=FALSE}, NMsim will normally
+read the results using \code{NMreadSim}. Use this argument
 to pass additional arguments (in a list) to that function if
-you want the results to be read in a specific way. You can
-also use \code{wait=FALSE} and read the data with
-NMdata::NMscanData as you like.}
+you want the results to be read in a specific way.}
 
 \item{path.nonmem}{The path to the Nonmem executable to use. The
 could be something like "/usr/local/NONMEM/run/nmfe75" (which

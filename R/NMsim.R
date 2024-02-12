@@ -150,12 +150,10 @@
 ##'     something else. If data.tables are wanted, use
 ##'     as.fun="data.table". The default can be configured using
 ##'     NMdataConf.
-##' @param args.NMscanData If \code{wait=TRUE}, NMsim will normally
-##'     read the results using NMdata::NMscanData. Use this argument
+##' @param args.NMscanData If \code{execute=TRUE&sge=FALSE}, NMsim will normally
+##'     read the results using \code{NMreadSim}. Use this argument
 ##'     to pass additional arguments (in a list) to that function if
-##'     you want the results to be read in a specific way. You can
-##'     also use \code{wait=FALSE} and read the data with
-##'     NMdata::NMscanData as you like.
+##'     you want the results to be read in a specific way. 
 ##' @param system.type A charachter string, either \"windows\" or
 ##'     \"linux\" - case insensitive. Windows is only experimentally
 ##'     supported. Default is to use \code{Sys.info()[["sysname"]]}.
@@ -1021,12 +1019,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     
     dt.models.save <- split(dt.models,by="path.rds")
-    addClass(dt.models,"NMsimModels")
+    addClass(dt.models,"NMsimModTab")
     files.rds <- lapply(1:length(dt.models.save),function(I){
 
 ####### notify user where to find rds files
         fn.this.rds <- unique(dt.models.save[[I]][,path.rds])
-        addClass(dt.models.save[[I]],"NMsimModels")
+        addClass(dt.models.save[[I]],"NMsimModTab")
         if(!quiet){
             message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))
         }
@@ -1035,7 +1033,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     })
 
 #### Section start: Read results if requested ####
-
+    
     if(execute && wait){
         ## simres <- NMreadSim(dt.models)
         simres <- NMreadSim(unlist(files.rds))
@@ -1049,10 +1047,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 
     ## if(!wait) return(simres$lst)
-    if(wait){
+    if(execute && wait){
         return(returnSimres(simres))
     } else {
-        addClass(dt.models,"NMsimModels")
+        addClass(dt.models,"NMsimModTab")
         return(invisible(dt.models[,path.rds]))
     }
 }
