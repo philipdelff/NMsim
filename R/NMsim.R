@@ -530,6 +530,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 
     relpathResFromSims <- relative_path(dir.res,dir.sims)
+    relpathSimsFromRes <- relative_path(dir.sims,dir.res)
     
     if(missing(text.table)) text.table <- NULL
     
@@ -546,6 +547,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,run.mod:=fnExtension(basename(file.mod),"")]
     dt.models[,name.mod:=run.mod]
     dt.models[,pathResFromSims:=relpathResFromSims]
+    dt.models[,pathSimsFromRes:=relpathSimsFromRes]
     dt.models[,NMsimVersion:=packageVersion("NMsim")]
     dt.models[,NMsimTime:=Sys.time()]
     if(!is.null(names(file.mod))){
@@ -1016,7 +1018,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ###  Section end: Execute
 
-
     
     dt.models.save <- split(dt.models,by="path.rds")
     addClass(dt.models,"NMsimModTab")
@@ -1036,21 +1037,23 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(execute && wait){
         ## simres <- NMreadSim(dt.models)
-        simres <- NMreadSim(unlist(files.rds))
+        simres <- try(NMreadSim(unlist(files.rds)))
+
+        if(inherits(simres,"try-error")){
+            message("Could not read simulation results. Returning path to rds file containing a table with info on all simulations (read with `readRDS()`).")
+            return(unlist(files.res))
+        }
     }
     
 ### Section end: Read results if requested
 
 ##### return results to user
-    if("ROWMODEL2"%in%colnames(simres)) {
-        simres[,ROWMODEL2:=NULL]
-    }
-
+    
     ## if(!wait) return(simres$lst)
     if(execute && wait){
         return(returnSimres(simres))
     } else {
         addClass(dt.models,"NMsimModTab")
-        return(invisible(dt.models[,path.rds]))
+        return(invisible(dt.models[,unique(path.rds)]))
     }
 }

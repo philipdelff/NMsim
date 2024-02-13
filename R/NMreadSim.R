@@ -21,7 +21,7 @@
 
 
 
-NMreadSim <- function(x,check.time=FALSE,as.fun){
+NMreadSim <- function(x,check.time=FALSE,dir.sims,as.fun){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -35,10 +35,11 @@ NMreadSim <- function(x,check.time=FALSE,as.fun){
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
+    if(missing(dir.sims)) dir.sims <- NULL
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
 
-
+    
 ### rexognized formats:
     ## NMsimRes - return x
 
@@ -60,9 +61,13 @@ NMreadSim <- function(x,check.time=FALSE,as.fun){
     if(!is.list(x) && is.character(x)) {
         ##  an rds, read it, make sure its NMSimModels, check for fst,  and proceed with NMSimModels
         tab.paths <- readRDS(x)
-        
+
+
         if(!inherits(tab.paths,"NMsimModTab")) {
-            stop("The provided rds file does not contain a NMsimModTab object")
+            if(!is.data.frame(tab.paths)){
+                stop("The provided rds file does not contain a NMsimModTab object")
+            }
+            message("x is not a NMsimModTab object. This can be OK if it was generated using earlier versions of NMsim. However, yoou may need to provide `dir.sims` for this to work.")
         }
         
         file.res.data <- fnAppend(fnExtension(x,"fst"),"res")
@@ -120,8 +125,20 @@ NMreadSim <- function(x,check.time=FALSE,as.fun){
             }
             
             ## this.res <- do.call(NMscanData,c(list(file=file.path(dirname(pathResFromSims),pathResFromSims,relative_path(path.sim.lst,dirname(pathResFromSims)))),args.NM))
-            this.res <- do.call(NMscanData,c(list(file=file.path(dirname(x),pathResFromSims,relative_path(path.sim.lst,dirname(x)))),args.NM))
-            
+
+            ## this.res <- do.call(NMscanData,
+            ##                     c(list(
+            ##                         file=file.path(dirname(x),pathSimsFromRes,relative_path(path.sim.lst,dirname(x)))),args.NM))
+
+            if(!is.null(dir.sims)){
+                dirSims <- dir.sims
+            } else {
+                dirSims <- file.path(dirname(x),pathSimsFromRes)
+            }
+            this.res <- do.call(NMscanData,
+                                c(list(
+                                    file=file.path(dirSims,relative_path(path.sim.lst,dirSims))),args.NM))
+
             if(!is.null(.SD$funs.transform)){
                 this.funs <- .SD[1,funs.transform][[1]]
                 this.res <- do.call(wrap.trans,c(list(dt=this.res),this.funs))

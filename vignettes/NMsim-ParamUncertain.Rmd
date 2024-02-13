@@ -36,6 +36,7 @@ NMdataConf(as.fun="data.table")
 run.simuls <- FALSE
 
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
 file.mod <- file.project("nonmem/xgxr032.mod")
 dat.sim <- read_fst("simulate-results/dat_sim.fst")
 ```
@@ -121,6 +122,7 @@ have to check the status of the jobs manually, and once they are all
 done, you can read all the results using `NMdata::NMscanMultiple`:
 
 ```{r,VarCov-collect,eval=TRUE}
+
 simres.VarCov <- NMreadSim("simulate-results/NMsim_xgxr032_VarCov_paths.rds")
 ```
 
@@ -143,15 +145,13 @@ vignette. We used `PSN`'s bootstrap. We can run the simulation on all the models
 
 ```{r,bootstrap-execute,eval=FALSE}
 ## generate a vector with paths to all the input control streams
-## mods.bootstrap <- list.files(path="~/NMsim_vignette_work/bs1_032_N1000/m1",
-##                              pattern=".+\\.mod$",full.names = T)
 mods.bootstrap <- list.files(path=file.project("nonmem/bs1_032_N1000/m1"),
                              pattern=".+\\.mod$",full.names = T)
 
 ## number of models to be run
 ## length(mods.bootstrap)
 
-simlsts.bootstrap <- NMsim(
+file.res.bootstrap <- NMsim(
     file.mod=mods.bootstrap   ## Estimation input control stream
    ,data=dat.sim              ## Simulation input data
    ,method.sim=NMsim_default  ## a single simulation with each sampled model
@@ -168,7 +168,7 @@ simlsts.bootstrap <- NMsim(
 simres.bootstrap <- NMreadSim("simulate-results/simres_bootstrap.rds")
 ```
 
-Using `NMdata::NMscanData`, `NMsim` keeps a column by default called `model` which holds the model name, derived from the control stream file name. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples). 
+`NMsim` keeps a column by default called `model` which holds the model name, derived from the control stream file name. This behavior is due to `NMsim` relying on the functionality implemented in `NMdata` for reading and writing data. Using `NMdata::NMscanData`. As an example, we can derive an estimated confidence interval of the population prediction against time by summarizing across the simulation models (samples). 
 
 
 ### The confidence intervals
