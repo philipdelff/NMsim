@@ -7,6 +7,14 @@
 ##'     information in `rds`, but notice that some systems don't
 ##'     preserve the file modification times. Becasue of that,
 ##'     `check.time` is `FALSE` by default.
+##' @param dir.sims By default, `NMreadSim` will use information about
+##'     the relative path from the results table file (`_paths.rds`)
+##'     to the Nonmem simulation results. If these paths have changed,
+##'     or for other reasons this doesn't work, you can use the
+##'     `dir.sims` argument to specify where to find the Nonmem
+##'     simulation results. If an `.fst` file was already generated
+##'     and is found next to the `_paths.rds`, the path to the Nonmem
+##'     simulation results is not used.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say `tibble::as_tibble`) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use
