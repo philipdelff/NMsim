@@ -20,7 +20,7 @@ get the most out of this."><!-- mathjax --><script src="https://cdnjs.cloudflare
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.901</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -339,12 +339,10 @@ it will be added.</p></dd>
 
 
 <dt>args.NMscanData</dt>
-<dd><p>If <code>wait=TRUE</code>, NMsim will normally
-read the results using NMdata::NMscanData. Use this argument
+<dd><p>If <code>execute=TRUE&amp;sge=FALSE</code>, NMsim will normally
+read the results using <code>NMreadSim</code>. Use this argument
 to pass additional arguments (in a list) to that function if
-you want the results to be read in a specific way. You can
-also use <code>wait=FALSE</code> and read the data with
-NMdata::NMscanData as you like.</p></dd>
+you want the results to be read in a specific way.</p></dd>
 
 
 <dt>path.nonmem</dt>
