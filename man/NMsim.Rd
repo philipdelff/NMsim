@@ -39,6 +39,7 @@ NMsim(
   system.type = NULL,
   dir.res,
   file.res,
+  wait,
   quiet = FALSE,
   ...
 )

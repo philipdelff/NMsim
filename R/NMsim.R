@@ -372,7 +372,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(missing(system.type)) system.type <- NULL
     system.type <- getSystemType(system.type)
 
+    ## after definition of wait and wait.exec, wait is used by
+    ## NMreadSim(), wait.exec used by NMexec().
     if(missing(wait)) wait <- !sge
+    wait.exec <- !sge && wait
+    ## If we already wait on the simulation, no reason to wait for
+    ## data. Especially, if NMTRAN fails in exec, NMreadSim() will
+    ## wait indefinitely.
+    if(wait.exec) wait <- FALSE
     
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL
@@ -984,8 +991,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         }
 
         ## run sim
-        wait.exec <- !sge && wait
-       
         dt.models[,lst:={
             simres.n <- NULL
             files.needed.n <- try(strsplit(files.needed,":")[[1]],silent=TRUE)

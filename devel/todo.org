@@ -64,6 +64,23 @@ NMsim we restrict to nc=1.
 *** CANCELED Intro arg return
 Align with NMdata
 ** NMreadSim
+*** Structure
+**** description of x argument
+main arg is x - a flexible object that contains
+- data
+- paths to fst containing data
+- NMsimModTab info on what to read
+- paths to rds files containing NMsimModTab
+
+  x can be a list of these or a vector of paths
+**** structure
+***** partition x into x.data and x.tabs
+***** stack or read and stack x.data into res.x
+***** combine x.tabs into tab.paths by reading and stacking
+****** Wait on lsts if needed/requested
+****** Read models from tab.paths and stack into res.tabs
+***** Stack res.data and res.tabs into res.all
+
 *** DONE Argument for path to dir.sims
 Currently, the sim results must be in the same path relative to the
 results files as specified when running NMsim.
