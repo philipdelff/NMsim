@@ -265,6 +265,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   system.type=NULL
                  ,dir.res
                  ,file.res
+                 ,wait
                  ,quiet=FALSE
                  ,...
                   ){
@@ -371,6 +372,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(missing(system.type)) system.type <- NULL
     system.type <- getSystemType(system.type)
 
+    if(missing(wait)) wait <- !sge
     
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL
@@ -651,7 +653,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ### reading results from prior run
     if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
         if(!quiet) message("Reading from simulation results on file.")
-        simres <- try(NMreadSim(dt.models[,path.rds]))
+        simres <- try(NMreadSim(dt.models[,path.rds],wait=wait))
         if(!inherits(simres,"try-error")) {
             return(returnSimres(simres))
         }
@@ -982,10 +984,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         }
 
         ## run sim
-        wait <- !sge
-
-
-        
+        wait.exec <- !sge && wait
+       
         dt.models[,lst:={
             simres.n <- NULL
             files.needed.n <- try(strsplit(files.needed,":")[[1]],silent=TRUE)
@@ -1008,7 +1008,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
             }
             
-            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
+            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait.exec,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
             
             ## simres.n <- list(lst=path.sim.lst)
             ## simres.n
@@ -1037,7 +1037,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(execute && wait){
         ## simres <- NMreadSim(dt.models)
-        simres <- try(NMreadSim(unlist(files.rds)))
+        simres <- try(NMreadSim(unlist(files.rds),wait=wait))
 
         if(inherits(simres,"try-error")){
             message("Could not read simulation results. Returning path to rds file containing a table with info on all simulations (read with `readRDS()`).")

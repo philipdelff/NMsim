@@ -57,6 +57,7 @@ test_that("basic - default",{
                     dir.sims="testOutput",
                     name.sim="default_01"
                     )
+    
     fix.time(simres)
     
     expect_equal_to_reference(simres,fileRef)
@@ -65,27 +66,61 @@ test_that("basic - default",{
 })
 
 
-test_that("basic - dont wait",{
+test_that("basic - sge - dont wait",{
 
     fileRef <- "testReference/NMsim_01.rds"
 
     file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
 
     set.seed(43)
+    ## simtab <- "testOutput/NMsim_xgxr021_default_01_paths.rds"
+    ## if(doSims){
     simtab <- NMsim(file.mod,
                     data=dt.sim,
                     table.vars="PRED IPRED",
                     dir.sims="testOutput",
                     name.sim="default_01"
-                   ,sge=T
+                   ,sge=TRUE
+                   ,reuse.results=TRUE
+                    ## ,file.res=simtab
                     )
+    ## }
+    simres2 <- NMreadSim(simtab,wait=T)
 
-    simres2 <- NMreadSim(simtab)
     fix.time(simres2)
     
     expect_equal_to_reference(simres2,fileRef)
 
 })
+
+test_that("basic - sge - wait",{
+
+    fileRef <- "testReference/NMsim_01.rds"
+
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+
+    set.seed(43)
+    ## simtab <- "testOutput/NMsim_xgxr021_default_01_paths.rds"
+    ## if(doSims){
+    simres3 <- NMsim(file.mod,
+                    data=dt.sim,
+                    table.vars="PRED IPRED",
+                    dir.sims="testOutput",
+                    name.sim="default_01"
+                   ,sge=TRUE
+                   ,wait=TRUE
+                   ,reuse.results=FALSE
+                    ## ,file.res=simtab
+                    )
+    ## }
+    ##simres2 <- NMreadSim(simtab,wait=T)
+
+    ##fix.time(simres2)
+    
+    expect_equal_to_reference(simres3,fileRef)
+
+})
+
 
 test_that("basic - typical",{
 
@@ -406,12 +441,12 @@ test_that("default with nc>1",{
                     dir.sims="testOutput",
                     name.sim="default_nc"
                    ,method.execute="nmsim"
-                     ,nc=72
+                   ,nc=72
                    ,sge=TRUE
                    ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                     )
 
-    ### last time I checked, this didnt work
+### last time I checked, this didnt work
     expect_error(simres <- NMreadSim(simres))
     
     ## expect_equal_to_reference(simres,fileRef)

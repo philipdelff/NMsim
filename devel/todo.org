@@ -1,5 +1,5 @@
+#+PROPERTY: LOGGING nil
 * NMsim todo
-
 ** general
 
 *** DONE Export simulation methods
@@ -64,7 +64,7 @@ NMsim we restrict to nc=1.
 *** CANCELED Intro arg return
 Align with NMdata
 ** NMreadSim
-*** TODO [#A] Argument for path to dir.sims
+*** DONE Argument for path to dir.sims
 Currently, the sim results must be in the same path relative to the
 results files as specified when running NMsim.
 *** DONE Support transform

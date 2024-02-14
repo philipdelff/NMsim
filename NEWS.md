@@ -1,3 +1,14 @@
+# NMsim 0.0.11
+## New features
+* `NMsim()` and `NMreadSim()` now have `wait` arguments which controls
+  if they will wait for Nonmem to finish simulating. This will also
+  work if jobs were sent to the cluster.
+  
+## Bugfixes
+* In some cases `NMreadSim()` would not get the path right to the
+  simulation results leading to failures in reading simulation
+  results. Fixed.
+
 # NMsim 0.0.10
 NMsim 0.0.9 had an unfortunate bug in `NMreadSim()` which has been
 fixed. That bugfix is difference between 0.0.9 and 0.0.10.

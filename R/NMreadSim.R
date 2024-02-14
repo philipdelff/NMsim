@@ -29,7 +29,7 @@
 
 
 
-NMreadSim <- function(x,check.time=FALSE,dir.sims,as.fun){
+NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -105,16 +105,7 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,as.fun){
     
 ####### Now we have a NMSimModels object to process.
     
-
-
-
-### read all sim results
-
-####  must read each model into list elements. Then rbind(fill=T)
-### this is to make sure results from different models with
-### incompatible columns can be combined.
-
-
+### will need a function to apply transformations if applicable
     wrap.trans <- function(dt,...){
         funs <- list(...)
         for(name.fun in names(funs)){
@@ -122,6 +113,36 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,as.fun){
         }
         dt
     }
+
+### read all sim results
+
+####  must read each model into list elements. Then rbind(fill=T)
+### this is to make sure results from different models with
+### incompatible columns can be combined.
+
+    ## add in usable path to sim results
+    
+    tab.paths[,path.lst.read:={
+        if(!is.null(dir.sims)){
+            dirSims <- dir.sims
+        } else {
+            dirSims <- file.path(dirname(x),pathSimsFromRes)
+        }
+        file.path(dirSims,relative_path(path.sim.lst,dirSims))
+    },by=.(ROWMODEL2)]
+    
+    if(wait){
+        done <- all(file.exists(tab.paths[,path.lst.read]))
+        turns <- 0
+        if(!done) message("Waiting for Nonmem to finish simulating...")
+        while(!done){
+            Sys.sleep(5)
+            done <- all(file.exists(tab.paths[,path.lst.read]))
+            turns <- turns+1
+        }
+        if(turns>0) message("Nonmem finished.")
+    }
+    
     
     res.list <- lapply(split(tab.paths,by="ROWMODEL2"),function(dat){
         res <- dat[,{
@@ -138,14 +159,29 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,as.fun){
             ##                     c(list(
             ##                         file=file.path(dirname(x),pathSimsFromRes,relative_path(path.sim.lst,dirname(x)))),args.NM))
 
-            if(!is.null(dir.sims)){
-                dirSims <- dir.sims
-            } else {
-                dirSims <- file.path(dirname(x),pathSimsFromRes)
+            ## this works, but moving it outside
+            if(FALSE){
+                if(!is.null(dir.sims)){
+                    dirSims <- dir.sims
+                } else {
+                    dirSims <- file.path(dirname(x),pathSimsFromRes)
+                }
+                this.res <- do.call(NMscanData,
+                                    c(list(
+                                        file=file.path(dirSims,relative_path(path.sim.lst,dirSims))),args.NM))
             }
-            this.res <- do.call(NMscanData,
-                                c(list(
-                                    file=file.path(dirSims,relative_path(path.sim.lst,dirSims))),args.NM))
+            ## put this in try and report better info if broken
+            this.res <- try(do.call(NMscanData,
+                                c(list(file=path.lst.read),args.NM)
+                                ))
+            if(inherits(this.res,"try-error")){
+                if(!quiet) {
+                    lines.lst <- readLines(path.lst.read)
+                    nlines <- length(lines.lst)
+                    message("Results could not be read from %s\nPasting the bottom of outputput control stream:\n",path.lst.read,paste(lines.lst[(nlines-25):nlines],collapse="\n"))
+                    }
+                this.res <- NULL
+            }
 
             if(!is.null(.SD$funs.transform)){
                 this.funs <- .SD[1,funs.transform][[1]]
