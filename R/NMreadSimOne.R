@@ -1,8 +1,10 @@
-#### a function that reads one sim element. This will be run in lapply in NMreadSim.
-
+##' Read simulation results from data.frames or fst files
+##' @param x a data set or a fst file
+##' @import data.table
+##' @keywords internal
 ## don't export
 
-##' @param x a data set or a fst file
+
 NMreadSimRes <- function(x){
 
     
@@ -13,12 +15,15 @@ NMreadSimRes <- function(x){
     res
 }
 
-
+##' read one sim element. This will be run in lapply in NMreadSim.
+##' @param x A path to an fst file or a data set
+##' @return A data.table
 ##' @importFrom fst read_fst
+##' @keywords internal
 NMreadSimResOne <- function(x){
 
     if(is.character(x)){
-        x <- read_fst(x)
+        x <- read_fst(x,as.data.table=TRUE)
     }
 
     x

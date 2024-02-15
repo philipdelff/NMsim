@@ -26,6 +26,17 @@ simulation results. If an `.fst` file was already generated
 and is found next to the `_paths.rds`, the path to the Nonmem
 simulation results is not used.}
 
+\item{wait}{If simulations seem to not be done yet, wait for them
+to finish? If not, an error will be thrown. If you choose to
+wait, the risk is results never come. `NMreadSim` will be
+waiting for an `lst` file. If Nonmem fails, it will normally
+generate an `lst` file. But if `NMTRAN` fails (checks of
+control stream prior to running Nonmem), the `lst` file is not
+generated.  Default is not to wait.}
+
+\item{quiet}{Turn off some messages about what is going on?
+Default is to report the messages.}
+
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say `tibble::as_tibble`) in as.fun to convert to
 something else. If data.tables are wanted, use

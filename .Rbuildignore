@@ -53,3 +53,4 @@ LINK.LNK
 ^R/NMwritePreamble.R
 ^tests_manual
 ^tests/testthat/simulations
+^tests/testthat/testOutput/.*fst

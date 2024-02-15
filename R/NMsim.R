@@ -276,11 +276,13 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     est <- NULL
     DATAROW <- NULL
     data.name <- NULL
+    default <- NULL
     direct <- NULL
     directory <- NULL
     dir.sim <- NULL
     f.exists <- NULL
     files.needed <- NULL
+    files.res <- NULL
     fn.sim.tmp <- NULL
     fn <- NULL
     fn.mod <- NULL
@@ -295,12 +297,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     is.data <- NULL
     text <- NULL
     textmod <- NULL
-    default <- NULL
     known <- NULL
     model <- NULL
     name.mod <- NULL
     psn <- NULL
     nmsim <- NULL
+    pathSimsFromRes <- NULL
     run.mod <- NULL
     run.sim <- NULL
     typical <- NULL
