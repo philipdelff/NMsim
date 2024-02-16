@@ -43,12 +43,8 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     . <- NULL
-    ROWMODEL2 <- NULL
-    args.NMscanData <- NULL
     path.sim.lst <- NULL
-    file.res.data <- NULL
     pathResFromSims <- NULL
-    funs.transform <- NULL
     is.fst <- NULL
     is.rds <- NULL
     is.res <- NULL
@@ -72,19 +68,11 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
 
     ## path to rds - read rds, then fst or lst
     
-    
-    ## if mltiple rds are provided, loop over them
-    if(F){
-        if(!is.list(x) && is.character(x)) {
-            if( length(x)>1 ){
-                res <- rbindlist(lapply(x,NMreadSim),fill=TRUE)
-                ## setattr(res,"NMsim-models",tab.paths)
-                addClass(res,"NMsimRes")
-                return(as.fun(res))
-            }
-        }
-    }
 
+    if(length(x)==0) {
+        message("No elementes in x. Returning NULL.")
+        return(NULL)
+    }
 
     dt.x <- data.table(is.rds=unlist(lapply(x,function(x)is.character(x)&&fnExtension(x)=="rds")))
     dt.x[,is.fst:=unlist(lapply(x,function(x)is.character(x)&&fnExtension(x)=="fst"))]
@@ -104,7 +92,7 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
     res.modTab <- NMreadSimModTab(x[dt.x$is.ModTab],check.time=check.time,
                                   dir.sims=dir.sims,wait=wait,quiet=quiet)
     
-
+    
     res.all <- rbind(res.simRes,res.modTab,fill=TRUE)
 
     res.all <- as.fun(res.all)

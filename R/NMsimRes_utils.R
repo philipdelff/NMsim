@@ -60,8 +60,13 @@ dimnames.NMsimRes <- function(x,...){
 ##' @export
 rbind.NMsimRes <- function(x,...){
     
+    list.ModTab <- lapply(c(x,list(...)),function(y)attributes(y)$NMsimModTab)
+    ModTab <- rbindlist(list.ModTab,fill=TRUE)
     unNMsimRes(x)
-    rbind(x,...)
+    res <- rbind(x,...)
+    addClass(res,"NMsimRes")
+    setattr(res,"NMsimModTab",ModTab)
+    res
 }
 
 ##' @rdname NMsimResOperations

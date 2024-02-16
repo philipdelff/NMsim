@@ -150,10 +150,10 @@
 ##'     something else. If data.tables are wanted, use
 ##'     as.fun="data.table". The default can be configured using
 ##'     NMdataConf.
-##' @param args.NMscanData If \code{execute=TRUE&sge=FALSE}, NMsim will normally
-##'     read the results using \code{NMreadSim}. Use this argument
-##'     to pass additional arguments (in a list) to that function if
-##'     you want the results to be read in a specific way. 
+##' @param args.NMscanData If \code{execute=TRUE&sge=FALSE}, NMsim
+##'     will normally read the results using \code{NMreadSim}. Use
+##'     this argument to pass additional arguments (in a list) to that
+##'     function if you want the results to be read in a specific way.
 ##' @param system.type A charachter string, either \"windows\" or
 ##'     \"linux\" - case insensitive. Windows is only experimentally
 ##'     supported. Default is to use \code{Sys.info()[["sysname"]]}.
@@ -178,6 +178,13 @@
 ##'     simulated, this will result in multiple rds files. Specifying
 ##'     a path ensures that one rds file containing information about
 ##'     all simulated models will be created.
+##' @param wait Wait for simulations to finish? Default is to do so if
+##'     simulations are run locally but not to if they are sent to the
+##'     cluster. Waiting for them means that the results will be read
+##'     when simulations are done. If not waiting, path(s) to `rds`
+##'     files to read will be returned. Pass them through
+##'     `NMreadSim()` (which also supports waiting for the simulations
+##'     to finish).
 ##' @param quiet If TRUE, messages from what is going on will be
 ##'     suppressed to the extend implemented.
 ##' @param ... Additional arguments passed to \code{method.sim}.
@@ -269,7 +276,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,quiet=FALSE
                  ,...
                   ){
-
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     . <- NULL
@@ -327,7 +333,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     path.rds.exists <- NULL
     pathResFromSims <- NULL
     
-## Section end: Dummy variables, only not to get NOTE's in pacakge checks
+    ## Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
     returnSimres <- function(simres){
         simres <- as.fun(simres)
@@ -374,6 +380,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(missing(system.type)) system.type <- NULL
     system.type <- getSystemType(system.type)
 
+    
     ## after definition of wait and wait.exec, wait is used by
     ## NMreadSim(), wait.exec used by NMexec().
     if(missing(wait)) wait <- !sge
@@ -382,6 +389,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## data. Especially, if NMTRAN fails in exec, NMreadSim() will
     ## wait indefinitely.
     if(wait.exec) wait <- FALSE
+
+
+    if(nc>1){warning("nc>1 is likely not to work. Please notice there are more efficient methods to speed up simulations, and nc>1 is most likely not what you want anyway. See discussions on the NMsim website.")}
     
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL
@@ -1042,7 +1052,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 #### Section start: Read results if requested ####
     
-    if(execute && wait){
+    if(execute && (wait.exec||wait)){
         ## simres <- NMreadSim(dt.models)
         simres <- try(NMreadSim(unlist(files.rds),wait=wait))
 
@@ -1057,7 +1067,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ##### return results to user
     
     ## if(!wait) return(simres$lst)
-    if(execute && wait){
+    ## if(execute && (wait.exec||wait)){
+    if(is.NMsimRes(simres) || (execute && (wait.exec||wait))){
         return(returnSimres(simres))
     } else {
         addClass(dt.models,"NMsimModTab")
