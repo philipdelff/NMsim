@@ -480,12 +480,13 @@ test_that("transform",{
 
 
     ## simres <- NMreadSim("testOutput/NMsim_xgxr021_default_trans_paths.rds")
+    1
     fix.time(simres)
     ##     unlink(fileRef)
     expect_equal_to_reference(simres,fileRef)
     
 
-)
+})
 
 test_that("dir.sims and dir.res with NMdataConf",{
 

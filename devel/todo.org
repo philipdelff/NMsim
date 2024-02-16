@@ -64,6 +64,7 @@ NMsim we restrict to nc=1.
 *** CANCELED Intro arg return
 Align with NMdata
 ** NMreadSim
+*** TODO [#A] Test reading of ModTab tables with repeated rds files
 *** Structure
 **** description of x argument
 main arg is x - a flexible object that contains
