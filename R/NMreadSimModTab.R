@@ -124,17 +124,20 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     modtab.fst <- NULL
     if(check.time){
         idx.from.fst <- modtab[,!is.null(file.res.data) &&
-                                file.exists(file.res.data)&&
+                                file.exists(file.res.data) &&
                                 file.mtime(file.res.data)>file.mtime(path.rds.read)
                                ]
-
-        if(sum(idx.from.fst)) modtab.fst <- modtab[idx.from.fst]
-        modtab.fst <- modtab[idx.from.fst]
-        modtab.notfst <- NULL
-        if(sum(!idx.from.fst)) modtab.notfst <- modtab[!idx.from.fst]
-        modtab.fst <- modtab[!idx.from.fst]
+    } else {
+        idx.from.fst <- modtab[,!is.null(file.res.data) &&
+                                file.exists(file.res.data)]
     }
+    if(sum(idx.from.fst)) modtab.fst <- modtab[idx.from.fst]
+    modtab.fst <- modtab[idx.from.fst]
+    modtab.notfst <- NULL
+    if(sum(!idx.from.fst)) modtab.notfst <- modtab[!idx.from.fst]
+    modtab.fst <- modtab[!idx.from.fst]
     
+
     ## fsts
     res.fst <- NULL
     if(!is.null(modtab.fst)){
@@ -193,11 +196,11 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
         res.notfst[,ROWMODEL2:=NULL]
     }
 
-    
-    
+
+
     res <- rbind(res.fst,res.notfst,fill=TRUE)
-    
-    
+
+
     res <- as.fun(res)
     setattr(res,"NMsimModTab",modtab)
     addClass(res,"NMsimRes")
