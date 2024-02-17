@@ -163,7 +163,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
                     if(!quiet) {
                         lines.lst <- readLines(path.lst.read)
                         nlines <- length(lines.lst)
-                        message(sprintf("Results could not be read from %s\nPasting the bottom of outputput control stream:\n----------------------------------------------\n%s\n----------------------------------------------",path.lst.read,paste(lines.lst[(nlines-25):nlines],collapse="\n")))
+                        message(sprintf("Results could not be read from %s\nPasting the bottom of output control stream:\n----------------------------------------------\n%s\n----------------------------------------------",path.lst.read,paste(lines.lst[(nlines-25):nlines],collapse="\n")))
                     }
                     this.res <- NULL
                 }

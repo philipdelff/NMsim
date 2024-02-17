@@ -525,7 +525,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(!create.dirs){
             stop(paste("dir.sims does not point to an existing directory. dir.sims is\n",NMdata:::filePathSimple(dir.sims)))
         }
-        dir.create(dir.sims)
+        res.dc <- tryCatch(dir.create(dir.sims),warning=function(w)w)
+        if("warning"%in%class(res.dc)){
+            stop("Problems creating dir.sims. Please check that the parent directory exists and is writable.")
+        }
     }
     
     if(missing(file.res)) file.res <- NULL
@@ -547,7 +550,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(!create.dirs){
             stop(paste("dir.res does not point to an existing directory. dir.res is\n",NMdata:::filePathSimple(dir.res)))
         }
-        dir.create(dir.res)
+        ## dir.create(dir.res)
+        res.dc <- tryCatch(dir.create(dir.res),warning=function(w)w)
+        if("warning"%in%class(res.dc)){
+            stop("Problems creating dir.res. Please check that the parent directory exists and is writable.")
+        }
+        
     }
 
     relpathResFromSims <- relative_path(dir.res,dir.sims)

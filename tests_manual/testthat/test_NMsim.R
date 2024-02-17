@@ -516,7 +516,7 @@ test_that("dir.sims and dir.res with NMdataConf",{
 })
 
 
-test_that("basic - a model that can't run",{
+test_that("basic - a model that fails on NMTRAN",{
     
     ## fileRef <- "testReference/NMsim_01.rds"
 
@@ -532,10 +532,12 @@ test_that("basic - a model that can't run",{
                     dir.sims="testOutput",
                     name.sim="default_01"
                    ,sge=F
-                   ,wait=FALSE
+                   ,wait=TRUE
                     )
 
-    expect_error(NMreadSim(simres))
+    expect_error(
+        NMreadSim(simres)
+    )
 
 
 })
