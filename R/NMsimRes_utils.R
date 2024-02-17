@@ -4,8 +4,10 @@
 ##' @export
 ##' @rdname NMsimResOperations
 unNMsimRes <- function(x){
-    setattr(x,"NMsimRes",NULL)
-    setattr(x,"class",setdiff(class(x),"NMsimRes"))
+    if(!is.null(x)){
+        setattr(x,"NMsimRes",NULL)
+        setattr(x,"class",setdiff(class(x),"NMsimRes"))
+    }
 }
 
 
@@ -61,9 +63,16 @@ dimnames.NMsimRes <- function(x,...){
 rbind.NMsimRes <- function(x,...){
     
     list.ModTab <- lapply(c(x,list(...)),function(y)attributes(y)$NMsimModTab)
+    list.ModTab <- list.ModTab[!sapply(list.ModTab,is.null)]
     ModTab <- rbindlist(list.ModTab,fill=TRUE)
     unNMsimRes(x)
-    res <- rbind(x,...)
+
+    
+    args.res.list <- c(x,list(...))
+    args.res.list <- args.res.list[!sapply(args.res.list,is.null)]
+    res <- do.call(rbind,args.res.list)
+    ## res <- rbind(x,...)
+
     addClass(res,"NMsimRes")
     setattr(res,"NMsimModTab",ModTab)
     res

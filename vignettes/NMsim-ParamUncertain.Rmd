@@ -122,7 +122,6 @@ have to check the status of the jobs manually, and once they are all
 done, you can read all the results using `NMdata::NMscanMultiple`:
 
 ```{r,VarCov-collect,eval=TRUE}
-
 simres.VarCov <- NMreadSim("simulate-results/NMsim_xgxr032_VarCov_paths.rds")
 ```
 

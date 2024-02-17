@@ -64,7 +64,7 @@ NMsim we restrict to nc=1.
 *** CANCELED Intro arg return
 Align with NMdata
 ** NMreadSim
-*** TODO [#A] Test reading of ModTab tables with repeated rds files
+*** DONE Test reading of ModTab tables with repeated rds files
 *** Structure
 **** description of x argument
 main arg is x - a flexible object that contains
@@ -119,7 +119,7 @@ ENDIF
 *** DONE Add NMsim version and date to table
 *** DONE No spaces in .mod files
 See test_manual "list of data sets - spaces in data names"
-*** TODO [#A] More useful error than the NMscanTables error
+*** DONE More useful error than the NMscanTables error
 *** TODO [#A] Tell more than "Writing"
 *** DONE dir.res should not be needed when file.res is provided
 *** DONE Create only one rds per .mod
@@ -276,6 +276,8 @@ able to use a known set of ID's and covs? Or use ID?
 @param ID ID's to replicate for. Default is 1. Use NULL to omit.
 
 ** addEVID2
+
+*** DONE Argument to set EVID value
 *** TODO Order the same way as NMdata::addTAPD?
 currently, addEVID2 does not order rows after adding simulation records
 ** plain nonmem run

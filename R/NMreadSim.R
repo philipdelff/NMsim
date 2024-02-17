@@ -60,7 +60,7 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
 
-    
+    if(is.data.frame(x)) x <- list(x)
 ### recognized formats:
     ## NMsimRes - return x
 
@@ -74,6 +74,8 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
         return(NULL)
     }
 
+    
+    
     dt.x <- data.table(is.rds=unlist(lapply(x,function(x)is.character(x)&&fnExtension(x)=="rds")))
     dt.x[,is.fst:=unlist(lapply(x,function(x)is.character(x)&&fnExtension(x)=="fst"))]
     dt.x[,is.simRes:=unlist(lapply(x,is.NMsimRes))]
@@ -88,10 +90,15 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
 
     
     
-    res.simRes <- NMreadSimRes(x[dt.x$is.simRes])
-    res.modTab <- NMreadSimModTab(x[dt.x$is.ModTab],check.time=check.time,
-                                  dir.sims=dir.sims,wait=wait,quiet=quiet)
-    
+    res.simRes <- NULL
+    if(sum(dt.x$is.simRes)){
+        res.simRes <- NMreadSimRes(x[dt.x$is.simRes])
+    }
+    res.modTab <- NULL
+    if(sum(dt.x$is.ModTab)){
+        res.modTab <- NMreadSimModTab(x[dt.x$is.ModTab],check.time=check.time,
+                                      dir.sims=dir.sims,wait=wait,quiet=quiet)
+    }
     
     res.all <- rbind(res.simRes,res.modTab,fill=TRUE)
 

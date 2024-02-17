@@ -541,3 +541,34 @@ test_that("basic - a model that fails on NMTRAN",{
 
 
 })
+
+
+test_that("Two models on one rds",{
+
+    file.mod.1 <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+    file.mod.2 <- "testData/nonmem/xgxr032.mod"
+
+    dt.dos <- NMcreateDoses(AMT=300,TIME=0)
+    dt.sim <- addEVID2(doses=dt.dos,time.sim=c(1,6,12),CMT=2)
+
+    set.seed(43)
+    simres <- NMsim(c(file.mod.1,file.mod.2),
+                    data=dt.sim,
+                    ## table.var="PRED IPRED",
+                    dir.sims="testOutput",
+                    name.sim="twomodels_01"
+                   ,file.res="testOutput/twomodels_01_paths.rds"
+                   ,table.vars=cc(PRED,IPRED)
+                   ,sge=F
+                   ,wait=TRUE
+                    )
+
+    ## readRDS("testOutput/twomodels_01_paths.rds")
+    res <- NMreadSim("testOutput/twomodels_01_paths.rds")
+
+    fix.time(simres)
+    fix.time(res)
+    
+    expect_equal(simres,res)
+    
+})

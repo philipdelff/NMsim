@@ -14,6 +14,8 @@
 ##'     records. If longer than one, the records will be repeated in
 ##'     all the specified compartments. If a data.frame, covariates
 ##'     can be specified.
+##' @param EVID The value to put in the EVID column for the created
+##'     rows. Default is 2 but 0 may be prefered even for simulation.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say `tibble::as_tibble`) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use
@@ -48,12 +50,11 @@
 ##' @export 
 
 
-addEVID2 <- function(doses,time.sim,CMT,as.fun){
+addEVID2 <- function(doses,time.sim,CMT,EVID=2,as.fun){
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
-    EVID <- NULL
-    DV <- NULL
+        DV <- NULL
     MDV <- NULL
     ID <- NULL
     TIME <- NULL
@@ -90,7 +91,7 @@ addEVID2 <- function(doses,time.sim,CMT,as.fun){
         }
     }
     dt.obs[
-       ,EVID:=2][
+       ,EVID:=..EVID][
        ,DV:=NA_real_][
        ,MDV:=1]
     
