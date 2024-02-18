@@ -1061,13 +1061,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 #### Section start: Read results if requested ####
     
     if(execute && (wait.exec||wait)){
-        ## simres <- NMreadSim(dt.models)
-        simres <- try(NMreadSim(unlist(files.rds),wait=wait))
 
-        if(inherits(simres,"try-error")){
-            message("Could not read simulation results. Returning path to rds file containing a table with info on all simulations (read with `readRDS()`).")
-            return(unlist(files.res))
-        }
+        ### This runs NMreadSim in try. But since the user is
+        ### requesting execute and wait, an error reading this should
+        ### result in an NMsim error.
+        ## simres <- try(NMreadSim(unlist(files.rds),wait=wait))
+        ## if(inherits(simres,"try-error")){
+        ##     message("Could not read simulation results. Returning path to rds file containing a table with info on all simulations (read with `readRDS()`).")
+        ##     return(unlist(files.res))
+        ## }
+        simres <- NMreadSim(unlist(files.rds),wait=wait)
     }
     
 ### Section end: Read results if requested

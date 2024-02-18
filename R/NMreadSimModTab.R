@@ -82,8 +82,21 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,a
     
     ## res <- NMreadSimModTabOne(modtab=modtab,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
     res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
+
+    
     
     res <- rbindlist(res.list,fill=TRUE)
+
+    list.ModTab <- lapply(res.list,function(y)attributes(y)$NMsimModTab)
+    ## list.ModTab <- list.ModTab[!sapply(list.ModTab,is.null)]
+    ModTab <- rbindlist(list.ModTab,fill=TRUE)
+
+    addClass(res,"NMsimRes")
+    setattr(res,"NMsimModTab",ModTab)
+
+    ## res <- do.call(rbind,
+    ##                c(res.list,list(fill=TRUE))
+    ##                )
 
     res
 

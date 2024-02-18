@@ -58,8 +58,9 @@ test_that("basic - default",{
                     name.sim="default_01"
                     )
     
+    ## attributes(NMreadSim("testOutput/NMsim_xgxr021_default_01_paths.rds"))
     fix.time(simres)
-    
+
     expect_equal_to_reference(simres,fileRef)
 
 
@@ -451,15 +452,18 @@ test_that("default with nc>1",{
                         dir.sims="testOutput",
                         name.sim="default_nc"
                        ,method.execute="nmsim"
-                       ,nc=72
+                       ,nc=2
                        ,sge=TRUE
                        ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                         )
     )
 ### last time I checked, this didnt work
-    expect_equal(
-        nrow(NMreadSim(simtab,wait=T)),0
-    )
+    expect_error(simres <- NMreadSim(simtab,wait=T))
+    ## expect_equal(
+    ##     nrow(
+    ##     simres
+    ##     ),nrow(dt.sim)
+    ## )
     
     ## expect_equal_to_reference(simres,fileRef)
 
