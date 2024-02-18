@@ -54,11 +54,12 @@ addEVID2 <- function(doses,time.sim,CMT,EVID=2,as.fun){
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
-        DV <- NULL
+    DV <- NULL
     MDV <- NULL
     ID <- NULL
     TIME <- NULL
-    
+    ..EVID <- NULL
+
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
     if(missing(as.fun)) as.fun <- NULL

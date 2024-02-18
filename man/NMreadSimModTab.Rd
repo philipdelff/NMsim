@@ -9,6 +9,7 @@ NMreadSimModTab(
   check.time = FALSE,
   dir.sims,
   wait = FALSE,
+  skip.missing = FALSE,
   quiet = FALSE,
   as.fun
 )

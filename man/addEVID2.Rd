@@ -4,7 +4,7 @@
 \alias{addEVID2}
 \title{Add simulation records to dosing records}
 \usage{
-addEVID2(doses, time.sim, CMT, as.fun)
+addEVID2(doses, time.sim, CMT, EVID = 2, as.fun)
 }
 \arguments{
 \item{doses}{dosing records Nonmem style (EVID==1 records from a
@@ -19,6 +19,9 @@ feature is experimental.}
 records. If longer than one, the records will be repeated in
 all the specified compartments. If a data.frame, covariates
 can be specified.}
+
+\item{EVID}{The value to put in the EVID column for the created
+rows. Default is 2 but 0 may be prefered even for simulation.}
 
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say `tibble::as_tibble`) in as.fun to convert to

@@ -1,7 +1,7 @@
 ##' Read simulation results from rds objects and/or NMsimModTab objects
 ##' @keywords internal
 
-NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun){
+NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=FALSE,quiet=FALSE,as.fun){
 
 
     ROWTMP <- NULL
@@ -64,20 +64,28 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,a
     ## by=.(ROWMODEL2)
     by=.(ROWTMP)
     ]
-
     
-    if(wait){
-        done <- all(file.exists(modtab[,path.lst.read]))
-        turns <- 0
-        if(!done) message("Waiting for Nonmem to finish simulating...")
-        while(!done){
-            Sys.sleep(5)
-            done <- all(file.exists(modtab[,path.lst.read]))
-            turns <- turns+1
+    lsts.found <- modtab[,file.exists(path.lst.read)]
+    done <- all(lsts.found)
+    if(!done){
+        if(wait){
+            turns <- 0
+            if(!done) message("Waiting for Nonmem to finish simulating...")
+            while(!done){
+                Sys.sleep(5)
+                done <- all(file.exists(modtab[,path.lst.read]))
+                turns <- turns+1
+            }
+            if(turns>0) message("Nonmem finished.")
+        } else {
+            if(skip.missing){
+                message(sprintf("%d/%d model runs found",sum(lsts.found),length(lsts.found)))
+            } else {
+                lapply(modtab[lsts.found==FALSE,path.lst.read],function(x) warning(sprintf("Not found: %s",x)))
+                stop("Not all model runs completed. Look in warnings for which ones. If you want to go ahead and read the ones that are found, use skip.missing=`TRUE`.")
+            }
         }
-        if(turns>0) message("Nonmem finished.")
     }
-
     
     
     ## res <- NMreadSimModTabOne(modtab=modtab,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)

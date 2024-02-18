@@ -47,7 +47,12 @@ we need for a VPC. We will use an example model included with NMsim:
 ```{r,eval=TRUE}
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 file.mod <- file.project("nonmem/xgxr032.mod")
-NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+NMdataConf(dir.sims="~/NMsim_vignette",
+           dir.res="simulate-results",
+           allow.unknown=TRUE ## necessary for dir.sims and dir.res
+           ## until NMdata 0.1.5
+           )
 ```
 
 ```{r,eval=FALSE}
@@ -55,13 +60,9 @@ set.seed(43)
 ## notice the data argument is not used.
 simres.vpc <- NMsim(file.mod,
                     table.vars=c("PRED","IPRED", "Y"),
-                    dir.sims="~/NMsim_vignette",
-                    dir.res="simulate-results",
                     name.sim="vpc_01"
                    ,nsims=500
-                   ,as.fun="data.table"
-                    ,sge=T
-                    )
+                   ,as.fun="data.table")
 ```
 
 The performed simulation is similar to the one produced by the `VPC` function in `PSN`. However, there are some important differences.
@@ -136,13 +137,12 @@ set.seed(43)
 ## notice the data argument is not used.
 sim.vpc.sge <- NMsim(file.mod,
                      table.vars=c("PRED","IPRED", "Y"),
-                     dir.sims="testOutput",
                      name.sim="vpc_01"
                     ,nsims=500
                     ,sge=TRUE
                      ## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"
-                    ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
-                    ,file.res=file.res
+                     ##,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                     ##,file.res=file.res
                      )
 
 ```
