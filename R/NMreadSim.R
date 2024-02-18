@@ -90,17 +90,27 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
 
     
     
-    res.simRes <- NULL
+    res.all <- NULL
     if(sum(dt.x$is.simRes)){
         res.simRes <- NMreadSimRes(x[dt.x$is.simRes])
+        if(is.null(res.all)){
+            res.all <- res.simRes
+        } else {
+            res.all <- rbind(res.all,res.simRes)  
+        }
     }
-    res.modTab <- NULL
+
     if(sum(dt.x$is.ModTab)){
         res.modTab <- NMreadSimModTab(x[dt.x$is.ModTab],check.time=check.time,
                                       dir.sims=dir.sims,wait=wait,quiet=quiet)
+        if(is.null(res.all)){
+            res.all <- res.modTab
+        } else {
+            res.all <- rbind(res.all,res.modTab)  
+        }
     }
     
-    res.all <- rbind(res.simRes,res.modTab,fill=TRUE)
+    ##    res.all <- rbind(res.simRes,res.modTab,fill=TRUE)
 
     res.all <- as.fun(res.all)
     addClass(res.all,"NMsimRes")

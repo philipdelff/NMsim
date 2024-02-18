@@ -471,7 +471,7 @@ test_that("default with nc>1",{
 
 
 test_that("transform",{
-
+## options(warn=2)
     fileRef <- "testReference/NMsim_09.rds"
 
     file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
@@ -533,6 +533,7 @@ test_that("basic - a model that fails on NMTRAN",{
     dt.sim <- addEVID2(doses=dt.dos,time.sim=c(1,6,12),CMT=2)
 
     set.seed(43)
+expect_error(
     simres <- NMsim(file.mod,
                     data=dt.sim,
                     ## table.var="PRED IPRED",
@@ -541,7 +542,7 @@ test_that("basic - a model that fails on NMTRAN",{
                    ,sge=F
                    ,wait=TRUE
                     )
-
+)
     ## expect_error(
     ##     NMreadSim(simres)
     ## )

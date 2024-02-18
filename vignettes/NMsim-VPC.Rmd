@@ -45,11 +45,9 @@ re-use the estimation data for the simulation. That is the simulation
 we need for a VPC. We will use an example model included with NMsim:
 
 ```{r,eval=TRUE}
-
-
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 file.mod <- file.project("nonmem/xgxr032.mod")
-
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
 ```
 
 ```{r,eval=FALSE}
@@ -57,12 +55,13 @@ set.seed(43)
 ## notice the data argument is not used.
 simres.vpc <- NMsim(file.mod,
                     table.vars=c("PRED","IPRED", "Y"),
-                    dir.sims="testOutput",
+                    dir.sims="~/NMsim_vignette",
+                    dir.res="simulate-results",
                     name.sim="vpc_01"
                    ,nsims=500
                    ,as.fun="data.table"
+                    ,sge=T
                     )
-
 ```
 
 The performed simulation is similar to the one produced by the `VPC` function in `PSN`. However, there are some important differences.
@@ -79,8 +78,8 @@ As mentioned, `NMsim` does not postprocess the simulation for generation of a VP
 
 
 ```{r,include=FALSE,eval=TRUE}
-file.res <- "simulate-results/simpaths-vpc.rds"
-simres.vpc <- NMreadSim(file.res,as.fun="data.table")
+file.res <- "simulate-results/NMsim_xgxr032_vpc_01_paths.rds"
+simres.vpc <- NMreadSim(file.res,as.fun="data.table",wait=T)
 ```
 
 
