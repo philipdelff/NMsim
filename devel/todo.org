@@ -101,6 +101,7 @@ simres.n[,(name):=transform[[name]](get(name))]
 reading is built on relative paths to wd when NMsim was run. They will
 have to be based on dir.res?
 ** NMsim
+*** TODO [#B] skip fst option
 *** TODO [#A] Returning NULL when it should error
 The test "basic - a model that fails on NMTRAN" has NMsim wait for a
 model that fails and can't read the results. Since it's waiting and

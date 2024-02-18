@@ -15,6 +15,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,a
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
 
     
+
     ## read all rds files to get everything into just one table.
     unwrapRDS <- function(x){
         path.rds.read <- NULL
@@ -79,7 +80,10 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,a
 
     
     
-    res <- NMreadSimModTabOne(modtab=modtab,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
+    ## res <- NMreadSimModTabOne(modtab=modtab,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
+    res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
+    
+    res <- rbindlist(res.list,fill=TRUE)
 
     res
 
@@ -99,6 +103,8 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     path.lst.read <- NULL
     ROWTMP <- NULL
 
+    rdstab <- unique(modtab[,.(file.res.data,path.rds.read)])
+    if(nrow(rdstab)>1) stop("modtab must be related to only one rds file.")
     
 ####### Now we have a NMSimModels object to process.
     
@@ -120,94 +126,99 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     
 ####### TODO this must be by rds file, not by row!!
 ### if we have an fst, read it and return results
-    modtab.notfst <- copy(modtab)
-    modtab.fst <- NULL
+    ## modtab.notfst <- copy(modtab)
+    ## modtab.fst <- NULL
     if(check.time){
-        idx.from.fst <- modtab[,!is.null(file.res.data) &&
-                                file.exists(file.res.data) &&
-                                file.mtime(file.res.data)>file.mtime(path.rds.read)
-                               ]
+        from.fst <- rdstab[,!is.null(file.res.data) &&
+                            file.exists(file.res.data) &&
+                            file.mtime(file.res.data)>file.mtime(path.rds.read)
+                           ]
     } else {
-        idx.from.fst <- modtab[,!is.null(file.res.data) &&
-                                file.exists(file.res.data)]
+        from.fst <- rdstab[,!is.null(file.res.data) &&
+                            file.exists(file.res.data)]
     }
 
-    if(sum(idx.from.fst)) modtab.fst <- modtab[idx.from.fst]
+                                        #    if(sum(from.fst)) modtab.fst <- modtab[idx.from.fst]
     ## modtab.fst <- modtab[idx.from.fst]
-    modtab.notfst <- NULL
-    if(sum(!idx.from.fst)) modtab.notfst <- modtab[!idx.from.fst]
+                                        #    modtab.notfst <- NULL
+                                        #    if(sum(!idx.from.fst)) modtab.notfst <- modtab[!idx.from.fst]
     ## modtab.fst <- modtab[!idx.from.fst]
     
 
     ## fsts
-    res.fst <- NULL
-    if(!is.null(modtab.fst)){
-        res.fst.list <- lapply(modtab.fst[,unique(file.res.data)],read_fst,as.data.table=TRUE)
-        res.fst <- rbindlist(res.fst.list,fill=TRUE)
-        addClass(res.fst,"NMsimRes")
+                                        #res.fst <- NULL
+    ##if(!is.null(modtab.fst)){
+    if(from.fst){
+### reads unique fsts
+        res.list <- lapply(modtab[,unique(file.res.data)],read_fst,as.data.table=TRUE)
+        res <- rbindlist(res.list,fill=TRUE)
+
+        setattr(res,"NMsimModTab",modtab)
+        addClass(res,"NMsimRes")
+        return(res)
+        
     }
 
-    res.notfst <- NULL
-    if(!is.null(modtab.notfst)){
-        res.list <- lapply(split(modtab.notfst,by="ROWMODEL2"),function(dat){
-            res <- dat[,{
-                ## cat(ROWMODEL2," ")     
-                ## the rds table must keep NMscanData arguments
-                args.NM <- args.NMscanData[[1]]
-                if(! "quiet" %in% names(args.NM)){
-                    args.NM$quiet <- TRUE
+    ## res.notfst <- NULL
+    ## if(!is.null(modtab.notfst)){
+    res.list <- lapply(split(modtab,by="ROWMODEL2"),function(dat){
+        res <- dat[,{
+            ## cat(ROWMODEL2," ")     
+            ## the rds table must keep NMscanData arguments
+            args.NM <- args.NMscanData[[1]]
+            if(! "quiet" %in% names(args.NM)){
+                args.NM$quiet <- TRUE
+            }
+            
+            
+            ## put this in try and report better info if broken
+            this.res <- try(do.call(NMscanData,
+                                    c(list(file=path.lst.read),args.NM)
+                                    ))
+            if(inherits(this.res,"try-error")){
+                if(!quiet) {
+                    lines.lst <- readLines(path.lst.read)
+                    nlines <- length(lines.lst)
+                    message(sprintf("Results could not be read from %s\nPasting the bottom of output control stream:\n----------------------------------------------\n%s\n----------------------------------------------",path.lst.read,paste(lines.lst[(nlines-25):nlines],collapse="\n")))
                 }
-                
-                
-                ## put this in try and report better info if broken
-                this.res <- try(do.call(NMscanData,
-                                        c(list(file=path.lst.read),args.NM)
-                                        ))
-                if(inherits(this.res,"try-error")){
-                    if(!quiet) {
-                        lines.lst <- readLines(path.lst.read)
-                        nlines <- length(lines.lst)
-                        message(sprintf("Results could not be read from %s\nPasting the bottom of output control stream:\n----------------------------------------------\n%s\n----------------------------------------------",path.lst.read,paste(lines.lst[(nlines-25):nlines],collapse="\n")))
-                    }
-                    this.res <- NULL
-                }
-
-                if(!is.null(.SD$funs.transform)){
-                    this.funs <- .SD[1,funs.transform][[1]]
-                    this.res <- do.call(wrap.trans,c(list(dt=this.res),this.funs))
-                    this.res
-                }
-
-
-                this.res
-            },by=.(ROWMODEL2)]
-#### What if mutliple rows point to the same fst. Will they be overwritten? That would be if multiple modes are stored in one rds/fst.
-            if(!is.null(dat$file.res.data)){
-                NMwriteData(res,
-                            file=dat$file.res.data,
-                            formats.write="fst",
-                            genText=F,
-                            quiet=TRUE)
+                this.res <- NULL
             }
 
-            res
-            
-        })
-        res.notfst <- rbindlist(res.list,fill=TRUE)
-        res.notfst[,ROWMODEL2:=NULL]
-    }
+            if(!is.null(.SD$funs.transform)){
+                this.funs <- .SD[1,funs.transform][[1]]
+                this.res <- do.call(wrap.trans,c(list(dt=this.res),this.funs))
+                this.res
+            }
 
 
+            this.res
+        },by=.(ROWMODEL2)]
+#### What if mutliple rows point to the same fst. Will they be overwritten? That would be if multiple modes are stored in one rds/fst.
+        
 
-    ## res <- rbind(res.fst,res.notfst,fill=TRUE)
-    
-    res.list <- c(list(res.fst),list(res.notfst))
-    res.list <- res.list[!sapply(res.list,is.null)]
-    res <- rbindlist(res.list
-                    ,fill=TRUE)
+        res
+        
+    })
+    res <- rbindlist(res.list,fill=TRUE)
+    res[,ROWMODEL2:=NULL]
+
+    ## res.list <- c(list(res.fst),list(res.notfst))
+    ## res.list <- res.list[!sapply(res.list,is.null)]
+    ## res <- rbindlist(res.list
+    ##                 ,fill=TRUE)
 
     res <- as.fun(res)
     setattr(res,"NMsimModTab",modtab)
     addClass(res,"NMsimRes")
+
+    if(!is.null(rdstab$file.res.data)){
+        NMwriteData(res,
+                    file=rdstab$file.res.data,
+                    formats.write="fst",
+                    genText=F,
+                    quiet=TRUE)
+    }
+
+
     res
 }
