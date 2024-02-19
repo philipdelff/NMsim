@@ -16,18 +16,9 @@ to R.
 ``` r
 ## From CRAN/MPN repositories
 install.packages("NMsim")
-#> Installing package into '/data/home/philipde/R/x86_64-pc-linux-gnu-library/4.1'
-#> (as 'lib' is unspecified)
-#> Warning: package 'NMsim' is not available for this version of R
-#> 
-#> A version of this package for your version of R might be available elsewhere,
-#> see the ideas at
-#> https://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Installing-packages
 ## From github
 library(remotes)
 install_github("philipdelff/NMsim")
-#> Skipping install of 'NMsim' from a github remote, the SHA1 (64b8c2bc) has not changed since last install.
-#>   Use `force = TRUE` to force installation
 ```
 
 ## Simulate a Nonmem model from R
@@ -51,10 +42,33 @@ datl <- as.data.table(simres) |>
 ggplot(datl,aes(TIME,value,colour=variable))+
     geom_line(data=function(x)x[variable!="Y"])+
     geom_point(data=function(x)x[variable=="Y"])+
-    facet_wrap(~trt)
+    labs(x="Hours since first dose",y="Concentration (ng/mL)")
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+``` r
+    facet_wrap(~trt)
+#> <ggproto object: Class FacetWrap, Facet, gg>
+#>     compute_layout: function
+#>     draw_back: function
+#>     draw_front: function
+#>     draw_labels: function
+#>     draw_panels: function
+#>     finish_data: function
+#>     init_scales: function
+#>     map_data: function
+#>     params: list
+#>     setup_data: function
+#>     setup_params: function
+#>     shrink: TRUE
+#>     train_scales: function
+#>     vars: function
+#>     super:  <ggproto object: Class FacetWrap, Facet, gg>
+```
+
+This example is from the first vignette
+[`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html).
 
 ## Supported types of simulations
 
@@ -89,8 +103,9 @@ simulation (or other job) you want to automate using `NMsim`.
 
 Many features are available. Prominent ones are:
 
--   Can use submit jobs to clusters (so running the simulation on say
-    1,000 model estimates from a bootstrap is actually not that hard).
+-   Can use submit jobs to clusters. It can wait for the simulations to
+    be done and automatically collect the results like in the example
+    above.
 -   Simulation replicates using Nonmem `SUBPROBLEMS` feature avaible
     through the `subproblems` argument
 -   Can modify the simulation control stream on the fly - a powerful

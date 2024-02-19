@@ -27,7 +27,7 @@ to R.
 ## Install
 `NMsim` is on CRAN, MPN and github:
 
-```{r}
+```{r,eval=FALSE}
 ## From CRAN/MPN repositories
 install.packages("NMsim")
 ## From github
@@ -53,7 +53,7 @@ We are ready to plot
 simres <- NMreadSim("vignettes/simulate-results/NMsim_xgxr021_noname_paths.rds")
 ```
 
-```{r,eval=TRUE}
+```{r,eval=TRUE,fig.height = 4, fig.width = 7}
 library(ggplot2)
 datl <- as.data.table(simres) |>
     melt(measure.vars=cc(PRED,IPRED,Y))
@@ -61,9 +61,11 @@ datl <- as.data.table(simres) |>
 ggplot(datl,aes(TIME,value,colour=variable))+
     geom_line(data=function(x)x[variable!="Y"])+
     geom_point(data=function(x)x[variable=="Y"])+
+    labs(x="Hours since first dose",y="Concentration (ng/mL)")
     facet_wrap(~trt)
 ```
 
+This example is from the first vignette [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html).
 
 
 ## Supported types of simulations
@@ -93,8 +95,7 @@ Nonmem-based simulation (or other job) you want to automate using
 
 Many features are available. Prominent ones are:
 
-* Can use submit jobs to clusters (so running the simulation on say
-1,000 model estimates from a bootstrap is actually not that hard).
+* Can use submit jobs to clusters. It can wait for the simulations to be done and automatically collect the results like in the example above.
 * Simulation replicates using Nonmem `SUBPROBLEMS` feature avaible
   through the `subproblems` argument
 * Can modify the simulation control stream on the fly - a powerful

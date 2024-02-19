@@ -1,7 +1,7 @@
 
 library(data.table)
 library(NMdata)
-NMdataConf(as.fun="data.table")
+
 packageVersion("NMdata")
 ## library(NMsim)
 library(devtools)
@@ -20,6 +20,7 @@ library(data.table)
 ## NMdataConf(dir.psn="/opt/psn")
 path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
 NMdataConf(dir.psn=NULL)
+NMdataConf(as.fun="data.table")
 ##
 path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 file.exists(path.nonmem)
@@ -471,7 +472,13 @@ test_that("default with nc>1",{
 
 
 test_that("transform",{
-## options(warn=2)
+    ## options(warn=2)
+    NMdataConf(reset=TRUE)
+    NMdataConf(dir.res=NULL,allow.unknown=TRUE)
+    NMdataConf(dir.sims=NULL,allow.unknown=TRUE)
+    NMdataConf(dir.psn=NULL)
+    NMdataConf(as.fun="data.table")
+
     fileRef <- "testReference/NMsim_09.rds"
 
     file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
