@@ -61,6 +61,12 @@ unlink(found.files)
 
 run.simuls <- FALSE
 NMdataConf(as.fun="data.table")
+
+NMdataConf(dir.sims="~/NMsim_vignette",
+           dir.res="simulate-results",
+           allow.unknown=TRUE ## necessary for dir.sims and dir.res
+           ## until NMdata 0.1.5
+           )
 ```
 
 
@@ -138,12 +144,13 @@ simres <- NMsim(file.mod=file.mod,
 ```
 
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres.fst"
-if(run.simuls){
-    write_fst(simres,path=file.fst)
-} else {
-    simres <- read_fst(file.fst,as.data.table=TRUE)
-}
+## file.fst <- "simulate-results/simres.fst"
+## if(run.simuls){
+##     write_fst(simres,path=file.fst)
+## } else {
+##     simres <- read_fst(file.fst,as.data.table=TRUE)
+## }
+simres <- NMreadSim("simulate-results/NMsim_xgxr021_noname_paths.rds")
 ```
 
 We plot population and individual predictions as the simulations of
