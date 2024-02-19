@@ -20,7 +20,7 @@ get the most out of this."><!-- mathjax --><script src="https://cdnjs.cloudflare
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.902</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.921</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -126,6 +126,7 @@ get the most out of this.</p>
 <span>  system.type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">dir.res</span>,</span>
 <span>  <span class="va">file.res</span>,</span>
+<span>  <span class="va">wait</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -339,10 +340,10 @@ it will be added.</p></dd>
 
 
 <dt>args.NMscanData</dt>
-<dd><p>If <code>execute=TRUE&amp;sge=FALSE</code>, NMsim will normally
-read the results using <code>NMreadSim</code>. Use this argument
-to pass additional arguments (in a list) to that function if
-you want the results to be read in a specific way.</p></dd>
+<dd><p>If <code>execute=TRUE&amp;sge=FALSE</code>, NMsim
+will normally read the results using <code>NMreadSim</code>. Use
+this argument to pass additional arguments (in a list) to that
+function if you want the results to be read in a specific way.</p></dd>
 
 
 <dt>path.nonmem</dt>
@@ -404,6 +405,16 @@ simulation directory. However, if multiple models are
 simulated, this will result in multiple rds files. Specifying
 a path ensures that one rds file containing information about
 all simulated models will be created.</p></dd>
+
+
+<dt>wait</dt>
+<dd><p>Wait for simulations to finish? Default is to do so if
+simulations are run locally but not to if they are sent to the
+cluster. Waiting for them means that the results will be read
+when simulations are done. If not waiting, path(s) to `rds`
+files to read will be returned. Pass them through
+`NMreadSim()` (which also supports waiting for the simulations
+to finish).</p></dd>
 
 
 <dt>quiet</dt>

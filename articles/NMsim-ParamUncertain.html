@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.902</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.921</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -182,8 +182,7 @@ written. You have to check the status of the jobs manually, and once
 they are all done, you can read all the results using
 <code><a href="https://philipdelff.github.io/NMdata/reference/NMscanMultiple.html" class="external-link">NMdata::NMscanMultiple</a></code>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">simres.VarCov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMreadSim.html">NMreadSim</a></span><span class="op">(</span><span class="st">"simulate-results/NMsim_xgxr032_VarCov_paths.rds"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">simres.VarCov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMreadSim.html">NMreadSim</a></span><span class="op">(</span><span class="st">"simulate-results/NMsim_xgxr032_VarCov_paths.rds"</span><span class="op">)</span></span></code></pre></div>
 <p>We now have simulation results from 1000 sampled models collected. We
 shall do the same with the models sampled in a bootstrap, and then we
 will calculate confidence intervals based on both methods.</p>

@@ -14,7 +14,7 @@ at subject level (i.e. non-variying covariates)."><!-- mathjax --><script src="h
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.902</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.921</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +82,7 @@ at subject level (i.e. non-variying covariates).</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addEVID2</span><span class="op">(</span><span class="va">doses</span>, <span class="va">time.sim</span>, <span class="va">CMT</span>, <span class="va">as.fun</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addEVID2</span><span class="op">(</span><span class="va">doses</span>, <span class="va">time.sim</span>, <span class="va">CMT</span>, EVID <span class="op">=</span> <span class="fl">2</span>, <span class="va">as.fun</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -104,6 +104,11 @@ feature is experimental.</p></dd>
 records. If longer than one, the records will be repeated in
 all the specified compartments. If a data.frame, covariates
 can be specified.</p></dd>
+
+
+<dt>EVID</dt>
+<dd><p>The value to put in the EVID column for the created
+rows. Default is 2 but 0 may be prefered even for simulation.</p></dd>
 
 
 <dt>as.fun</dt>
