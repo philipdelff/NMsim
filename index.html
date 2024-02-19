@@ -96,18 +96,9 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## From CRAN/MPN repositories</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"NMsim"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Installing package into '/data/home/philipde/R/x86_64-pc-linux-gnu-library/4.1'</span></span>
-<span><span class="co">#&gt; (as 'lib' is unspecified)</span></span>
-<span><span class="co">#&gt; Warning: package 'NMsim' is not available for this version of R</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; A version of this package for your version of R might be available elsewhere,</span></span>
-<span><span class="co">#&gt; see the ideas at</span></span>
-<span><span class="co">#&gt; https://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Installing-packages</span></span>
 <span><span class="co">## From github</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span></span>
-<span><span class="fu">install_github</span><span class="op">(</span><span class="st">"philipdelff/NMsim"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Skipping install of 'NMsim' from a github remote, the SHA1 (64b8c2bc) has not changed since last install.</span></span>
-<span><span class="co">#&gt;   Use `force = TRUE` to force installation</span></span></code></pre></div>
+<span><span class="fu">install_github</span><span class="op">(</span><span class="st">"philipdelff/NMsim"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="simulate-a-nonmem-model-from-r">Simulate a Nonmem model from R<a class="anchor" aria-label="anchor" href="#simulate-a-nonmem-model-from-r"></a>
@@ -125,8 +116,27 @@
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">datl</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">TIME</span>,<span class="va">value</span>,colour<span class="op">=</span><span class="va">variable</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="va">x</span><span class="op">[</span><span class="va">variable</span><span class="op">!=</span><span class="st">"Y"</span><span class="op">]</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="va">x</span><span class="op">[</span><span class="va">variable</span><span class="op">==</span><span class="st">"Y"</span><span class="op">]</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">trt</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Hours since first dose"</span>,y<span class="op">=</span><span class="st">"Concentration (ng/mL)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-5-1.png" width="100%"></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">trt</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;ggproto object: Class FacetWrap, Facet, gg&gt;</span></span>
+<span><span class="co">#&gt;     compute_layout: function</span></span>
+<span><span class="co">#&gt;     draw_back: function</span></span>
+<span><span class="co">#&gt;     draw_front: function</span></span>
+<span><span class="co">#&gt;     draw_labels: function</span></span>
+<span><span class="co">#&gt;     draw_panels: function</span></span>
+<span><span class="co">#&gt;     finish_data: function</span></span>
+<span><span class="co">#&gt;     init_scales: function</span></span>
+<span><span class="co">#&gt;     map_data: function</span></span>
+<span><span class="co">#&gt;     params: list</span></span>
+<span><span class="co">#&gt;     setup_data: function</span></span>
+<span><span class="co">#&gt;     setup_params: function</span></span>
+<span><span class="co">#&gt;     shrink: TRUE</span></span>
+<span><span class="co">#&gt;     train_scales: function</span></span>
+<span><span class="co">#&gt;     vars: function</span></span>
+<span><span class="co">#&gt;     super:  &lt;ggproto object: Class FacetWrap, Facet, gg&gt;</span></span></code></pre></div>
+<p>This example is from the first vignette <a href="https://philipdelff.github.io/NMsim/articles/NMsim-basics.html"><code>NMsim-basics.html</code></a>.</p>
 </div>
 <div class="section level2">
 <h2 id="supported-types-of-simulations">Supported types of simulations<a class="anchor" aria-label="anchor" href="#supported-types-of-simulations"></a>
@@ -144,7 +154,7 @@
 <p>You can also write your own methods, if you have some other Nonmem-based simulation (or other job) you want to automate using <code>NMsim</code>.</p>
 <p>Many features are available. Prominent ones are:</p>
 <ul>
-<li>Can use submit jobs to clusters (so running the simulation on say 1,000 model estimates from a bootstrap is actually not that hard).</li>
+<li>Can use submit jobs to clusters. It can wait for the simulations to be done and automatically collect the results like in the example above.</li>
 <li>Simulation replicates using Nonmem <code>SUBPROBLEMS</code> feature avaible through the <code>subproblems</code> argument</li>
 <li>Can modify the simulation control stream on the fly - a powerful feature for studying the effect of varying model parameters</li>
 <li>Simulations of models on transformed observations can be automatically transformed back using the <code>transform</code> argument.</li>
