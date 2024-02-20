@@ -10,6 +10,7 @@ NMreadSimModTabOne(
   dir.sims,
   wait = FALSE,
   quiet = FALSE,
+  skip.missing = FALSE,
   as.fun
 )
 }

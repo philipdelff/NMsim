@@ -67,7 +67,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
     
     
     ## res <- NMreadSimModTabOne(modtab=modtab,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
-    res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
+    res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,skip.missing=skip.missing,quiet=quiet,as.fun=as.fun)
 
     
     
@@ -91,7 +91,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
 ##' Read simulation results from an rds or a NMsimModTab object
 ##' @inheritParams NMreadSim
 ##' @keywords internal
-NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun){
+NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,skip.missing=FALSE,as.fun){
 
     . <- NULL
     ROWMODEL2 <- NULL

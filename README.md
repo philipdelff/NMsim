@@ -47,27 +47,9 @@ ggplot(datl,aes(TIME,value,colour=variable))+
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
-``` r
-    facet_wrap(~trt)
-#> <ggproto object: Class FacetWrap, Facet, gg>
-#>     compute_layout: function
-#>     draw_back: function
-#>     draw_front: function
-#>     draw_labels: function
-#>     draw_panels: function
-#>     finish_data: function
-#>     init_scales: function
-#>     map_data: function
-#>     params: list
-#>     setup_data: function
-#>     setup_params: function
-#>     shrink: TRUE
-#>     train_scales: function
-#>     vars: function
-#>     super:  <ggproto object: Class FacetWrap, Facet, gg>
-```
-
-This example is from the first vignette
+This example was a simulation of a multiple dose regimen with a loading
+dose using a model estimated on single dose data. It is from the first
+vignette
 [`NMsim-basics.html`](https://philipdelff.github.io/NMsim/articles/NMsim-basics.html).
 
 ## Supported types of simulations
