@@ -1,9 +1,9 @@
 ##sprintf("call %s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-NMrunWin <- function(fn.mod,dir.mod.abs,exts.cp,meta.tables){
+NMrunWin <- function(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
-    path.nonmem <- FALSE
+##     path.nonmem <- FALSE
     name <- FALSE
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
@@ -21,7 +21,7 @@ NMrunWin <- function(fn.mod,dir.mod.abs,exts.cp,meta.tables){
     lines.bat <- c(
         sprintf("call %s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
        ,
-        paste(unlist(lapply(exts.cp,cp.if.pres,dest=dir.mod.abs)),collapse="\n")
+        paste(unlist(lapply(fnExtension(fn.mod,exts.cp),cp.if.pres,dest=dir.mod.abs)),collapse="\n")
        ,
         paste(unlist(lapply(meta.tables[,name],cp.if.pres,dest=dir.mod.abs)),collapse="\n")
     )

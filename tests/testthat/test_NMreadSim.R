@@ -33,7 +33,8 @@ if(F){
 context("NMreadSim")
 
 test_that("Basic",{
-
+    fileRef <- "testReference/NMreadSim_01.rds"
     res1 <- NMreadSim("testOutput/NMsim_xgxr021_sd1_NMreadSim_paths.rds")
-
+    
+    expect_equal_to_reference(res1,fileRef)
 })

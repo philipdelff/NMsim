@@ -132,7 +132,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
     }
     
     if(system.type=="windows"){
-        lines.script <- NMrunWin(fn.mod,dir.mod.abs,exts.cp,meta.tables)
+        lines.script <- NMrunWin(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem=path.nonmem)
         path.script <- file.path(dir.tmp,"run_nonmem.bat")
         writeTextFile(lines.script,path.script)
     }
