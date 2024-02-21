@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.923</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.931</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,10 +71,13 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.11" id="nmsim-0011">NMsim 0.0.11<a class="anchor" aria-label="anchor" href="#nmsim-0011"></a></h2>
+<p>This is an important upgrade that solidifies the way NMsim reads results from simulations. In addition to important bug fixes, it allows for NMsim to wait on Nonmem to complete simulations - even when they are run on a cluster. This means even large simulations with NMsim can be integrated in scripts.</p>
 <div class="section level3">
 <h3 id="new-features-0-0-11">New features<a class="anchor" aria-label="anchor" href="#new-features-0-0-11"></a></h3>
-<ul><li>
-<code><a href="../reference/NMsim.html">NMsim()</a></code> and <code><a href="../reference/NMreadSim.html">NMreadSim()</a></code> now have <code>wait</code> arguments which controls if they will wait for Nonmem to finish simulating. This will also work if jobs were sent to the cluster.</li>
+<ul><li><p><code><a href="../reference/NMsim.html">NMsim()</a></code> and <code><a href="../reference/NMreadSim.html">NMreadSim()</a></code> now have <code>wait</code> arguments which controls if they will wait for Nonmem to finish simulating. This will also work if jobs were sent to the cluster.</p></li>
+<li><p><code><a href="../reference/NMsim.html">NMsim()</a></code> respects the <code>reuse.results</code> argument. If <code>TRUE</code> it will use results file on the file system. This can be used in stead of putting <code><a href="../reference/NMsim.html">NMsim()</a></code> calls inside an if-statement to disable the simulation but read results on file.</p></li>
+<li><p><code>addEVID2</code> has a new argument, <code>EVID</code> to specify what value the <code>EVID</code> column should have. It can be useful sometimes to use <code>EVID=0</code> for simulation records.</p></li>
+<li><p>There is progress on getting simulations to run on Windows. More testing is needed, so this is still experimental.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bugfixes-0-0-11">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-0-0-11"></a></h3>
