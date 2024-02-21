@@ -1,9 +1,27 @@
 # NMsim 0.0.11
+This is an important upgrade that solidifies the way NMsim reads
+results from simulations.  In addition to important bug fixes, it
+allows for NMsim to wait on Nonmem to complete simulations - even when
+they are run on a cluster. This means even large simulations with
+NMsim can be integrated in scripts.
+
 ## New features
 * `NMsim()` and `NMreadSim()` now have `wait` arguments which controls
   if they will wait for Nonmem to finish simulating. This will also
   work if jobs were sent to the cluster.
   
+* `NMsim()` respects the `reuse.results` argument. If `TRUE` it will
+  use results file on the file system. This can be used in stead of
+  putting `NMsim()` calls inside an if-statement to disable the
+  simulation but read results on file.
+  
+* `addEVID2` has a new argument, `EVID` to specify what value the
+  `EVID` column should have. It can be useful sometimes to use
+  `EVID=0` for simulation records.
+
+* There is progress on getting simulations to run on Windows. More
+  testing is needed, so this is still experimental.
+
 ## Bugfixes
 * In some cases `NMreadSim()` would not get the path right to the
   simulation results leading to failures in reading simulation

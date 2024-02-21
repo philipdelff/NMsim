@@ -406,8 +406,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         stop("When method.execute is direct or nmsim, path.nonmem must be provided.")
     }
 
-    if(system.type=="windows" && method.execute != "psn"){
-        message('On windows, only method.execute=\"psn\" has been tested to work. This is likely to fail.')
+    if(system.type=="windows"){
+        message('Windows is only experimentally supported. You may need avoid spaces and some special characters in directory and file names.')
     }
     
     ## args.psn.execute

@@ -74,15 +74,10 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
     res <- rbindlist(res.list,fill=TRUE)
 
     list.ModTab <- lapply(res.list,function(y)attributes(y)$NMsimModTab)
-    ## list.ModTab <- list.ModTab[!sapply(list.ModTab,is.null)]
     ModTab <- rbindlist(list.ModTab,fill=TRUE)
 
     addClass(res,"NMsimRes")
     setattr(res,"NMsimModTab",ModTab)
-
-    ## res <- do.call(rbind,
-    ##                c(res.list,list(fill=TRUE))
-    ##                )
 
     res
 
@@ -123,10 +118,8 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 ### incompatible columns can be combined.
     
     
-####### TODO this must be by rds file, not by row!!
+
 ### if we have an fst, read it and return results
-    ## modtab.notfst <- copy(modtab)
-    ## modtab.fst <- NULL
     if(check.time){
         from.fst <- rdstab[,!is.null(file.res.data) &&
                             file.exists(file.res.data) &&
@@ -139,17 +132,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
 
 
-
-                                        #    if(sum(from.fst)) modtab.fst <- modtab[idx.from.fst]
-    ## modtab.fst <- modtab[idx.from.fst]
-                                        #    modtab.notfst <- NULL
-                                        #    if(sum(!idx.from.fst)) modtab.notfst <- modtab[!idx.from.fst]
-    ## modtab.fst <- modtab[!idx.from.fst]
-    
-    
     ## fsts
-                                        #res.fst <- NULL
-    ##if(!is.null(modtab.fst)){
     if(from.fst){
 ### reads unique fsts
         res.list <- lapply(modtab[,unique(file.res.data)],read_fst,as.data.table=TRUE)
@@ -177,25 +160,20 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
             if(skip.missing){
                 message(sprintf("%d/%d model runs found",sum(lsts.found),length(lsts.found)))
             } else {
-                lapply(modtab[lsts.found==FALSE,path.lst.read],function(x) warning(sprintf("Not found: %s",x)))
-                stop("Not all model runs completed. Look in warnings for which ones. If you want to go ahead and read the ones that are found, use skip.missing=`TRUE`.")
+                lapply(modtab[lsts.found==FALSE,path.lst.read],function(x) message(sprintf("Not found: %s",x)))
+                stop("Not all model runs completed. Look in messages for which ones. If you want to go ahead and read the ones that are found, use skip.missing=`TRUE`.")
             }
         }
     }
     
 
-    
-    ## res.notfst <- NULL
-    ## if(!is.null(modtab.notfst)){
-    res.list <- lapply(split(modtab,by="ROWMODEL2"),function(dat){
+        res.list <- lapply(split(modtab,by="ROWMODEL2"),function(dat){
         res <- dat[,{
-            ## cat(ROWMODEL2," ")     
             ## the rds table must keep NMscanData arguments
             args.NM <- args.NMscanData[[1]]
             if(! "quiet" %in% names(args.NM)){
                 args.NM$quiet <- TRUE
             }
-            
             
             ## put this in try and report better info if broken
             this.res <- try(do.call(NMscanData,
@@ -219,19 +197,12 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
             this.res
         },by=.(ROWMODEL2)]
-#### What if mutliple rows point to the same fst. Will they be overwritten? That would be if multiple modes are stored in one rds/fst.
-        
-
         res
         
     })
     res <- rbindlist(res.list,fill=TRUE)
     res[,ROWMODEL2:=NULL]
 
-    ## res.list <- c(list(res.fst),list(res.notfst))
-    ## res.list <- res.list[!sapply(res.list,is.null)]
-    ## res <- rbindlist(res.list
-    ##                 ,fill=TRUE)
 
     res <- as.fun(res)
     setattr(res,"NMsimModTab",modtab)

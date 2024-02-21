@@ -1,4 +1,4 @@
-
+##install.packages("NMsim",repos="https://cloud.r-project.org")
 library(data.table)
 library(NMdata)
 
@@ -6,6 +6,10 @@ packageVersion("NMdata")
 ## library(NMsim)
 library(devtools)
 load_all(export_all=FALSE)
+
+NMdataConf(dir.psn=NULL)
+NMdataConf(as.fun="data.table")
+
 dt.dos <- NMcreateDoses(AMT=300,TIME=0)
 dt.sim <- addEVID2(doses=dt.dos,time.sim=c(1,6,12),CMT=2)
 dt.sim[,BBW:=40][,ROW:=.I]
@@ -14,13 +18,8 @@ dt.sim.known <- egdt(dt.sim[,!("ID")],data.table(ID=101:105))
 setorder(dt.sim.known,ID,TIME,EVID,CMT)
 
 
-
-library(data.table)
-
 ## NMdataConf(dir.psn="/opt/psn")
 path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
-NMdataConf(dir.psn=NULL)
-NMdataConf(as.fun="data.table")
 ##
 path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 file.exists(path.nonmem)
@@ -420,7 +419,7 @@ test_that("default with renaming",{
 
 test_that("multiple data sets with renaming",{
     data.multiple <- split(dt.sim.known[ID<=103],by="ID")
-                                        #data.multiple
+    ## data.multiple
 
     set.seed(43)
     simres.multidata <- NMsim(c(ref=file.mod),
@@ -496,6 +495,12 @@ test_that("transform",{
     ## simres <- NMreadSim("testOutput/NMsim_xgxr021_default_trans_paths.rds")
     
     fix.time(simres)
+
+    ## simres[,funs.transform:=NULL]
+    meta.x <- attr(simres,"NMsimModTab")
+    meta.x$funs.transform <- "removed"
+    setattr(simres,"NMsimModTab",meta.x)
+
     ##     unlink(fileRef)
     expect_equal_to_reference(simres,fileRef)
     
@@ -540,20 +545,19 @@ test_that("basic - a model that fails on NMTRAN",{
     dt.sim <- addEVID2(doses=dt.dos,time.sim=c(1,6,12),CMT=2)
 
     set.seed(43)
-expect_error(
-    simres <- NMsim(file.mod,
-                    data=dt.sim,
-                    ## table.var="PRED IPRED",
-                    dir.sims="testOutput",
-                    name.sim="default_01"
-                   ,sge=F
-                   ,wait=TRUE
-                    )
-)
+    expect_error(
+        simres <- NMsim(file.mod,
+                        data=dt.sim,
+                        ## table.var="PRED IPRED",
+                        dir.sims="testOutput",
+                        name.sim="nmtranfail"
+                       ,sge=F
+                       ,wait=TRUE
+                        )
+    )
     ## expect_error(
     ##     NMreadSim(simres)
     ## )
-
 
 })
 

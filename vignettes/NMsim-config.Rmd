@@ -42,9 +42,8 @@ you have run Nonmem, you can then use `NMdata::NMscanData()` to
 collect the results.
 
 ## Requirements
-Currently, NMsim only supports systems that run Nonmem on linux. If
-you run Nonmem on a Windows system, you can try to use the PSN
-methods, see below. 
+Currently, NMsim only fully supports systems that run Nonmem on
+linux. Windows support is experimental.
 
 Notice, the important thing is which system is running Nonmem, not
 what system is running R. So if you run R on a windows system and can
@@ -70,7 +69,13 @@ function. Say you want to run Nonmem with `/opt/NONMEM/nm75/run/nmfe`,
 insert this after loading `NMdata` in the beginning of your script
 
 ```{r,eval=FALSE}
-NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe")
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+```
+
+On Windows, the executable has a `.bat` extension. The path could look be
+
+```{r,eval=FALSE}
+NMdataConf(path.nonmem ="C:/nm75g64/run/nmfe75.bat")
 ```
 
 If you normally use PSN as your Nonmem interface, and you therefore do not know where Nonmem is installed, you can check this using PSN. The following command should give you the Nonmem installation paths that PSN is configured with. However, you likely still need to add the last piece of the path from the installation directory to the nonmem binary.
@@ -105,10 +110,11 @@ controls which one is used, i.e. `method.execute="psn"` and
 For simulations, `method.execute="psn"` does not provide advantages
 over `method.execute="nmsim"`. In contrast, there are simulation types
 that will only work with `method.execute="nmsim"`. You need to tell
-NMsim where to find Nonmem for this to work.
+NMsim where to find Nonmem (by settin `path.nonmem`) for this to work.
 
-Nonmem execution with `NMexec()` is a slightly different discussion. See
-`?NMexec` for that.
+Nonmem execution with `NMexec()` (typically, for estimation and not
+simulation) is a slightly different discussion. See `?NMexec` for
+that.
 
 ### PSN or not for updating initial values
 NMsim needs to update initial values using the model estimate prior to
@@ -120,8 +126,8 @@ NMsim also provides a similar functionality internally, referred to as
 `method.update.inits="NMsim"`. This will be used if PSN is not found -
 and if you ask for it. 
 
-`method.update.inits="psn"` has a few advantages over the
-NMsim-provided method. Most notbably, it is widely used, and it keeps
+`method.update.inits="psn"` has two advantages over the
+NMsim-provided method. It is widely used, and it keeps
 comments in affected control stream sections (`$THETA`, `$OMEGA`,
 `$SIGMA`). `method.update.inits="nmsim"` will drop all comments in
 affected sections. I have in the past seen issues with some methods to
