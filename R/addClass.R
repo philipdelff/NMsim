@@ -1,6 +1,7 @@
 ## don't export
 
 addClass <- function(data,class){
-
-    setattr(data,"class",c(class,class(data)))
+    allclasses <- class(data)
+    if(!class %in% allclasses) allclasses <- c(class,allclasses)
+    setattr(data,"class",allclasses)
 }

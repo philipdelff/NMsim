@@ -1,0 +1,149 @@
+---
+title: "VPC simulations"
+output:
+rmarkdown::html_vignette:
+    toc: true
+Suggests: markdown
+VignetteBuilder: knitr
+vignette: >
+  %\VignetteIndexEntry{02VPC}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+header-includes:
+- \usepackage{ae}
+---
+
+```{r,include = FALSE}
+## library(tidyvpc)
+library(NMdata)
+library(fst)
+library(NMsim)
+##knitr::opts_chunk$set(dev = "cairo_pdf")
+knitr::opts_chunk$set(
+                      collapse = TRUE
+                     ,comment = "#>"
+                     ,fig.width=7
+                     ,cache=FALSE
+                  )
+
+## NMdataConf(dir.psn="/opt/psn")
+
+## this changes data.table syntax. I think we can do without.
+## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
+run.simuls <- FALSE
+```
+
+## Simulations for Visual Predictive Checks (VPC)
+This vignette shows how to generate simulations for generation of VPC
+plots. While `NMsim` does not include any functionality for summarizing quantiles or plotting, it provides powerful ways to obtain the simulated data needed. We shall see how the `tidyvpc` package easily creates VPC plots based on the simulation results.
+
+## Default option: reuse estimation data for simulation
+Normally, the two main arguments to NMsim are the path to the input
+control stream (`file.mod`) and the simulation input data set
+(`data`). But if we leave out the the `data` argument, NMsim will
+re-use the estimation data for the simulation. That is the simulation
+we need for a VPC. We will use an example model included with NMsim:
+
+```{r,eval=TRUE}
+file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+file.mod <- file.project("nonmem/xgxr032.mod")
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+NMdataConf(dir.sims="~/NMsim_vignette",
+           dir.res="simulate-results",
+           allow.unknown=TRUE ## necessary for dir.sims and dir.res
+           ## until NMdata 0.1.5
+           )
+```
+
+```{r,eval=FALSE}
+set.seed(43)
+## notice the data argument is not used.
+simres.vpc <- NMsim(file.mod,
+                    table.vars=c("PRED","IPRED", "Y"),
+                    name.sim="vpc_01"
+                   ,nsims=500
+                   ,as.fun="data.table")
+```
+
+The performed simulation is similar to the one produced by the `VPC` function in `PSN`. However, there are some important differences.
+
+* The simulation results are automatically read into R.
+
+* The `table.vars` argument allows the user to narrow down the variables to be written to disk. This can speed up the simulation considerably and reduce the amount of disk space the Nonmem simulation results require.
+
+* No postprocessing of the results is being done by `NMsim`. See below how to easily do that.
+
+
+## Plotting using `tidyvpc`
+As mentioned, `NMsim` does not postprocess the simulation for generation of a VPC plot, nor does it offter any plotting functions. The R package called `tidyvpc` offer those two things and is moreover implemented in `data.table`, so it's fast. The following simple code shows how to get from the results from `NMsim` to the VPC plot with `tidyvpc`.
+
+
+```{r,include=FALSE,eval=TRUE}
+file.res <- "simulate-results/NMsim_xgxr032_vpc_01_paths.rds"
+simres.vpc <- NMreadSim(file.res,as.fun="data.table",wait=T)
+```
+
+
+```{r,eval=TRUE}
+library(ggplot2)
+library(tidyvpc)
+library(NMdata)
+## read the data as it was used in the Nonmem model
+res <- NMscanData(file.mod,as.fun="data.table",quiet=TRUE)
+## only plot observation events from estimation data set
+data.obs <- res[EVID==0]
+## Only plot simulated observation events
+data.sim <- simres.vpc[EVID==0]
+
+## run vpc
+vpc1 <-
+    observed(data.obs, x = TIME, y = DV) |>
+    simulated(data.sim, y = Y) |>
+    stratify(~DOSE) |>
+    binning(bin = "ntile", nbins = 9) |>
+    vpcstats()
+
+
+plot(vpc1)
+
+```
+
+
+### Use a different input data set
+In the first example we used the exact same data as was used for the
+estimation. This is a common way to produce a VPC, and we saw the
+advantage that the user does not risk making mistakes in preparing the
+data set for the simulations. However, it may be of interest to
+include additional data or even a different data set in the
+simulation. It could be including data points that were excluded in
+estimation (like samples below the quantification limit) or a separate
+study that was not included in the model. All you have to do is to
+read the data you want and provide it in `NMsim`'s `data` argument.
+
+### Make use of the cluster
+We will repeat the same as above, but now 500 times (`nsims`). We make
+use of a few more arguments for efficiency. `sge` means that the jobs
+will be sent to the cluster. The `nc` argument is now used meaning
+only one core will be used per job. If each node on the cluster has 16
+cores, this could engage 500/16 ~ 32 nodes in parallel, with all jobs
+executed at the same time. We supply the path to the Nonmem executable. With PSN this should work without specifying the Nonmem path, but PSN for some reason takes more time submitting the jobs to the cluster. If nodes are available, the following simulation should not take more than a couple of minutes to execute.
+
+```{r,eval=TRUE}
+file.res <- "simulate-results/simpaths-vpc.rds"
+```
+
+```{r,eval=FALSE}
+set.seed(43)
+## notice the data argument is not used.
+sim.vpc.sge <- NMsim(file.mod,
+                     table.vars=c("PRED","IPRED", "Y"),
+                     name.sim="vpc_01"
+                    ,nsims=500
+                    ,sge=TRUE
+                     ## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"
+                     ##,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
+                     ##,file.res=file.res
+                     )
+
+```
+

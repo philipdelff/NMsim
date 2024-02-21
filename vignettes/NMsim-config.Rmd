@@ -100,11 +100,7 @@ NMsim can call Nonmem using PSN's `execute` or through similar
 functionality included in `NMsim`. We will refer to those methods by
 the way they are referred to in the NMsim function argument that
 controls which one is used, i.e. `method.execute="psn"` and
-`method.execute="nmsim"`. Notice, NMsim will handle it all no matter
-which of these you choose - the difference is what happens under the
-hood of NMsim. NMsim can make most things work using either of the
-two, but they do provide slightly different advantages so it's best if
-you configure NMsim to be able to use both.
+`method.execute="nmsim"`. 
 
 For simulations, `method.execute="psn"` does not provide advantages
 over `method.execute="nmsim"`. In contrast, there are simulation types

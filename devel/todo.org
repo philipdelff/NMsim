@@ -1,5 +1,5 @@
+#+PROPERTY: LOGGING nil
 * NMsim todo
-
 ** general
 
 *** DONE Export simulation methods
@@ -63,8 +63,70 @@ NMsim we restrict to nc=1.
 *** CANCELED Support multiple files
 *** CANCELED Intro arg return
 Align with NMdata
+** NMreadSim
+*** DONE Test reading of ModTab tables with repeated rds files
+*** Structure
+**** description of x argument
+main arg is x - a flexible object that contains
+- data
+- paths to fst containing data
+- NMsimModTab info on what to read
+- paths to rds files containing NMsimModTab
+
+  x can be a list of these or a vector of paths
+**** structure
+***** partition x into x.data and x.tabs
+***** stack or read and stack x.data into res.x
+***** combine x.tabs into tab.paths by reading and stacking
+****** Wait on lsts if needed/requested
+****** Read models from tab.paths and stack into res.tabs
+***** Stack res.data and res.tabs into res.all
+
+*** DONE Argument for path to dir.sims
+Currently, the sim results must be in the same path relative to the
+results files as specified when running NMsim.
+*** DONE Support transform
+It used to be done in NMsim. But it has to be a list in each row of
+the NMsimTab object specifying what to transform. Then do someting
+like this.
+
+#+begin_src R
+else if(!is.null(transform)){
+## optionally transform results like DV, IPRED, PRED
+for(name in names(transform)){
+simres.n[,(name):=transform[[name]](get(name))]
+}
+#+end_source
+*** DONE Support changing paths after running NMsim
+reading is built on relative paths to wd when NMsim was run. They will
+have to be based on dir.res?
 ** NMsim
-*** TODO [#A] Save dt of models
+*** TODO [#B] skip fst option
+*** DONE Returning NULL when it should error
+The test "basic - a model that fails on NMTRAN" has NMsim wait for a
+model that fails and can't read the results. Since it's waiting and
+can't return results it should be an error.
+*** TODO [#A] Avoid (OBSERVATIONS ONLY)
+That has to be dropped from $ERROR sections by default
+*** TODO [#B] avoid PRED_IGNORE_DATA_TEST==1
+In $PK. Example
+; include study 4 even though ANP3AC=0
+IF(PRED_IGNORE_DATA_TEST==1) THEN
+  PRED_IGNORE_DATA=0
+  IF(ANP3AC.NE.1.AND.STUDY.NE.4) PRED_IGNORE_DATA=1
+RETURN ;Assures no additional computation code in INFN is executed
+ENDIF
+
+*** DONE Add NMsim version and date to table
+*** DONE No spaces in .mod files
+See test_manual "list of data sets - spaces in data names"
+*** DONE More useful error than the NMscanTables error
+*** TODO [#A] Tell more than "Writing"
+*** DONE dir.res should not be needed when file.res is provided
+*** DONE Create only one rds per .mod
+*** DONE Should invisibly return the table of models
+*** DONE NMorderColumns must also be appied if data is a list
+*** DONE Save dt of models
 Can be used to read all results later. And see what has been done in
 the individual runs.
 *** TODO [#A] Work with output control streams
@@ -128,6 +190,8 @@ stream is wanted. For NMscanData, files makes sense because it will
 work on both input and output control streams.
 *** DONE If path.nonmem is not supplied, use psn?
 *** TODO [#B] Fix broken reuse.results
+**** DONE First step is to just trust saved results and read them if reuse.results=TRUE.
+If not, just return a vector of rds files.
 *** DONE Reduce number of needed arguments
 **** DONE seed
 **** DONE suffix.sim
@@ -166,6 +230,7 @@ The implementation compares all explicitly given arguments. E.g. if
 a=1 by default and it was explicitly given in previous run but not in
 the new one, it will be a difference.
 *** DONE Support multiple $TABLE blocks
+
 ** VPC sims - no new method needed
 *** DONE By default, reuse $INPUT and $DATA sections, with updated data path
 Normally, one would simply reuse the estimation input data set for this
@@ -212,6 +277,8 @@ able to use a known set of ID's and covs? Or use ID?
 @param ID ID's to replicate for. Default is 1. Use NULL to omit.
 
 ** addEVID2
+
+*** DONE Argument to set EVID value
 *** TODO Order the same way as NMdata::addTAPD?
 currently, addEVID2 does not order rows after adding simulation records
 ** plain nonmem run

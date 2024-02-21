@@ -2,7 +2,7 @@
 % Please edit documentation in R/NMsim.R
 \name{NMsim}
 \alias{NMsim}
-\title{Run simulations from an estimated Nonmem model}
+\title{Simulate from an estimated Nonmem model}
 \usage{
 NMsim(
   file.mod,
@@ -25,7 +25,7 @@ NMsim(
   transform = NULL,
   method.execute,
   method.update.inits,
-  create.dir = TRUE,
+  create.dirs = TRUE,
   dir.psn,
   list.sections,
   sim.dir.from.scratch = TRUE,
@@ -37,6 +37,10 @@ NMsim(
   suffix.sim,
   text.table,
   system.type = NULL,
+  dir.res,
+  file.res,
+  wait,
+  quiet = FALSE,
   ...
 )
 }
@@ -50,7 +54,8 @@ simulating known subjects, the .phi is necessary too.}
 \item{data}{The simulation data as a data.frame.}
 
 \item{dir.sims}{The directory in which NMsim will store all
-generated files.}
+generated files. Default is to create a folder called `NMsim`
+next to `file.mod`.}
 
 \item{name.sim}{Give all filenames related to the simulation a
 suffix. A short string describing the sim is recommended like
@@ -155,8 +160,8 @@ control streams less easy to read. On the other hand, this
 method is robust because it avoids any interpretation of BLOCK
 structure or other code in the control streams.}
 
-\item{create.dir}{If the directory specified in dir.sims does not
-exists, should it be created? Default is TRUE.}
+\item{create.dirs}{If the directories specified in dir.sims and
+dir.res do not exists, should it be created? Default is TRUE.}
 
 \item{dir.psn}{The directory in which to find PSN's executables
 ('execute' and 'update_inits'). The default is to rely on the
@@ -195,12 +200,10 @@ row identifier. If none is supplied,
 already exists in the data set, it will be used as is, if not
 it will be added.}
 
-\item{args.NMscanData}{If \code{wait=TRUE}, NMsim will normally
-read the results using NMdata::NMscanData. Use this argument
-to pass additional arguments (in a list) to that function if
-you want the results to be read in a specific way. You can
-also use \code{wait=FALSE} and read the data with
-NMdata::NMscanData as you like.}
+\item{args.NMscanData}{If \code{execute=TRUE&sge=FALSE}, NMsim
+will normally read the results using \code{NMreadSim}. Use
+this argument to pass additional arguments (in a list) to that
+function if you want the results to be read in a specific way.}
 
 \item{path.nonmem}{The path to the Nonmem executable to use. The
 could be something like "/usr/local/NONMEM/run/nmfe75" (which
@@ -211,7 +214,7 @@ Nonmem, or ask a colleague.}
 \item{nmquiet}{Silent messages from Nonmem.}
 
 \item{as.fun}{The default is to return data as a data.frame. Pass
-a function (say tibble::as_tibble) in as.fun to convert to
+a function (say `tibble::as_tibble`) in as.fun to convert to
 something else. If data.tables are wanted, use
 as.fun="data.table". The default can be configured using
 NMdataConf.}
@@ -225,12 +228,45 @@ export from Nonmem.}
 \"linux\" - case insensitive. Windows is only experimentally
 supported. Default is to use \code{Sys.info()[["sysname"]]}.}
 
+\item{dir.res}{Provide a path to a directory in which to save rds
+files with paths to results. Default is to use dir.sims. After
+running `NMreadSim()` on these files, the original simulation
+files can be deleted. Hence, providing both `dir.sims` and
+`dir.res` provides a structure that is simple to
+clean. `dir.sims` can be purged when `NMreadSim` has been run
+and only small `rds` and `fst` files will be kept in
+`dir.res`. Notice, in case multiple models are simulated,
+multiple `rds` (to be read with `NMreadSim()`) files will be
+created by default. In cases where multiple models are
+simulated, see `file.res` to get just one file refering to all
+simulation results.}
+
+\item{file.res}{Path to an rds file that will contain a table of
+the simulated models. This is useful for subsequently
+retrieving all the results using `NMreadSim()`. The default is
+to create a file called `NMsim_paths.rds` under the model
+simulation directory. However, if multiple models are
+simulated, this will result in multiple rds files. Specifying
+a path ensures that one rds file containing information about
+all simulated models will be created.}
+
+\item{wait}{Wait for simulations to finish? Default is to do so if
+simulations are run locally but not to if they are sent to the
+cluster. Waiting for them means that the results will be read
+when simulations are done. If not waiting, path(s) to `rds`
+files to read will be returned. Pass them through
+`NMreadSim()` (which also supports waiting for the simulations
+to finish).}
+
+\item{quiet}{If TRUE, messages from what is going on will be
+suppressed to the extend implemented.}
+
 \item{...}{Additional arguments passed to \code{method.sim}.}
 }
 \value{
 A data.frame with simulation results (same number of rows
-    as input data). If `wait=FALSE` a character vector with paths
-    to simulation control streams.
+    as input data). If `sge=TRUE` a character vector with paths to
+    simulation control streams.
 }
 \description{
 Supply a data set and an estimation input control stream, and

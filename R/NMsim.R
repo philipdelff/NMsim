@@ -1,4 +1,4 @@
-##' Run simulations from an estimated Nonmem model
+##' Simulate from an estimated Nonmem model
 ##'
 ##' Supply a data set and an estimation input control stream, and
 ##' NMsim can create neccesary files (control stream, data files), run
@@ -14,7 +14,8 @@
 ##'     simulating known subjects, the .phi is necessary too.
 ##' @param data The simulation data as a data.frame.
 ##' @param dir.sims The directory in which NMsim will store all
-##'     generated files.
+##'     generated files. Default is to create a folder called `NMsim`
+##'     next to `file.mod`.
 ##' @param name.sim Give all filenames related to the simulation a
 ##'     suffix. A short string describing the sim is recommended like
 ##'     "ph3_regimens".
@@ -128,8 +129,8 @@
 ##'     of analyses, like modifying parameter values. See vignettes
 ##'     for further information. Documentation still under
 ##'     development.
-##' @param create.dir If the directory specified in dir.sims does not
-##'     exists, should it be created? Default is TRUE.
+##' @param create.dirs If the directories specified in dir.sims and
+##'     dir.res do not exists, should it be created? Default is TRUE.
 ##' @param sim.dir.from.scratch If TRUE (default) this will wipe the
 ##'     simulation directory before running new simulations. The
 ##'     directory that will be emptied is _not_ dir.sims where you may
@@ -145,24 +146,51 @@
 ##'     choose FALSE here, you can end up with the results of 500 new
 ##'     and 500 old simulations.
 ##' @param as.fun The default is to return data as a data.frame. Pass
-##'     a function (say tibble::as_tibble) in as.fun to convert to
+##'     a function (say `tibble::as_tibble`) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use
 ##'     as.fun="data.table". The default can be configured using
 ##'     NMdataConf.
-##' @param args.NMscanData If \code{wait=TRUE}, NMsim will normally
-##'     read the results using NMdata::NMscanData. Use this argument
-##'     to pass additional arguments (in a list) to that function if
-##'     you want the results to be read in a specific way. You can
-##'     also use \code{wait=FALSE} and read the data with
-##'     NMdata::NMscanData as you like.
+##' @param args.NMscanData If \code{execute=TRUE&sge=FALSE}, NMsim
+##'     will normally read the results using \code{NMreadSim}. Use
+##'     this argument to pass additional arguments (in a list) to that
+##'     function if you want the results to be read in a specific way.
 ##' @param system.type A charachter string, either \"windows\" or
 ##'     \"linux\" - case insensitive. Windows is only experimentally
 ##'     supported. Default is to use \code{Sys.info()[["sysname"]]}.
 ##' @param suffix.sim Deprecated. Use name.sim instead.
+##' @param dir.res Provide a path to a directory in which to save rds
+##'     files with paths to results. Default is to use dir.sims. After
+##'     running `NMreadSim()` on these files, the original simulation
+##'     files can be deleted. Hence, providing both `dir.sims` and
+##'     `dir.res` provides a structure that is simple to
+##'     clean. `dir.sims` can be purged when `NMreadSim` has been run
+##'     and only small `rds` and `fst` files will be kept in
+##'     `dir.res`. Notice, in case multiple models are simulated,
+##'     multiple `rds` (to be read with `NMreadSim()`) files will be
+##'     created by default. In cases where multiple models are
+##'     simulated, see `file.res` to get just one file refering to all
+##'     simulation results.
+##' @param file.res Path to an rds file that will contain a table of
+##'     the simulated models. This is useful for subsequently
+##'     retrieving all the results using `NMreadSim()`. The default is
+##'     to create a file called `NMsim_paths.rds` under the model
+##'     simulation directory. However, if multiple models are
+##'     simulated, this will result in multiple rds files. Specifying
+##'     a path ensures that one rds file containing information about
+##'     all simulated models will be created.
+##' @param wait Wait for simulations to finish? Default is to do so if
+##'     simulations are run locally but not to if they are sent to the
+##'     cluster. Waiting for them means that the results will be read
+##'     when simulations are done. If not waiting, path(s) to `rds`
+##'     files to read will be returned. Pass them through
+##'     `NMreadSim()` (which also supports waiting for the simulations
+##'     to finish).
+##' @param quiet If TRUE, messages from what is going on will be
+##'     suppressed to the extend implemented.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
-##'     as input data). If `wait=FALSE` a character vector with paths
-##'     to simulation control streams.
+##'     as input data). If `sge=TRUE` a character vector with paths to
+##'     simulation control streams.
 ##' @details Loosely speaking, the argument \code{method.sim} defines
 ##'     _what_ NMsim will do, \code{method.executes} define _how_ it
 ##'     does it. \code{method.sim} takes a function that converts an
@@ -218,7 +246,7 @@
 ##' @import NMdata
 ##' @import data.table
 ##' @importFrom stats runif
-
+##' @importFrom xfun relative_path
 ##' @export
 
 
@@ -232,7 +260,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   method.sim=NMsim_default,
                   execute=TRUE,sge=FALSE,
                   nc=1,transform=NULL,
-                  method.execute,method.update.inits,create.dir=TRUE,dir.psn,
+                  method.execute,method.update.inits,
+                  create.dirs=TRUE,dir.psn,
                   list.sections,sim.dir.from.scratch=TRUE,
                   col.row,
                   args.NMscanData,
@@ -241,40 +270,45 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   as.fun
                  ,suffix.sim,text.table,
                   system.type=NULL
+                 ,dir.res
+                 ,file.res
+                 ,wait
+                 ,quiet=FALSE
                  ,...
                   ){
-
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
+    . <- NULL
     est <- NULL
     DATAROW <- NULL
     data.name <- NULL
+    default <- NULL
     direct <- NULL
     directory <- NULL
     dir.sim <- NULL
     f.exists <- NULL
     files.needed <- NULL
+    files.res <- NULL
     fn.sim.tmp <- NULL
     fn <- NULL
-    par.type <- NULL
+    fn.mod <- NULL
+    path.rds <- NULL
+    fn.sim <- NULL
     i <- NULL
+    par.type <- NULL
     rowtmp <- NULL
-    . <- NULL
     ID <- NULL
     n <- NULL
     none <- NULL
     is.data <- NULL
     text <- NULL
     textmod <- NULL
-    default <- NULL
     known <- NULL
     model <- NULL
     name.mod <- NULL
     psn <- NULL
     nmsim <- NULL
-    ROWMODEL <- NULL
-    fn.mod <- NULL
-    fn.sim <- NULL
+    pathSimsFromRes <- NULL
     run.mod <- NULL
     run.sim <- NULL
     typical <- NULL
@@ -287,9 +321,25 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     value <- NULL
     variable <- NULL
     ROW <- NULL
+    ROWMODEL <- NULL
     ROWMODEL2 <- NULL
+    ..dir.res <- NULL
+    pathResFromists <- NULL
+    funs.transform <- NULL
+    lst <- NULL
+    NMsimTime <- NULL
+    NMsimVersion <- NULL
+    fn.sim.predata <- NULL
+    path.rds.exists <- NULL
+    pathResFromSims <- NULL
     
-### Section end: Dummy variables, only not to get NOTE's in pacakge checks
+    ## Section end: Dummy variables, only not to get NOTE's in pacakge checks
+
+    returnSimres <- function(simres){
+        simres <- as.fun(simres)
+        addClass(simres,"NMsimRes")
+        return(simres)
+    }
     
 #### Section start: Checking aguments ####
     
@@ -331,6 +381,18 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     system.type <- getSystemType(system.type)
 
     
+    ## after definition of wait and wait.exec, wait is used by
+    ## NMreadSim(), wait.exec used by NMexec().
+    if(missing(wait)) wait <- !sge
+    wait.exec <- !sge && wait
+    ## If we already wait on the simulation, no reason to wait for
+    ## data. Especially, if NMTRAN fails in exec, NMreadSim() will
+    ## wait indefinitely.
+    if(wait.exec) wait <- FALSE
+
+
+    if(nc>1){warning("nc>1 is likely not to work. Please notice there are more efficient methods to speed up simulations, and nc>1 is most likely not what you want anyway. See discussions on the NMsim website.")}
+    
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL
     ## if path.nonmem is provided, default method.execute is directory. If not, it is psn
@@ -345,7 +407,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 
     if(system.type=="windows" && method.execute != "psn"){
-        stop('On windows, only method.execute=\"psn\" is supported.')
+        message('On windows, only method.execute=\"psn\" has been tested to work. This is likely to fail.')
     }
     
     ## args.psn.execute
@@ -418,46 +480,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
 ###  Section end: Checking aguments
 
-    
+    ## if(!is.null(transform) && !transform!=FALSE) {message("transform is CURRENTLY NOT SUPPORTED. Will be back in the future.")}
     warn.notransform <- function(transform){
         if(is.null(transform)) return(invisible(NULL))
         warning("`transform` (argument) ignored since NMsim is not reading the simulation results.")
     }
     
-
-    ## if(length(file.mod)>1){
-    ##     allres.l <- lapply(1:length(file.mod),function(x)
-    ##         NMsim(file.mod=file.mod[[x]],
-    ##              ,data=data
-    ##              ,dir.sims=dir.sims,
-    ##               name.sim=name.sim,
-    ##               order.columns=order.columns,script=script,
-    ##               subproblems=subproblems,
-    ##               reuse.results=reuse.results,seed=seed,
-    ##               args.psn.execute=args.psn.execute,
-    ##               nmquiet=nmquiet,
-    ##               text.table=text.table,
-    ##               table.vars=table.vars,
-    ##               table.options=table.options,
-    ##               text.sim=text.sim,
-    ##               execute=execute,
-    ##               sge=sge
-    ##              ,nc=nc
-    ##               ## ,modelname=modelname
-    ##              ,transform=transform
-    ##              ,method.sim=method.sim
-    ##              ,path.nonmem=path.nonmem
-    ##              ,col.row=col.row
-    ##              ,args.NMscanData=args.NMscanData
-    ##              ,dir.psn=dir.psn
-    ##              ,...
-    ##               ))
-    ##     if(file.mod.named){
-    ##         names.mod <- names(file.mod)
-    ##         allres.l <- lapply(1:length(allres.l),function(I) allres.l[[I]][,model:=names.mod[[I]]])
-    ##     }
-    ##     return(rbindlist(allres.l,fill=TRUE))
-    ## }
 
     if(missing(table.vars)) table.vars <- NULL
     if(missing(table.options)) table.options <- NULL
@@ -485,16 +513,53 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     ## dir.sim
     
-
     if(missing(dir.sims)) dir.sims <- NULL
+    dir.sims <- try(NMdata:::NMdataDecideOption("dir.sims",dir.sims,allow.unknown=TRUE),silent=TRUE)
+    if(inherits(dir.sims,"try-error")){
+        dir.sims <- NULL
+    }
+    ## dir.sims <- simpleCharArg("dir.sims",dir.sims,default=NULL,accepted=NULL,lower=FALSE)
     dir.sims <- simpleCharArg("dir.sims",dir.sims,file.path(dirname(file.mod),"NMsim"),accepted=NULL,lower=FALSE)
     
     if(!dir.exists(dir.sims)){
-        if(!create.dir){
+        if(!create.dirs){
             stop(paste("dir.sims does not point to an existing directory. dir.sims is\n",NMdata:::filePathSimple(dir.sims)))
         }
-        dir.create(dir.sims)
+        res.dc <- tryCatch(dir.create(dir.sims),warning=function(w)w)
+        if("warning"%in%class(res.dc)){
+            stop("Problems creating dir.sims. Please check that the parent directory exists and is writable.")
+        }
     }
+    
+    if(missing(file.res)) file.res <- NULL
+    if(is.null(file.res)) {
+
+        if(missing(dir.res)) dir.res <- NULL
+        dir.res <- try(NMdata:::NMdataDecideOption("dir.res",dir.res,allow.unknown=TRUE),silent=TRUE)
+        if(inherits(dir.res,"try-error")){
+            dir.res <- NULL
+        }
+        dir.res <- simpleCharArg("dir.res",dir.res,default=dir.sims,accepted=NULL,lower=FALSE)
+        
+        ## if(missing(dir.res) || is.null(dir.res)) dir.res <- dir.sims
+    } else {
+        dir.res <- dirname(file.res)
+    }
+    
+    if(!dir.exists(dir.res)){
+        if(!create.dirs){
+            stop(paste("dir.res does not point to an existing directory. dir.res is\n",NMdata:::filePathSimple(dir.res)))
+        }
+        ## dir.create(dir.res)
+        res.dc <- tryCatch(dir.create(dir.res),warning=function(w)w)
+        if("warning"%in%class(res.dc)){
+            stop("Problems creating dir.res. Please check that the parent directory exists and is writable.")
+        }
+        
+    }
+
+    relpathResFromSims <- relative_path(dir.res,dir.sims)
+    relpathSimsFromRes <- relative_path(dir.sims,dir.res)
     
     if(missing(text.table)) text.table <- NULL
     
@@ -510,6 +575,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models <- data.table(file.mod=file.mod)
     dt.models[,run.mod:=fnExtension(basename(file.mod),"")]
     dt.models[,name.mod:=run.mod]
+    dt.models[,pathResFromSims:=relpathResFromSims]
+    dt.models[,pathSimsFromRes:=relpathSimsFromRes]
+    dt.models[,NMsimVersion:=packageVersion("NMsim")]
+    dt.models[,NMsimTime:=Sys.time()]
     if(!is.null(names(file.mod))){
         names.mod <- names(file.mod)
         names.mod[names.mod==""] <- file.mod[names.mod==""]
@@ -526,13 +595,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(!is.null(data) && is.data.frame(data)) {
         data <- list(data)
         data <- lapply(data,as.data.table)
-        if(order.columns) data <- lapply(data,NMorderColumns)
     }
     if(!is.null(data) && is.list(data) && !is.data.frame(data)) {
         names.data <- names(data)
         if(is.null(names.data)) {
             names.data <- as.character(1:length(data))
         } else if(""%in%names.data) {
+            names.data <- gsub(" ","_",names.data)
+            if(any(duplicated(names.data))) stop("If data is a list of data sets, the list elements must be uniquely named.")
             names.data[names.data==""] <- as.character(which(names.data==""))
         }
         
@@ -544,6 +614,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     if(is.null(data)){
         dt.models[,data.name:=""]
+    } else {
+        if(order.columns) data <- lapply(data,NMorderColumns)
     }
     
     
@@ -557,8 +629,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,fn.mod:=basename(file.mod)]
     dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
     ## dt.models[,fn.sim:=paste0(fn.mod)]
-    dt.models[,fn.sim:=fnAppend(fn.sim,name.sim)]
-    dt.models[,fn.sim:=fnAppend(fn.sim,as.character(data.name)),by=.(ROWMODEL)]
+
+    
+    dt.models[,fn.sim.predata:=fnAppend(fn.sim,name.sim)]
+    dt.models[,fn.sim:=fnAppend(fn.sim.predata,as.character(data.name)),by=.(ROWMODEL)]
+    ## spaces not allowed in model names
+    dt.models[,fn.sim:=gsub(" ","_",fn.sim)]
     dt.models[,run.sim:=modelname(fn.sim)]
 
     
@@ -576,18 +652,43 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     ## where tosave input data to be read by simulation control stream
     ## fn.data is the data file name, no path
-    dt.models[,fn.data:=paste0("NMsimData_",fnExtension(fnAppend(name.mod,name.sim),".csv"))]
+    
+    dt.models[,fn.data:=paste0("NMsimData_",fnAppend(fnExtension(name.mod,".csv"),name.sim))]
     dt.models[,fn.data:=fnAppend(fn.data,data.name),by=.(ROWMODEL)]
+    dt.models[,fn.data:=gsub(" ","_",fn.data)]
     
     dt.models[,path.data:=file.path(dir.sim,fn.data)]
 
-    ## fn.rds - Where to save table of runs
-    dt.models[,fn.rds:=file.path(dir.sim,"NMsim_paths.rds")]
-
+    ## path.rds - Where to save table of runs
+    if(missing(dir.res)) {
+        dt.models[,dir.res:=dir.sim]
+    } else {
+        dt.models[,dir.res:=..dir.res]
+    }
+    
+    if(missing(file.res)) file.res <- NULL
+    
+    
+    if(is.null(file.res)){
+        
+        ## dt.models[,path.rds:=file.path(dir.res,"NMsim_paths.rds")]
+        dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"rds"),"paths"))]
+    } else {
+        dt.models[,path.rds:=fnExtension(file.res,"rds")]
+    }
+    dt.models[,path.rds.exists:=file.exists(path.rds)]
+### reading results from prior run
+    if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
+        if(!quiet) message("Reading from simulation results on file.")
+        simres <- try(NMreadSim(dt.models[,path.rds],wait=wait))
+        if(!inherits(simres,"try-error")) {
+            return(returnSimres(simres))
+        }
+    }
 
 ### clear simulation directories so user does not end up with old results
     if(sim.dir.from.scratch){
-        dt.models[,if(dir.exists(dir.sim)) unlink(dir.sim),by=.(ROWMODEL)]
+        dt.models[,if(dir.exists(dir.sim)) unlink(dir.sim,recursive=TRUE),by=.(ROWMODEL)]
     }
     dt.models[,if(file.exists(path.sim)) unlink(path.sim),by=.(ROWMODEL)]
     
@@ -597,14 +698,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ]
     
     
-
+    
 ### Generate the first version of file.sim.
     ## It would not need to, but beware PSN's update_inits needs to
     ## create a new file - don't try to overwrite an existing one.
     if(method.update.inits=="none"){
         dt.models[,file.copy(file.mod,path.sim),by=ROWMODEL]
     }
-    
+
     if(method.update.inits=="psn"){
 ### this next line is done already. I think it should be removed but testing needed.
         cmd.update.inits <- file.psn(dir.psn,"update_inits")
@@ -664,11 +765,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             data.this <- data[[DATAROW]]
 
         }
-        ## if(!col.row%in%colnames(data)) data[,(col.row):=.I]
-
-        ## if(is.data.frame(data)){
-        ##     data <- list(data)
-        ## }
         
         ## if(order.columns) data <- lapply(data,NMorderColumns)
         ##data <- NMorderColumns(data)
@@ -715,7 +811,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 ## notice, this must capture zero and 1.
                 lines.tables.new <- list(gsub(paste0("FILE *= *[^ ]+"),replacement=fn.tab.base,lines.tables[[1]]))
             } else {
-                
+                ## I don't remember the reason for the concern this may fail. It looks OK? I think it was supposed to be a check if text.table was a list, so the user is trying to create multiple tables. I don't know if that would work.
+                ## message("Number of output tables is >1. Trying, but retrieving results may fail.")
                 lines.tables.new <- lapply(seq_along(lines.tables),function(n){
                     fn.tab <- fnAppend(fn.tab.base,n)
                     gsub(paste0("FILE *= *[^ ]+"),replacement=fn.tab,lines.tables[[n]])
@@ -724,8 +821,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         } else {
             lines.tables.new <- list(paste("$TABLE",text.table,fn.tab.base))
         }
-        fun.paste <- function(...) paste(...,sep="\n")
-        lines.tables.new <- do.call(fun.paste,lines.tables.new)
+        ## fun.paste <- function(...) paste(...,sep="\n")
+        ## l.bu <- lines.tables.new
+        ## lines.tables.new <- do.call(fun.paste,lines.tables.new)
+        lines.tables.new <- paste(unlist(lines.tables.new),collapse="\n")
         if(exists("add.var.table")){
             
             lines.tables.new <- gsub("\\$TABLE",paste("$TABLE",add.var.table),lines.tables.new)
@@ -766,7 +865,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                               ,by=.(ROWMODEL)]
     
     
-
     ## when methods return just a vector of path.sim, we need to reorganize
     if(ncol(dt.models.gen)==2 && all(colnames(dt.models.gen)%in%c("ROWMODEL","V1"))){
         setnames(dt.models.gen,"V1","path.sim")
@@ -782,7 +880,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     cnames.gen <- colnames(dt.models.gen)
     if(!"path.sim"%in%cnames.gen) stop("path.sim must be in returned data.table")
     
-
+    
     ## if multiple models have been spawned, and files.needed has been generated, the only allowed method.execute is "nmsim"
     if(nrow(dt.models.gen)>1 && "files.needed"%in%colnames(dt.models.gen)){
         if(method.execute!="nmsim"){
@@ -873,6 +971,31 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 
 
+
+
+    
+    args.NMscanData.list <- c(args.NMscanData,args.NMscanData.default)
+    args.NMscanData.list <- args.NMscanData.list[unique(names(args.NMscanData.list))]
+    ## if(!is.null(args.NMscanData.list)){
+    if(nrow(dt.models)==1){
+        dt.models[,args.NMscanData:=list()]
+    } else {
+        dt.models[,args.NMscanData:=vector("list", .N)]
+    }
+    dt.models[,args.NMscanData:=list(list(args.NMscanData.list))]
+
+
+###### store transform
+    
+    if(nrow(dt.models)==1){
+        dt.models[,funs.transform:=list()]
+    } else {
+        dt.models[,funs.transform:=vector("list", .N)]
+    }
+    dt.models[,funs.transform:=list(list(transform))]
+
+    
+    
     
 #### Section start: Execute ####
     
@@ -881,21 +1004,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     if(execute){
 
-        dt.models[,unlink(fn.rds)]
+        dt.models[,unlink(path.rds)]
+        file.res.data <- fnAppend(fnExtension(dt.models[,path.rds],"fst"),"res")
+        if(any(file.exists(file.res.data))){
+            unlink(file.res.data[file.exists(file.res.data)])
+        }
 
         ## run sim
-        wait <- !sge
-
-        if(wait){
-            
-            args.NMscanData.list <- c(args.NMscanData,args.NMscanData.default)
-            args.NMscanData.list <- args.NMscanData.list[unique(names(args.NMscanData.list))]
-            dt.models[,args.NMscanData:=vector("list", .N)]
-            dt.models[,args.NMscanData:=list(list(args.NMscanData.list))]
-
-        }
-        
-        simres <- dt.models[,{
+        dt.models[,lst:={
             simres.n <- NULL
             files.needed.n <- try(strsplit(files.needed,":")[[1]],silent=TRUE)
             if(inherits(files.needed.n,"try-error")) files.needed.n <- NULL
@@ -904,10 +1020,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ### run.extension. run_input.extension kept.
             ## files.unwanted <- list.files(
             if(file.exists(path.sim.lst)){
-                message("Existing output control stream found. Removing.")
+                ## message("Existing output control stream found. Removing.")
                 
                 dt.outtabs <- try(NMscanTables(path.sim.lst,meta.only=TRUE,as.fun="data.table",quiet=TRUE),silent=TRUE)
-                if(!inherits(dt.outtabs,"try-error") && nrow(dt.outtabs)){
+                if(!inherits(dt.outtabs,"try-error") && is.data.table(dt.outtabs) && nrow(dt.outtabs)>0){
                     
                     file.remove(
                         dt.outtabs[file.exists(file),file]
@@ -916,52 +1032,57 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 unlink(path.sim.lst)
 
             }
-            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
             
-            if(wait){
-                
-                ## simres.n <- try(NMscanData(path.sim.lst,merge.by.row=FALSE,as.fun="data.table",file.data=input.archive))
-                simres.n <- try(do.call(NMscanData,c(file=path.sim.lst,as.fun="data.table",file.data=input.archive,args.NMscanData[[1]])))
-
-                if(inherits(simres.n,"try-error")){
-                    message("Results could not be read.")
-                    simres.n <- NULL
-                } else if(!is.null(transform)){
-                    ## optionally transform results like DV, IPRED, PRED
-                    for(name in names(transform)){
-                        simres.n[,(name):=transform[[name]](get(name))]
-                    }
-                }
-                ## warn.notransform(transform)
-                simres.n <- as.fun(simres.n)
-            } else {
-                warn.notransform(transform)
-                ## simres.n <- NULL
-                simres.n <- list(lst=path.sim.lst)
-            }
-            simres.n
+            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait.exec,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
+            
+            ## simres.n <- list(lst=path.sim.lst)
+            ## simres.n
+            path.sim.lst
         },by=.(ROWMODEL2)]
     }
-    if("ROWMODEL2"%in%colnames(simres)) {
-        simres[,ROWMODEL2:=NULL]
-    }
+
 ###  Section end: Execute
 
     
-    dt.models.save <- split(dt.models,by="dir.sim")
-    lapply(1:length(dt.models.save),function(I){
+    dt.models.save <- split(dt.models,by="path.rds")
+    addClass(dt.models,"NMsimModTab")
+    files.rds <- lapply(1:length(dt.models.save),function(I){
 
 ####### notify user where to find rds files
-        fn.this.rds <- unique(dt.models.save[[I]][,fn.rds])
-        message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))
+        fn.this.rds <- unique(dt.models.save[[I]][,path.rds])
+        addClass(dt.models.save[[I]],"NMsimModTab")
+        if(!quiet){
+            message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))
+        }
         saveRDS(dt.models.save[[I]],file=fn.this.rds)
+        fn.this.rds
     })
 
+#### Section start: Read results if requested ####
+    
+    if(execute && (wait.exec||wait)){
+
+        ### This runs NMreadSim in try. But since the user is
+        ### requesting execute and wait, an error reading this should
+        ### result in an NMsim error.
+        ## simres <- try(NMreadSim(unlist(files.rds),wait=wait))
+        ## if(inherits(simres,"try-error")){
+        ##     message("Could not read simulation results. Returning path to rds file containing a table with info on all simulations (read with `readRDS()`).")
+        ##     return(unlist(files.res))
+        ## }
+        simres <- NMreadSim(unlist(files.rds),wait=wait)
+    }
+    
+### Section end: Read results if requested
+
+##### return results to user
+    
     ## if(!wait) return(simres$lst)
-    if(wait){
-        return(as.fun(simres))
+    ## if(execute && (wait.exec||wait)){
+    if(is.NMsimRes(simres) || (execute && (wait.exec||wait))){
+        return(returnSimres(simres))
     } else {
-        addClass(dt.models,"NMsimTab")
-        return(dt.models)
+        addClass(dt.models,"NMsimModTab")
+        return(invisible(dt.models[,unique(path.rds)]))
     }
 }

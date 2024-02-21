@@ -1,5 +1,5 @@
 ---
-title: "NMsim -- Simulation of New Subjects"
+title: "Simulation of New Subjects"
 output:
 rmarkdown::html_vignette:
     toc: true
@@ -7,7 +7,7 @@ rmarkdown::html_vignette:
 Suggests: markdown
 VignetteBuilder: knitr
 vignette: >
-  %\VignetteIndexEntry{Simulation -- Basic}
+  %\VignetteIndexEntry{01BASIC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 header-includes:
@@ -61,6 +61,12 @@ unlink(found.files)
 
 run.simuls <- FALSE
 NMdataConf(as.fun="data.table")
+
+NMdataConf(dir.sims="~/NMsim_vignette",
+           dir.res="simulate-results",
+           allow.unknown=TRUE ## necessary for dir.sims and dir.res
+           ## until NMdata 0.1.5
+           )
 ```
 
 
@@ -97,9 +103,12 @@ worry - it is very easy.
 
 ## Estimation based on single dose, simulation of multiple doses
 The situation is like this: We collected PK and PD data from a single ascending dose 
-trial on a drug candidate. The following plot shows the data for no other reason than pointing out clearly that the data informing the model was single dose, and we will be simulating a different dosing regimen.
+trial on a drug candidate. A PK model was estimated using Nonmem. We have on file
+the model input and output control streams (here with extensions `.mod`
+and `.lst` respetively), parameter estimates (`.ext`). 
+<!-- The following plot shows the data for no other reason than pointing out clearly that the data informing the model was single dose, and we will be simulating a different dosing regimen. -->
 
-```{r,include=TRUE,echo=FALSE}
+```{r,include=FALSE,echo=FALSE}
 file.mod <- file.project("nonmem/xgxr021.mod")
 res <- NMscanInput(file.mod,quiet=TRUE)
 ggplot(res[!is.na(DV)],aes(TIME,DV))+
@@ -108,72 +117,15 @@ ggplot(res[!is.na(DV)],aes(TIME,DV))+
 
 ```
 
-A PK model was estimated using Nonmem. We have on file
-the model input and output control streams (here with extensions `.mod`
-and `.lst` respetively), parameter estimates (`.ext`) and estimated
-random effects (`.phi`). 
 
 We want to predict concentrations in a multiple dose regimen. This is a regimen that we have not
 studied in clinical trials so far, and we have decided to use
 population PK simulations for this purpose. 
 
-### Generating a simulation input data set
-The pop PK model was estimated using an ADVAN subroutine with
-extravascular dosing in compartment 1 and the central compartment is
-compartment 2. This information is needed because the compartment
-numbers in the simulation data set will be created to match this. We
-shall see that this is the only information needed about the model for
-`NMsim` to be able to simulate it.
-
-It does not matter to NMsim how we create a simulation data set as
-long as we get it into a data.frame structure. For the example, we used functions
-included with NMsim, but you can use anything. We
-create a regimen with a loading dose of 300 mg followed by 150 QD for
-6 days. Notice that the compartment numbers match the compartment
-numbers that were used when estimating the model.
-
-```{r,dsCreateSim,include=TRUE}
-### multiple dose regimens with loading are easily created with NMcreateDoses too
-## We use ADDL+II (either method easy)
-doses <- NMcreateDoses(TIME=c(0,24),AMT=c(300,150),addl=data.frame(ADDL=c(0,5),II=c(0,24)),CMT=1)
-doses <- transform(doses,trt="300 mg then 150 mg QD")
-
-## Add simulation records - longer for QD regimens
-dat.sim <- addEVID2(doses,time.sim=0:(24*7),CMT=2)
-
-## sort data set 
-setorder(dat.sim,ID,TIME,EVID)
-
-## Adding a row identifier (generally not necessary)
-dat.sim$ROW <- 1:nrow(dat.sim)
-```
-```{r,save-datsim,eval=FALSE}
-write_fst(dat.sim,"simulate-results/dat_sim.fst")
-```
-
-We check the simulation data set for various potential issues in
-Nonmem data sets using `NMdata::NMcheckData` and summarize the number
-of doses and observations:
-
+### The Simulation data set
+You can create a Nonmem-compatible simulation data set however you want. We will keep that as a separate topic and read one that was already created in [`NMsim-DataCreate.html`](https://philipdelff.github.io/NMsim/articles/NMsim-DataCreate.html) using tools provided with NMsim to make that task simpler and faster to do:
 ```{r}
-NMcheckData(dat.sim,type.data="sim")
-```
-
-A brief overview of the number of events broken down by event type `EVID` and dose amount `AMT`:
-
-```{r,echo=FALSE}
-NMexpandDoses(dat.sim)[,.(Nrows=.N),keyby=.(trt,EVID,AMT)] |>
-    kable()
-```
-
-Showing the top five rows for understanding what the data now looks like. Notice that the following are _not_ issues:
-
-- Data contains a mix of numeric and non-numeric columns
-- Columns are not sorted in Nonmem-friendly style with non-numeric columns to the right
-
-
-```{r,echo=FALSE}
-dat.sim[1:5,]
+dat.sim <- read_fst(path="simulate-results/dat_sim.fst")
 ```
 
 ## Simulation of a new subject
@@ -191,12 +143,13 @@ simres <- NMsim(file.mod=file.mod,
 ```
 
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres.fst"
-if(run.simuls){
-    write_fst(simres,path=file.fst)
-} else {
-    simres <- read_fst(file.fst,as.data.table=TRUE)
-}
+## file.fst <- "simulate-results/simres.fst"
+## if(run.simuls){
+##     write_fst(simres,path=file.fst)
+## } else {
+##     simres <- read_fst(file.fst,as.data.table=TRUE)
+## }
+simres <- NMreadSim("simulate-results/NMsim_xgxr021_noname_paths.rds")
 ```
 
 We plot population and individual predictions as the simulations of
@@ -210,6 +163,7 @@ datl <- as.data.table(simres) |>
 ggplot(datl,aes(TIME,value,colour=variable))+
     geom_line(data=function(x)x[variable!="Y"])+
     geom_point(data=function(x)x[variable=="Y"])+
+    labs(x="Hours since first dose",y="Concentration (ng/mL)")
     facet_wrap(~trt)
 ```
 
@@ -250,7 +204,6 @@ Notice a few things about the returned data:
 Before we continue with that model, we want to compare a simulation based on this model to another model we are considering. `NMsim` can do this and collect the data into one object:
 
 ```{r,sim-twomodels,eval=FALSE}
-## file.mod <- "../nonmem/xgxr014.mod"
 files.2.mod <- file.project(c("nonmem/xgxr021.mod","nonmem/xgxr114.mod"))
 simres.2models <- NMsim(file.mod=files.2.mod,
                         data=dat.sim
@@ -295,7 +248,7 @@ this point already. Here they are:
   simulation Nonmem runs including simulation input data).
 * `name.sim` Give your simulation a meaningfull name. We did not do
   this above, so `NMsim` called it "noname".
-* `text.table` Very important. This redefines the output table section
+* `table.vars` Very important. This redefines the output table section
   from the estimation control stream to the simulation control
   stream. The estimation control stream may have too many variables
   printed (which will make Nonmem slow), or it may not have some that
@@ -308,57 +261,6 @@ this point already. Here they are:
 You will learn about a few more arguments in the next examples.
 
 
-## Most common reasons for `NMsim` to fail or be slow
-If `NMsim` can find the Nonmem executable and/or PSN, it should work
-on basically any models where where it makes sense to replace the
-`$ESTIMATION` by a `$SIMULATION`. If `NMsim` fails or behaves
-unexpectedly, make sure to read the output from Nonmem in the R
-console. If `NMsim` complains it cannot find the output tables, it is
-likely because Nonmem failed and did not generate them.
-
-There is one thing about the Nonmem model evaluation you have to
-remember. Nonmem cannot run a model if it uses variables that are
-unavailable. It may be a covariate in the model that you did not
-include in your data set. And often the estimation models include
-variables in output tables that were not used for anything else by
-Nonmem than being read from the input data set and printed in output
-tables. In fact, this was exactly why we included a row identifier
-calle `ROW` when generating the simulation data set. If we do not do
-that, we get this error:
-
-```
-Starting NMTRAN
- 
- AN ERROR WAS FOUND IN THE CONTROL STATEMENTS.
- 
-AN ERROR WAS FOUND ON LINE 60 AT THE APPROXIMATE POSITION NOTED:
- $TABLE ROW TVKA TVV2 TVV3 TVCL KA V2 V3 CL Q PRED IPRED Y NOPRINT FILE=NMsim_xgxr021_noname.tab
-         X  
- THE CHARACTERS IN ERROR ARE: ROW
-  479  THIS ITEM IS NOT LISTED IN MODULE NMPRD4 AND MAY NOT BE DISPLAYED.
-cp: cannot stat 'NMsim_xgxr021_noname.tab': No such file or directory
-Error in NMscanTables(file, quiet = TRUE, as.fun = "data.table", col.row = col.row,  : 
-  NMscanTables: File not found: /home/philip/R/x86_64-pc-linux-gnu-library/4.2/NMsim/examples/nonmem/NMsim/xgxr021_noname/NMsim_xgxr021_noname.tab. Did you copy the lst file but forgot table file?
-Results could not be read.
-```
-
-Nonmem gets to writing the `$TABLE` but cannot find a variable called
-`ROW`. Again, we fixed that by including `ROW`. In many cases, the
-best way to fix this is to reduce the `$TABLE` section using the
-`text.table` argument. All we need from the simulation results are
-population and individual predictions anyway. We could have omitted
-`ROW` in the input data set and done something as simple as
-
-```{r,sim-simplest-table,eval=FALSE}
-simres <- NMsim(file.mod=file.mod,
-                data=dat.sim,
-                text.table="PRED IPRED Y")
-```
-
-`text.table` can help avoid many of these problems. And if `NMsim` is
-slow, this is a potentially a very large low-hanging fruit. In a
-benchmark example, I reduced a (very large) simulation run time from
-~1.5 hours to ~7 minutes this way.
 
 ## More subjects and prediction intervals
 To create a prediction interval based on the selected model, we need
@@ -396,12 +298,13 @@ simres.n1000.1 <- NMsim(file.mod=file.mod,
 ```
 
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres_n1000_1.fst"
-if(run.simuls){
-    write_fst(simres.n1000.1,path=file.fst)
-} else {
-    simres.n1000.1 <- read_fst(file.fst,as.data.table=TRUE)
-}
+## file.fst <- "simulate-results/simres_n1000_1.fst"
+## if(run.simuls){
+##     write_fst(simres.n1000.1,path=file.fst)
+## } else {
+##     simres.n1000.1 <- read_fst(file.fst,as.data.table=TRUE)
+## }
+simres.n1000.1 <- NMreadSim("simulate-results/NMsim_xgxr021_N1000_datarep_paths.rds")
 ```
 
 ### Multiple subjects generated by Nonmem
@@ -459,29 +362,3 @@ simres.n1000.1 <- NMscanData("~/NMsim_vignette/xgxr021_N1000_datarep/NMsim_xgxr0
 In fact, that is also what `NMsim` does once Nonmem has run.
 
 
-## Add residual variability
-The best way to simulate with residual variability is to include the it in the estimation control stream as described in this vignette. `NMsim` currently does not provide any automated way to add simulation of
-residual variability with Nonmem. It does provide a method to
-simulate residual variability in R, based on the Nonmem parameter
-estimates. This should only be used in case one has an existing Nonmem without residual variability simulated, and it is not feasible to modify the model control stream for some reason. The function is called `addResVar()` and supports additive,
-proportional, and combined (additive and proportional) error
-models. It can also add the residual error on log scale (exponential
-error model).
-
-`addResVar` supports both estimation using `$SIGMA` and `$THETA` (in Nonmem). The user has to specify which of the two methods were used in the Nonmem model using the `par.type` argument. The other thing that must be specified is the parameter numbers for the standard deviations or variances. The model simulated in this vignette has this combined error model estimated using the `$SIGMA` matrix:
-
-```
-Y=F+F*ERR(1)+ERR(2)
-```
-
-We now specify for `addResVar` to find the variance for the proportional component in `$SIGMA[1,1]` and the one for the additive component in `$SIGMA[2,2]`. In this case where `SIGMA` is used, the off-diagonal (covariance) elements of the `$SIGMA` matrix are also used for the simulation. 
-
-```{r,eval=FALSE}
-simres.with.resvar <- addResVar(simres,path.ext=fnExtension(file.mod,"ext"),par.type="SIGMA",prop=1,add=2)
-```
-
-If `par.type="THETA"` the default assumption is that the thetas
-represent standard deviation (in contrast to when using
-`par.type="SIGMA"`). This can be modified using the `scale.par`
-argument. There are arguments to avoid negative observations and
-several other features. But again, this should be the last resort.

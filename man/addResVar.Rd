@@ -69,7 +69,7 @@ addResVar to contain the simulated observations (individual
 predictions plus residual error).}
 
 \item{as.fun}{The default is to return data as a data.frame. Pass
-a function (say tibble::as_tibble) in as.fun to convert to
+a function (say `tibble::as_tibble`) in as.fun to convert to
 something else. If data.tables are wanted, use
 as.fun="data.table". The default can be configured using
 NMdataConf.}
@@ -84,7 +84,7 @@ Add residual variability based on parameter estimates
 \dontrun{
 ## based on SIGMA
 simres.var <- addResVar(data=simres,
-                        path.ext = "path/to/model.ext"
+                        path.ext = "path/to/model.ext",
                         prop = 1,
                         add = 2,
                         par.type = "SIGMA",
@@ -92,7 +92,7 @@ simres.var <- addResVar(data=simres,
 
 ## If implemented using THETAs
 simres.var <- addResVar(data=simres,
-                        path.ext = "path/to/model.ext"
+                        path.ext = "path/to/model.ext",
                         prop = 8, ## point to elements in THETA
                         add = 9,  ## point to elements in THETA
                         par.type = "THETA",

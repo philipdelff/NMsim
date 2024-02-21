@@ -82,6 +82,8 @@
 ##' @param system.type A charachter string, either \"windows\" or
 ##'     \"linux\" - case insensitive. Windows is only experimentally
 ##'     supported. Default is to use \code{Sys.info()[["sysname"]]}.
+##' @param quiet Suppress messages on what NMexec is doing? Default is
+##'     FALSE.
 ##' @details Use this to read the archived input data when retrieving
 ##'     the nonmem results:
 ##'     \code{NMdataConf(file.data=inputArchiveDefault)}
@@ -118,7 +120,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                    nc=64,dir.data=NULL,wait=FALSE, args.psn.execute,
                    update.only=FALSE,nmquiet=FALSE,
                    method.execute="psn",dir.psn,path.nonmem,system.type,
-                   files.needed){
+                   files.needed,quiet=FALSE){
     
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -205,11 +207,10 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         files.exec <- findUpdated(files.all)
     }
 
-    ## message(paste(files.exec,collapse=", "))
     
     for(file.mod in files.exec){
         file.mod <- NMdata:::filePathSimple(file.mod)
-        message(paste0("Executing ",file.mod))
+        if(!quiet) message(paste0("Executing ",file.mod))
         if(!file.exists(file.mod)){
             stop(paste("Could not find file:",file.mod))
         }
@@ -264,7 +265,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             if(!file.exists(path.nonmem)){
                 stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
             }
-            string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed)
+            string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed,system.type=system.type)
             if(sge) {
 
                 if(nc==1){
@@ -281,7 +282,12 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                 }
                 wait <- TRUE
             } else {
-                string.cmd <- sprintf("cd %s; ./%s",dirname(string.cmd),basename(string.cmd))
+                if(system.type=="linux"){
+                    string.cmd <- sprintf("cd \"%s\"; \"./%s\"",dirname(string.cmd),basename(string.cmd))
+                } 
+                if(system.type=="windows"){
+                    string.cmd <- sprintf("CD \"%s\";call \"%s\"",dirname(string.cmd),basename(string.cmd))
+                }
             }
         }
         
@@ -290,11 +296,12 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             ## contents.bat <- gsub(";","\n",string.cmd)
             ## cat(contents.bat,file=path.script)
             path.script <- file.path(dirname(file.mod),"NMsim_exec.bat")
+
             contents.bat <-
                 strsplit(string.cmd,split=";")[[1]]
             writeTextFile(contents.bat,file=path.script)
 
-            shell(shQuote(path.script,type="cmd") )
+            shell(shQuote(paste("call", path.script),type="cmd") )
         }
         if(system.type=="linux"){
             

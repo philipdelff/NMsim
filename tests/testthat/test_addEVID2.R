@@ -89,3 +89,15 @@ test_that("time with covariates",{
     expect_equal_to_reference(res,fileRef)
 
 })
+
+test_that("EVID=0",{
+    fileRef <- "testReference/addEVID2_06.rds"
+
+    df.doses <- NMcreateDoses(TIME=c(0,12),AMT=10,CMT=2)
+    seq.time <- c(0,4,12,24)
+
+    res <- addEVID2(df.doses,time.sim=seq.time,CMT=2,EVID=0)
+
+    expect_equal_to_reference(res,fileRef)
+
+})

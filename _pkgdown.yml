@@ -5,4 +5,42 @@ template:
     after_body: |-
       <script data-goatcounter="https://nmsim.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
-
+navbar:
+  structure:
+    left:
+    - home
+    - articles
+    - cheatsheet
+    - reference
+    - github
+  components:
+   home:
+    title: Sim Nonmem
+    desc: Really good
+    icon: fas fa-home fa-lg
+    href: index.html
+   articles:
+      text: Vignettes
+      menu:
+      - text: Simulation of new subjects
+        href: articles/NMsim-basics.html
+      - text: Simulations for VPCs 
+        href: articles/NMsim-VPC.html
+      - text: NMsim Configuration
+        href: articles/NMsim-config.html
+      - text: Simulate known subjects
+        href: articles/NMsim-known.html
+      - text: Simulate typical subjects
+        href: articles/NMsim-TypSubj.html
+      - text: Simulations with parameter uncertainty
+        href: articles/NMsim-ParamUncertain.html
+      - text: Creation of Simulation Data Sets
+        href: articles/NMsim-DataCreate.html
+      - text: Simulation with residual variability
+        href: articles/NMsim-ResidVar.html
+      - text: Varying parameter values
+        href: articles/NMsim-varyPars.html
+      - text: Reuse simulated subjects
+        href: articles/NMsim-ReuseSimSubjects.html
+      - text: Debugging, Speed, and Disk Space
+        href: articles/NMsim-speed.html
