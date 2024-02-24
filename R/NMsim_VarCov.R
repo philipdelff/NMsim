@@ -63,10 +63,9 @@ NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
     
     
     ## nonmem2rx::nmcov(path.cov)
-    covmat <- NMreadCov(path.cov)
-    ests <- NMdata::NMreadExt(path.ext,as.fun="data.table")[NMREP==1,.(parameter,par.type,i,j,est,FIX)]
+    covmat <- NMdata::NMreadCov(path.cov)
+    ests <- NMreadExt(path.ext,as.fun="data.table")[NMREP==1,.(parameter,par.type,i,j,est,FIX)]
     ests <- ests[par.type%in%c("THETA","SIGMA","OMEGA")]
-    ## ests <- NMreadExt(path.ext)$pars[NMREP==1,.(parameter,par.type,i,j,est,FIX)]
     ests <- ests[match(ests$parameter,colnames(covmat))]
     
     

@@ -1,6 +1,6 @@
 ##' Replace initial values in Nonmem control stream
 ##' @param inits A data.frame with new initial estimates, same style
-##'     as returned by NMreadExt. Column` par.type` can contain
+##'     as returned by NMdata::NMreadExt. Column` par.type` can contain
 ##'     elements THETA, OMEGA, SIGMA.
 ##' @param fix Fix the initial values? Default is not to.
 ##' @param ... Passed to NMdata::NMwriteSection. This is important for

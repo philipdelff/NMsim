@@ -1,6 +1,6 @@
 ##' Create text lines for OMEGA and SIGMA Nonmem sections
 ##'
-##' @param omegas See NMreadExt and the pars element returned by that
+##' @param omegas See NMdata::NMreadExt and the pars element returned by that
 ##'     function.
 ##' @param type The matrix type. OMEGA or SIGMA - case in-sensitive.
 ##' @return Character vector

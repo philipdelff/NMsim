@@ -418,6 +418,7 @@ test_that("default with renaming",{
 })
 
 test_that("multiple data sets with renaming",{
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
     data.multiple <- split(dt.sim.known[ID<=103],by="ID")
     ## data.multiple
 

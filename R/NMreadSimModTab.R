@@ -1,4 +1,5 @@
 ##' Read simulation results from rds objects and/or NMsimModTab objects
+##' @inheritParams NMreadSim
 ##' @keywords internal
 
 NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=FALSE,quiet=FALSE,as.fun){

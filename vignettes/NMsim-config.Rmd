@@ -102,15 +102,15 @@ NMdataConf(dir.psn="/opt/PSN")
 ## PSN or not?
 ### PSN or not for Nonmem execution
 NMsim can call Nonmem using PSN's `execute` or through similar
-functionality included in `NMsim`. We will refer to those methods by
-the way they are referred to in the NMsim function argument that
+functionality included in NMsim. We will refer to those methods by
+the way they are referred to in the `NMsim()` function argument that
 controls which one is used, i.e. `method.execute="psn"` and
 `method.execute="nmsim"`. 
 
 For simulations, `method.execute="psn"` does not provide advantages
 over `method.execute="nmsim"`. In contrast, there are simulation types
 that will only work with `method.execute="nmsim"`. You need to tell
-NMsim where to find Nonmem (by settin `path.nonmem`) for this to work.
+NMsim where to find Nonmem (by setting `path.nonmem`) for this to work.
 
 Nonmem execution with `NMexec()` (typically, for estimation and not
 simulation) is a slightly different discussion. See `?NMexec` for
@@ -124,18 +124,19 @@ refer to this by the argument name, `method.update.inits="psn"`.
 
 NMsim also provides a similar functionality internally, referred to as
 `method.update.inits="NMsim"`. This will be used if PSN is not found -
-and if you ask for it. 
+or if you ask for it. 
 
-`method.update.inits="psn"` has two advantages over the
-NMsim-provided method. It is widely used, and it keeps
-comments in affected control stream sections (`$THETA`, `$OMEGA`,
+`method.update.inits="psn"` has two advantages over the NMsim-provided
+method. It is widely used, and it keeps comments in affected control
+stream sections (`$THETA`, `$OMEGA`,
 `$SIGMA`). `method.update.inits="nmsim"` will drop all comments in
 affected sections. I have in the past seen issues with some methods to
 update `$OMEGA` sections with off-diagonal elements
-(`BLOCK`). `method.update.inits="nmsim"` takes a very simple approach. Reading the `OMEGA` matrix  from the `.ext` file, this is
-not relying on interpreting Nonmem code at all. The support of systems without `PSN`
-would be the main reason one would choose `method.update.inits="nmsim"`
-over `method.update.inits="psn"`.
+(`BLOCK`). `method.update.inits="nmsim"` takes a very simple
+approach. Reading the `OMEGA` matrix from the `.ext` file, this is not
+relying on interpreting Nonmem code at all. The support of systems
+without `PSN` would be the main reason one would choose
+`method.update.inits="nmsim"` over `method.update.inits="psn"`.
 
 In order to make use of `method.update.inits="psn"`, you need to make
 sure NMsim can find PSN.

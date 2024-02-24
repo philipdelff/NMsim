@@ -1,11 +1,18 @@
-# NMsim 0.0.11
-This is an important upgrade that solidifies the way NMsim reads
+# NMsim 0.1.0
+For the first time NMsim works on Windows. There may still be some
+limitations but initial testing looks very promising. Make sure to set
+`path.nonmem`. See the configuration vignette on the website:
+[`NMsim-config.html`](https://philipdelff.github.io/NMsim/articles/NMsim-config.html)
+
+0.1.0 is also an important upgrade that solidifies the way NMsim reads
 results from simulations.  In addition to important bug fixes, it
 allows for NMsim to wait on Nonmem to complete simulations - even when
 they are run on a cluster. This means even large simulations with
 NMsim can be integrated in scripts.
 
 ## New features
+* Works on Windows - at least most features do.
+
 * `NMsim()` and `NMreadSim()` now have `wait` arguments which controls
   if they will wait for Nonmem to finish simulating. This will also
   work if jobs were sent to the cluster.
@@ -15,17 +22,23 @@ NMsim can be integrated in scripts.
   putting `NMsim()` calls inside an if-statement to disable the
   simulation but read results on file.
   
+* `NMsim()` looks for a couple of features of the provided control
+  streams that are known to be able to cause issues. Warnings will be
+  issued if these are found.
+  
 * `addEVID2` has a new argument, `EVID` to specify what value the
   `EVID` column should have. It can be useful sometimes to use
   `EVID=0` for simulation records.
-
-* There is progress on getting simulations to run on Windows. More
-  testing is needed, so this is still experimental.
 
 ## Bugfixes
 * In some cases `NMreadSim()` would not get the path right to the
   simulation results leading to failures in reading simulation
   results. Fixed.
+
+## Other changes
+* Functions `NMreadExt` and `NMreadPhi` have been removed from
+  NMsim. They live and are being maintained in the `NMdata`
+  package. In NMsim, were deprecated and unmaintained functions.
 
 # NMsim 0.0.10
 NMsim 0.0.9 had an unfortunate bug in `NMreadSim()` which has been

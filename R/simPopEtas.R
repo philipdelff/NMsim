@@ -29,7 +29,7 @@ simPopEtas <- function(file.mod,N,seed,file.phi,as.fun){
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
     
-    pars <- NMdata::NMreadExt(file=fnExtension(file.mod,"ext"),return="pars",as.fun="data.table")
+    pars <- NMreadExt(file=fnExtension(file.mod,"ext"),return="pars",as.fun="data.table")
 ### NMdata::NMreadExt can do this starting from NMdata 0.1.4. For now,
 ### we make sure only one step is used this way.
     pars <- pars[TABLENO==max(TABLENO)]

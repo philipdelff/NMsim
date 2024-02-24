@@ -15,6 +15,9 @@
 
 
 NMreadCov <- function (file, ...) {
+    
+    .Deprecated("NMdata::NMreadCov")
+
     if(!file.exists(file)){stop("file does not exist.")}
     TABLE <- NULL
     NMREP <- NULL

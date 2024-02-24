@@ -41,6 +41,7 @@ NMsim(
   file.res,
   wait,
   quiet = FALSE,
+  check.mod = TRUE,
   ...
 )
 }
@@ -203,7 +204,11 @@ it will be added.}
 \item{args.NMscanData}{If \code{execute=TRUE&sge=FALSE}, NMsim
 will normally read the results using \code{NMreadSim}. Use
 this argument to pass additional arguments (in a list) to that
-function if you want the results to be read in a specific way.}
+function if you want the results to be read in a specific
+way. This can be if the model for some reason drops rows, and
+you need to merge by a row identifier. You would do
+`args.NMscanData=list(col.row="ROW")` to merge by a column
+called `ROW`. This is only used in rare cases.}
 
 \item{path.nonmem}{The path to the Nonmem executable to use. The
 could be something like "/usr/local/NONMEM/run/nmfe75" (which
@@ -260,6 +265,12 @@ to finish).}
 
 \item{quiet}{If TRUE, messages from what is going on will be
 suppressed to the extend implemented.}
+
+\item{check.mod}{Check the provided control streams for contents
+that may cause issues for simulation. Default is `TRUE`, and
+it is only recommended to disable this if you are fully aware
+of such a feature of your control stream, you know how it
+impacts simulation, and you want to get rid of warnings.}
 
 \item{...}{Additional arguments passed to \code{method.sim}.}
 }

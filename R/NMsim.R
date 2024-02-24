@@ -153,7 +153,11 @@
 ##' @param args.NMscanData If \code{execute=TRUE&sge=FALSE}, NMsim
 ##'     will normally read the results using \code{NMreadSim}. Use
 ##'     this argument to pass additional arguments (in a list) to that
-##'     function if you want the results to be read in a specific way.
+##'     function if you want the results to be read in a specific
+##'     way. This can be if the model for some reason drops rows, and
+##'     you need to merge by a row identifier. You would do
+##'     `args.NMscanData=list(col.row="ROW")` to merge by a column
+##'     called `ROW`. This is only used in rare cases.
 ##' @param system.type A charachter string, either \"windows\" or
 ##'     \"linux\" - case insensitive. Windows is only experimentally
 ##'     supported. Default is to use \code{Sys.info()[["sysname"]]}.
@@ -187,6 +191,11 @@
 ##'     to finish).
 ##' @param quiet If TRUE, messages from what is going on will be
 ##'     suppressed to the extend implemented.
+##' @param check.mod Check the provided control streams for contents
+##'     that may cause issues for simulation. Default is `TRUE`, and
+##'     it is only recommended to disable this if you are fully aware
+##'     of such a feature of your control stream, you know how it
+##'     impacts simulation, and you want to get rid of warnings.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
 ##'     as input data). If `sge=TRUE` a character vector with paths to
@@ -274,10 +283,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,file.res
                  ,wait
                  ,quiet=FALSE
+                  ,check.mod = TRUE
                  ,...
                   ){
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
-
+    
     . <- NULL
     est <- NULL
     DATAROW <- NULL
@@ -345,7 +355,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(missing(file.mod)) stop("file.mod must be supplied. It must be one or more paths to existing control streams.")
     if(any(!file.exists(file.mod))) stop("All elements in file.mod must be paths to existing input control streams.")
-
+    ## Check control streams for potential problems
+    
+    if(check.mod){
+        lapply(file.mod,NMsimCheckMod)
+    }
     if(missing(data)) data <- NULL
     
     ## dir.psn - should use NMdataConf setup
@@ -407,7 +421,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 
     if(system.type=="windows"){
-        message('Windows is only experimentally supported. You may need avoid spaces and some special characters in directory and file names.')
+        message('Windows support is new in NMsim and may be limited. You may need to avoid spaces and some special characters in directory and file names.')
     }
     
     ## args.psn.execute
@@ -425,6 +439,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(is.null(method.update.inits)) {
         method.update.inits <- "psn"
         cmd.update.inits <- file.psn(dir.psn,"update_inits")
+
+        if(system.type=="windows"){
+            ## We have seen problems with PSN on windows. Until
+            ## clarified, internal method prefered on win.
+            method.update.inits <- "nmsim"
+        }
         
         ## check if update_inits is avail
         ## if(suppressWarnings(system(paste(cmd.update.inits,"-h"),show.output.on.console=FALSE)!=0)){
@@ -1062,9 +1082,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(execute && (wait.exec||wait)){
 
-        ### This runs NMreadSim in try. But since the user is
-        ### requesting execute and wait, an error reading this should
-        ### result in an NMsim error.
+### This runs NMreadSim in try. But since the user is
+### requesting execute and wait, an error reading this should
+### result in an NMsim error.
         ## simres <- try(NMreadSim(unlist(files.rds),wait=wait))
         ## if(inherits(simres,"try-error")){
         ##     message("Could not read simulation results. Returning path to rds file containing a table with info on all simulations (read with `readRDS()`).")

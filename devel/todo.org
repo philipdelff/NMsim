@@ -254,6 +254,14 @@ https://nmhelp.tingjieguo.com/$etasphis.htm
 As if submodel structure does not support n=1. For now, just give an
 error to avoid some weird message.
 ** NMcreateDoses
+*** TODO Wrong replicates in some cases
+this is supposed to return 4 doses, not 8
+#+begin_src R
+dt.amt.13 <- data.table(DOSE1=c(100))[,AMT:=DOSE1*1000]
+dt.time.13 <- data.table(TIME=c(0,288,0,432),trtp=rep(c("VX-548 - VX-548 + Omeprazole","VX-548 - VX-548 + Rifampin"),each=2))
+dt.dos.13 <- NMcreateDoses(TIME=dt.time.13,AMT=dt.amt.13)
+dt.dos.13[,ID:=NULL]
+#+end_src
 *** TODO No CMT by default?
 Not all models use CMT so it shouldnt be required
 *** TODO II/ADDL should only be applied to last event.

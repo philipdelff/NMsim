@@ -8,7 +8,7 @@ NMreplaceInits(inits, fix = FALSE, ...)
 }
 \arguments{
 \item{inits}{A data.frame with new initial estimates, same style
-as returned by NMreadExt. Column` par.type` can contain
+as returned by NMdata::NMreadExt. Column` par.type` can contain
 elements THETA, OMEGA, SIGMA.}
 
 \item{fix}{Fix the initial values? Default is not to.}

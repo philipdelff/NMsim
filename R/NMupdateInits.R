@@ -14,7 +14,6 @@ NMupdateInits <- function(file.mod,newfile,fix){
     j <- NULL
     
     pars.est <- NMdata::NMreadExt(fnExtension(file.mod,"ext"),return="pars",as.fun="data.table")
-    ## pars.est <- ext$pars
 
 ### making sure to only use the last value provided
     pars.est <- unique(pars.est[.N:1],by="parameter")[.N:1]

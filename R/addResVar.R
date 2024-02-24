@@ -137,8 +137,7 @@ addResVar <- function(data,path.ext,prop=NULL,add=NULL,log=FALSE,par.type="SIGMA
     }
     
     ## get parameter estimates
-    ## ext <- NMreadExt(path.ext)
-    pars <- NMdata::NMreadExt(path.ext,as.fun="data.table",return="pars")
+    pars <- NMreadExt(path.ext,as.fun="data.table",return="pars")
     nerrs <- length(c(prop,add))
     
     setnames(pars,"par.type","ext.par.type")
