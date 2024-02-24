@@ -20,7 +20,7 @@ get the most out of this."><!-- mathjax --><script src="https://cdnjs.cloudflare
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.931</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,6 +128,7 @@ get the most out of this.</p>
 <span>  <span class="va">file.res</span>,</span>
 <span>  <span class="va">wait</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  check.mod <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -343,7 +344,11 @@ it will be added.</p></dd>
 <dd><p>If <code>execute=TRUE&amp;sge=FALSE</code>, NMsim
 will normally read the results using <code>NMreadSim</code>. Use
 this argument to pass additional arguments (in a list) to that
-function if you want the results to be read in a specific way.</p></dd>
+function if you want the results to be read in a specific
+way. This can be if the model for some reason drops rows, and
+you need to merge by a row identifier. You would do
+`args.NMscanData=list(col.row="ROW")` to merge by a column
+called `ROW`. This is only used in rare cases.</p></dd>
 
 
 <dt>path.nonmem</dt>
@@ -420,6 +425,14 @@ to finish).</p></dd>
 <dt>quiet</dt>
 <dd><p>If TRUE, messages from what is going on will be
 suppressed to the extend implemented.</p></dd>
+
+
+<dt>check.mod</dt>
+<dd><p>Check the provided control streams for contents
+that may cause issues for simulation. Default is `TRUE`, and
+it is only recommended to disable this if you are fully aware
+of such a feature of your control stream, you know how it
+impacts simulation, and you want to get rid of warnings.</p></dd>
 
 
 <dt>...</dt>

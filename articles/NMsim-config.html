@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.10.931</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -185,8 +185,8 @@ running:</p>
 <h3 id="psn-or-not-for-nonmem-execution">PSN or not for Nonmem execution<a class="anchor" aria-label="anchor" href="#psn-or-not-for-nonmem-execution"></a>
 </h3>
 <p>NMsim can call Nonmem using PSN’s <code>execute</code> or through
-similar functionality included in <code>NMsim</code>. We will refer to
-those methods by the way they are referred to in the NMsim function
+similar functionality included in NMsim. We will refer to those methods
+by the way they are referred to in the <code><a href="../reference/NMsim.html">NMsim()</a></code> function
 argument that controls which one is used,
 i.e. <code>method.execute="psn"</code> and
 <code>method.execute="nmsim"</code>.</p>
@@ -194,7 +194,7 @@ i.e. <code>method.execute="psn"</code> and
 advantages over <code>method.execute="nmsim"</code>. In contrast, there
 are simulation types that will only work with
 <code>method.execute="nmsim"</code>. You need to tell NMsim where to
-find Nonmem (by settin <code>path.nonmem</code>) for this to work.</p>
+find Nonmem (by setting <code>path.nonmem</code>) for this to work.</p>
 <p>Nonmem execution with <code><a href="../reference/NMexec.html">NMexec()</a></code> (typically, for
 estimation and not simulation) is a slightly different discussion. See
 <code><a href="../reference/NMexec.html">?NMexec</a></code> for that.</p>
@@ -209,7 +209,7 @@ NMsim. Again, we refer to this by the argument name,
 <code>method.update.inits="psn"</code>.</p>
 <p>NMsim also provides a similar functionality internally, referred to
 as <code>method.update.inits="NMsim"</code>. This will be used if PSN is
-not found - and if you ask for it.</p>
+not found - or if you ask for it.</p>
 <p><code>method.update.inits="psn"</code> has two advantages over the
 NMsim-provided method. It is widely used, and it keeps comments in
 affected control stream sections (<code>$THETA</code>,
