@@ -164,7 +164,6 @@ ggplot(datl,aes(TIME,value,colour=variable))+
     geom_line(data=function(x)x[variable!="Y"])+
     geom_point(data=function(x)x[variable=="Y"])+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
-    facet_wrap(~trt)
 ```
 
 The reason we can plot a simulation with residual variability is that the control stream includes a variable `Y` defined with residual variability in `$ERROR`:
@@ -199,6 +198,11 @@ Notice a few things about the returned data:
 * Input data columns are there too (like `trt`).
 * Additional columns (`model` and `nmout`) may be familiar to `NMdata` users.
 * We will soon learn where the "_noname" in the `model` column comes from.
+
+## How to (re-)read the simulation results
+`NMsim()` creates an `.rds` file with information about where all the results are stored. It is named based on the model name and the `name.sim` argument. NMsim provides the path to it in the console at every run. You can also specify exactly where it should be stored and the file name using the `file.res` argument. Run the function `NMreadSim` on this file to (re-)read all the simulation results. 
+
+`NMreadSim` also supports the `wait` argument making it wait for all the simulation results to be available in case you submitted a large simulation to a cluster and want to continue your execution only when it's all done.
 
 ## Multiple models
 Before we continue with that model, we want to compare a simulation based on this model to another model we are considering. `NMsim` can do this and collect the data into one object:
@@ -246,6 +250,13 @@ this point already. Here they are:
   post-processing step. You are encouraged to explore what `NMsim`
   leaves in this directory (you will find fully reproducible
   simulation Nonmem runs including simulation input data).
+* `dir.res` while `dir.sims` contains all the Nonmem files, you can
+  specify a separate directory just for compressed results. The `rds`
+  files containing information about where the simulations were
+  performed will also be saved here. This means that as soon as
+  results have been read once, all contents of `dir.sims` can be
+  purged without loss of critical data. This can save a lot of disk
+  space.
 * `name.sim` Give your simulation a meaningfull name. We did not do
   this above, so `NMsim` called it "noname".
 * `table.vars` Very important. This redefines the output table section
@@ -255,6 +266,11 @@ this point already. Here they are:
   are useful for the simulation analysis. See how this is used
   below. Once you get used to this argument, you will use it very
   frequently.
+* `wait` Wait for simulation to be done and return the resulting data?
+  If not a path to the rds file to be read with `NMreadSim` will be
+  returned.
+* `reuse.results` If `TRUE` and results are found on file, those will
+  be read instead of rerunning the simulation.
 * `seed` A numeric value that will be used in Nonmem's $SIMULATION section
 
 
@@ -316,7 +332,8 @@ simres.n1000.2 <- NMsim(file.mod=file.mod,
                         data=dat.sim,
                         subproblems=1000
                         dir.sims="~/NMsim_vignette", ## where to store simulation files
-                        name.sim="N1000_subproblems"
+                        dir.res="simulate-results", ## where to store simulation files
+                        name.sim="N1000_subproblems",
                         )
 simres.n1000.2 <- as.data.table(simres.n1000.2)[,ID:=.GRP,by=.(NMREP,ID,trt)]
 ```
@@ -352,11 +369,11 @@ p.pi.typ
 ```
 
 ## Read previously generated simulations
-There is no need to save simulation results because they are already saved by `NMsim`. Instead, use arguments `dir.sims` and `name.sim` to make sure to get a meaningful structure for the generated files. Then read the results with `NMdata::NMscanData`. `merge.by.row=FALSE` because there is no reason to combine `NMsim` datasets using a row identifier.
+There is no need to save simulation results because they are already saved by `NMsim`. Instead, use arguments `dir.sims`, `dir.res` and `name.sim` to make sure to get a meaningful structure for the generated files. Then read the results with `NMreadSim()`.
 
 ```{r,eval=FALSE}
 library(NMdata)
-simres.n1000.1 <- NMscanData("~/NMsim_vignette/xgxr021_N1000_datarep/NMsim_xgxr021_N1000_datarep.lst",merge.by.row=FALSE)
+simres.n1000.1 <- NMreadSim("simulate-results/simres_n1000_1_paths.rds")
 ```
 
 In fact, that is also what `NMsim` does once Nonmem has run.

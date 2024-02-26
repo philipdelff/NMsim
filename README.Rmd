@@ -207,7 +207,6 @@ use these functions to use `NMsim`, they do add to the package
 providing a framework that enables a complete simulation workflow in
 only 5-15 simple lines of R code. 
 
-	
 ## Run Nonmem from R
 There are several other packages out there that can do this, and
 `NMsim` may not be your best choice if this feature is all you are
