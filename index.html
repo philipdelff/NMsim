@@ -173,7 +173,7 @@
 <div class="section level2">
 <h2 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
 </h2>
-<p>Currently, <code>NMsim</code> can only run Nonmem on Unix/Linux systems. It wouldn’t be too big a deal to add support for Windows, so reach out if you need it. It is possible to run <code>R</code> on Windows and run Nonmem on a Unix/Linux system through SSH if needed.</p>
+<p>NMsim is dependent on running Nonmem. Often, that will mean Nonmem must be available on the same system as the one running R. However, if Nonmem is run on a separate system through <code>qsub</code> or in another way initiates Nonmem on another system, that will work too. Then however, only if R can read the file system where Nonmem writes the results, it can retrieve the results.</p>
 <p>NMsim does not need PSN but can use it. However, not all features are available with PSN, so for some features you will have to specify the path to the Nonmem executable (say <code>path.nonmem=/path/to/nmfe75</code> or any Nonmem executable you want to use). Specifically of the simulation types currently available, simulation of known subjects is not possible using PSN (but works if a Nonmem executable is provided).</p>
 <p>If PSN is used, <code>NMsim</code> uses PSN’s <code>execute</code> to run models. In addition, <code>NMsim</code> by default uses PSN’s <code>update_inits</code> to update initial values in control streams, if PSN is available. <code>NMsim</code> does also include its own simple function to do this if <code>PSN</code> is not available.</p>
 </div>
