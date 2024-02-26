@@ -108,9 +108,9 @@ into one R function. In the example given above, `NMsim` will do the
 following:
 
 -   Save the simulation input data in a csv file for Nonmem
--   Create a simulation input control stream based on `file.mod` ($INPUT
-    and $DATA matching the saved simulation data set; $SIMULATE instead
-    of $ESTIMATION and $COVARIANCE)
+-   Create a simulation input control stream based on `file.mod`
+    (\$INPUT and \$DATA matching the saved simulation data set;
+    \$SIMULATE instead of \$ESTIMATION and \$COVARIANCE)
 -   Update and fix initial values based on estimate (from `file.ext`)
 -   Run Nonmem on the generated simulation control stream
 -   Collect output data tables, combine them, and merge with the
@@ -161,10 +161,12 @@ easy to do.
 
 ## Requirements
 
-Currently, `NMsim` can only run Nonmem on Unix/Linux systems. It
-wouldn’t be too big a deal to add support for Windows, so reach out if
-you need it. It is possible to run `R` on Windows and run Nonmem on a
-Unix/Linux system through SSH if needed.
+NMsim is dependent on running Nonmem. Often, that will mean Nonmem must
+be available on the same system as the one running R. However, if Nonmem
+is run on a separate system through `qsub` or in another way initiates
+Nonmem on another system, that will work too. Then however, only if R
+can read the file system where Nonmem writes the results, it can
+retrieve the results.
 
 NMsim does not need PSN but can use it. However, not all features are
 available with PSN, so for some features you will have to specify the
