@@ -30,7 +30,7 @@ NMcreateMatLines <- function(omegas,type){
     omegas.long[hasOff==TRUE,maxOff:=max(j[abs(value)>1e-9]-i),by=.(i)]
 
     
-    
+
     is <- unique(omegas.long$i)
 
     i.idx <- 1

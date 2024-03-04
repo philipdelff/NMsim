@@ -65,7 +65,6 @@
 
 NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, addl=NULL, as.fun){
     
-    ## if(debug) browser()
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -99,7 +98,7 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     ## convert to dt's
     
     names.doses <- names(list.doses)
-    
+
     list.doses <- lapply(names.doses,function(x){
         dt <- list.doses[[x]]
         if(is.data.frame(dt)){
@@ -121,8 +120,7 @@ NMcreateDoses <- function(TIME, AMT=NULL, RATE=NULL, SS=NULL, CMT=1, EVID=1, add
     ##     stop("Column(s) has/have been specified beyond TIME. This is not allowed - TIME has to be at least as long as other arguments.")
     ## }
 
-    ## list.doses[[6]][,TIME:=12]
-    ## list.doses[[5]][,TIME:=12]
+
     
 ### make use of merge.data.frame to get outer merges where if no
 ### common columns found.

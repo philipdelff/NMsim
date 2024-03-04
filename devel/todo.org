@@ -136,7 +136,7 @@ It must add col.row to output table. And NMscanData arguments
 collected dont seem to be used when running NMscanData.
 *** TODO [#B] option to clean temp dirs
 *** DONE Support list of data sets
-*** TODO [#B] Function to read and save results
+*** DONE Function to read and save results
 And clean up?
 *** DONE Support args.NMscanData 
 *** DONE Split text.table into table.vars and table.options

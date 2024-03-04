@@ -144,3 +144,5 @@ test_that("data.frames accepted",{
     res.dt <- NMcreateDoses(TIME=c(0),AMT=data.table(DOSE=c(10,50),AMT=c(10,50)))
     expect_equal(res.df,res.dt)
 })
+
+
