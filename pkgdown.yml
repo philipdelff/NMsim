@@ -1,19 +1,19 @@
 pandoc: 3.1.11
-pkgdown: 2.0.7
+pkgdown: 2.0.8
 pkgdown_sha: ~
 articles:
+  NMsim-basics: NMsim-basics.html
+  NMsim-config: NMsim-config.html
   NMsim-DataCreate: NMsim-DataCreate.html
+  NMsim-known: NMsim-known.html
   NMsim-ParamUncertain: NMsim-ParamUncertain.html
   NMsim-ResidVar: NMsim-ResidVar.html
   NMsim-ReuseSimSubjects: NMsim-ReuseSimSubjects.html
-  NMsim-TypSubj: NMsim-TypSubj.html
-  NMsim-VPC: NMsim-VPC.html
-  NMsim-basics: NMsim-basics.html
-  NMsim-config: NMsim-config.html
-  NMsim-known: NMsim-known.html
   NMsim-speed: NMsim-speed.html
+  NMsim-TypSubj: NMsim-TypSubj.html
   NMsim-varyPars: NMsim-varyPars.html
-last_built: 2024-03-18T21:23Z
+  NMsim-VPC: NMsim-VPC.html
+last_built: 2024-04-11T18:09Z
 urls:
   reference: https://philipdelff.github.io/NMsim/reference
   article: https://philipdelff.github.io/NMsim/articles
