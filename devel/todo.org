@@ -101,6 +101,8 @@ simres.n[,(name):=transform[[name]](get(name))]
 reading is built on relative paths to wd when NMsim was run. They will
 have to be based on dir.res?
 ** NMsim
+*** TODO [#A] Include name.model argument
+Often one will want to give a vector of model names to easily label the models in the output
 *** TODO [#B] skip fst option
 *** DONE Returning NULL when it should error
 The test "basic - a model that fails on NMTRAN" has NMsim wait for a
@@ -303,3 +305,8 @@ ENDIF
 *** DONE Make sure data is not edited
 *** DONE col.ipre and col.iprevar
 *** TODO Support custom errors functions
+** rbind.NMsimRes
+*** TODO [#A] bug in infite recursive calc
+The lapply(....,unNMsimRes) does not seem to work. The next call to
+rbind still gets rbind.NMsimRes. Would it be better to run unNMsimRes
+in a loop?
