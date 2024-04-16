@@ -44,7 +44,6 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
     name <- NULL
 
 ###  Section end: Dummy variables, only not to get NOTE's in pacakge checks
-    
     copy.data <- FALSE
     if(is.null(dir.data)){
         copy.data <- TRUE
@@ -74,9 +73,13 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
     dir.tmp <- fnExtension(fnAppend(file.mod,paste0("dir",sprintf(fmt="%04d",no.dir.new))),"")
     dir.create(dir.tmp)
     file.mod.tmp <- file.path(dir.tmp,fn.mod)
+
+    
     
 ### copy input data to temp dir. 
     if(copy.data){
+
+        
         file.copy(extr.data$path.csv,dir.tmp)
 ### modify .mod to use local copy of input data. Notice the newfile
 ### arg to NMwriteSection creating file.mod.tmp.

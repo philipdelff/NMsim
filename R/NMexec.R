@@ -125,7 +125,6 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
-    input.archive <- NULL
     nid <- NULL
     input <- NULL
     result <- NULL
@@ -216,6 +215,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         }
 ### cat(file.mod,"\n")
 
+        
         ## replace extension of fn.input based on path.input - prefer rds
         rundir <- dirname(file.mod)
 
@@ -226,7 +226,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             if(packageVersion("NMdata")<"0.1.1"){
                 dat.inp <- NMscanInput(file=file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
             } else {
-                dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
+                ## dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
+                dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",quiet=TRUE)
             }
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
@@ -265,7 +266,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             if(!file.exists(path.nonmem)){
                 stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
             }
-            string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed,system.type=system.type)
+            string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed,system.type=system.type,dir.data=dir.data)
             if(sge) {
 
                 if(nc==1){
