@@ -66,13 +66,16 @@ rbind.NMsimRes <- function(x,...){
     ## list.ModTab <- list.ModTab[!sapply(list.ModTab,is.null)]
     ModTab <- rbindlist(list.ModTab,fill=TRUE)
 
-    ## unNMsimRes(x)
-    lapply(c(x,list(...)),unNMsimRes)
-
+### solution 1
+    unNMsimRes(x)
+    ## lapply(c(x,list(...)),unNMsimRes)
+    res <- rbind(x,...)
+    
     ## args.res.list <- c(x,list(...))
     ## args.res.list <- args.res.list[!sapply(args.res.list,is.null)]
     ## res <- do.call(rbind,args.res.list)
-    res <- rbind(x,...)
+### solution 2
+    ## res <- data.table:::rbind.data.table(x,...)
 
     addClass(res,"NMsimRes")
     setattr(res,"NMsimModTab",ModTab)
