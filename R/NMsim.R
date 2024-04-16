@@ -262,7 +262,7 @@
 
 NMsim <- function(file.mod,data,dir.sims, name.sim,
                   order.columns=TRUE,script=NULL,subproblems=NULL,
-                  reuse.results=FALSE,seed,args.psn.execute,
+                  reuse.results=FALSE,seed,args.seed=NULL,args.psn.execute,
                   table.vars,
                   table.options,
                   text.sim="",
@@ -578,6 +578,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         
     }
 
+    
     relpathResFromSims <- relative_path(dir.res,dir.sims)
     relpathSimsFromRes <- relative_path(dir.sims,dir.res)
     
@@ -587,7 +588,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## seed
     arg.seed <- seed
     if(is.null(seed)){
-        seed <- function()round(runif(n=1)*2147483647)
+        seed <- NMseed
     } 
     
     if(missing(subproblems)|| is.null(subproblems)) subproblems <- 0
@@ -696,9 +697,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     } else {
         dt.models[,path.rds:=fnExtension(file.res,"rds")]
     }
-    dt.models[,path.rds.exists:=file.exists(path.rds)]
+    ## dt.models[,path.rds.exists:=file.exists(path.rds)]
+    path.rds.exists <- dt.models[,file.exists(path.rds)]
 ### reading results from prior run
-    if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
+    ## if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
+    if(reuse.results && all(path.rds.exists==TRUE)){
         if(!quiet) message("Reading from simulation results on file.")
         simres <- try(NMreadSim(dt.models[,path.rds],wait=wait))
         if(!inherits(simres,"try-error")) {
@@ -865,7 +868,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
 
 ###  Section end: Output tables
-
+    
 
 #### Section start: Additional control stream modifications specified by user - list.sections ####
     if( !missing(list.sections) && !is.null(list.sections) ){
@@ -953,8 +956,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,path.sim.lst:=fnExtension(path.sim,".lst")]
     
     dt.models[,ROWMODEL2:=.I]
-    dt.models[,seed:={if(is.function(seed))  seed() else seed},by=.(ROWMODEL2)]
+    ## dt.models[,seed:={if(is.function(seed))  seed() else seed},by=.(ROWMODEL2)]
+    ## if(is.numeric(dt.models[,seed])) dt.model[,seed:=sprintf("(%s)",seed)]
     
+    dt.models <- do.call(NMseed,c(list(models=dt.models),args.seed))
+
     
     
 ### seed and subproblems
@@ -975,10 +981,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 name.sim <- names.sections[grepl("^(SIM|SIMULATION)$",names.sections)]
                 section.sim <- all.sections.sim[[name.sim]]
                 
-                if(!is.null(seed)){
-                    section.sim <- gsub("\\([0-9]+\\)","",section.sim)
-                    section.sim <- paste(section.sim,sprintf("(%s)",seed))
-                }
+                #if(!is.null(seed)){
+                section.sim <- gsub("\\([0-9]+\\)","",section.sim)
+                section.sim <- paste(section.sim,seed)
+                #}
                 if(subproblems>0){
                     section.sim <- gsub("SUBPROBLEMS *= *[0-9]*"," ",section.sim)
                     section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
@@ -993,7 +999,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 
 
-    
+######  store NMscanData arguments
     args.NMscanData.list <- c(args.NMscanData,args.NMscanData.default)
     args.NMscanData.list <- args.NMscanData.list[unique(names(args.NMscanData.list))]
     ## if(!is.null(args.NMscanData.list)){
@@ -1053,7 +1059,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
             }
             
-            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait.exec,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type)
+            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait.exec,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type,dir.data="..")
             
             ## simres.n <- list(lst=path.sim.lst)
             ## simres.n

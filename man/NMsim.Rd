@@ -14,6 +14,7 @@ NMsim(
   subproblems = NULL,
   reuse.results = FALSE,
   seed,
+  args.seed = NULL,
   args.psn.execute,
   table.vars,
   table.options,
