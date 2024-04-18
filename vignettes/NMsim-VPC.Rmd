@@ -61,7 +61,7 @@ set.seed(43)
 simres.vpc <- NMsim(file.mod,
                     table.vars=c("PRED","IPRED", "Y"),
                     name.sim="vpc_01"
-                   ,nsims=500
+                   ,subproblems=500
                    ,as.fun="data.table")
 ```
 
@@ -121,7 +121,7 @@ study that was not included in the model. All you have to do is to
 read the data you want and provide it in `NMsim`'s `data` argument.
 
 ### Make use of the cluster
-We will repeat the same as above, but now 500 times (`nsims`). We make
+We will repeat the same as above, but now 500 times (`subproblems`). We make
 use of a few more arguments for efficiency. `sge` means that the jobs
 will be sent to the cluster. The `nc` argument is now used meaning
 only one core will be used per job. If each node on the cluster has 16
@@ -138,7 +138,7 @@ set.seed(43)
 sim.vpc.sge <- NMsim(file.mod,
                      table.vars=c("PRED","IPRED", "Y"),
                      name.sim="vpc_01"
-                    ,nsims=500
+                    ,subproblems=500
                     ,sge=TRUE
                      ## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"
                      ##,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
