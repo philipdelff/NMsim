@@ -132,7 +132,7 @@ included with NMsim:</p>
 <span><span class="va">simres.vpc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span><span class="va">file.mod</span>,</span>
 <span>                    table.vars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PRED"</span>,<span class="st">"IPRED"</span>, <span class="st">"Y"</span><span class="op">)</span>,</span>
 <span>                    name.sim<span class="op">=</span><span class="st">"vpc_01"</span></span>
-<span>                   ,nsims<span class="op">=</span><span class="fl">500</span></span>
+<span>                   ,subproblems<span class="op">=</span><span class="fl">500</span></span>
 <span>                   ,as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span></code></pre></div>
 <p>The performed simulation is similar to the one produced by the
 <code>VPC</code> function in <code>PSN</code>. However, there are some
@@ -198,7 +198,7 @@ and provide it in <code>NMsim</code>’s <code>data</code> argument.</p>
 <h3 id="make-use-of-the-cluster">Make use of the cluster<a class="anchor" aria-label="anchor" href="#make-use-of-the-cluster"></a>
 </h3>
 <p>We will repeat the same as above, but now 500 times
-(<code>nsims</code>). We make use of a few more arguments for
+(<code>subproblems</code>). We make use of a few more arguments for
 efficiency. <code>sge</code> means that the jobs will be sent to the
 cluster. The <code>nc</code> argument is now used meaning only one core
 will be used per job. If each node on the cluster has 16 cores, this
@@ -216,7 +216,7 @@ of minutes to execute.</p>
 <span><span class="va">sim.vpc.sge</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span><span class="va">file.mod</span>,</span>
 <span>                     table.vars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PRED"</span>,<span class="st">"IPRED"</span>, <span class="st">"Y"</span><span class="op">)</span>,</span>
 <span>                     name.sim<span class="op">=</span><span class="st">"vpc_01"</span></span>
-<span>                    ,nsims<span class="op">=</span><span class="fl">500</span></span>
+<span>                    ,subproblems<span class="op">=</span><span class="fl">500</span></span>
 <span>                    ,sge<span class="op">=</span><span class="cn">TRUE</span></span>
 <span>                     <span class="co">## ,path.nonmem="/opt/nonmem/nm751/run/nmfe75"</span></span>
 <span>                     <span class="co">##,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"</span></span>
