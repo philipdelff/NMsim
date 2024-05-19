@@ -13,8 +13,8 @@ NMsim(
   script = NULL,
   subproblems = NULL,
   reuse.results = FALSE,
-  seed,
-  args.seed = NULL,
+  seed.R = NULL,
+  seed.nm = NULL,
   args.psn.execute,
   table.vars,
   table.options,
@@ -43,6 +43,7 @@ NMsim(
   wait,
   quiet = FALSE,
   check.mod = TRUE,
+  seed,
   ...
 )
 }
@@ -78,11 +79,29 @@ means not to use SUBPROBLEMS.}
 they be used? If TRUE and reading the results fail, the
 simulations will still be rerun.}
 
-\item{seed}{Seed to pass to Nonmem. Default is to draw one betwen
-0 and 2147483647 (the values supported by Nonmem) for each
-simulation. You can pass a function that will be evaluated
-(say to choose a different pool of seeds to draw from). In
-case type.sim=known, seed is not used and will be set to 1.}
+\item{seed.R}{A value passed to \code{set.seed()}. It may be
+better use \code{seed.R} rather than calling \code{set.seed()}
+manually because the seed can then be captured and stored by
+\code{NMsim()} for reproducibility. See \code{seed.nm} for
+finer control of the seeds that are used in the Nonmem control
+streams.}
+
+\item{seed.nm}{Control Nonmem seeds. If a numeric, a vector or a
+    `data.frame`, these are used as the the seed values (a single
+    value or vector will be recycled so make sure the dimesnsions
+    are right, the number of columns in a \code{data.frame} will
+    dictate the number of seeds in each Nonmem control stream. Use
+    a list with elements `values`, and `dist` and others for
+    detailed control of the random sources. See \code{?NMseed} for
+    details on what arguments can be passed this way.
+
+Default is to draw seeds betwen
+    0 and 2147483647 (the values supported by Nonmem) for each
+    simulation. You can pass a function that will be evaluated
+    (say to choose a different pool of seeds to draw from).
+
+
+In case \code{method.sim=NMsim_known}, seed is not used and will be set to 1.}
 
 \item{args.psn.execute}{A charachter string that will be passed as
 arguments PSN's `execute`.}
@@ -149,18 +168,35 @@ is in the system search path. So as long as you know where
 your Nonmem executable is, "nmsim" is recommended. The default
 is "nmsim" if path.nonmem is specified, and "psn" if not.}
 
-\item{method.update.inits}{The initial estimates must be updated
-from the estimated model before running the simulation. NMsim
-supports two ways of doing this: "psn" which uses PSN's
-"update_inits", and "nmsim" which uses a simple internal
-method. The advantage of "psn" is it keeps comments in the
-control stream and is a method known to many. The advantages
-of "nmsim" are it does not require PSN, and that it is very
-robust. "nmsim" fixes the whole OMEGA and SIGMA matrices as
-single blocks making the $OMEGA and $SIGMA sections of the
-control streams less easy to read. On the other hand, this
-method is robust because it avoids any interpretation of BLOCK
-structure or other code in the control streams.}
+\item{method.update.inits}{The initial values of all parameters
+    are by updated from the estimated model before running the
+    simulation. NMsim can do this with a native function or use
+    PSN to do it - or the step can be skipped to not update the
+    values. The possible values are
+
+\itemize{
+
+\item{"psn"}
+    uses PSN's "update_inits". Requires a functioning PSN
+    installation and possibly that \code{dir.psn} is correctly
+    set. The advantages of this method are that it keeps comments
+    in the control stream and that it is a method known to many.
+
+\item{"nmsim"}
+ Uses a simple internal method to update the parameter values
+based on the ext file.  The advantages of "nmsim" are it does not
+require PSN, and that it is very robust. "nmsim" fixes the whole
+OMEGA and SIGMA matrices as single blocks making the $OMEGA and
+$SIGMA sections of the control streams less easy to read. On the
+other hand, this method is robust because it avoids any
+interpretation of BLOCK structure or other code in the control
+streams.
+
+\item{"none"} Do nothing. This is useful if the model to simulate
+has not been estimated but parameter values have been manually put
+into the respective sections in the control stream.
+
+}}
 
 \item{create.dirs}{If the directories specified in dir.sims and
 dir.res do not exists, should it be created? Default is TRUE.}
@@ -273,6 +309,8 @@ it is only recommended to disable this if you are fully aware
 of such a feature of your control stream, you know how it
 impacts simulation, and you want to get rid of warnings.}
 
+\item{seed}{Deprecated. See \code{seed.R} and \code{seed.nm}.}
+
 \item{...}{Additional arguments passed to \code{method.sim}.}
 }
 \value{
@@ -290,7 +328,7 @@ get the most out of this.
 }
 \details{
 Loosely speaking, the argument \code{method.sim} defines
-    _what_ NMsim will do, \code{method.executes} define _how_ it
+    _what_ NMsim will do, \code{method.execute} define _how_ it
     does it. \code{method.sim} takes a function that converts an
     estimation control stream into whatever should be
     run. Features like replacing `$INPUT`, `$DATA`, `$TABLE`, and

@@ -5,7 +5,8 @@
 ##' @rdname NMsimResOperations
 unNMsimRes <- function(x){
     if(!is.null(x)){
-        setattr(x,"NMsimRes",NULL)
+        ## setattr(x,"NMsimRes",NULL)
+        setattr(x,"NMsimModTab",NULL)
         setattr(x,"class",setdiff(class(x),"NMsimRes"))
     }
 }

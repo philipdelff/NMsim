@@ -1,3 +1,11 @@
+# NMsim 0.1.1
+
+## New features
+* seeds
+
+## Bugfixes 
+* rbind
+
 # NMsim 0.1.0
 For the first time NMsim works on Windows. There may still be some
 limitations but initial testing looks very promising. Make sure to set
