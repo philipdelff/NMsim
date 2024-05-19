@@ -235,7 +235,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 
         if((sge && nc > 1)||(sge && method.execute=="psn")){
             if(nc>1){
-                file.pnm <- file.path(rundir,"NMexec.pnm")
+                ## file.pnm <- file.path(rundir,"NMexec.pnm")
+                file.pnm <- fnExtension(file.mod,"pnm")
                 pnm <- NMgenPNM(nc=nc,file=file.pnm)
             }
         }

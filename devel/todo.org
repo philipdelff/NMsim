@@ -100,9 +100,24 @@ simres.n[,(name):=transform[[name]](get(name))]
 *** DONE Support changing paths after running NMsim
 reading is built on relative paths to wd when NMsim was run. They will
 have to be based on dir.res?
+** NMseed
+Purpose: Add seeds to $SIM
+
+I don't think we will need to interpret existing SIM. The user will
+have to supply what dists are needed.
+*** TODO [#A] Make sure NMsim uses seed and args.seed meaningfully mean
+
 ** NMsim
-*** TODO [#A] Include name.model argument
+
+*** TODO [#B] Drop NMsim from file names
+In NMsim(), it happens here:
+#+begin_src R
+dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
+#+end_source
+*** CANCELED Include name.model argument
 Often one will want to give a vector of model names to easily label the models in the output
+
+This can be done by naming the file.mod vector 
 *** TODO [#B] skip fst option
 *** DONE Returning NULL when it should error
 The test "basic - a model that fails on NMTRAN" has NMsim wait for a
@@ -110,6 +125,8 @@ model that fails and can't read the results. Since it's waiting and
 can't return results it should be an error.
 *** TODO [#A] Avoid (OBSERVATIONS ONLY)
 That has to be dropped from $ERROR sections by default
+
+Currently, the user is warned about the existence
 *** TODO [#B] avoid PRED_IGNORE_DATA_TEST==1
 In $PK. Example
 ; include study 4 even though ANP3AC=0
@@ -246,6 +263,8 @@ Or we read and write data applying filters? But that has limitations
 to what filters are supported.
 *** Use NMsim_default for VPC's
 The vpc sim is about sim of the orig dataset with SUBPROBLEM
+** NMsim_known
+*** TODO [#B] throw error if no subjects are found in phi
 ** NMsim_typical
 *** TODO [#C] Use $ETAS rather than $OMEGA
 Just repeat 0 for as many ETAS as used
@@ -306,7 +325,7 @@ ENDIF
 *** DONE col.ipre and col.iprevar
 *** TODO Support custom errors functions
 ** rbind.NMsimRes
-*** TODO [#A] bug in infite recursive calc
+*** DONE bug in infite recursive calc
 The lapply(....,unNMsimRes) does not seem to work. The next call to
 rbind still gets rbind.NMsimRes. Would it be better to run unNMsimRes
 in a loop?

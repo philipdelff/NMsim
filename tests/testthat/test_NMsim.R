@@ -37,7 +37,7 @@ test_that("Basic",{
                   data=dat.sim,
                   dir.sim="testOutput",
                   suffix.sim = "sd1",
-                  seed=2342,
+                  seed.nm=2342,
                   execute=FALSE,
                   method.update.inits="nmsim")
 

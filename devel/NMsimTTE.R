@@ -1,10 +1,15 @@
-## number of TTE endpoints
+## Determine in input .mod
 
-## number of comp in .mod
+### number of TTE endpoints
 
-## extend or create COM()
+### number of comp in .mod
 
-## add differential equations for each endpoint
+## modify sim .mod
 
-## Based on surv variable, sim TTE endpoints
+### extend or create COM()
 
+### add differential equations for each endpoint
+
+### Based on surv variable, sim TTE endpoints
+
+### TTE endpoints in output table
