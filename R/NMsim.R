@@ -819,7 +819,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         },by=ROWMODEL]
     }
     if(method.update.inits=="nmsim"){
-        
+        ## edits the simulation control stream in the
+        ## background. dt.models not affected.
         dt.models[,NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE),by=.(ROWMODEL)]
     }
     
@@ -829,7 +830,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         ## if data is NULL, we will re-use data used in file.mod
         rewrite.data.section <- TRUE
         if(is.null(data)){
-            if(!packageVersion("NMdata")>"0.1.1") stop("data has to be supplied. Starting with NMdata 0.1.2 it will be possible not to supply data which is intented for simulations for VPCs.")
             data.this <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
             ## col.row <- tmpcol(data,base="ROW")
             if(!col.row %in% colnames(data.this)){

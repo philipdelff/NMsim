@@ -44,26 +44,6 @@ NMreplaceInits <- function(inits,fix=FALSE,...){
     sigmas <- inits[par.type=="SIGMA"]    
     lines.sigma <- NMcreateMatLines(sigmas,type="SIGMA")
 
-    ##     omegas[value==0,value:=1e-30]
-    ##     Netas <- omegas[,max(i)]
-    ##     setorder(omegas,i,j)
-    ## ## this is the diag and the upper triangle only
-    ##     dt.diag <- dcast(omegas,j~i,value.var="value")
-    ##     list.lines <- lapply(dt.diag[,!("j")],function(x)paste(x[!is.na(x)],collapse=" "))
-    ##     lines.omega <- c(sprintf("$OMEGA BLOCK(%d) %s",Netas,str.fix)
-    ##                     ,unlist(list.lines,use.names=FALSE)
-    ##                      )
-    
-    ## create SIGMA section
-    ## sigmas <- inits[par.type=="SIGMA"]
-    ## sigmas[value==0,value:=1e-30]
-    ## Netas <- sigmas[,max(i)]
-    ## setorder(sigmas,i,j)
-    ## dt.diag <- dcast(sigmas,j~i,value.var="value")
-    ## list.lines <- lapply(dt.diag[,!("j")],function(x)paste(x[!is.na(x)],collapse=" "))
-    ## lines.sigma <- c(sprintf("$SIGMA BLOCK(%d) %s",Netas,str.fix)
-    ##                 ,unlist(list.lines,use.names=FALSE)
-    ##                  )
 
     list.sections <- list(THETA=lines.theta
                          ,OMEGA=lines.omega
