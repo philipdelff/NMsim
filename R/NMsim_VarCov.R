@@ -19,7 +19,7 @@
 ##' @return Character vector of simulation control stream paths
 ##' @export
 
-NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
+NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims,tab.ext){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
@@ -42,14 +42,21 @@ NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
     
 
     files.needed.def <- NMsim_default(file.sim=file.sim,file.mod,data.sim)
-
     
     path.lst <- fnExtension(file.mod,"lst")
     path.cov <- fnExtension(path.lst,"cov")
     path.ext <- fnExtension(path.lst,"ext")
-    ## Should not include NMREP. 
-    ##    NMreadTabCov(path.cov,rm.name=F)
 
+
+    if(missing(tab.ext)) tab.ext <- NULL
+    if(missing(nsims) && is.null(tab.ext)){
+
+
+        }
+    ## if(!is.null(tab.ext)){
+    ##     nsims <- tab.ext[,.N]
+    ##     }
+    
     ## define new files
     path.sim.0 <- file.sim
     run.sim.0 <- fnExtension(basename(path.sim.0),"")
@@ -61,41 +68,43 @@ NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims=1){
     dt.sims[,fn.sim:=basename(path.sim),by=.(SUBMODEL)]
     dt.sims[,run.sim:=fnExtension(fn.sim,""),by=.(SUBMODEL)]
     
-    
+#### Section start: sampling new parameters from COV matrix ####
+
     covmat <- NMdata::NMreadCov(path.cov)
     ests <- NMreadExt(path.ext,as.fun="data.table")[NMREP==1,.(parameter,par.type,i,j,est,FIX)]
     ests <- ests[par.type%in%c("THETA","SIGMA","OMEGA")]
     ests <- ests[match(ests$parameter,colnames(covmat))]
-    
-    
     newpars <- mvrnorm(n=nsims,Sigma=covmat,mu=ests$est)
-    ### as.list first is because without it, this will fail for
-    ### nsims=1. This is because a single-column data.table would be
-    ### created in that case, and then SUBMODEL and further steps
+### as.list first is because without it, this will fail for
+### nsims=1. This is because a single-column data.table would be
+### created in that case, and then SUBMODEL and further steps
 ### become wrong and will fail.
     if(nsims==1){
         newpars <- as.data.table(as.list(newpars))
     } else {
         newpars <- as.data.table(newpars)
     }
-    newpars[,SUBMODEL:=.I]
-
-    
-    newpars <- mergeCheck(
-        melt(newpars,id.vars="SUBMODEL",variable.name="parameter")
-       ,
-        ests
-                         ,by="parameter",quiet=TRUE)
-
-    newpars <- mergeCheck(newpars,dt.sims,by="SUBMODEL")
     ## if the parameter was fixed, reset it to the estimate
     newpars[FIX==1,value:=est]
     ## if OMEGA or SIGMA diagonal elements are <0 set to 0.
     newpars[i==j&value<0,value:=0]
     
-    ## newpars[,est:=NULL]
-    ## setnames(newpars,"value","est")
+###  Section end: sampling new parameters from COV matrix
+    ##:ess-bp-start::conditional@:##
+browser(expr={TRUE})##:ess-bp-end:##
     
+    newpars[,SUBMODEL:=.I]
+
+    newpars <- mergeCheck(
+        melt(newpars,id.vars="SUBMODEL",variable.name="parameter")
+       ,
+        ests
+       ,by="parameter",quiet=TRUE)
+
+    newpars <- mergeCheck(newpars,dt.sims,by="SUBMODEL")
+    
+
+
     
 ### create control streams one by one
     res <- newpars[,

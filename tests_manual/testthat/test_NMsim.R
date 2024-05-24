@@ -218,7 +218,7 @@ test_that("basic - spaces in paths",{
     set.seed(43)
     simres <- NMsim(file.mod,
                     data=dt.sim,
-                    text.table="PRED IPRED",
+                    table.vars="PRED IPRED",
                     dir.sims="testOutput",
                     name.sim="default_01"
                     )
@@ -232,7 +232,7 @@ test_that("basic - spaces in paths",{
     set.seed(43)
     simres.psn <- NMsim(file.mod,
                         data=dt.sim,
-                        text.table="PRED IPRED",
+                        table.vars="PRED IPRED",
                         dir.sims="testOutput",
                         name.sim="default_01",
                         method.execute="psn"
@@ -242,7 +242,7 @@ test_that("basic - spaces in paths",{
     set.seed(43)
     simres.nm <- NMsim(file.mod,
                        data=dt.sim,
-                       text.table="PRED IPRED",
+                       table.vars="PRED IPRED",
                        dir.sims="testOutput",
                        name.sim="default_01",
                        path.nonmem=path.nonmem,
@@ -251,6 +251,9 @@ test_that("basic - spaces in paths",{
 
     expect_equal(simres.psn,simres.nm)
 
+    if(F){
+        compareCols(simres.psn,simres.nm)
+    }
 })
 
 

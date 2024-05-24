@@ -22,6 +22,8 @@
 ##' @param order.columns reorder columns by calling
 ##'     NMdata::NMorderColumns before saving dataset and running
 ##'     simulations? Default is TRUE.
+##' @param file.ext
+##' @param tab.ext
 ##' @param script The path to the script where this is run. For
 ##'     stamping of dataset so results can be traced back to code.
 ##' @param subproblems Number of subproblems to use as SUBPROBLEMS in
@@ -298,8 +300,14 @@
 
 
 NMsim <- function(file.mod,data,dir.sims, name.sim,
-                  order.columns=TRUE,script=NULL,subproblems=NULL,
-                  reuse.results=FALSE,seed.R=NULL,seed.nm=NULL,args.psn.execute,
+                  order.columns=TRUE,
+                  file.ext=NULL,
+##                  tab.ext=NULL,
+                  script=NULL,subproblems=NULL,
+                  reuse.results=FALSE,
+                  seed.R=NULL,
+                  seed.nm=NULL,
+                  args.psn.execute,
                   table.vars,
                   table.options,
                   text.sim="",
@@ -821,13 +829,23 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(method.update.inits=="nmsim"){
         ## edits the simulation control stream in the
         ## background. dt.models not affected.
+        
         dt.models[,NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE),by=.(ROWMODEL)]
+        if(F){
+### this way, NMupdateInits is expected to return a vector or control stream names or paths
+        dt.mods.tmp <- dt.models[,.(file.sim=NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE,file.ext=file.ext,tab.ext=tab.ext)),by=.(ROWMODEL)]
+        dt.models <- mergeCheck(dt.mods.tmp[,.(NEWMODEL,ROWMODEL)],dt.models,by=cc(ROWMODEL))
+        dt.models[,ROWMODEL:=.I]
+            dt.models[,NEWMODEL:=NULL]
+        }
     }
-    
+
+    ## Error in NMdata:::NMwriteSectionOne(file0 = path.sim, list.sections = nmtext["INPUT"],  : 
+    ## file.exists(file0) is not TRUE
     
     dt.models[,{
 ### note: insert test for whether run is needed here
-        ## if data is NULL, we will re-use data used in file.mod
+        ## if data is NULL, we will re-use data used in file.mod. Adding row counter if not found.
         rewrite.data.section <- TRUE
         if(is.null(data)){
             data.this <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
@@ -935,7 +953,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 #### Section start: Additional control stream modifications specified by user - list.sections ####
     if( !missing(list.sections) && !is.null(list.sections) ){
 ### This requires NMdata >=0.1.0.905
-        if(packageVersion("NMdata")<"0.1.1") warning("list.sections argument requires NMdata>=0.1.1. Please upgrade NMdata.") 
         dt.models[,{
             NMwriteSection(files=path.sim,list.sections=list.sections)
         },by=.(ROWMODEL)]
