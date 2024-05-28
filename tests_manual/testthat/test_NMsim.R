@@ -249,6 +249,9 @@ test_that("basic - spaces in paths",{
                        method.update.inits="nmsim"
                        )
 
+    fix.time(simres.psn)
+    fix.time(simres.nm)
+    
     expect_equal(simres.psn,simres.nm)
 
     if(F){

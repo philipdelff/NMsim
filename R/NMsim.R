@@ -8,9 +8,9 @@
 ##' get the most out of this.
 ##'
 ##' @param file.mod Path(s) to the input control stream(s) to run the
-##'     simulation on. The output control stream is for now assumed
-##'     to be stored next to the input control stream and ending in
-##'     .lst instead of .mod. The .ext file must also be present. If
+##'     simulation on. The output control stream is for now assumed to
+##'     be stored next to the input control stream and ending in .lst
+##'     instead of .mod. The .ext file must also be present. If
 ##'     simulating known subjects, the .phi is necessary too.
 ##' @param data The simulation data as a data.frame.
 ##' @param dir.sims The directory in which NMsim will store all
@@ -20,15 +20,13 @@
 ##'     suffix. A short string describing the sim is recommended like
 ##'     "ph3_regimens".
 ##' @param order.columns reorder columns by calling
-##'     NMdata::NMorderColumns before saving dataset and running
-##'     simulations? Default is TRUE.
-##' @param file.ext
-##' @param tab.ext
+##'     \code{NMdata::NMorderColumns} before saving dataset and
+##'     running simulations? Default is TRUE.
 ##' @param script The path to the script where this is run. For
 ##'     stamping of dataset so results can be traced back to code.
-##' @param subproblems Number of subproblems to use as SUBPROBLEMS in
-##'     $SIMULATION block in Nonmem. The default is subproblem=0 which
-##'     means not to use SUBPROBLEMS.
+##' @param subproblems Number of subproblems to use as
+##'     \code{SUBPROBLEMS} in \code{$SIMULATION} block in Nonmem. The default
+##'     is subproblem=0 which means not to use \code{SUBPROBLEMS}.
 ##' @param reuse.results If simulation results found on file, should
 ##'     they be used? If TRUE and reading the results fail, the
 ##'     simulations will still be rerun.
@@ -829,13 +827,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(method.update.inits=="nmsim"){
         ## edits the simulation control stream in the
         ## background. dt.models not affected.
-        
+
+                ### because we use newfile, this will be printed to newfile. If not, it would just return a list of control stream lines.
         dt.models[,NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE),by=.(ROWMODEL)]
         if(F){
-### this way, NMupdateInits is expected to return a vector or control stream names or paths
-        dt.mods.tmp <- dt.models[,.(file.sim=NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE,file.ext=file.ext,tab.ext=tab.ext)),by=.(ROWMODEL)]
-        dt.models <- mergeCheck(dt.mods.tmp[,.(NEWMODEL,ROWMODEL)],dt.models,by=cc(ROWMODEL))
-        dt.models[,ROWMODEL:=.I]
+### this way, NMupdateInits is expected to return a list of control stream contents
+            dt.mods.tmp <- dt.models[,.(mod.sim=NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE,file.ext=file.ext,tab.ext=tab.ext)),by=.(ROWMODEL)]
+            dt.models <- mergeCheck(dt.mods.tmp[,.(NEWMODEL,ROWMODEL)],dt.models,by=cc(ROWMODEL))
+            dt.models[,ROWMODEL:=.I]
             dt.models[,NEWMODEL:=NULL]
         }
     }
@@ -1138,7 +1137,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
             }
             
-            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait.exec,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type,dir.data="..")
+            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait.exec,args.psn.execute=args.psn.execute,nmquiet=nmquiet,quiet=TRUE,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type,dir.data="..")
             
             ## simres.n <- list(lst=path.sim.lst)
             ## simres.n
