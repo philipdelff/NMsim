@@ -10,6 +10,7 @@ NMsim(
   dir.sims,
   name.sim,
   order.columns = TRUE,
+  file.ext = NULL,
   script = NULL,
   subproblems = NULL,
   reuse.results = FALSE,
@@ -49,9 +50,9 @@ NMsim(
 }
 \arguments{
 \item{file.mod}{Path(s) to the input control stream(s) to run the
-simulation on. The outpult control stream is for now assumed
-to be stored next to the input control stream and ending in
-.lst instead of .mod. The .ext file must also be present. If
+simulation on. The output control stream is for now assumed to
+be stored next to the input control stream and ending in .lst
+instead of .mod. The .ext file must also be present. If
 simulating known subjects, the .phi is necessary too.}
 
 \item{data}{The simulation data as a data.frame.}
@@ -65,15 +66,15 @@ suffix. A short string describing the sim is recommended like
 "ph3_regimens".}
 
 \item{order.columns}{reorder columns by calling
-NMdata::NMorderColumns before saving dataset and running
-simulations? Default is TRUE.}
+\code{NMdata::NMorderColumns} before saving dataset and
+running simulations? Default is TRUE.}
 
 \item{script}{The path to the script where this is run. For
 stamping of dataset so results can be traced back to code.}
 
-\item{subproblems}{Number of subproblems to use as SUBPROBLEMS in
-$SIMULATION block in Nonmem. The default is subproblem=0 which
-means not to use SUBPROBLEMS.}
+\item{subproblems}{Number of subproblems to use as
+\code{SUBPROBLEMS} in \code{$SIMULATION} block in Nonmem. The default
+is subproblem=0 which means not to use \code{SUBPROBLEMS}.}
 
 \item{reuse.results}{If simulation results found on file, should
 they be used? If TRUE and reading the results fail, the

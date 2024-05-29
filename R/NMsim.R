@@ -8,9 +8,9 @@
 ##' get the most out of this.
 ##'
 ##' @param file.mod Path(s) to the input control stream(s) to run the
-##'     simulation on. The output control stream is for now assumed
-##'     to be stored next to the input control stream and ending in
-##'     .lst instead of .mod. The .ext file must also be present. If
+##'     simulation on. The output control stream is for now assumed to
+##'     be stored next to the input control stream and ending in .lst
+##'     instead of .mod. The .ext file must also be present. If
 ##'     simulating known subjects, the .phi is necessary too.
 ##' @param data The simulation data as a data.frame.
 ##' @param dir.sims The directory in which NMsim will store all
@@ -20,13 +20,13 @@
 ##'     suffix. A short string describing the sim is recommended like
 ##'     "ph3_regimens".
 ##' @param order.columns reorder columns by calling
-##'     NMdata::NMorderColumns before saving dataset and running
-##'     simulations? Default is TRUE.
+##'     \code{NMdata::NMorderColumns} before saving dataset and
+##'     running simulations? Default is TRUE.
 ##' @param script The path to the script where this is run. For
 ##'     stamping of dataset so results can be traced back to code.
-##' @param subproblems Number of subproblems to use as SUBPROBLEMS in
-##'     $SIMULATION block in Nonmem. The default is subproblem=0 which
-##'     means not to use SUBPROBLEMS.
+##' @param subproblems Number of subproblems to use as
+##'     \code{SUBPROBLEMS} in \code{$SIMULATION} block in Nonmem. The default
+##'     is subproblem=0 which means not to use \code{SUBPROBLEMS}.
 ##' @param reuse.results If simulation results found on file, should
 ##'     they be used? If TRUE and reading the results fail, the
 ##'     simulations will still be rerun.
@@ -298,8 +298,14 @@
 
 
 NMsim <- function(file.mod,data,dir.sims, name.sim,
-                  order.columns=TRUE,script=NULL,subproblems=NULL,
-                  reuse.results=FALSE,seed.R=NULL,seed.nm=NULL,args.psn.execute,
+                  order.columns=TRUE,
+                  file.ext=NULL,
+##                  tab.ext=NULL,
+                  script=NULL,subproblems=NULL,
+                  reuse.results=FALSE,
+                  seed.R=NULL,
+                  seed.nm=NULL,
+                  args.psn.execute,
                   table.vars,
                   table.options,
                   text.sim="",
@@ -821,13 +827,24 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(method.update.inits=="nmsim"){
         ## edits the simulation control stream in the
         ## background. dt.models not affected.
+
+                ### because we use newfile, this will be printed to newfile. If not, it would just return a list of control stream lines.
         dt.models[,NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE),by=.(ROWMODEL)]
+        if(F){
+### this way, NMupdateInits is expected to return a list of control stream contents
+            dt.mods.tmp <- dt.models[,.(mod.sim=NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE,file.ext=file.ext,tab.ext=tab.ext)),by=.(ROWMODEL)]
+            dt.models <- mergeCheck(dt.mods.tmp[,.(NEWMODEL,ROWMODEL)],dt.models,by=cc(ROWMODEL))
+            dt.models[,ROWMODEL:=.I]
+            dt.models[,NEWMODEL:=NULL]
+        }
     }
-    
+
+    ## Error in NMdata:::NMwriteSectionOne(file0 = path.sim, list.sections = nmtext["INPUT"],  : 
+    ## file.exists(file0) is not TRUE
     
     dt.models[,{
 ### note: insert test for whether run is needed here
-        ## if data is NULL, we will re-use data used in file.mod
+        ## if data is NULL, we will re-use data used in file.mod. Adding row counter if not found.
         rewrite.data.section <- TRUE
         if(is.null(data)){
             data.this <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
@@ -935,7 +952,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 #### Section start: Additional control stream modifications specified by user - list.sections ####
     if( !missing(list.sections) && !is.null(list.sections) ){
 ### This requires NMdata >=0.1.0.905
-        if(packageVersion("NMdata")<"0.1.1") warning("list.sections argument requires NMdata>=0.1.1. Please upgrade NMdata.") 
         dt.models[,{
             NMwriteSection(files=path.sim,list.sections=list.sections)
         },by=.(ROWMODEL)]
@@ -1121,7 +1137,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
             }
             
-            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait.exec,args.psn.execute=args.psn.execute,nmquiet=nmquiet,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type,dir.data="..")
+            NMexec(files=path.sim,sge=sge,nc=nc,wait=wait.exec,args.psn.execute=args.psn.execute,nmquiet=nmquiet,quiet=TRUE,method.execute=method.execute,path.nonmem=path.nonmem,dir.psn=dir.psn,files.needed=files.needed.n,input.archive=input.archive,system.type=system.type,dir.data="..")
             
             ## simres.n <- list(lst=path.sim.lst)
             ## simres.n
