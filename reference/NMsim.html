@@ -20,7 +20,7 @@ get the most out of this."><!-- mathjax --><script src="https://cdnjs.cloudflare
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.911</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.921</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,6 +97,7 @@ get the most out of this.</p>
 <span>  <span class="va">dir.sims</span>,</span>
 <span>  <span class="va">name.sim</span>,</span>
 <span>  order.columns <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  file.ext <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  script <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  subproblems <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reuse.results <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -139,9 +140,9 @@ get the most out of this.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>file.mod</dt>
 <dd><p>Path(s) to the input control stream(s) to run the
-simulation on. The outpult control stream is for now assumed
-to be stored next to the input control stream and ending in
-.lst instead of .mod. The .ext file must also be present. If
+simulation on. The output control stream is for now assumed to
+be stored next to the input control stream and ending in .lst
+instead of .mod. The .ext file must also be present. If
 simulating known subjects, the .phi is necessary too.</p></dd>
 
 
@@ -163,8 +164,8 @@ suffix. A short string describing the sim is recommended like
 
 <dt>order.columns</dt>
 <dd><p>reorder columns by calling
-NMdata::NMorderColumns before saving dataset and running
-simulations? Default is TRUE.</p></dd>
+<code><a href="https://philipdelff.github.io/NMdata/reference/NMorderColumns.html" class="external-link">NMdata::NMorderColumns</a></code> before saving dataset and
+running simulations? Default is TRUE.</p></dd>
 
 
 <dt>script</dt>
@@ -173,9 +174,9 @@ stamping of dataset so results can be traced back to code.</p></dd>
 
 
 <dt>subproblems</dt>
-<dd><p>Number of subproblems to use as SUBPROBLEMS in
-$SIMULATION block in Nonmem. The default is subproblem=0 which
-means not to use SUBPROBLEMS.</p></dd>
+<dd><p>Number of subproblems to use as
+<code>SUBPROBLEMS</code> in <code>$SIMULATION</code> block in Nonmem. The default
+is subproblem=0 which means not to use <code>SUBPROBLEMS</code>.</p></dd>
 
 
 <dt>reuse.results</dt>

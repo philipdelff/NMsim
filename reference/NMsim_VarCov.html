@@ -22,7 +22,7 @@ results, use NMsim_default."><!-- mathjax --><script src="https://cdnjs.cloudfla
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.911</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.921</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,7 +94,7 @@ results, use <code>NMsim_default</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">NMsim_VarCov</span><span class="op">(</span><span class="va">file.sim</span>, <span class="va">file.mod</span>, <span class="va">data.sim</span>, nsims <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">NMsim_VarCov</span><span class="op">(</span><span class="va">file.sim</span>, <span class="va">file.mod</span>, <span class="va">data.sim</span>, <span class="va">nsims</span>, <span class="va">ext</span>, write.ext <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -114,6 +114,16 @@ results, use <code>NMsim_default</code>.</p>
 <dt>nsims</dt>
 <dd><p>Number of replications wanted. The default is 1. If
 greater, multiple control streams will be generated.</p></dd>
+
+
+<dt>ext</dt>
+<dd><p>Parameter values in long format as created by `read`
+and `NMdata::NMreadExt`.</p></dd>
+
+
+<dt>write.ext</dt>
+<dd><p>If supplied, a path to an rds file where the
+parameter values will be saved.</p></dd>
 
 </dl></div>
     <div class="section level2">
