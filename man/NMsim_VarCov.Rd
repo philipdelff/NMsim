@@ -16,11 +16,11 @@ NMsim_VarCov(file.sim, file.mod, data.sim, nsims, ext, write.ext = NULL)
 \item{nsims}{Number of replications wanted. The default is 1. If
 greater, multiple control streams will be generated.}
 
-\item{ext}{Parameter values in long format as created by `read`
-and `NMdata::NMreadExt`.}
+\item{ext}{Parameter values in long format as created by
+`readParsWide` and `NMdata::NMreadExt`.}
 
 \item{write.ext}{If supplied, a path to an rds file where the
-parameter values will be saved.}
+parameter values used for simulation will be saved.}
 }
 \value{
 Character vector of simulation control stream paths

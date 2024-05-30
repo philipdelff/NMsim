@@ -69,6 +69,14 @@ suffix. A short string describing the sim is recommended like
 \code{NMdata::NMorderColumns} before saving dataset and
 running simulations? Default is TRUE.}
 
+\item{file.ext}{Optionally provide a parameter estimate file from
+Nonmem. This is normally not needed since `NMsim` will by
+default use the ext file stored next to the input control
+stream (replacing the file name extension with `.ext`). If
+using method.update.inits="psn", this argument cannot be
+used. If you want provide parameters to be used for the
+simulation, look at the `ext` argument to `NMsim_VarCov`.}
+
 \item{script}{The path to the script where this is run. For
 stamping of dataset so results can be traced back to code.}
 

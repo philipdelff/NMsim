@@ -57,6 +57,23 @@
 ##' }
 
 readParsWide <- function(data,col.model=NULL,strings.par.type=c(THETA="^T.*",OMEGA="^O.*",SIGMA="^S."),as.fun){
+
+
+#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+
+    id.model.par <- NULL
+    name.wide <- NULL
+    value <- NULL
+    . <- NULL
+    par.type <- NULL
+    parameter <- NULL
+    model <- NULL
+    i <- NULL
+    j <- NULL
+
+
+###  Section end: Dummy variables, only not to get NOTE's in pacakge checks
+
     
     if(!is.data.frame(data)){
         data <- fread(data)
@@ -78,9 +95,9 @@ readParsWide <- function(data,col.model=NULL,strings.par.type=c(THETA="^T.*",OME
     pars.l <- melt(data,id.vars=col.model,variable.name="name.wide",value.name="value")
     
     ## assign par.type
-    ### id.model.par is unique across models x parameter
+### id.model.par is unique across models x parameter
     pars.l[,id.model.par:=.I]
-## dt.match is w
+    ## dt.match is w
     dt.match <- pars.l[,lapply(strings.par.type,grepl,x=name.wide),by=c(col.model,"id.model.par")]
     dt.match.l <- melt(dt.match,id.vars=c(col.model,"id.model.par"),variable.name="par.type")[value==TRUE]
 
@@ -104,6 +121,14 @@ readParsWide <- function(data,col.model=NULL,strings.par.type=c(THETA="^T.*",OME
     ## Assign Nonmem style name THETA1, OMEGA(1,1) etc. Notice the
     ## inconsistency in naming.
     NMparIdxNames <- function(dt){
+
+        j <- NULL
+        par.type <- NULL
+        parameter <- NULL
+        i <- NULL
+        j <- NULL
+
+        
         dt <- copy(dt)
         dt[,par.type:=toupper(par.type)]
 

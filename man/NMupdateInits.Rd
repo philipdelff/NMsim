@@ -9,6 +9,8 @@ NMupdateInits(file.mod, file.ext, newfile, fix)
 \arguments{
 \item{file.mod}{The control stream to update. Will not be edited.}
 
+\item{file.ext}{}
+
 \item{newfile}{New file to generate}
 
 \item{fix}{Fix the values? Probably only TRUE is supported. Passed to \code{NMreplaceInits()}.}

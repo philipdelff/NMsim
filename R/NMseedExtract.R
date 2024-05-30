@@ -7,6 +7,8 @@
 
 ## Internal function to extract seed information from a control stream
 
+##' @keywords internal
+
 NMseedExtract <- function(file.mod,lines){
 
     if(!is.null(file.mod)){

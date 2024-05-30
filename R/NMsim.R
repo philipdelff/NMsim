@@ -182,6 +182,13 @@
 ##'     1000 replications, fixed something and now rand 500. If you
 ##'     choose FALSE here, you can end up with the results of 500 new
 ##'     and 500 old simulations.
+##' @param file.ext Optionally provide a parameter estimate file from
+##'     Nonmem. This is normally not needed since `NMsim` will by
+##'     default use the ext file stored next to the input control
+##'     stream (replacing the file name extension with `.ext`). If
+##'     using method.update.inits="psn", this argument cannot be
+##'     used. If you want provide parameters to be used for the
+##'     simulation, look at the `ext` argument to `NMsim_VarCov`.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say `tibble::as_tibble`) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use
@@ -300,7 +307,7 @@
 NMsim <- function(file.mod,data,dir.sims, name.sim,
                   order.columns=TRUE,
                   file.ext=NULL,
-##                  tab.ext=NULL,
+                  ## tab.ext=NULL,
                   script=NULL,subproblems=NULL,
                   reuse.results=FALSE,
                   seed.R=NULL,
@@ -333,52 +340,56 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
     
     . <- NULL
-    est <- NULL
+    ..name.sim <- NULL
+    ..dir.res <- NULL
     DATAROW <- NULL
     data.name <- NULL
     default <- NULL
     direct <- NULL
     directory <- NULL
     dir.sim <- NULL
+    est <- NULL
+    fn.data <- NULL
     f.exists <- NULL
     files.needed <- NULL
     files.res <- NULL
     fn.sim.tmp <- NULL
     fn <- NULL
     fn.mod <- NULL
-    path.rds <- NULL
     fn.sim <- NULL
     i <- NULL
-    par.type <- NULL
-    rowtmp <- NULL
     ID <- NULL
-    n <- NULL
-    none <- NULL
     is.data <- NULL
-    text <- NULL
-    textmod <- NULL
     known <- NULL
     model <- NULL
     name.mod <- NULL
-    psn <- NULL
+    NEWMODEL <- NULL
     nmsim <- NULL
+    n <- NULL
+    none <- NULL
+    psn <- NULL
+    par.type <- NULL
+    path.rds <- NULL
+    pathResFromists <- NULL
     pathSimsFromRes <- NULL
-    run.mod <- NULL
-    run.sim <- NULL
-    typical <- NULL
     path.sim <- NULL
     path.digests <- NULL
     path.sim.lst <- NULL
-    fn.data <- NULL
     path.data <- NULL
-    sim <- NULL
-    value <- NULL
-    variable <- NULL
     ROW <- NULL
     ROWMODEL <- NULL
     ROWMODEL2 <- NULL
-    ..dir.res <- NULL
-    pathResFromists <- NULL
+    rowtmp <- NULL
+    run.mod <- NULL
+    run.sim <- NULL
+    sim <- NULL
+    tab.ext <- NULL
+    text <- NULL
+    textmod <- NULL
+    typical <- NULL
+    value <- NULL
+    variable <- NULL
+    
     funs.transform <- NULL
     lst <- NULL
     NMsimTime <- NULL
@@ -418,7 +429,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         file.path(dir.psn,file.psn)
     }
     
-
     ## path.nonmem
     if(missing(path.nonmem)) path.nonmem <- NULL
     path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem),silent=TRUE)
@@ -438,6 +448,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(missing(system.type)) system.type <- NULL
     system.type <- getSystemType(system.type)
 
+   
     
     ## after definition of wait and wait.exec, wait is used by
     ## NMreadSim(), wait.exec used by NMexec().
@@ -477,37 +488,20 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                                      ,clean=FALSE
                                      ,lower=FALSE)
     
-    ## method.update.inits
-    if(missing(method.update.inits)) method.update.inits <- NULL
-    ## if method.execute is psn, default is psn. If not, it is NMsim.
-    if(is.null(method.update.inits)) {
-        method.update.inits <- "psn"
-        cmd.update.inits <- file.psn(dir.psn,"update_inits")
 
-        if(system.type=="windows"){
-            ## We have seen problems with PSN on windows. Until
-            ## clarified, internal method prefered on win.
-            method.update.inits <- "nmsim"
-        }
-        
-        ## check if update_inits is avail
-        ## if(suppressWarnings(system(paste(cmd.update.inits,"-h"),show.output.on.console=FALSE)!=0)){
-        if(system.type=="linux"){
-            which.found <- system(paste("which",cmd.update.inits),ignore.stdout=T)
-            if(which.found!=0){
-                method.update.inits <- "nmsim"
-                rm(cmd.update.inits)
-            }
-        }
-    }
-    method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim,none))
-    ## if update.inits with psn, it needs to be available
-    if(method.update.inits=="psn"){
-        cmd.update.inits <- file.psn(dir.psn,"update_inits")        
-        if(system.type=="linux" && suppressWarnings(system(paste(cmd.update.inits,"-h"),ignore.stdout = TRUE)!=0)){
-            stop('Attempting to use PSN\'s update_inits but it was not found. Look at the dir.psn argument or use method.update.inits="nmsim"')
-        }
-    }
+    if(missing(file.ext)) file.ext <- NULL
+    method.update.inits <- adjust.method.update.inits(method.update.inits,system.type=system.type,file.psn=file.psn,dir.psn=dir.psn,cmd.update.inits=cmd.update.inits,file.ext=file.ext)
+    ## method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim,none))
+    ## ## if update.inits with psn, it needs to be available
+    ## if(method.update.inits=="psn"){
+    ##     cmd.update.inits <- file.psn(dir.psn,"update_inits")        
+    ##     if(system.type=="linux" && suppressWarnings(system(paste(cmd.update.inits,"-h"),ignore.stdout = TRUE)!=0)){
+    ##         stop('Attempting to use PSN\'s update_inits but it was not found. Look at the dir.psn argument or use method.update.inits="nmsim"')
+    ##     }
+    ## }
+    if(is.null(file.ext)) file.ext <- fnExtension(file.mod,"ext")
+    
+    
 
 ### seed.R
     if(!is.null(seed.R)){
@@ -538,7 +532,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         name.sim <- suffix.sim
     }
     if(missing(name.sim)) name.sim <- NULL
-    name.sim <- simpleCharArg("name.sim",name.sim,"noname",accepted=NULL,lower=FALSE)
+    name.sim <- simpleCharArg("name.sim",name.sim,"noname",accepted=NULL,lower=FALSE,clean=FALSE)
+    name.sim.paths <- cleanStrings(name.sim)
 
     ## modelname
     ## if(missing(modelname)){
@@ -681,8 +676,13 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ### prepare data sets
     if(!is.null(data) && is.data.frame(data)) {
+        ##data <- list(copy(data))
         data <- list(data)
         data <- lapply(data,as.data.table)
+
+        col.sim <- tmpcol(names=sapply(data,names),base="sim")
+        if(col.sim != "sim") warning(sprintf("column sim exists, name.sim written to column %s instead.",col.sim))
+        data <- lapply(data,function(x) x[,(col.sim):=..name.sim])
     }
     if(!is.null(data) && is.list(data) && !is.data.frame(data)) {
         names.data <- names(data)
@@ -705,8 +705,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     } else {
         if(order.columns) data <- lapply(data,NMorderColumns)
     }
+
     
-    
+
 ### name.mod and name.sim are confusing. name.mod is the name
 ### specified for the mod, like
 ### file.mod=c(ref="run01.mod"). name.sim is the name that was
@@ -719,7 +720,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## dt.models[,fn.sim:=paste0(fn.mod)]
 
     
-    dt.models[,fn.sim.predata:=fnAppend(fn.sim,name.sim)]
+    dt.models[,fn.sim.predata:=fnAppend(fn.sim,name.sim.paths)]
     dt.models[,fn.sim:=fnAppend(fn.sim.predata,as.character(data.name)),by=.(ROWMODEL)]
     ## spaces not allowed in model names
     dt.models[,fn.sim:=gsub(" ","_",fn.sim)]
@@ -729,7 +730,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ### todo name by data set
     ## dir.sim is the model-individual directory in which the model will be run
     dt.models[,
-              dir.sim:=file.path(dir.sims,paste(name.mod,name.sim,sep="_"))]
+              dir.sim:=file.path(dir.sims,paste(name.mod,name.sim.paths,sep="_"))]
     
     ## path.sim.tmp is a temporary path to the sim control stream - it
     ## will be moved to path.sim once created.
@@ -806,7 +807,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",normalizePath(cmd.update.inits,mustWork=FALSE),fn.sim.tmp,normalizePath(file.mod))
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
-
             if(system.type=="linux"){
                 sys.res <- system(cmd.update,wait=TRUE)
                 
@@ -829,14 +829,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         ## background. dt.models not affected.
 
                 ### because we use newfile, this will be printed to newfile. If not, it would just return a list of control stream lines.
-        dt.models[,NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE),by=.(ROWMODEL)]
-        if(F){
+        dt.models[,NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE,file.ext=file.ext),by=.(ROWMODEL)]
+        ## if(F){
 ### this way, NMupdateInits is expected to return a list of control stream contents
-            dt.mods.tmp <- dt.models[,.(mod.sim=NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE,file.ext=file.ext,tab.ext=tab.ext)),by=.(ROWMODEL)]
-            dt.models <- mergeCheck(dt.mods.tmp[,.(NEWMODEL,ROWMODEL)],dt.models,by=cc(ROWMODEL))
-            dt.models[,ROWMODEL:=.I]
-            dt.models[,NEWMODEL:=NULL]
-        }
+            ## dt.mods.tmp <- dt.models[,.(mod.sim=NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE,file.ext=file.ext,tab.ext=tab.ext)),by=.(ROWMODEL)]
+            ## dt.models <- mergeCheck(dt.mods.tmp[,.(NEWMODEL,ROWMODEL)],dt.models,by=cc(ROWMODEL))
+            ## dt.models[,ROWMODEL:=.I]
+            ## dt.models[,NEWMODEL:=NULL]
+        ## }
     }
 
     ## Error in NMdata:::NMwriteSectionOne(file0 = path.sim, list.sections = nmtext["INPUT"],  : 
@@ -863,10 +863,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             args.NMscanData.default$col.row <- col.row
             rewrite.data.section <- FALSE
             order.columns <- FALSE
+
+            col.sim <- tmpcol(data.this,base="sim")
+            if(col.sim != "sim") warning(sprintf("column sim exists, name.sim written to column %s instead.",col.sim))
+            data.this[,(col.sim):=..name.sim]
         } else {
             data.this <- data[[DATAROW]]
 
         }
+
         
         ## if(order.columns) data <- lapply(data,NMorderColumns)
         ##data <- NMorderColumns(data)

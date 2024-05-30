@@ -62,6 +62,7 @@ test_that("basic - default",{
     
     ## attributes(NMreadSim("testOutput/NMsim_xgxr021_default_01_paths.rds"))
     fix.time(simres)
+    ## expect_equal_to_reference(simres[,!("sim")],fileRef)
     expect_equal_to_reference(simres,fileRef)
 
     if(F){

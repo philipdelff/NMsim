@@ -1,5 +1,6 @@
 ##' Create new Nonmem control stream with updated initial parameter values
 ##' @param file.mod The control stream to update. Will not be edited.
+##' @param file.ext 
 ##' @param newfile New file to generate
 ##' @param fix Fix the values? Probably only TRUE is supported. Passed to \code{NMreplaceInits()}.
 ##' @return The resulting control stream path(s)
@@ -8,10 +9,12 @@
 
 NMupdateInits <- function(file.mod,file.ext,newfile,fix){
     
-    par.type <- NULL
+
     i <- NULL
     est <- NULL
     j <- NULL
+    model <- NULL
+    par.type <- NULL
 
     
     if(missing(file.ext)) file.ext <- NULL
@@ -30,7 +33,6 @@ NMupdateInits <- function(file.mod,file.ext,newfile,fix){
     if(! (is.null(file.ext) || is.null(ext) )){
         stop("Provide at maximum one of file.ext or tab.ext, not both.")
     }
-    
 
     if(is.null(file.ext) && is.null(ext)){
         file.ext <- fnExtension(file.mod,"ext")

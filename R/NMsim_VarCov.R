@@ -13,10 +13,10 @@
 ##' @param data.sim See \code{?NMsim}.
 ##' @param nsims Number of replications wanted. The default is 1. If
 ##'     greater, multiple control streams will be generated.
-##' @param ext Parameter values in long format as created by `read`
-##'     and `NMdata::NMreadExt`.
+##' @param ext Parameter values in long format as created by
+##'     `readParsWide` and `NMdata::NMreadExt`.
 ##' @param write.ext If supplied, a path to an rds file where the
-##'     parameter values will be saved.
+##'     parameter values used for simulation will be saved.
 ##' @import NMdata
 ##' @import data.table
 ##' @importFrom MASS mvrnorm
@@ -25,7 +25,7 @@
 
 NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims,ext,write.ext=NULL){
 
-#### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
+#### Section start: Dummy variables, only not to get NOTE's in package checks ####
 
     . <- NULL
     est <- NULL
@@ -33,16 +33,17 @@ NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims,ext,write.ext=NULL){
     j <- NULL
     FIX <- NULL
     fn.sim <- NULL
-    submodel <- NULL
-    SUBMODEL <- NULL
-    run.sim <- NULL
     NMREP <- NULL
     parameter <- NULL
     par.type <- NULL
     path.sim <- NULL
+    ROW <- NULL
+    run.sim <- NULL
+    submodel <- NULL
+    SUBMODEL <- NULL
     value <- NULL
 
-### Section end: Dummy variables, only not to get NOTE's in pacakge checks 
+### Section end: Dummy variables, only not to get NOTE's in package checks 
     
 
     files.needed.def <- NMsim_default(file.sim=file.sim,file.mod,data.sim)
