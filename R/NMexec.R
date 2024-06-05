@@ -227,7 +227,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                 dat.inp <- NMscanInput(file=file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
             } else {
                 ## dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
-                dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",quiet=TRUE)
+                dat.inp <- NMscanInput(file=file.mod,file.mod=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",quiet=TRUE)
             }
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }

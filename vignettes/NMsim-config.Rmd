@@ -1,5 +1,5 @@
 ---
-title: "NMsim Configuration"
+title: "Requirements and Configuration"
 output:
 rmarkdown::html_vignette:
     toc: true
@@ -29,42 +29,46 @@ knitr::opts_chunk$set(
 ## Objectives
 This vignettes aims at enabling you to
 
-* Configure `NMsim` to use `PSN` or methods provided by `NMsim` to update Nonmem control stream initial values and to run Nonmem
+* Understand requirements for using NMsim
 
-* Understand pros and cons of using `PSN` vs. methods provided by `NMsim`.
+* Configure `NMsim` to use `PSN` or methods provided by `NMsim` to
+  update Nonmem control stream initial values and to run Nonmem
 
+* Understand pros and cons of using `PSN` vs. methods provided by
+  `NMsim`.
 
-NMsim relies on Nonmem for running simulations. If your system does
-not meet the requirements described in this document, it does not mean
-that NMsim can't work. It can still put together your Nonmem
-simulations and make everything ready for Nonmem to be executed. Once
-you have run Nonmem, you can then use `NMdata::NMscanData()` to
-collect the results.
+* Configure `NMsim` to store results in desired locations and separate
+  storage of temporary files and storage of selected and efficiently
+  stored key result data.
+
 
 ## Requirements
-Currently, NMsim only fully supports systems that run Nonmem on
-linux. Windows support is experimental.
 
-Notice, the important thing is which system is running Nonmem, not
-what system is running R. So if you run R on a windows system and can
-run Nonmem through an ssh tunnel, NMsim should still be able to
-work. If you run Nonmem on Windows and would like to get NMsim to
-work, reach out and we will figure it out.
+`NMsim` itself and many features will work in any newer R installation. Integration with Nonmem for a seamless simulation experience within R, Nonmem installations on linux, Windows and Mac are supported. Multi-threaded execution may currently not work on Windows.
 
-NMsim functions and their arguments often refer to input control
-streams by `.mod`. It should work independently of the file name
-extension of the input control streams. The estimate files (`.ext` and
-if known subjects simulated `.phi`) are currently expected to carry
-the same file name but with those file name extension.
+`NMsim` relies on Nonmem for running simulations. The most important requirement for a fully seamless simulation experience within R, NMsim must be able to execute Nonmem. The simplest example where this is easily achieved, is when R and Nonmem run on the same system. If they are on separate system, the questions are: Do R and Nonmem share access to a data structure where the relevant files can be stored and executed? And can R login to that other system to run Nonmem, for instance through SSH? In case these two criteria are met, the fully seamless experience should still be possible.
+
+If your system does
+not meet these requirements in this document, it does not mean
+that NMsim can't work. It can still put together your Nonmem
+simulation control streams and data and make everything ready for Nonmem to execute. Once
+you have run Nonmem, you can then use `NMsim::NMreadSim()` to
+collect the results.
+
+
 
 ## Configuration of NMsim
-Below this section, some background discussion is provided to understand which methods to choose. No matter what you prefer to use, the best is to set up NMsim to be able to use both Nonmem and (if available) PSN. Then you have the flexibility to switch between methods as preferred. 
+Below this section, some background discussion is provided to
+understand which methods to choose. No matter what you prefer to use,
+the best is to set up `NMsim` to be able to use both Nonmem and (if
+available) PSN. Then you have the flexibility to switch between
+methods as preferred.
 
 ### Specify the Nonmem paths
-For NMsim to run Nonmem, it needs to know where to find the Nonmem
-executable.
+For `NMsim` to run Nonmem, it needs to know where to find the Nonmem
+executable. This step is recommended.
 
-The easiest way to do configure this is through NMdata's configuration
+The easiest way to configure this is through NMdata's configuration
 function. Say you want to run Nonmem with `/opt/NONMEM/nm75/run/nmfe`,
 insert this after loading `NMdata` in the beginning of your script
 
@@ -78,7 +82,12 @@ On Windows, the executable has a `.bat` extension. The path could look be
 NMdataConf(path.nonmem ="C:/nm75g64/run/nmfe75.bat")
 ```
 
-If you normally use PSN as your Nonmem interface, and you therefore do not know where Nonmem is installed, you can check this using PSN. The following command should give you the Nonmem installation paths that PSN is configured with. However, you likely still need to add the last piece of the path from the installation directory to the nonmem binary.
+If you normally use PSN as your Nonmem interface, and you therefore do
+not know where Nonmem is installed, you can check this using PSN. The
+following command should give you the Nonmem installation paths that
+PSN is configured with. However, you likely still need to add the last
+piece of the path from the installation directory to the nonmem
+binary.
 
 ```
 psn -nm_versions
@@ -86,7 +95,7 @@ psn -nm_versions
 
 ### Specify the PSN installation path
 If PSN is available, and you can run `execute` and `update_inits` in a
-terminal, you don't need to configure anything. If you have PSN
+terminal, you don't need to configure how NMsim finds PSN. If you have PSN
 installed, but you have to provide the paths to those two executables
 when running them (something like `/opt/PSN/execute run1.mod`), you
 will have to tell NMsim where to find them. In this case, the easiest
@@ -96,8 +105,31 @@ is loading NMdata and then running:
 NMdataConf(dir.psn="/opt/PSN")
 ```
 
+Notice `dir.psn` refers to a directory while `path.nonmem`
+refers to a file. 
 
 
+### Configure the directories `NMsim` writes to
+`NMsim` creates two main directories for its output.
+
+#### `dir.sims`
+
+- simulation control streams and other data created by NMsim 
+
+- output written by Nonmem
+
+- By far, the largest directory
+
+These files are not necessarily needed for further storage. 
+
+#### `dir.res`
+Selected and efficiently stored simulation output data. 
+
+- `_paths.rds` which contains an index table for `NMreadSim()1. It does not contain any simulated data and is of insignificant size. 
+
+- `.fst` is the full simulation output data set. `NMreadSim()` will automatically create this file the first time it reads `_paths.rds`. The user does not need to know about the `fst` format as they will keep reading the simulation results via `NMreadSim()` on `_paths.rds`.
+
+You must make sure to preserve this directory in case you will need to re-analyze or further analyze the simulation output without re-running the simulations.
 
 ## PSN or not?
 ### PSN or not for Nonmem execution
@@ -140,3 +172,23 @@ without `PSN` would be the main reason one would choose
 
 In order to make use of `method.update.inits="psn"`, you need to make
 sure NMsim can find PSN.
+
+
+### Input model file name extensions
+The following requirements to file name and their contents concerns
+the "input model". It does not concern files generated by `NMsim`.
+
+There is no requirement to the file name extension of the input control stream. 
+`NMsim` function documentation  and their argument `file.mod` refer to input control
+streams by `.mod`. However, the input control stream can have any extension (e.g., `.ctl` or `.txt`). 
+
+If your input control streams are named differently than `.mod`, avoid setting `file.mod` using `NMdata::NMdataConf(file.mod)`. 
+
+
+The estimate files (`.ext`, `.phi`
+if known subjects simulated, `.cov` if simulating parameters from the covariance step) are by default expected to carry
+the same file name but with those file name extension. See arguments like `file.ext` and `file.phi` to specify other paths. Currently, the default behavior cannot be customized and the two arguments will have to be provided at each NMsim() call to the extend relevant for the simulation.
+
+Output table files from input model may be needed. This is the case using `NMsim_known` on models estimated using Bayesian `$ESTIMATION` methods like `SAEM` and/or `$IMP`. In this case `NMsim` will need to find all the `ETA` values for all subjects, even if spread across the output tables. This is because these estimation methods leave `PHI` instead of `ETA` in the `.phi` file. For emperical Bayes estimates, `NMsim` needs the `ETA`s.
+
+There are no limitations to the file names of the output tables. If needed, file names will be automatically identified and read  using `NMdata::NMscanData`. For `$TABLE` options, subsetting is supported using `FIRSTONLY` and `LASTONLY`.

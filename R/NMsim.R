@@ -92,6 +92,8 @@
 ##'     step. See details section on oter methods, and see examples
 ##'     and especially vignettes on how to use the different provided
 ##'     methods.
+##' @param typical Run with all ETAs fixed to zero? Technically all ETAs=0 is obtained by replacing
+##' \code{$OMEGA} by a zero matrix. Default is FALSE. 
 ##' @param execute Execute the simulation or only prepare it?
 ##'     `execute=FALSE` can be useful if you want to do additional
 ##'     tweaks or simulate using other parameter estimates.
@@ -271,11 +273,7 @@
 ##' (or estimation actually) control stream and want NMsim to run it
 ##' on different data sets.
 ##'
-##' \item \code{NMsim_typical} Like \code{NMsim_default} but with all
-##' ETAs=0, giving a "typical subject" simulation. Do not confuse this
-##' with a "reference subject" simulation which has to do with
-##' covariate values. Technically all ETAs=0 is obtained by replacing
-##' \code{$OMEGA} by a zero matrix.
+##' \item \code{NMsim_typical} Deprecated. Use \code{typical=TRUE} instead. 
 ##' 
 ##' \item \code{NMsim_known} Simulates _known_ subjects, meaning that
 ##' it reuses ETA values from estimation run. This is what is refered
@@ -317,6 +315,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   table.options,
                   text.sim="",
                   method.sim=NMsim_default,
+                  typical=FALSE,
                   execute=TRUE,sge=FALSE,
                   nc=1,transform=NULL,
                   method.execute,method.update.inits,
@@ -362,6 +361,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     is.data <- NULL
     known <- NULL
     model <- NULL
+    mod <- NULL
     name.mod <- NULL
     NEWMODEL <- NULL
     nmsim <- NULL
@@ -386,7 +386,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     tab.ext <- NULL
     text <- NULL
     textmod <- NULL
-    typical <- NULL
+    ##typical <- NULL
     value <- NULL
     variable <- NULL
     
@@ -499,7 +499,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ##         stop('Attempting to use PSN\'s update_inits but it was not found. Look at the dir.psn argument or use method.update.inits="nmsim"')
     ##     }
     ## }
-    if(is.null(file.ext)) file.ext <- fnExtension(file.mod,"ext")
     
     
 
@@ -671,7 +670,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,ROWMODEL:=.I]
 
 
-
+### file.ext
+    if(is.null(file.ext)) {
+        dt.models[,file.ext:=fnExtension(file.mod,"ext"),by=.(ROWMODEL)]
+    } else {
+        if(length(file.ext) != length(file.mod)){
+            stop("If `file.ext` is provided, it must be of same length as `file.mod`.")
+        }
+    }
     
 
 ### prepare data sets
@@ -798,6 +804,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         dt.models[,file.copy(file.mod,path.sim),by=ROWMODEL]
     }
 
+##### todo all file.xyz arguments must be NULL or of equal length. And this should be done per model
+    
+    ## if(!file.exists(file.ext) && method.update.inits!="none"){
+    ##     stop("No ext file found. Did you forget to copy it? Normally, NMsim needs that file to find estimated parameter values. If you do not have an ext file and you are running a simulation that does not need it, please use `method.update.inits=\"none\"`")
+    ## }
+    if(method.update.inits!="none" && any(dt.models[,!file.exists(file.ext)])){
+        stop(paste("ext file(s) not found. Did you forget to copy it? Normally, NMsim needs that file to find estimated parameter values. If you do not have an ext file and you are running a simulation that does not need it, please use `method.update.inits=\"none\"`. Was expecting to find ",paste(dt.models[!file.exists(file.ext),file.ext],collapse="\n"),sep=""))
+    }
+    
     if(method.update.inits=="psn"){
 ### this next line is done already. I think it should be removed but testing needed.
         cmd.update.inits <- file.psn(dir.psn,"update_inits")
@@ -808,7 +823,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
             if(system.type=="linux"){
-                sys.res <- system(cmd.update,wait=TRUE)
+                ## print(paste(cmd.update,"2>/dev/null"))
+                sys.res <- system(paste(cmd.update,"2>/dev/null"),wait=TRUE)
                 
                 if(sys.res!=0){
                     stop("update_inits failed. Please look into this. Is the output control stream available? Is it in a directory where you have write-access?")
@@ -1042,6 +1058,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## dt.models[,seed:={if(is.function(seed))  seed() else seed},by=.(ROWMODEL2)]
     ## if(is.numeric(dt.models[,seed])) dt.model[,seed:=sprintf("(%s)",seed)]
 
+
+### if typical
+    if(typical){
+        dt.mods.sim <- dt.models[,.(mod=typicalize(file.sim=path.sim,file.mod=file.mod,return.text=TRUE,file.ext=file.ext)),by=ROWMODEL2]
+        ## write results
+        dt.models[,writeTextFile(dt.mods.sim[ROWMODEL2==ROWMODEL,mod],file=path.sim),by=ROWMODEL2]
+    }
+
+    
     if(do.seed){
         dt.models <- do.call(NMseed,c(list(models=dt.models),seed.nm))
     }
@@ -1160,9 +1185,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ####### notify user where to find rds files
         fn.this.rds <- unique(dt.models.save[[I]][,path.rds])
         addClass(dt.models.save[[I]],"NMsimModTab")
-        if(!quiet){
-            message(sprintf("\nWriting simulation info to %s\n",fn.this.rds))
-        }
         saveRDS(dt.models.save[[I]],file=fn.this.rds)
         fn.this.rds
     })
@@ -1189,8 +1211,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## if(!wait) return(simres$lst)
     ## if(execute && (wait.exec||wait)){
     if(is.NMsimRes(simres) || (execute && (wait.exec||wait))){
+        if(!quiet){
+            message("\nSimulation results returned. Re-read them without re-simulating using:\n",paste(sprintf("NMreadSim(\"%s\")",dt.models[,unique(path.rds)]),collapse="\n"))
+        }
         return(returnSimres(simres))
     } else {
+        if(!quiet){
+            message(sprintf("\nSimulation results not returned. Read them with:\nNMreadSim(\"%s\")\nThe first time the results are read, they will be efficiently stored in the simulation results folder. Until then, they only exist as Nonmem result files.",paste(dt.models[,unique(path.rds)],collapse=",")))
+        }
         addClass(dt.models,"NMsimModTab")
         return(invisible(dt.models[,unique(path.rds)]))
     }

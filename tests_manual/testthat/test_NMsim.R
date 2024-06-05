@@ -151,24 +151,38 @@ test_that("basic - typical",{
     file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
     
     set.seed(43)
-    simres <- NMsim(file.mod,
-                    data=dt.sim,
-                    table.vars="PRED IPRED" ,
-                    dir.sims="testOutput",
-                    method.sim=NMsim_typical,
-                    ## method.sim=NMsim_asis,
-                    name.sim="typsubj"
-                    )
+    if(F){
+        simres <- NMsim(file.mod,
+                        data=dt.sim,
+                        table.vars="PRED IPRED" ,
+                        dir.sims="testOutput",
+                        method.sim=NMsim_typical,
+                        ## method.sim=NMsim_asis,
+                        name.sim="typsubj"
+                        )
+    }
 
-    expect_true(simres[,all(IPRED==PRED)])
+    ## file.mod2 <- c(file.mod,  "testData/nonmem/xgxr032.mod")
+    file.mod2 <- c(file.mod)
+    simres2 <- NMsim(file.mod2,
+                     data=dt.sim,
+                     table.vars="PRED IPRED" ,
+                     dir.sims="testOutput",
+                     typical=TRUE,
+                     ## method.sim=NMsim_asis,
+                     name.sim="typsubj2"
+                     )
 
-    fix.time(simres)
-    expect_equal_to_reference(simres,fileRef)
+    
+    expect_true(simres2[,all(IPRED==PRED)])
+
+    fix.time(simres2)
+    expect_equal_to_reference(simres2,fileRef)
 
 
     if(F){
         ref <- readRDS(fileRef)
-        compareCols(simres,ref)
+        compareCols(simres2,ref)
 
         compareCols(attributes(simres)$NMsimModTab,
                     attributes(ref)$NMsimModTab)
@@ -478,7 +492,7 @@ test_that("default with renaming",{
                     name.sim="default_01"
                     )
 
-    expect_equal(unique(simres[,model]),"NMsim_ref_default_01")
+    expect_equal(unique(simres[,model]),"NMsim_ref_default01")
     
     fix.time(simres)
     expect_equal_to_reference(simres,fileRef)
@@ -513,7 +527,7 @@ test_that("multiple data sets with renaming",{
                              ,wait=T
                               )
 
-    expect_equal(unique(simres.multidata[,model]),paste("NMsim_ref_datalist_01",101:103,sep="_"))
+    expect_equal(unique(simres.multidata[,model]),paste("NMsim_ref_datalist01",101:103,sep="_"))
     
     expect_equal(nrow(simres.multidata),nrow(dt.sim.known[ID<=103]))
     
@@ -585,7 +599,15 @@ test_that("transform",{
 
     ##     unlink(fileRef)
     expect_equal_to_reference(simres,fileRef)
-    
+
+    if(F){
+        ref <- readRDS(fileRef)
+        compareCols(simres,ref)
+
+        compareCols(attributes(simres)$NMsimModTab,
+                    attributes(ref)$NMsimModTab)
+    }
+
 
 })
 
@@ -610,6 +632,15 @@ test_that("dir.sims and dir.res with NMdataConf",{
     
     expect_equal_to_reference(simres,fileRef)
 
+    if(F){
+        ref <- readRDS(fileRef)
+        compareCols(simres,ref)
+
+        compareCols(attributes(simres)$NMsimModTab,
+                    attributes(ref)$NMsimModTab)
+    }
+
+    
     NMdataConf(dir.sims=NULL,
                dir.res=NULL,
                allow.unknown=TRUE)
@@ -672,4 +703,41 @@ test_that("Two models on one rds",{
     
     expect_equal(simres,res)
     
+})
+
+
+test_that("basic - ctl",{
+    
+    fileRef <- "testReference/NMsim_01_ctl.rds"
+
+    file.mod <- "../../tests/testthat/testData/nonmem/xgxr021.mod"
+    file.ctl <- fnExtension(file.mod,"ctl")
+    file.copy(file.mod,file.ctl)
+    
+    set.seed(43)
+    simres1 <- NMsim(file.ctl,
+                     data=dt.sim,
+                     table.var="PRED IPRED",
+                     dir.sims="testOutput",
+                     name.sim="default_ctl_01"
+                     )
+
+    NMdataConf(file.mod=function(file)fnExtension(file,"ctl"))
+
+    set.seed(43)
+    simres2 <- NMsim(file.ctl,
+                     data=dt.sim,
+                     table.var="PRED IPRED",
+                     dir.sims="testOutput",
+                     name.sim="default_ctl_01"
+                     )
+
+
+    fix.time(simres1)
+    fix.time(simres2)
+    ## expect_equal_to_reference(simres[,!("sim")],fileRef)
+    expect_equal(simres1,simres2)
+
+    NMdataConf(file.mod=NULL)
+
 })

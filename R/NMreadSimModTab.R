@@ -172,6 +172,11 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
         res <- dat[,{
             ## the rds table must keep NMscanData arguments
             args.NM <- args.NMscanData[[1]]
+            if( "file.mod" %in% names(args.NM)){
+                
+                stop("Do not use file.mod in args.NMscanData. NMsim created the simulation control streams so as a user you do not need to help NMsim find them.")
+            }
+            args.NM$file.mod <- function(file) fnExtension(file,".mod")
             if(! "quiet" %in% names(args.NM)){
                 args.NM$quiet <- TRUE
             }
@@ -219,4 +224,5 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
 
     res
+
 }

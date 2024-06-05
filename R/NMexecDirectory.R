@@ -49,7 +49,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
         copy.data <- TRUE
     }     
     if(missing(files.needed)) files.needed <- NULL
-    extr.data <- NMextractDataFile(file.mod,file.data="extract")
+    extr.data <- NMextractDataFile(file.mod,file.mod=file.mod,file.data="extract")
     
     if(is.null(extr.data$path.csv) && !is.null(extr.data$path)){
         extr.data$path.csv <- extr.data$path

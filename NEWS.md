@@ -3,10 +3,21 @@
 ## New features
 * Provide parameter table for simulations
 
-* seeds
+* New arguments to control seeds. `NMsim` can either use R's `set.seed` before generating the seeds for Nonmem. Detailed control of the seeds, including how many to include and the distribution of the random sources in Nonmem, can be controlled using the `seed.nm` argument. This way, the user can add random processes to the estimated control stream. The actual Nonmem seed values can also be provided.
+
+* method.sim=NMsim_typical() as been replaced by argument `typical=TRUE`.
+
+* Cleaned messaging. Improved for `NMreadSim()`.
+
+* Check for presence of .ext
 
 ## Bugfixes 
-* rbind
+* Running `rbind` on results from `NMsim` would throw errors. Thanks
+  to Simone Cassani for reporting this. Fixed.
+
+* Using other file name extensions than ".mod" on input control
+  streams in combination with `NMdataConf(file.mod)` would make NMsim
+  fail. Thanks to Brian Reilly for reporting. Fixed.
 
 # NMsim 0.1.0
 For the first time NMsim works on Windows. There may still be some

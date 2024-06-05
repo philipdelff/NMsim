@@ -21,6 +21,7 @@ NMsim(
   table.options,
   text.sim = "",
   method.sim = NMsim_default,
+  typical = FALSE,
   execute = TRUE,
   sge = FALSE,
   nc = 1,
@@ -148,6 +149,9 @@ replace any estimation and covariance step by a simulation
 step. See details section on oter methods, and see examples
 and especially vignettes on how to use the different provided
 methods.}
+
+\item{typical}{Run with all ETAs fixed to zero? Technically all ETAs=0 is obtained by replacing
+\code{$OMEGA} by a zero matrix. Default is FALSE.}
 
 \item{execute}{Execute the simulation or only prepare it?
 `execute=FALSE` can be useful if you want to do additional
@@ -363,11 +367,7 @@ more. Use this for instance if you already created a simulation
 (or estimation actually) control stream and want NMsim to run it
 on different data sets.
 
-\item \code{NMsim_typical} Like \code{NMsim_default} but with all
-ETAs=0, giving a "typical subject" simulation. Do not confuse this
-with a "reference subject" simulation which has to do with
-covariate values. Technically all ETAs=0 is obtained by replacing
-\code{$OMEGA} by a zero matrix.
+\item \code{NMsim_typical} Deprecated. Use \code{typical=TRUE} instead. 
 
 \item \code{NMsim_known} Simulates _known_ subjects, meaning that
 it reuses ETA values from estimation run. This is what is refered
