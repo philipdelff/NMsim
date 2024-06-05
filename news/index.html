@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.921</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.931</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,11 +74,15 @@
 <div class="section level3">
 <h3 id="new-features-0-1-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1"></a></h3>
 <ul><li><p>Provide parameter table for simulations</p></li>
-<li><p>seeds</p></li>
+<li><p>New arguments to control seeds. <code>NMsim</code> can either use R’s <code>set.seed</code> before generating the seeds for Nonmem. Detailed control of the seeds, including how many to include and the distribution of the random sources in Nonmem, can be controlled using the <code>seed.nm</code> argument. This way, the user can add random processes to the estimated control stream. The actual Nonmem seed values can also be provided.</p></li>
+<li><p>method.sim=NMsim_typical() as been replaced by argument <code>typical=TRUE</code>.</p></li>
+<li><p>Cleaned messaging. Improved for <code><a href="../reference/NMreadSim.html">NMreadSim()</a></code>.</p></li>
+<li><p>Check for presence of .ext</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bugfixes-0-1-1">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-0-1-1"></a></h3>
-<ul><li>rbind</li>
+<ul><li><p>Running <code>rbind</code> on results from <code>NMsim</code> would throw errors. Thanks to Simone Cassani for reporting this. Fixed.</p></li>
+<li><p>Using other file name extensions than “.mod” on input control streams in combination with <code>NMdataConf(file.mod)</code> would make NMsim fail. Thanks to Brian Reilly for reporting. Fixed.</p></li>
 </ul></div>
 </div>
     <div class="section level2">

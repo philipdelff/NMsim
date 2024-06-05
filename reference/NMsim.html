@@ -20,7 +20,7 @@ get the most out of this."><!-- mathjax --><script src="https://cdnjs.cloudflare
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.921</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.931</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,6 +108,7 @@ get the most out of this.</p>
 <span>  <span class="va">table.options</span>,</span>
 <span>  text.sim <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  method.sim <span class="op">=</span> <span class="va">NMsim_default</span>,</span>
+<span>  typical <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  execute <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  sge <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  nc <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -266,6 +267,11 @@ replace any estimation and covariance step by a simulation
 step. See details section on oter methods, and see examples
 and especially vignettes on how to use the different provided
 methods.</p></dd>
+
+
+<dt>typical</dt>
+<dd><p>Run with all ETAs fixed to zero? Technically all ETAs=0 is obtained by replacing
+<code>$OMEGA</code> by a zero matrix. Default is FALSE.</p></dd>
 
 
 <dt>execute</dt>
@@ -516,11 +522,7 @@ again, <code>NMsim</code> handles `$INPUT`, `$DATA`, `$TABLE` and
 more. Use this for instance if you already created a simulation
 (or estimation actually) control stream and want NMsim to run it
 on different data sets.</p></li>
-<li><p><code>NMsim_typical</code> Like <code>NMsim_default</code> but with all
-ETAs=0, giving a "typical subject" simulation. Do not confuse this
-with a "reference subject" simulation which has to do with
-covariate values. Technically all ETAs=0 is obtained by replacing
-<code>$OMEGA</code> by a zero matrix.</p></li>
+<li><p><code>NMsim_typical</code> Deprecated. Use <code>typical=TRUE</code> instead.</p></li>
 <li><p><code>NMsim_known</code> Simulates _known_ subjects, meaning that
 it reuses ETA values from estimation run. This is what is refered
 to as emperical Bayes estimates. The .phi file from the estimation
