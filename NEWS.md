@@ -1,11 +1,13 @@
 # NMsim 0.1.1
 
 ## New features
+* Simpler messaging, progress trackers.
+
 * Provide parameter table for simulations
 
 * New arguments to control seeds. `NMsim` can either use R's `set.seed` before generating the seeds for Nonmem. Detailed control of the seeds, including how many to include and the distribution of the random sources in Nonmem, can be controlled using the `seed.nm` argument. This way, the user can add random processes to the estimated control stream. The actual Nonmem seed values can also be provided.
 
-* method.sim=NMsim_typical() as been replaced by argument `typical=TRUE`.
+* `method.sim=NMsim_typical()` has been replaced by argument `typical=TRUE`.
 
 * Cleaned messaging. Improved for `NMreadSim()`.
 

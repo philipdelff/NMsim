@@ -147,16 +147,45 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
     lsts.found <- modtab[,file.exists(path.lst.read)]
     done <- all(lsts.found)
+
+
+    
     if(!done){
         if(wait){
             turns <- 0
-            if(!done) message("Waiting for Nonmem to finish simulating...")
+            if(!done) message("Waiting for Nonmem to finish simulating")
+            
+            ## progress tracker
+            n.lsts <- modtab[,.N]
+            do.pb <- n.lsts>1
+            if(do.pb){
+                ## set up progress bar
+                n.done <- sum(file.exists(modtab[,path.lst.read]))
+                pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+                                     max = n.lsts, # Maximum value of the progress bar
+                                     initial = n.done,
+                                     style = 3,    # Progress bar style (also available style = 1 and style = 2)
+                                     ## width = 50,   # Progress bar width. Defaults to getOption("width")
+                                     char = "=")
+            }
+
+            
             while(!done){
                 Sys.sleep(5)
-                done <- all(file.exists(modtab[,path.lst.read]))
+                n.done <- sum(file.exists(modtab[,path.lst.read]))
+                done <- n.done==n.lsts
                 turns <- turns+1
+
+                if(do.pb){
+                    setTxtProgressBar(pb, n.done)
+                }
+                
             }
-            if(turns>0) message("Nonmem finished.")
+            ## if(turns>0) message("Nonmem finished.")
+            if(do.pb){
+                close(pb)
+                ## message("")
+            }
         } else {
             if(skip.missing){
                 message(sprintf("%d/%d model runs found",sum(lsts.found),length(lsts.found)))
@@ -166,9 +195,27 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
             }
         }
     }
+
+
+    message("Reading Nonmem results")
     
 
-        res.list <- lapply(split(modtab,by="ROWMODEL2"),function(dat){
+    tab.split <- split(modtab,by="ROWMODEL2")
+    nsplits <- length(tab.split)
+
+    do.pb <- nsplits>1
+    if(do.pb){
+        ## progress tracker
+            pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+                                 max = nsplits, # Maximum value of the progress bar
+                                 ##initial = n.done,
+                                 style = 3,    # Progress bar style (also available style = 1 and style = 2)
+                                 ## width = 50,   # Progress bar width. Defaults to getOption("width")
+                                 char = "=")
+    }
+    
+    res.list <- lapply(1:nsplits,function(count){
+        dat <- tab.split[[count]]
         res <- dat[,{
             ## the rds table must keep NMscanData arguments
             args.NM <- args.NMscanData[[1]]
@@ -203,9 +250,21 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
             this.res
         },by=.(ROWMODEL2)]
+
+        if(do.pb){
+            setTxtProgressBar(pb, count)
+        }
+
+        
         res
         
     })
+
+    if(do.pb){
+        close(pb)
+        ##        message("")
+    }
+    
     res <- rbindlist(res.list,fill=TRUE)
     res[,ROWMODEL2:=NULL]
 

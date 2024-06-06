@@ -184,8 +184,8 @@ test_that("basic - typical",{
         ref <- readRDS(fileRef)
         compareCols(simres2,ref)
 
-        compareCols(attributes(simres)$NMsimModTab,
-                    attributes(ref)$NMsimModTab)
+        compareCols(attributes(simres2)$NMsimModTab,
+                    attributes(ref)$NMsimModTab,keep.names=FALSE)
     }
 
 })
@@ -419,7 +419,10 @@ test_that("multiple data sets",{
                              ,table.vars="PRED IPRED Y",
                               dir.sims="testOutput"
                              ,name.sim="datalist_01"
-                             ,method.execute="nmsim"
+                             ## ,method.execute="nmsim"
+                             ,method.execute="psn"
+                             ,sge=TRUE
+                              ,wait=T
                              ,path.nonmem=path.nonmem
                               )
 

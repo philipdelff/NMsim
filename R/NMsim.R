@@ -97,7 +97,7 @@
 ##' @param execute Execute the simulation or only prepare it?
 ##'     `execute=FALSE` can be useful if you want to do additional
 ##'     tweaks or simulate using other parameter estimates.
-##' @param nmquiet Silent messages from Nonmem.
+##' @param nmquiet Silent messages from Nonmem. The default is `TRUE`. 
 ##' @param sge Submit to cluster? Default is not to, but this is very
 ##'     useful if creating a large number of simulations,
 ##'     e.g. simulate with all parameter estimates from a bootstrap
@@ -298,6 +298,7 @@
 ##' @import data.table
 ##' @importFrom stats runif
 ##' @importFrom xfun relative_path
+##' @importFrom utils txtProgressBar
 ##' @export
 
 
@@ -324,7 +325,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   col.row,
                   args.NMscanData,
                   path.nonmem=NULL,
-                  nmquiet=FALSE,
+                  nmquiet=TRUE,
                   as.fun
                  ,suffix.sim,text.table,
                   system.type=NULL
@@ -733,10 +734,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,run.sim:=modelname(fn.sim)]
 
     
-### todo name by data set
     ## dir.sim is the model-individual directory in which the model will be run
     dt.models[,
               dir.sim:=file.path(dir.sims,paste(name.mod,name.sim.paths,sep="_"))]
+
     
     ## path.sim.tmp is a temporary path to the sim control stream - it
     ## will be moved to path.sim once created.
@@ -795,7 +796,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     },by=.(ROWMODEL)
     ]
     
-    
+
+###### Messaging to user
+    if(!quiet) {
+        message("Writing simulation control stream(s) and simulation data set(s) to directory:\n",dt.models[,paste(unique(dir.sim),collapse="\n")])
+    }
     
 ### Generate the first version of file.sim.
     ## It would not need to, but beware PSN's update_inits needs to
@@ -846,13 +851,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
                 ### because we use newfile, this will be printed to newfile. If not, it would just return a list of control stream lines.
         dt.models[,NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE,file.ext=file.ext),by=.(ROWMODEL)]
-        ## if(F){
-### this way, NMupdateInits is expected to return a list of control stream contents
-            ## dt.mods.tmp <- dt.models[,.(mod.sim=NMupdateInits(file.mod=file.mod,newfile=path.sim,fix=TRUE,file.ext=file.ext,tab.ext=tab.ext)),by=.(ROWMODEL)]
-            ## dt.models <- mergeCheck(dt.mods.tmp[,.(NEWMODEL,ROWMODEL)],dt.models,by=cc(ROWMODEL))
-            ## dt.models[,ROWMODEL:=.I]
-            ## dt.models[,NEWMODEL:=NULL]
-        ## }
+
     }
 
     ## Error in NMdata:::NMwriteSectionOne(file0 = path.sim, list.sections = nmtext["INPUT"],  : 
@@ -974,7 +973,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if( !missing(list.sections) && !is.null(list.sections) ){
 ### This requires NMdata >=0.1.0.905
         dt.models[,{
-            NMwriteSection(files=path.sim,list.sections=list.sections)
+            NMwriteSection(files=path.sim,list.sections=list.sections,quiet=TRUE)
         },by=.(ROWMODEL)]
     }
     
@@ -1132,11 +1131,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     
 #### Section start: Execute ####
-    
+
+  
 ### files needed can vary, so NMexec must be run for one model at a time
     simres <- NULL
 
     if(execute){
+        ##### Messaging user
+        if(!quiet) message("Executing Nonmem")
 
         dt.models[,unlink(path.rds)]
         file.res.data <- fnAppend(fnExtension(dt.models[,path.rds],"fst"),"res")
@@ -1145,6 +1147,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         }
 
         ## run sim
+        do.pb <- dt.models[,.N]>1
+        if(do.pb){
+        ## set up progress bar
+        pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+                     max = dt.models[,.N], # Maximum value of the progress bar
+                     style = 3,    # Progress bar style (also available style = 1 and style = 2)
+                     ## width = 50,   # Progress bar width. Defaults to getOption("width")
+                     char = "=")
+        }
+        
         dt.models[,lst:={
             simres.n <- NULL
             files.needed.n <- try(strsplit(files.needed,":")[[1]],silent=TRUE)
@@ -1171,8 +1183,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             
             ## simres.n <- list(lst=path.sim.lst)
             ## simres.n
+            if(do.pb){
+                setTxtProgressBar(pb, .I)
+            }
+            
             path.sim.lst
         },by=.(ROWMODEL2)]
+        if(do.pb){
+            close(pb)
+        }
     }
 
 ###  Section end: Execute
@@ -1193,14 +1212,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(execute && (wait.exec||wait)){
 
-### This runs NMreadSim in try. But since the user is
-### requesting execute and wait, an error reading this should
-### result in an NMsim error.
-        ## simres <- try(NMreadSim(unlist(files.rds),wait=wait))
-        ## if(inherits(simres,"try-error")){
-        ##     message("Could not read simulation results. Returning path to rds file containing a table with info on all simulations (read with `readRDS()`).")
-        ##     return(unlist(files.res))
-        ## }
+##### Messaging user
+        ### we are controlling this messaging better from NMreadSim()
+        ## if(!quiet) message("\nCollecting results.")
         simres <- NMreadSim(unlist(files.rds),wait=wait)
     }
     

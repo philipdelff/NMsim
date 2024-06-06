@@ -137,7 +137,7 @@ NMsim can call Nonmem using PSN's `execute` or through similar
 functionality included in NMsim. We will refer to those methods by
 the way they are referred to in the `NMsim()` function argument that
 controls which one is used, i.e. `method.execute="psn"` and
-`method.execute="nmsim"`. 
+`method.execute="nmsim"`. While `PSN` users will be familiar with what `PSN`'s `execute` does, `method.execute="nmsim"` needs a few words of explanation. It is essentially an R-based method similar to `PSN`'s `execute`, meaning it creates a temporary folder containing necessary files for running Nonmem, then runs `nmfe` (as specified using `path.nonmem`) and then copies the desired result files back to the location of the input control stream. `NMsim` can control the behavior of this function better than it can `PSN`'s execute which enables NMsim to do additional things with `method.execute="nmsim"`.
 
 For simulations, `method.execute="psn"` does not provide advantages
 over `method.execute="nmsim"`. In contrast, there are simulation types

@@ -1,7 +1,7 @@
 Package: NMsim
 Type: Package
 Title: Seamless 'Nonmem' Simulation Platform
-Version: 0.1.0.931
+Version: 0.1.0.933
 Authors@R: c(person("Philip", "Delff", email = "philip@delff.dk",role = c("aut","cre")),
   person("Matthew","Fidler", role = c("ctb"), email = "matt.fidler@novartis.com", comment="Co-author on NMreadCov"))
 Maintainer: Philip Delff <philip@delff.dk>

@@ -26,7 +26,7 @@ navbar:
         href: articles/NMsim-basics.html
       - text: Simulations for VPCs 
         href: articles/NMsim-VPC.html
-      - text: NMsim Configuration
+      - text: Requirements and Configuration
         href: articles/NMsim-config.html
       - text: Simulate known subjects
         href: articles/NMsim-known.html

@@ -25,6 +25,10 @@
 ##'     simulation results. If an `.fst` file was already generated
 ##'     and is found next to the `_paths.rds`, the path to the Nonmem
 ##'     simulation results is not used.
+##' @param progress Track progress? Default is `TRUE` if `quiet` is
+##'     FALSE and more than one model is being read. The progress
+##'     tracking is based on the number of models completed/read, not
+##'     the status of the individual models.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say `tibble::as_tibble`) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use
@@ -118,7 +122,7 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
         if(is.null(res.all)){
             res.all <- res.modTab
         } else {
-            res.all <- rbind(res.all,res.modTab)  
+            res.all <- rbind(res.all,res.modTab)
         }
     }
     
