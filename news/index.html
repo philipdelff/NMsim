@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.931</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.933</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,7 +29,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-vignettes">
     <a class="dropdown-item" href="../articles/NMsim-basics.html">Simulation of new subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-VPC.html">Simulations for VPCs</a>
-    <a class="dropdown-item" href="../articles/NMsim-config.html">NMsim Configuration</a>
+    <a class="dropdown-item" href="../articles/NMsim-config.html">Requirements and Configuration</a>
     <a class="dropdown-item" href="../articles/NMsim-known.html">Simulate known subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-TypSubj.html">Simulate typical subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-ParamUncertain.html">Simulations with parameter uncertainty</a>
@@ -73,9 +73,10 @@
 <h2 class="pkg-version" data-toc-text="0.1.1" id="nmsim-011">NMsim 0.1.1<a class="anchor" aria-label="anchor" href="#nmsim-011"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-1-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1"></a></h3>
-<ul><li><p>Provide parameter table for simulations</p></li>
+<ul><li><p>Simpler messaging, progress trackers.</p></li>
+<li><p>Provide parameter table for simulations</p></li>
 <li><p>New arguments to control seeds. <code>NMsim</code> can either use R’s <code>set.seed</code> before generating the seeds for Nonmem. Detailed control of the seeds, including how many to include and the distribution of the random sources in Nonmem, can be controlled using the <code>seed.nm</code> argument. This way, the user can add random processes to the estimated control stream. The actual Nonmem seed values can also be provided.</p></li>
-<li><p>method.sim=NMsim_typical() as been replaced by argument <code>typical=TRUE</code>.</p></li>
+<li><p><code>method.sim=NMsim_typical()</code> has been replaced by argument <code>typical=TRUE</code>.</p></li>
 <li><p>Cleaned messaging. Improved for <code><a href="../reference/NMreadSim.html">NMreadSim()</a></code>.</p></li>
 <li><p>Check for presence of .ext</p></li>
 </ul></div>

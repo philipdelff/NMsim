@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.931</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.933</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-vignettes">
     <a class="dropdown-item" href="../articles/NMsim-basics.html">Simulation of new subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-VPC.html">Simulations for VPCs</a>
-    <a class="dropdown-item" href="../articles/NMsim-config.html">NMsim Configuration</a>
+    <a class="dropdown-item" href="../articles/NMsim-config.html">Requirements and Configuration</a>
     <a class="dropdown-item" href="../articles/NMsim-known.html">Simulate known subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-TypSubj.html">Simulate typical subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-ParamUncertain.html">Simulations with parameter uncertainty</a>
@@ -232,7 +232,17 @@ similar functionality included in NMsim. We will refer to those methods
 by the way they are referred to in the <code><a href="../reference/NMsim.html">NMsim()</a></code> function
 argument that controls which one is used,
 i.e. <code>method.execute="psn"</code> and
-<code>method.execute="nmsim"</code>.</p>
+<code>method.execute="nmsim"</code>. While <code>PSN</code> users will
+be familiar with what <code>PSN</code>’s <code>execute</code> does,
+<code>method.execute="nmsim"</code> needs a few words of explanation. It
+is essentially an R-based method similar to <code>PSN</code>’s
+<code>execute</code>, meaning it creates a temporary folder containing
+necessary files for running Nonmem, then runs <code>nmfe</code> (as
+specified using <code>path.nonmem</code>) and then copies the desired
+result files back to the location of the input control stream.
+<code>NMsim</code> can control the behavior of this function better than
+it can <code>PSN</code>’s execute which enables NMsim to do additional
+things with <code>method.execute="nmsim"</code>.</p>
 <p>For simulations, <code>method.execute="psn"</code> does not provide
 advantages over <code>method.execute="nmsim"</code>. In contrast, there
 are simulation types that will only work with
