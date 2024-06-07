@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.933</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.934</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,6 +83,7 @@
 <span>  wait <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  skip.missing <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">progress</span>,</span>
 <span>  <span class="va">as.fun</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -128,6 +129,13 @@ generated.  Default is not to wait.</p></dd>
 <dt>quiet</dt>
 <dd><p>Turn off some messages about what is going on?
 Default is to report the messages.</p></dd>
+
+
+<dt>progress</dt>
+<dd><p>Track progress? Default is `TRUE` if `quiet` is
+FALSE and more than one model is being simulated. The progress
+tracking is based on the number of models completed, not the
+status of the individual models.</p></dd>
 
 
 <dt>as.fun</dt>
