@@ -1,8 +1,12 @@
 ##' Read simulation results from rds objects and/or NMsimModTab objects
 ##' @inheritParams NMreadSim
+##' @param progress Track progress? Default is `TRUE` if `quiet` is
+##'     FALSE and more than one model is being simulated. The progress
+##'     tracking is based on the number of models completed, not the
+##'     status of the individual models.
 ##' @keywords internal
 
-NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=FALSE,quiet=FALSE,as.fun){
+NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=FALSE,quiet=FALSE,progress,as.fun){
 
 
     ROWTMP <- NULL
@@ -14,7 +18,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
 
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
-
+    if(missing(progress)) progress <- NULL
     
 
     ## read all rds files to get everything into just one table.
@@ -68,7 +72,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
     
     
     ## res <- NMreadSimModTabOne(modtab=modtab,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
-    res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,skip.missing=skip.missing,quiet=quiet,as.fun=as.fun)
+    res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,skip.missing=skip.missing,quiet=quiet,as.fun=as.fun,progress=progress)
 
     
     
@@ -87,7 +91,8 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
 ##' Read simulation results from an rds or a NMsimModTab object
 ##' @inheritParams NMreadSim
 ##' @keywords internal
-NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,skip.missing=FALSE,as.fun){
+##' @import utils
+NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,skip.missing=FALSE,progress,as.fun){
 
     . <- NULL
     ROWMODEL2 <- NULL
@@ -98,6 +103,8 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     path.lst.read <- NULL
     ROWTMP <- NULL
 
+    if(missing(progress)) progress <- NULL
+    if(is.null(progress)) progress <- TRUE
     rdstab <- unique(modtab[,.(file.res.data,path.rds.read)])
     if(nrow(rdstab)>1) stop("modtab must be related to only one rds file.")
     
@@ -148,8 +155,6 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     lsts.found <- modtab[,file.exists(path.lst.read)]
     done <- all(lsts.found)
 
-
-    
     if(!done){
         if(wait){
             turns <- 0
@@ -157,7 +162,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
             
             ## progress tracker
             n.lsts <- modtab[,.N]
-            do.pb <- n.lsts>1
+            do.pb <- !quiet && progress && n.lsts>1
             if(do.pb){
                 ## set up progress bar
                 n.done <- sum(file.exists(modtab[,path.lst.read]))
@@ -203,7 +208,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     tab.split <- split(modtab,by="ROWMODEL2")
     nsplits <- length(tab.split)
 
-    do.pb <- nsplits>1
+    do.pb <- do.pb <- !quiet && progress && nsplits>1
     if(do.pb){
         ## progress tracker
             pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar

@@ -35,7 +35,8 @@ NMsim(
   col.row,
   args.NMscanData,
   path.nonmem = NULL,
-  nmquiet = FALSE,
+  nmquiet = TRUE,
+  progress,
   as.fun,
   suffix.sim,
   text.table,
@@ -266,7 +267,12 @@ is a made up example). No default is available. You should be
 able to figure this out through how you normally execute
 Nonmem, or ask a colleague.}
 
-\item{nmquiet}{Silent messages from Nonmem.}
+\item{nmquiet}{Silent messages from Nonmem. The default is `TRUE`.}
+
+\item{progress}{Track progress? Default is `TRUE` if `quiet` is
+FALSE and more than one model is being simulated. The progress
+tracking is based on the number of models completed, not
+the status of the individual models.}
 
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say `tibble::as_tibble`) in as.fun to convert to
@@ -314,7 +320,7 @@ files to read will be returned. Pass them through
 to finish).}
 
 \item{quiet}{If TRUE, messages from what is going on will be
-suppressed to the extend implemented.}
+suppressed.}
 
 \item{check.mod}{Check the provided control streams for contents
 that may cause issues for simulation. Default is `TRUE`, and
