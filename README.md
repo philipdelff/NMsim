@@ -3,6 +3,17 @@
 
 # NMsim
 
+<!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+<!-- [![R-CMD-check](https://github.com/philipdelff/NMdata/workflows/R-CMD-check/badge.svg)](https://github.com/philipdelff/NMdata/actions) -->
+<!-- [![Codecov test coverage](https://codecov.io/gh/philipdelff/NMdata/branch/master/graph/badge.svg)](https://app.codecov.io/gh/philipdelff/NMdata?branch=master) -->
+[![CRAN
+status](https://www.r-pkg.org/badges/version/NMdata)](https://CRAN.R-project.org/package=NMdata)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/NMsim)](https://cran.r-project.org/package=NMsim%20%3C!--%20badges:%20end%20--%3E)
+
 `NMsim` is an R package that can simulate Nonmem models (using the
 `NMsim` function) based on just a simulation data set and a path to an
 estimation control stream. It will also retrive and combine output
@@ -28,7 +39,7 @@ In its simplest use, a simulation of the (estimated) model stored in
 variable `data.sim` this way:
 
 ``` r
-simres <- NMsim(path.mod="/path/to/file.mod",
+simres <- NMsim(file.mod="/path/to/file.mod",
                 data=data.sim)
 ```
 
@@ -108,9 +119,9 @@ into one R function. In the example given above, `NMsim` will do the
 following:
 
 -   Save the simulation input data in a csv file for Nonmem
--   Create a simulation input control stream based on `file.mod`
-    (\$INPUT and \$DATA matching the saved simulation data set;
-    \$SIMULATE instead of \$ESTIMATION and \$COVARIANCE)
+-   Create a simulation input control stream based on `file.mod` ($INPUT
+    and $DATA matching the saved simulation data set; $SIMULATE instead
+    of $ESTIMATION and $COVARIANCE)
 -   Update and fix initial values based on estimate (from `file.ext`)
 -   Run Nonmem on the generated simulation control stream
 -   Collect output data tables, combine them, and merge with the
