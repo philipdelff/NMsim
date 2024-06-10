@@ -786,7 +786,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ### reading results from prior run
     ## if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
     if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
-        if(!quiet) message("Reading from simulation results on file.")
+        if(!quiet) message(sprintf("Reading from simulation results on file:\n%s",dt.models[,paste(unique(path.rds),collapse="\n")]))
         simres <- try(NMreadSim(dt.models[,path.rds],wait=wait,quiet=quiet,progress=progress))
         if(!inherits(simres,"try-error")) {
             return(returnSimres(simres))

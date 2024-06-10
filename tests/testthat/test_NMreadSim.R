@@ -32,14 +32,16 @@ dat.sim <- copy(dat.sim.sd)
 dat.sim[,ROW:=.I]
 dat.sim[,BBW:=75]
 
-
+if(F){
+## testOutput/NMsim_xgxr021_sd1_NMreadSim_paths.rds
 file.mod <- "testData/nonmem/xgxr021.mod"
 sim1 <- NMsim(file.mod=file.mod,
               data=dat.sim,
               dir.sim="testOutput",
               name.sim = "sd1_NMreadSim",
-              seed.nm=2342)
-
+              seed.nm=2342
+              ,reuse.results=TRUE)
+}
 
 
 

@@ -7,7 +7,10 @@ NMdataConf(as.fun="data.table")
 
 path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 file.exists(path.nonmem)
-NMdataConf(path.nonmem=path.nonmem)
+NMdataConf(path.nonmem=path.nonmem
+          ,dir.sim="testOutput")
+
+
 
 if(F){
     ## need a sim to test reading, rbinding etc
