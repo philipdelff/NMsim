@@ -7,14 +7,17 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-<!-- [![R-CMD-check](https://github.com/philipdelff/NMsim/workflows/R-CMD-check/badge.svg)](https://github.com/philipdelff/NMsim/actions) -->
 [![CRAN
 status](https://www.r-pkg.org/badges/version/NMsim)](https://CRAN.R-project.org/package=NMsim)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/NMsim)](https://cran.r-project.org/package=NMsim)
 [![Codecov test
 coverage](https://codecov.io/gh/philipdelff/NMsim/branch/master/graph/badge.svg)](https://app.codecov.io/gh/philipdelff/NMsim?branch=master)
-<!-- badges: end --> )
+
+<!-- [![R-CMD-check](https://github.com/philipdelff/NMsim/workflows/R-CMD-check/badge.svg)](https://github.com/philipdelff/NMsim/actions) -->
+<!-- badges: end -->
+
+)
 
 `NMsim` is an R package that can simulate Nonmem models (using the
 `NMsim` function) based on just a simulation data set and a path to an

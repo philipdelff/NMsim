@@ -280,7 +280,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 ##### for nc>1 this can be used <nc> is nc evaluated
                     ## qsub -pe orte <nc> -V -N <name for qstat> -j y -cwd -b y /opt/NONMEM/nm75/run/nmfe75 psn.mod psn.lst -background -parafile=/path/to/pnm [nodes]=<nc>
                 } else {
-                    string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
+                    ## string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
+                    string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s; setwd()' ,dirname(file.mod),nc,path.nonmem,basename(file.mod),fnExtension(basename(file.mod),"lst"),basename(pnm),nc,getwd())
                 }
                 wait <- TRUE
             } else {

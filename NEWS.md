@@ -25,6 +25,11 @@
 
 * `NMsim_known()` renamed to `NMsim_EBE()`.
 
+* In case of multi-threaded (cluster) execution and something went
+  wrong `NMexec()` used to write some output files from Nonmem in the
+  current working directory. All these are now being written to the
+  model execution directory for clarity and tidyness.
+
 # NMsim 0.1.0
 For the first time NMsim works on Windows. There may still be some
 limitations but initial testing looks very promising. Make sure to set
