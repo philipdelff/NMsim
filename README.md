@@ -7,12 +7,11 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-<!-- [![R-CMD-check](https://github.com/philipdelff/NMdata/workflows/R-CMD-check/badge.svg)](https://github.com/philipdelff/NMdata/actions) -->
-<!-- [![Codecov test coverage](https://codecov.io/gh/philipdelff/NMdata/branch/master/graph/badge.svg)](https://app.codecov.io/gh/philipdelff/NMdata?branch=master) -->
+[![R-CMD-check](https://github.com/philipdelff/NMsim/workflows/R-CMD-check/badge.svg)](https://github.com/philipdelff/NMsim/actions)
 [![CRAN
-status](https://www.r-pkg.org/badges/version/NMdata)](https://CRAN.R-project.org/package=NMdata)
+status](https://www.r-pkg.org/badges/version/NMsim)](https://CRAN.R-project.org/package=NMsim)
 [![CRAN
-downloads](https://cranlogs.r-pkg.org/badges/NMsim)](https://cran.r-project.org/package=NMsim%20%3C!--%20badges:%20end%20--%3E)
+downloads](https://cranlogs.r-pkg.org/badges/NMsim)](https://cran.r-project.org/package=NMsim%20%3C!--%20%5B!%5BR-CMD-check%5D(https://github.com/philipdelff/NMsim/workflows/R-CMD-check/badge.svg)%5D(https://github.com/philipdelff/NMsim/actions)%20--%3E%20%3C!--%20%5B!%5BCodecov%20test%20coverage%5D(https://codecov.io/gh/philipdelff/NMsim/branch/master/graph/badge.svg)%5D(https://app.codecov.io/gh/philipdelff/NMsim?branch=master)%20--%3E%20%3C!--%20badges:%20end%20--%3E)
 
 `NMsim` is an R package that can simulate Nonmem models (using the
 `NMsim` function) based on just a simulation data set and a path to an
@@ -136,9 +135,9 @@ without Nonmem.
 system where Nonmem cannot be executed, `NMsim` can still prepare the
 simulation control stream and datafile.
 
-`NMsim` is in itself a small R package. It makes extensive use of
-functionality to handle Nonmem data and control streams provided by the
-R package [`NMdata`](https://cran.r-project.org/package=NMdata).
+`NMsim` is in itself a relatively small R package. It makes extensive
+use of functionality to handle Nonmem data and control streams provided
+by the R package [`NMdata`](https://cran.r-project.org/package=NMdata).
 
 ## Supported model types
 
