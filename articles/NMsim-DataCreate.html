@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.934</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.935</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,7 +99,7 @@
 
     
     
-<p>Built 2024-06-07 using NMsim 0.1.0.934.</p>
+<p>Built 2024-06-10 using NMsim 0.1.0.935.</p>
 <div class="section level3">
 <h3 id="generating-a-simulation-input-data-set">Generating a simulation input data set<a class="anchor" aria-label="anchor" href="#generating-a-simulation-input-data-set"></a>
 </h3>
@@ -130,7 +130,7 @@ were used when estimating the model.</p>
 <span><span class="co">## Adding a row identifier (generally not necessary)</span></span>
 <span><span class="va">dat.sim</span><span class="op">$</span><span class="va">ROW</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">dat.sim</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">NMwriteData</span><span class="op">(</span><span class="va">dat.sim</span>,file<span class="op">=</span><span class="st">"simulate-results/dat_sim.fst"</span>,formats.write<span class="op">=</span><span class="st">"fst"</span>,genText<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">NMwriteData</span><span class="op">(</span><span class="va">dat.sim</span>,file<span class="op">=</span><span class="st">"simulate-results/dat_sim.csv"</span>,genText<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>We check the simulation data set for various potential issues in
 Nonmem data sets using <code><a href="https://philipdelff.github.io/NMdata/reference/NMcheckData.html" class="external-link">NMdata::NMcheckData</a></code> and summarize
 the number of doses and observations:</p>
