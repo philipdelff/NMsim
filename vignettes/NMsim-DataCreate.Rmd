@@ -93,7 +93,7 @@ setorder(dat.sim,ID,TIME,EVID)
 dat.sim$ROW <- 1:nrow(dat.sim)
 ```
 ```{r,save-datsim,eval=FALSE}
-NMwriteData(dat.sim,file="simulate-results/dat_sim.fst",formats.write="fst",genText=FALSE)
+NMwriteData(dat.sim,file="simulate-results/dat_sim.csv",genText=FALSE)
 ```
 
 We check the simulation data set for various potential issues in

@@ -20,6 +20,10 @@
 * Using other file name extensions than ".mod" on input control
   streams in combination with `NMdataConf(file.mod)` would make NMsim
   fail. Thanks to Brian Reilly for reporting. Fixed.
+  
+## Other changes
+
+* `NMsim_known()` renamed to `NMsim_EBE()`.
 
 # NMsim 0.1.0
 For the first time NMsim works on Windows. There may still be some

@@ -236,7 +236,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
             ## put this in try and report better info if broken
             this.res <- try(do.call(NMscanData,
                                     c(list(file=path.lst.read),args.NM)
-                                    ))
+                                    ),silent=TRUE)
             if(inherits(this.res,"try-error")){
                 if(!quiet) {
                     lines.lst <- readLines(path.lst.read)

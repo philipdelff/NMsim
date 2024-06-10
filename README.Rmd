@@ -42,7 +42,7 @@ In its simplest use, a simulation of the (estimated) model stored in
 variable `data.sim` this way:
 
 ```{r,eval=FALSE}
-simres <- NMsim(path.mod="/path/to/file.mod",
+simres <- NMsim(file.mod="/path/to/file.mod",
                 data=data.sim)
 ```
 
