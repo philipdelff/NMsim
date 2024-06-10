@@ -15,8 +15,8 @@ navbar:
     - github
   components:
    home:
-    title: Sim Nonmem
-    desc: Really good
+    title: Simulation of Nonmem models from R
+    desc: A seamless Nonmem simulation platform
     icon: fas fa-home fa-lg
     href: index.html
    articles:
