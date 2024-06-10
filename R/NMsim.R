@@ -981,7 +981,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if( !missing(list.sections) && !is.null(list.sections) ){
 ### This requires NMdata >=0.1.0.905
         dt.models[,{
-            NMwriteSection(files=path.sim,list.sections=list.sections,quiet=TRUE)
+            NMwriteSection(files=path.sim,list.sections=list.sections,quiet=TRUE,backup=FALSE)
         },by=.(ROWMODEL)]
     }
     
@@ -1105,7 +1105,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                     section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
                 }
                 section.sim <- paste(section.sim,text.sim)
-                lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="simulation",newlines=section.sim,quiet=TRUE)
+                lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="simulation",newlines=section.sim,quiet=TRUE,backup=FALSE)
                 writeTextFile(lines.sim,path.sim)
             }
         },by=.(ROWMODEL2)]
