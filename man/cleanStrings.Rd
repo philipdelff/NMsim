@@ -12,4 +12,9 @@ cleanStrings(x)
 \description{
 Drop spaces and odd characters
 }
+\examples{
+NMsim:::cleanStrings("e w\% # ff!l3:t,3?.csv")
+NMsim:::cleanStrings("3!?:#;<>=, {}|=g+&-
+.csv")
+}
 \keyword{internal}

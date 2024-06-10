@@ -52,9 +52,24 @@ adjust.method.update.inits <- function(method.update.inits,system.type,file.psn,
 ##' Drop spaces and odd characters
 ##' @param x a string to clean
 ##' @keywords internal
+##' @examples
+##' NMsim:::cleanStrings("e w% # ff!l3:t,3?.csv")
+##' NMsim:::cleanStrings("3!?:#;<>=, {}|=g+&-
+##' .csv")
 
 cleanStrings <- function(x){
-    x <- gsub(" ","",as.character(x))
-    x <- gsub("[[:punct:]]", "", x)
+    ## x <- gsub(" ","",as.character(x))
+    ## x <- gsub("[[:punct:]]", "", x)
+    ##  *^$@~% []
+    ## x <- gsub("[ !?#:;<>/,[]\\{\\}\\|-=+&]", "", x)
+
+
+    x <- gsub("[ +!?#:;<>&/,\\{\\}\\|=]", "",x) 
+    x <- gsub(pattern="-",replacement="",x=x,perl=TRUE) 
+    x <- gsub(pattern="\n",replacement="",x=x)
+    
     x
 }
+
+
+

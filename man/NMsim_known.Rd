@@ -12,3 +12,4 @@ NMsim_known(...)
 \description{
 NMsim_known is an old name for NMsim_EBE()
 }
+\keyword{internal}

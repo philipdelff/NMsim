@@ -5,14 +5,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://namespaces.oreilly.com/xmlnut/address output.xsd"
 xmlns:nm="http://namespaces.oreilly.com/xmlnut/address"
 >
-<nm:start_datetime>2024-02-12T19:35:56.481</nm:start_datetime>
+<nm:start_datetime>2024-06-10T15:40:03.635</nm:start_datetime>
 <nm:control_stream><![CDATA[
 $PROBLEM    018 with 2 comp
-$INPUT ROW ID TIME EVID CMT AMT DV MDV BBW DOSE
-
-$DATA  ../NMsimData_xgxr021_sd1_NMreadSim.csv
-IGN=@
-
+$INPUT      ROW ID TIME EVID CMT AMT DV MDV BBW DOSE
+$DATA      NMsimData_xgxr021_sd1_NMreadSim.csv IGNORE=@
 $SUBROUTINE ADVAN4 TRANS4
 $PK
 TVKA=THETA(1)
@@ -54,12 +51,7 @@ $OMEGA  0  FIX
 $OMEGA  0  FIX
 $SIGMA  0.0822435
 $SIGMA  0  FIX
-
-
-
-
 $SIMULATION ONLYSIM (2342)
-
 $TABLE      ROW TVKA TVV2 TVV3 TVCL KA V2 V3 CL Q PRED IPRED Y NOPRINT
             FILE=NMsim_xgxr021_sd1_NMreadSim.tab
 
@@ -80,11 +72,10 @@ $TABLE      ROW TVKA TVV2 TVV3 TVCL KA V2 V3 CL Q PRED IPRED Y NOPRINT
 ]]></nm:nmtran>
 <nm:nonmem nm:version='7.5.0'>
 <nm:license_information><![CDATA[
-License Registered to: Temporary license for Vertex
-Expiration Date:    12 FEB 2024
-Current Date:       12 FEB 2024
-  **** WARNING!!! Days until program expires :   0 ****
-  **** CONTACT idssoftware@iconplc.com FOR RENEWAL ****
+License Registered to: Vertex Pharmaceuticals Inc
+Expiration Date:    14 JAN 2025
+Current Date:       10 JUN 2024
+Days until program expires : 219
 ]]></nm:license_information>
 <nm:program_information><![CDATA[
 1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.5.0
@@ -277,11 +268,11 @@ SEED   1 RESET TO INITIAL: YES
 />
 </nm:estimation>
 <nm:post_process_times>
-<nm:post_elapsed_time>0.02</nm:post_elapsed_time>
+<nm:post_elapsed_time>0.01</nm:post_elapsed_time>
 <nm:finaloutput_elapsed_time>0.00</nm:finaloutput_elapsed_time>
 </nm:post_process_times>
 </nm:problem>
 </nm:nonmem>
-<nm:stop_datetime>2024-02-12T19:35:56.509</nm:stop_datetime>
-<nm:total_cputime>0.026</nm:total_cputime>
+<nm:stop_datetime>2024-06-10T15:40:03.660</nm:stop_datetime>
+<nm:total_cputime>0.025</nm:total_cputime>
 </nm:output>

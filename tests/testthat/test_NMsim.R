@@ -36,7 +36,7 @@ test_that("Basic",{
     sim1 <- NMsim(file.mod=file.mod,
                   data=dat.sim,
                   dir.sim="testOutput",
-                  suffix.sim = "sd1",
+                  name.sim = "sd1",
                   seed.nm=2342,
                   execute=FALSE,
                   method.update.inits="nmsim")
