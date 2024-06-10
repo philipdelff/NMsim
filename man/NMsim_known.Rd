@@ -6,6 +6,9 @@
 \usage{
 NMsim_known(...)
 }
+\arguments{
+\item{...}{Everything passed to NMsim_EBE()}
+}
 \description{
 NMsim_known is an old name for NMsim_EBE()
 }
