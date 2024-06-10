@@ -88,6 +88,8 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="nmsim">NMsim<a class="anchor" aria-label="anchor" href="#nmsim"></a>
 </h1></div>
+<!-- badges: start -->
+
 <p><code>NMsim</code> is an R package that can simulate Nonmem models (using the <code>NMsim</code> function) based on just a simulation data set and a path to an estimation control stream. It will also retrive and combine output tables with input data once Nonmem has finished and return the results to R.</p>
 <div class="section level2">
 <h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
@@ -105,7 +107,7 @@
 </h2>
 <p>In its simplest use, a simulation of the (estimated) model stored in “path/to/file.mod” using the simulation input data set stored in the variable <code>data.sim</code> this way:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/NMsim.html">NMsim</a></span><span class="op">(</span>path.mod<span class="op">=</span><span class="st">"/path/to/file.mod"</span>,</span>
+<code class="sourceCode R"><span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="st">"/path/to/file.mod"</span>,</span>
 <span>                data<span class="op">=</span><span class="va">data.sim</span><span class="op">)</span></span></code></pre></div>
 <p>We are ready to plot</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -241,7 +243,14 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+<li><a href="https://CRAN.R-project.org/package=NMdata" class="external-link"><img src="https://www.r-pkg.org/badges/version/NMdata" alt="CRAN status"></a></li>
+<li><a href="https://cran.r-project.org/package=NMsim%20%3C!--%20badges:%20end%20--%3E" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/NMsim" alt="CRAN downloads"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
