@@ -38,10 +38,10 @@ test_that("Basic",{
     fileRef <- "testReference/rbind_NMsimRes_01.rds"
     res1 <- NMreadSim("testOutput/NMsim_xgxr021_default_01_paths.rds")
 
-    res2 <- res1[,rep:=1]
-    res2 <- res1[,rep:=2]
+    res1 <- res1[,rep:=1]
+    res2 <- copy(res1)[,rep:=2]
     class(res1)
-    r2 <- rbind(res1,res1)
+    r2 <- rbind.NMsimRes(res1,res2)
     
     expect_equal_to_reference(r2,fileRef)
 })
