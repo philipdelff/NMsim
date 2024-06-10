@@ -27,7 +27,7 @@ if(F){
     simres <- NMsim(file.mod,
                     data=dt.sim,
                     table.var="PRED IPRED",
-                    dir.sims="testData",
+                    ## dir.sims="testData",
                     name.sim="default_01"
                     )
 
@@ -36,7 +36,7 @@ if(F){
 test_that("Basic",{
 
     fileRef <- "testReference/rbind_NMsimRes_01.rds"
-    res1 <- NMreadSim("testData/NMsim_xgxr021_default_01_paths.rds")
+    res1 <- NMreadSim("testOutput/NMsim_xgxr021_default_01_paths.rds")
 
     res2 <- res1[,rep:=1]
     res2 <- res1[,rep:=2]
