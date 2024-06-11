@@ -199,7 +199,7 @@ test_that("basic - known",{
     simres <- NMsim(file.mod,
                     data=dt.sim.known,
                     table.vars="PRED IPRED" ,
-                    dir.sims="testOutput",
+                    ## dir.sims="testOutput",
                     method.sim=NMsim_known,
                     name.sim="known_01",
                     method.execute="nmsim",
@@ -324,7 +324,7 @@ test_that("SAEM - known",{
     
     
     set.seed(43)
-    simres.5 <- NMsim(file.mod,
+    simres <- NMsim(file.mod,
                       data=dt.sim.known,
                       table.vars="PRED IPRED",
                       dir.sims="testOutput",
@@ -335,8 +335,8 @@ test_that("SAEM - known",{
                       )
 
     ## simres.5
-    fix.time(simres.5)
-    expect_equal_to_reference(simres.5,fileRef)
+    fix.time(simres)
+    expect_equal_to_reference(simres,fileRef)
     
 
     if(F){

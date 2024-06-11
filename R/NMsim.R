@@ -930,7 +930,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             NMdata:::NMwriteSectionOne(file0=path.sim,list.sections = nmtext["DATA"],backup=FALSE,quiet=TRUE)    
         } else {
             ## replace data file only
-            NMreplaceDataFile(files=path.sim,path.data=basename(path.data))
+            NMreplaceDataFile(files=path.sim,path.data=basename(path.data),quiet=TRUE)
         }
     },by=.(ROWMODEL)]
     
@@ -985,7 +985,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         writeTextFile(lines=lines.sim,file=path.sim)
     },by=.(ROWMODEL)]
     
-
+    
 ###  Section end: Output tables
     
 
