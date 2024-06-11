@@ -323,7 +323,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   typical=FALSE,
                   execute=TRUE,sge=FALSE,
                   nc=1,transform=NULL,
-                  method.execute,method.update.inits,
+                  method.execute,
+                  method.update.inits,
                   create.dirs=TRUE,dir.psn,
                   list.sections,sim.dir.from.scratch=TRUE,
                   col.row,
@@ -500,14 +501,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     if(missing(file.ext)) file.ext <- NULL
     method.update.inits <- adjust.method.update.inits(method.update.inits,system.type=system.type,file.psn=file.psn,dir.psn=dir.psn,cmd.update.inits=cmd.update.inits,file.ext=file.ext)
-    ## method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim,none))
-    ## ## if update.inits with psn, it needs to be available
-    ## if(method.update.inits=="psn"){
-    ##     cmd.update.inits <- file.psn(dir.psn,"update_inits")        
-    ##     if(system.type=="linux" && suppressWarnings(system(paste(cmd.update.inits,"-h"),ignore.stdout = TRUE)!=0)){
-    ##         stop('Attempting to use PSN\'s update_inits but it was not found. Look at the dir.psn argument or use method.update.inits="nmsim"')
-    ##     }
-    ## }
     
     
 
@@ -731,10 +724,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## fn.sim is the file name of the simulation control stream created by NMsim
     ## fn.sim <- sub("^run","NMsim",basename(file.mod))
     dt.models[,fn.mod:=basename(file.mod)]
-    dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
-    ## dt.models[,fn.sim:=paste0(fn.mod)]
+### prepending NMsim to model names
+    ## dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
+### dropping NMsim in front of all model names
+    dt.models[,fn.sim:=fnExtension(name.mod,".mod")]
 
-    
     dt.models[,fn.sim.predata:=fnAppend(fn.sim,name.sim.paths)]
     dt.models[,fn.sim:=fnAppend(fn.sim.predata,as.character(data.name)),by=.(ROWMODEL)]
     ## spaces not allowed in model names
@@ -807,7 +801,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ###### Messaging to user
     if(!quiet) {
-        message("Writing simulation control stream(s) and simulation data set(s) to directory:\n",dt.models[,paste(unique(dir.sim),collapse="\n")])
+        message("Writing simulation control stream(s) and simulation data set(s).\nNonmem to be executed here:\n",dt.models[,paste(unique(dir.sim),collapse="\n")])
     }
     
 ### Generate the first version of file.sim.
@@ -862,8 +856,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     }
 
-    ## Error in NMdata:::NMwriteSectionOne(file0 = path.sim, list.sections = nmtext["INPUT"],  : 
-    ## file.exists(file0) is not TRUE
     
     dt.models[,{
 ### note: insert test for whether run is needed here

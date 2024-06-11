@@ -17,6 +17,7 @@ data.table::setDTthreads(1)
 
 
 
+
 context("NMreadSim")
 
 ## prepare a sim to read
@@ -33,14 +34,16 @@ dat.sim[,ROW:=.I]
 dat.sim[,BBW:=75]
 
 if(F){
-## testOutput/NMsim_xgxr021_sd1_NMreadSim_paths.rds
-file.mod <- "testData/nonmem/xgxr021.mod"
-sim1 <- NMsim(file.mod=file.mod,
-              data=dat.sim,
-              dir.sim="testOutput",
-              name.sim = "sd1_NMreadSim",
-              seed.nm=2342
-              ,reuse.results=TRUE)
+    ## testOutput/NMsim_xgxr021_sd1_NMreadSim_paths.rds
+    file.mod <- "testData/nonmem/xgxr021.mod"
+    sim1 <- NMsim(file.mod=file.mod,
+                  data=dat.sim,
+                  dir.sims="testOutput",
+                  dir.res="testData/simres",
+                  name.sim = "sd1_NMreadSim",
+                  seed.nm=2342
+                 ## ,reuse.results=TRUE
+                  )
 }
 
 
@@ -49,7 +52,7 @@ sim1 <- NMsim(file.mod=file.mod,
 test_that("Basic",{
     fileRef <- "testReference/NMreadSim_01.rds"
     ## ref <- readRDS(fileRef)
-    res1 <- NMreadSim("testOutput/NMsim_xgxr021_sd1_NMreadSim_paths.rds")
+    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim/_paths.rds")
 
     fix.time(res1)
     

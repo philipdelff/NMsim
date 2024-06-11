@@ -7,7 +7,7 @@
 NMsim_known <- function(...){
 
 
-    message("NMsim_known() has been renamed to NMsim_EBE(). Calling NMsim_EBE()...")
+    message("NMsim_known() has been renamed to NMsim_EBE(). Calling NMsim_EBE().")
     
     NMsim_EBE(...)
 

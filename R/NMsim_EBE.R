@@ -60,7 +60,7 @@ NMsim_EBE <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
 ### $SIM ONLYSIM does not work in combination with $ESTIM, so we have to drop ONLYSIM
     lines.section.sim <- NMreadSection(lines=lines.sim,section="SIM")
     lines.section.sim <- sub("ONLYSIM(ULATION)*","",lines.section.sim)
-    lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="SIM",newlines=lines.section.sim,backup=FALSE,quiet=FALSE)
+    lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="SIM",newlines=lines.section.sim,backup=FALSE,quiet=TRUE)
 
     
     
@@ -95,7 +95,7 @@ NMsim_EBE <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
         genPhiFile(data=dt.res,file=file.phi)
     }
 
-
+#### NMreadPhi converts to long format R-friendly format. We prefer to manipulate the raw text lines for now. The alternative would be to read using NMreadPhi, then use genPhiFile(). However, that adds steps that may change format. For now, it is considered safer to just use the phi lines.
 ###### using the last table found in .phi to generate lines for a new .phi file. 
     phi.lines <- data.table(text=readLines(file.phi))
     phi.lines[,n:=.I]
@@ -110,6 +110,8 @@ NMsim_EBE <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
     phi.lines[grepl("^ *TABLE NO\\..*",text),tableStart:=TRUE]
     phi.lines[,TABLE.NO:=cumsum(tableStart)]
     phi.lines <- phi.lines[TABLE.NO==max(TABLE.NO)]
+
+    
     
     phi.use <- mergeCheck(dt.id.order[,.(ID)],phi.lines[,.(ID,text)],by=cc(ID),all.x=TRUE,quiet=TRUE)
     
