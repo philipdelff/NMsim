@@ -47,6 +47,7 @@ NMsim(
   quiet = FALSE,
   check.mod = TRUE,
   seed,
+  format.data.complete = "fst",
   ...
 )
 }
@@ -271,8 +272,8 @@ Nonmem, or ask a colleague.}
 
 \item{progress}{Track progress? Default is `TRUE` if `quiet` is
 FALSE and more than one model is being simulated. The progress
-tracking is based on the number of models completed, not
-the status of the individual models.}
+tracking is based on the number of models completed, not the
+status of the individual models.}
 
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say `tibble::as_tibble`) in as.fun to convert to
@@ -303,13 +304,16 @@ simulated, see `file.res` to get just one file refering to all
 simulation results.}
 
 \item{file.res}{Path to an rds file that will contain a table of
-the simulated models. This is useful for subsequently
-retrieving all the results using `NMreadSim()`. The default is
-to create a file called `NMsim_paths.rds` under the model
-simulation directory. However, if multiple models are
-simulated, this will result in multiple rds files. Specifying
-a path ensures that one rds file containing information about
-all simulated models will be created.}
+the simulated models and other metadata. This is needed for
+subsequently retrieving all the results using
+`NMreadSim()`. The default is to create a file called
+`NMsim_..._paths.rds` under the \code{dir.res} directory where
+... is based on the model name. However, if multiple models
+(\code{file.mod}) are simulated, this will result in multiple
+rds files. Specifying a path ensures that one rds file
+containing information about all simulated models will be
+created. Notice if \code{file.res} is supplied, \code{dir.res}
+is not used.}
 
 \item{wait}{Wait for simulations to finish? Default is to do so if
 simulations are run locally but not to if they are sent to the
@@ -329,6 +333,13 @@ of such a feature of your control stream, you know how it
 impacts simulation, and you want to get rid of warnings.}
 
 \item{seed}{Deprecated. See \code{seed.R} and \code{seed.nm}.}
+
+\item{format.data.complete}{Controls what format the complete
+input data set is saved in. This should be of no interest to
+the user and is only included to allow to revert the change
+from using `rds` in version 0.1.0 to using `fst`. Possible
+values are `fst` (default), `rds` (previously default) and
+`csv`. Users should not need this argument.}
 
 \item{...}{Additional arguments passed to \code{method.sim}.}
 }

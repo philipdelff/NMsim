@@ -39,10 +39,9 @@ if(F){
     sim1 <- NMsim(file.mod=file.mod,
                   data=dat.sim,
                   dir.sims="testOutput",
-                  dir.res="testData/simres",
                   name.sim = "sd1_NMreadSim",
                   seed.nm=2342
-                 ## ,reuse.results=TRUE
+                  ## ,reuse.results=TRUE
                   )
 }
 
@@ -52,10 +51,19 @@ if(F){
 test_that("Basic",{
     fileRef <- "testReference/NMreadSim_01.rds"
     ## ref <- readRDS(fileRef)
-    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim/_paths.rds")
+    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim_paths.rds")
 
     fix.time(res1)
     
     expect_equal_to_reference(res1,fileRef)
+
+    if(F){
+        ref <- readRDS(fileRef)
+        compareCols(res1,ref)
+
+        compareCols(attributes(res1)$NMsimModTab,
+                    attributes(ref)$NMsimModTab,keep.names=FALSE)
+    }
+
 })
 

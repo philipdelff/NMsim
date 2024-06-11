@@ -1,6 +1,18 @@
 ## library(devtools)
 ## load_all()
 
+#### need a function to drop NMsimVersion and NMsimTime from table
+fix.time <- function(x){
+    meta.x <- attr(x,"NMsimModTab")
+    ## meta.x$time.call <- as.POSIXct("2020-02-01 00:01:01",tz="UTC")
+    meta.x$NMsimVersion <- NULL
+    meta.x$NMsimTime <- NULL
+    
+    setattr(x,"NMsimModTab",meta.x)
+    invisible(x)
+}
+
+
 library(NMdata)
 NMdataConf(dir.psn=NULL)
 NMdataConf(as.fun="data.table")
@@ -27,7 +39,7 @@ if(F){
     simres <- NMsim(file.mod,
                     data=dt.sim,
                     table.var="PRED IPRED",
-                    ## dir.sims="testData",
+                    dir.sims="testOutput",
                     name.sim="default_01"
                     )
 
@@ -36,12 +48,22 @@ if(F){
 test_that("Basic",{
 
     fileRef <- "testReference/rbind_NMsimRes_01.rds"
-    res1 <- NMreadSim("testOutput/NMsim_xgxr021_default_01_paths.rds")
+    res1 <- NMreadSim("testOutput/xgxr021_default_01_paths.rds")
 
     res1 <- res1[,rep:=1]
     res2 <- copy(res1)[,rep:=2]
     class(res1)
     r2 <- rbind.NMsimRes(res1,res2)
+    fix.time(r2)
     
     expect_equal_to_reference(r2,fileRef)
+
+    if(F){
+        ref <- readRDS(fileRef)
+        compareCols(r2,ref)
+
+        compareCols(attributes(r2)$NMsimModTab,
+                    attributes(ref)$NMsimModTab,keep.names=FALSE)
+    }
+
 })

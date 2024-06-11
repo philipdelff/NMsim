@@ -56,8 +56,7 @@ if(FALSE){
                   suffix.sim = "sd1",
                   seed=2342,
                   ## execute=FALSE,
-                  method.update.inits="nmsim",
-                  
+                  method.update.inits="nmsim"
                   )
 
 

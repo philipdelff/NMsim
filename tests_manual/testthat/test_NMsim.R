@@ -1,4 +1,4 @@
-##install.packages("NMsim",repos="https://cloud.r-project.org")
+## install.packages("NMsim",repos="https://cloud.r-project.org")
 library(data.table)
 library(NMdata)
 
@@ -9,8 +9,8 @@ load_all(export_all=FALSE)
 
 NMdataConf(dir.psn=NULL)
 NMdataConf(as.fun="data.table")
-NMdataConf(dir.sims="testData/simtmp")
-NMdataConf(dir.res="testData/simres")
+NMdataConf(dir.sims="testOutput/simtmp")
+NMdataConf(dir.res="testOutput/simres")
 
 dt.dos <- NMcreateDoses(AMT=300,TIME=0)
 dt.sim <- addEVID2(doses=dt.dos,time.sim=c(1,6,12),CMT=2)
@@ -66,6 +66,7 @@ test_that("basic - default",{
     expect_equal_to_reference(simres,fileRef)
 
     if(F){
+        compareCols(simres,readRDS(fileRef),keep.names=FALSE)
         compareCols(attributes(simres)$NMsimModTab,attributes(readRDS(fileRef))$NMsimModTab,keep.names=FALSE)
         simres.nometa <- copy(simres)
         unNMsimRes(simres.nometa)
@@ -134,9 +135,7 @@ test_that("basic - sge - wait",{
                     ,reuse.results=FALSE
                      ## ,file.res=simtab
                      )
-    ## }
-    ##simres2 <- NMreadSim(simtab,wait=T)
-
+    
     fix.time(simres3)
     
     expect_equal_to_reference(simres3,fileRef)
@@ -241,6 +240,12 @@ test_that("basic - spaces in paths",{
     unNMsimRes(simres)
     expect_equal_to_reference(simres,fileRef)
 
+    if(F){
+        ref <- readRDS(fileRef)
+        compareCols(simres,ref)
+    }
+
+    
     file.mod <- "testData/nonmem/folder with space/xgxr021.mod"
 
     ## using PSN 
@@ -271,6 +276,7 @@ test_that("basic - spaces in paths",{
 
     if(F){
         compareCols(simres.psn,simres.nm)
+        compareCols(attributes(simres.psn)$NMsimModTab,attributes(simres.nm)$NMsimModTab)
     }
 })
 
@@ -419,10 +425,10 @@ test_that("multiple data sets",{
                              ,table.vars="PRED IPRED Y",
                               dir.sims="testOutput"
                              ,name.sim="datalist_01"
-                             ## ,method.execute="nmsim"
+                              ## ,method.execute="nmsim"
                              ,method.execute="psn"
                              ,sge=TRUE
-                              ,wait=T
+                             ,wait=T
                              ,path.nonmem=path.nonmem
                               )
 

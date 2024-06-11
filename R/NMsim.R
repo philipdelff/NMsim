@@ -220,13 +220,16 @@
 ##'     simulated, see `file.res` to get just one file refering to all
 ##'     simulation results.
 ##' @param file.res Path to an rds file that will contain a table of
-##'     the simulated models. This is useful for subsequently
-##'     retrieving all the results using `NMreadSim()`. The default is
-##'     to create a file called `NMsim_paths.rds` under the model
-##'     simulation directory. However, if multiple models are
-##'     simulated, this will result in multiple rds files. Specifying
-##'     a path ensures that one rds file containing information about
-##'     all simulated models will be created.
+##'     the simulated models and other metadata. This is needed for
+##'     subsequently retrieving all the results using
+##'     `NMreadSim()`. The default is to create a file called
+##'     `NMsim_..._paths.rds` under the \code{dir.res} directory where
+##'     ... is based on the model name. However, if multiple models
+##'     (\code{file.mod}) are simulated, this will result in multiple
+##'     rds files. Specifying a path ensures that one rds file
+##'     containing information about all simulated models will be
+##'     created. Notice if \code{file.res} is supplied, \code{dir.res}
+##'     is not used.
 ##' @param wait Wait for simulations to finish? Default is to do so if
 ##'     simulations are run locally but not to if they are sent to the
 ##'     cluster. Waiting for them means that the results will be read
@@ -236,16 +239,22 @@
 ##'     to finish).
 ##' @param quiet If TRUE, messages from what is going on will be
 ##'     suppressed.
-##' @param nmquiet Silent messages from Nonmem. The default is `TRUE`. 
+##' @param nmquiet Silent messages from Nonmem. The default is `TRUE`.
 ##' @param progress Track progress? Default is `TRUE` if `quiet` is
 ##'     FALSE and more than one model is being simulated. The progress
-##'     tracking is based on the number of models completed, not
-##'     the status of the individual models.
+##'     tracking is based on the number of models completed, not the
+##'     status of the individual models.
 ##' @param check.mod Check the provided control streams for contents
 ##'     that may cause issues for simulation. Default is `TRUE`, and
 ##'     it is only recommended to disable this if you are fully aware
 ##'     of such a feature of your control stream, you know how it
 ##'     impacts simulation, and you want to get rid of warnings.
+##' @param format.data.complete Controls what format the complete
+##'     input data set is saved in. This should be of no interest to
+##'     the user and is only included to allow to revert the change
+##'     from using `rds` in version 0.1.0 to using `fst`. Possible
+##'     values are `fst` (default), `rds` (previously default) and
+##'     `csv`. Users should not need this argument.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
 ##'     as input data). If `sge=TRUE` a character vector with paths to
@@ -342,6 +351,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,quiet=FALSE
                  ,check.mod = TRUE
                  ,seed
+                 ,format.data.complete="fst"
                  ,...
                   ){
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -354,6 +364,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     default <- NULL
     direct <- NULL
     directory <- NULL
+    dir.data.sim <- NULL
     dir.sim <- NULL
     est <- NULL
     fn.data <- NULL
@@ -739,7 +750,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## dir.sim is the model-individual directory in which the model will be run
     dt.models[,
               dir.sim:=file.path(dir.sims,paste(name.mod,name.sim.paths,sep="_"))]
-
+    
     
     ## path.sim.tmp is a temporary path to the sim control stream - it
     ## will be moved to path.sim once created.
@@ -753,10 +764,17 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     dt.models[,fn.data:=paste0("NMsimData_",fnAppend(fnExtension(name.mod,".csv"),name.sim))]
     dt.models[,fn.data:=fnAppend(fn.data,data.name),by=.(ROWMODEL)]
-    dt.models[,fn.data:=gsub(" ","_",fn.data)]
-    
-    dt.models[,path.data:=file.path(dir.sim,fn.data)]
+    ## dt.models[,fn.data:=gsub(" ","_",fn.data)]
+    dt.models[,fn.data:=cleanStrings(fn.data)]
 
+    dt.models[,dir.data.sim:=dir.sim]
+#### A data-efficient way to store data sets as needed
+    if(FALSE){
+        dt.models[,dir.data.sim:=file.path(dir.sim,"data")]
+    }
+
+    dt.models[,path.data:=file.path(dir.data.sim,fn.data)]
+    
     ## path.rds - Where to save table of runs
     if(missing(dir.res)) {
         dt.models[,dir.res:=dir.sim]
@@ -766,10 +784,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(missing(file.res)) file.res <- NULL
     
-    
     if(is.null(file.res)){
-        
-        ## dt.models[,path.rds:=file.path(dir.res,"NMsim_paths.rds")]
         dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"rds"),"paths"))]
     } else {
         dt.models[,path.rds:=fnExtension(file.res,"rds")]
@@ -794,7 +809,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,if(file.exists(path.sim)) unlink(path.sim),by=.(ROWMODEL)]
     
     dt.models[,{if(!dir.exists(dir.sim)){
-                    dir.create(dir.sim)}
+                    dir.create(dir.sim)
+                }
+                    if(!dir.exists(dir.data.sim)){
+                        dir.create(dir.data.sim)
+                    }   
     },by=.(ROWMODEL)
     ]
     
@@ -894,8 +913,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 #### multiple todo: save only for each unique path.data
         
         
-        
-        nmtext <- NMwriteData(data.this,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script)
+        ## format.data.complete <- "fst"
+        nmtext <- NMwriteData(data.this,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script
+                             ,formats.write=c("csv",format.data.complete))
         
         ## input
         if(exists("section.input")){
