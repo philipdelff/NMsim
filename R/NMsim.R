@@ -481,7 +481,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(wait.exec) wait <- FALSE
 
 
-    if(nc>1){warning("nc>1 is likely not to work. Please notice there are more efficient methods to speed up simulations, and nc>1 is most likely not what you want anyway. See discussions on the NMsim website.")}
+    if(nc>1){message("nc>1 may not work depending on your system configuration. It has only been tested on linux. Please notice there are other and most often more efficient methods to speed up simulations. See discussions on the NMsim website.")}
     
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL

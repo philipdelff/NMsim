@@ -501,7 +501,7 @@ test_that("default with renaming",{
                     name.sim="default_01"
                     )
 
-    expect_equal(unique(simres[,model]),"NMsim_ref_default01")
+    expect_equal(unique(simres[,model]),"ref_default_01")
     
     fix.time(simres)
     expect_equal_to_reference(simres,fileRef)
@@ -536,7 +536,7 @@ test_that("multiple data sets with renaming",{
                              ,wait=T
                               )
 
-    expect_equal(unique(simres.multidata[,model]),paste("NMsim_ref_datalist01",101:103,sep="_"))
+    expect_equal(unique(simres.multidata[,model]),paste("ref_datalist_01",101:103,sep="_"))
     
     expect_equal(nrow(simres.multidata),nrow(dt.sim.known[ID<=103]))
     
@@ -551,6 +551,7 @@ test_that("default with nc>1",{
 
     set.seed(43)
     expect_warning(
+        
         simtab <- NMsim(file.mod,
                         data=dt.sim,
                         table.vars="PRED IPRED",
@@ -561,14 +562,19 @@ test_that("default with nc>1",{
                        ,sge=TRUE
                        ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
                         )
+        
     )
 ### last time I checked, this didnt work
-    expect_error(simres <- NMreadSim(simtab,wait=T))
-    ## expect_equal(
-    ##     nrow(
-    ##     simres
-    ##     ),nrow(dt.sim)
-    ## )
+    ## expect_error(
+        simres <- NMreadSim(simtab,wait=T)
+        ## )
+        
+    expect_equal(
+        nrow(
+        simres
+        ),
+        nrow(dt.sim)
+    )
     
     ## expect_equal_to_reference(simres,fileRef)
 

@@ -186,7 +186,7 @@ simres.known <- NMsim(file.mod=file.mod,
 
 ```{r,include=FALSE,eval=TRUE}
 file.fst <- "simulate-results/xgxr021_known1_paths.rds"
-sim.res.known <- NMreadSim(file.fst)
+simres.known <- NMreadSim(file.fst)
 ```
 
 And the simulation results are plotted for each subject.
