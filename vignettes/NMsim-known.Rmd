@@ -45,7 +45,7 @@ library(tracee)
 ## library(tidyr)
 library(fst)
 library(knitr)
-## NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 ## NMdataConf(path.nonmem="/opt/nonmem/nm751/run/nmfe75")
 ## NMdataConf(dir.psn=NULL)
 
@@ -150,7 +150,16 @@ single ID, and merges all other columns than `ID` onto the observed
 
 First thing, we decide on a model (an input control stream of an estimated model) to use for the example:
 ```{r}
-file.mod <- file.project("nonmem/xgxr021.mod")
+file.mod <- system.file("examples/nonmem/xgxr021.mod",package="NMsim")
+```
+
+Simulation with known ETA values is only possible through NMsim's internal Nonmem execution method. That means, we need to provide the path to the Nonmem executable. Also, We configure locations where `NMsim` will store and run Nonmem control streams (`dir.sims`) and where it will save the final results file. Finally, because this vignette uses some `data.table` code we tell `NMsim` to return `data.table`s.
+
+```{r,eval=TRUE}
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
+           dir.sims="simulate-tmp",
+           dir.res="simulate-res",
+           as.fun="data.table")
 ```
 
 
@@ -171,18 +180,13 @@ simres.known <- NMsim(file.mod=file.mod,
                       data=dat.sim.known,
                       method.sim=NMsim_known,
                       table.vars="PRED IPRED CL V2 KA",
-                      name.sim="known1",
-                      dir.sims="~/NMsim_vignette/"
+                      name.sim="known1"
                       )
 ```
 
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres_known.fst"
-if(run.simuls){
-    write_fst(simres.known,path=file.fst)
-} else {
-    simres.known <- read_fst(file.fst,as.data.table=TRUE)
-}
+file.fst <- "simulate-results/xgxr021_known1_paths.rds"
+sim.res.known <- NMreadSim(file.fst)
 ```
 
 And the simulation results are plotted for each subject.
@@ -201,8 +205,10 @@ evaluate the individual predictions of the PK model at the individual
 PD samplng times - reusing the individual dosing history.
 
 Reading some example PD data:
-```{r,pddata,include=FALSE,eval=TRUE}
-pd <- readRDS(file.project("data/xgxr_pd.rds")) |> as.data.table()
+```{r,pddata,include=TRUE,eval=TRUE}
+pd <- readRDS(system.file("examples/data/xgxr_pd.rds",package="NMsim"))
+## some code below makes use of data.table features so we make it a data.table
+setDT(pd)
 ```
 
 For a PK model without time-varying covariates, suggested steps 
@@ -222,11 +228,12 @@ In case of time-varying covariates, you can keep all data records from the PK da
 pkres <- NMscanData(file.mod,quiet=TRUE)
 pkdos <- pkres[EVID==1,.(ID, TIME, EVID, CMT, AMT)]
 ## Take PD data observation records (`pdsamples`)
-pd[,ROWPD:=.I]
-pdsamples <- pd[EVID==0,.(ROWPD,ID,TIME,EVID=2)]
+pdsamples <- pd[EVID==0,.(ID,TIME,LIDV)]
 ## Stack `pkdos` and `pdsamples` to one data set (`pdsim`)
 pdsim <- rbind(pkdos,pdsamples,fill=TRUE)
+## Nonmem needs a DV column to run
 pdsim[,DV:=NA]
+## only include subjects that were included in the PK model
 pdsim <- pdsim[ID%in%pkres$ID]
 setorder(pdsim,ID,TIME,EVID)
 ```
@@ -234,36 +241,24 @@ setorder(pdsim,ID,TIME,EVID)
 Then run `NMsim` like this:
 
 ```{r,known-pkpd-run,eval=FALSE}
-
 simres.pksim <- NMsim(file.mod,
                       data=pdsim,
                       name.sim="pkpd",
-                     ,method.sim=NMsim_known
-                     ,table.vars="IPRED PRED"
+                      method.sim=NMsim_known,
+                      table.vars="PKIPRED=IPRED PKPRED=PRED"
                       )
-
 ```
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres_pksim.fst"
-if(run.simuls){
-    write_fst(simres.pksim,path=file.fst)
-} else {
-    simres.pksim <- read_fst(file.fst,as.data.table=TRUE)
-}
+file.fst <- "simulate-results/xgxr021_pkpd_paths.rds"
+simres.pksim <- NMreadSim(file.fst)
 ```
 
 
-Now rename `res.pksim$IPRED` to something meaningfull like `res.pksim$PKIPRED`, and you can merge `res.pksim` onto the PD data by the unique row identifier. 
-
-```{r,merge-pdres,eval=TRUE}
-setnames(simres.pksim,"IPRED","PKIPRED")
-pd2 <- mergeCheck(pd,simres.pksim[,.(ROWPD,PKIPRED)],by="ROWPD",all.x=TRUE)
-```
 
 ```{r,eval=TRUE}
-ggplot(pd2[!is.na(LIDV)&!is.na(PKIPRED)],aes(PKIPRED,LIDV))+
+ggplot(simres.pksim[!is.na(LIDV)&!is.na(PKIPRED)],aes(PKIPRED,LIDV))+
     geom_point()+
-    labs(x="Individual PK prediction",y="Observed PD value") ## +
+    labs(x="Individual PK prediction",y="Observed PD value")
 ``` 
 
 
