@@ -249,7 +249,7 @@ simres.pksim <- NMsim(file.mod,
                       )
 ```
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/xgxr021_pkpd_paths.rds"
+file.fst <- "simulate-res/xgxr021_pkpd_paths.rds"
 simres.pksim <- NMreadSim(file.fst)
 ```
 
