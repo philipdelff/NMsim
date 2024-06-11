@@ -629,8 +629,8 @@ test_that("transform",{
 test_that("dir.sims and dir.res with NMdataConf",{
 
     NMdataConf(dir.sims="testOutput/NMdataConfSim",
-               dir.res="testOutput/NMdataConfRes",
-               allow.unknown=TRUE)
+               dir.res="testOutput/NMdataConfRes"
+    )
     
     fileRef <- "testReference/NMsim_10.rds"
 
@@ -677,11 +677,13 @@ test_that("basic - a model that fails on NMTRAN",{
         simres <- NMsim(file.mod,
                         data=dt.sim,
                         ## table.var="PRED IPRED",
-                        dir.sims="testOutput",
+                        ## dir.sims="testOutput",
                         name.sim="nmtranfail"
                        ,sge=F
-                       ,wait=TRUE
-                        )
+                       ,nmquiet=F
+                       ,wait=TRUE,
+                        path.nonmem=path.nonmem
+                     )
     )
     ## expect_error(
     ##     NMreadSim(simres)

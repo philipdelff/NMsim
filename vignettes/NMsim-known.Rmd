@@ -158,7 +158,7 @@ Simulation with known ETA values is only possible through NMsim's internal Nonme
 ```{r,eval=TRUE}
 NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
            dir.sims="simulate-tmp",
-           dir.res="simulate-res",
+           dir.res="simulate-results",
            as.fun="data.table")
 ```
 
@@ -238,7 +238,7 @@ pdsim <- pdsim[ID%in%pkres$ID]
 setorder(pdsim,ID,TIME,EVID)
 ```
 
-Then run `NMsim` like this:
+Then run `NMsim` like this. We are renaming the prediction columns using Nonmem `$TABLE` statement not to confuse PK predictions and PD predictions.
 
 ```{r,known-pkpd-run,eval=FALSE}
 simres.pksim <- NMsim(file.mod,
@@ -249,7 +249,7 @@ simres.pksim <- NMsim(file.mod,
                       )
 ```
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-res/xgxr021_pkpd_paths.rds"
+file.fst <- "simulate-results/xgxr021_pkpd_paths.rds"
 simres.pksim <- NMreadSim(file.fst)
 ```
 
