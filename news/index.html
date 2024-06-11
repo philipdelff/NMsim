@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.936</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.939</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,8 +87,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="other-changes-0-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1"></a></h3>
-<ul><li>
-<code><a href="../reference/NMsim_known.html">NMsim_known()</a></code> renamed to <code><a href="../reference/NMsim_EBE.html">NMsim_EBE()</a></code>.</li>
+<ul><li><p><code><a href="../reference/NMsim_known.html">NMsim_known()</a></code> renamed to <code><a href="../reference/NMsim_EBE.html">NMsim_EBE()</a></code>.</p></li>
+<li><p>In case of multi-threaded (cluster) execution and something went wrong <code><a href="../reference/NMexec.html">NMexec()</a></code> used to write some output files from Nonmem in the current working directory. All these are now being written to the model execution directory for clarity and tidyness.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
