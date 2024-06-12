@@ -17,7 +17,9 @@ coverage](https://codecov.io/gh/philipdelff/NMsim/branch/master/graph/badge.svg)
 <!-- [![R-CMD-check](https://github.com/philipdelff/NMsim/workflows/R-CMD-check/badge.svg)](https://github.com/philipdelff/NMsim/actions) -->
 <!-- badges: end -->
 
-)
+Please make sure to read this at
+[`The NMsim website`](https://philipdelff.github.io/NMsim) where you can
+browse several vignettes with examples on speecific topics.
 
 `NMsim` is an R package that can simulate Nonmem models (using the
 `NMsim` function) based on just a simulation data set and a path to an
@@ -25,30 +27,38 @@ estimation control stream. It will also retrive and combine output
 tables with input data once Nonmem has finished and return the results
 to R.
 
-## Install
-
-`NMsim` is on CRAN, MPN and github:
-
-``` r
-## From CRAN/MPN repositories
-install.packages("NMsim")
-## From github
-library(remotes)
-install_github("philipdelff/NMsim")
-```
-
-## Simulate a Nonmem model from R
-
-In its simplest use, a simulation of the (estimated) model stored in
-“path/to/file.mod” using the simulation input data set stored in the
-variable `data.sim` this way:
+The interface is “seamless” or fully integrated in R. Run a simulation
+of the (estimated) model stored in “path/to/file.mod” using the
+simulation input data set stored in the variable `data.sim` this way:
 
 ``` r
 simres <- NMsim(file.mod="/path/to/file.mod",
                 data=data.sim)
 ```
 
-We are ready to plot
+You will quickly learn to do this on your own models, but if you can’t
+wait to see this working, you can do the following:
+
+``` r
+data.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"))
+simres <- NMsim(file.mod=system.file("examples/nonmem/xgxr021.mod",package="NMsim"),
+                data=data.sim,
+                dir.sims=".")
+#> Writing simulation control stream(s) and simulation data set(s).
+#> Nonmem to be executed here:
+#> ./xgxr021_noname
+#> Executing Nonmem
+#> Reading Nonmem results
+#> 
+#> Simulation results returned. Re-read them without re-simulating using:
+#> NMreadSim("./xgxr021_noname_paths.rds")
+```
+
+where `dir.sims` may be needed because the model in this case may be in
+a read-only location.
+
+Notice, that could be any working Nonmem model as long as the provided
+simulation data set is sufficient to run it. We are ready to plot:
 
 ``` r
 library(ggplot2)
@@ -240,3 +250,15 @@ is different, this is for now not supported. Please use
 `NMexec(sge=FALSE)` in that case (which may not be desirable). Notice
 that simulations are not done on a cluster by default so you may still
 be able to use `NMsim`.
+
+## Install
+
+`NMsim` is on CRAN, MPN and github:
+
+``` r
+## From CRAN/MPN repositories
+install.packages("NMsim")
+## From github
+library(remotes)
+install_github("philipdelff/NMsim")
+```
