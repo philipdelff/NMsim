@@ -62,52 +62,66 @@ Built `r Sys.Date()` using NMsim `r packageVersion("NMsim")`.
 
 
 
-### Generating a simulation input data set
-The pop PK model was estimated using an ADVAN subroutine with
-extravascular dosing in compartment 1 and the central compartment is
-compartment 2. This information is needed because the compartment
-numbers in the simulation data set will be created to match this. We
-shall see that this is the only information needed about the model for
-`NMsim` to be able to simulate it.
+### A basic simulation data set
 
-It does not matter to NMsim how we create a simulation data set as
-long as we get it into a data.frame structure. For the example, we used functions
-included with NMsim, but you can use anything. We
+As long as a simulation data set is in a `data.frame` structure with columns and values compatible with the Nonmem model(s) to be simulated, it does not matter to `NMsim` how it was created. However, `NMsim` and `NMdata` do provide powerful methods to easily create such data sets.
+
+As an example we
 create a regimen with a loading dose of 300 mg followed by 150 QD for
-6 days. Notice that the compartment numbers match the compartment
-numbers that were used when estimating the model.
+6 days. We dose into compartment 1, and we want to simulate samples in the second compartment. These numbers depend on the model which the data set is intended to be used with.
+
+`NMcreateDoses()` is a flexible function that creates dosing records based on a concise syntax. We add a label to the regimen right away.
 
 ```{r,dsCreateSim,include=TRUE}
 ### multiple dose regimens with loading are easily created with NMcreateDoses too
 ## We use ADDL+II (either method easy)
 doses <- NMcreateDoses(TIME=c(0,24),AMT=c(300,150),addl=data.frame(ADDL=c(0,5),II=c(0,24)),CMT=1)
 doses <- transform(doses,trt="300 mg then 150 mg QD")
-
-## Add simulation records - longer for QD regimens
-dat.sim <- addEVID2(doses,time.sim=0:(24*7),CMT=2)
-
-## sort data set 
-setorder(dat.sim,ID,TIME,EVID)
-
-## Adding a row identifier (generally not necessary)
-dat.sim$ROW <- 1:nrow(dat.sim)
-```
-```{r,save-datsim,eval=FALSE}
-NMwriteData(dat.sim,file="simulate-results/dat_sim.csv",genText=FALSE)
+## Notice, the ID and MDV columns are included
+doses
 ```
 
-We check the simulation data set for various potential issues in
-Nonmem data sets using `NMdata::NMcheckData` and summarize the number
-of doses and observations:
+Now we add the sample records using `addEVID2()`. 
 
 ```{r}
-NMcheckData(dat.sim,type.data="sim")
+## Add simulation records - longer for QD regimens
+dat.sim <- addEVID2(doses,time.sim=0:(24*7),CMT=2)
 ```
+
+`dat.sim` is now a valid simulation data set with one subject. However, even though `addEVID2()` does try to order the data in a meaningful way, it is recommended to always manually order the data set. We use `data.table`'s `setorder()`. `dplyr::arrange` can just as well be used. A row identifier (counter) can make post-processing easier, so we add that too.
+
+```{r}
+## sort data set 
+setorder(dat.sim,ID,TIME,EVID)
+## Adding a row identifier (generally not necessary but recommended)
+dat.sim$ROW <- 1:nrow(dat.sim)
+```
+
+
+```{r,save-datsim,eval=FALSE,include=FALSE}
+## NMwriteData(dat.sim,file="simulate-results/dat_sim.csv",genText=FALSE)
+NMwriteData(dat.sim,file="../inst/examples/derived/dat_sim1.csv",genText=FALSE)
+```
+
+`NMsim` does not include any plotting functionality, but here is a simple way to show dosing amounts and sample times. `NMdata::NMexpandDoses()` is used to _expand_ the doses coded with `ADDL`/`II` in order to get a data row to plot for each dose. We also take the sum of the amounts by time point in case doses are simultaneous. 
+
+```{r,fig.height=2}
+dtplot <- NMdata::NMexpandDoses(dat.sim,as.fun="data.table")
+dtplot <- dtplot[,.(AMT=sum(AMT)),by=.(ID,CMT,TIME,EVID)]
+
+ggplot(dtplot,aes(TIME,factor(CMT),colour=factor(EVID)))+
+    geom_point(data=function(x)x[EVID==1],aes(size=AMT))+
+    geom_point(data=function(x)x[EVID==2],shape="|")+
+    labs(x="Time (hours)",y="Compartment")+
+    theme(legend.position="bottom")
+
+````
+
 
 A brief overview of the number of events broken down by event type `EVID` and dose amount `AMT`:
 
 ```{r,echo=FALSE}
-NMexpandDoses(dat.sim)[,.(Nrows=.N),keyby=.(trt,EVID,AMT)] |>
+NMexpandDoses(dat.sim)[,.(Nrows=.N),keyby=.(trt,CMT,EVID,AMT)] |>
     kable()
 ```
 
@@ -120,3 +134,48 @@ Showing the top five rows for understanding what the data now looks like. Notice
 ```{r,echo=FALSE}
 dat.sim[1:5,]
 ```
+
+
+Finally, We check the simulation data set for various potential issues in
+Nonmem data sets using `NMdata::NMcheckData` and summarize the number
+of doses and observations:
+
+```{r}
+NMdata::NMcheckData(dat.sim,type.data="sim")
+```
+
+### Add time after previous dose and related information
+
+Just like for preparation of data set with observed data, time after previous dose may be the relevant time to analyze the simulation results against. We use `NMdata::addTAPD()` to add this automatically.
+
+```{r,addTAPD}
+dat.sim2 <- addTAPD(dat.sim)
+head(dat.sim2)
+```
+
+Here is something important to decide for simulations. Notice `TAPD` for the sample at `TIME==0`.
+`addTAPD` does not use the order of the data set to determine the time-order or the records. The default behavior of `addTAPD` is to treat a sample taken at the exact same time as a dose as a pre-dose. If instead we want them to be considered post-dose, we have to specify how to order `EVID` numbers.
+
+```{r,addTAPD2}
+## order.evid=c(1,2) means doses are ordered before EVID=2 records
+dat.sim2 <- addTAPD(dat.sim,order.evid=c(1,2))
+## now the TIME=0 sample has TAPD=0
+head(dat.sim2)
+```
+
+`addTAPD` uses `NMdata::NMexpandDoses` to make sure all dosing times are considered. See `?NMdata::addTAPD` for what the other created columns mean and for many useful features.
+
+### Multiple endpoints (e.g. parent and metabolite)
+
+Pass a data.frame to `addEVID2`'s CMT argument to include multiple endpoints. 
+
+```{r}
+addEVID2(doses,CMT=data.frame(CMT=c(2,3),DVID=c("Parent","Metabolite")),time.sim=1:2)
+```
+
+
+### Cohort-dependent or individual sampling schemes
+Same way as for the `CMT` argument, `time.sim` can also be a `data.frame`. If it contains a covariate found in the doses data, the added simulation times will be merged on accordingly. You can use say a cohort identifier, or it could be `ID` which allows you to reuse (all or parts of) the observed sample times.
+
+### Other features
+As the name implies the default of function is to use `EVID=2` (which means they are neither doses, samples, nor resetting events) for these records. Should you want to change that (maybe to `EVID=0`), use the `EVID` argument.
