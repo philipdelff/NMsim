@@ -570,8 +570,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(!missing(seed.nm)){
             stop("`seed` and `seed.nm` supplied. Use `seed.nm` and not the deprecated `seed`.")
         }
-        message("`seed` is deprecated. Use `seed.nm`.")
-        seed <- seed.nm
+        message("`seed` is deprecated. Use `seed.nm`. See argument `seed.R` too.")
+        seed.nm <- seed
     }
     if(missing(seed.nm)) seed.nm <- NULL
 
@@ -820,7 +820,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ###### Messaging to user
     if(!quiet) {
-        message("Writing simulation control stream(s) and simulation data set(s).\nNonmem to be executed here:\n",dt.models[,paste(unique(dir.sim),collapse="\n")])
+        message(sprintf("Writing %d simulation control stream(s) and simulation data set(s).\nNonmem to be executed here:\n",dt.models[,.N]),dt.models[,paste(unique(dir.sim),collapse="\n")])
     }
     
 ### Generate the first version of file.sim.
@@ -1158,7 +1158,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     if(execute){
 ##### Messaging user
-        if(!quiet) message("Executing Nonmem")
+        if(!quiet) {
+            message(paste("Executing Nonmem",ifelse(method.execute=="psn","(using PSN)","")))
+            }
 
         dt.models[,unlink(path.rds)]
         file.res.data <- fnAppend(fnExtension(dt.models[,path.rds],"fst"),"res")
