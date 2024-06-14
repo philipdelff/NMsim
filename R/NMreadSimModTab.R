@@ -106,12 +106,20 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     if(missing(progress)) progress <- NULL
     if(is.null(progress)) progress <- TRUE
     ## Previous versions did not save path.results, so 
+
+    
     if(! "NMsimVersion"%in%colnames(modtab) ){
         modtab[,path.results:=fnExtension(fnAppend(path.rds.read,"res"),"fst")]
     } else {
-        modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
+        if("file.res.data" %in% colnames(modtab)){
+            modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
+        } else {
+            modtab[,path.results:=fnExtension(fnAppend(path.rds.read,"res"),"fst")]
+        }
+        
     }
 
+    
     rdstab <- unique(modtab[,.(path.results,path.rds.read)])
     if(nrow(rdstab)>1) stop("modtab must be related to only one rds file.")
     
@@ -146,7 +154,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     }
 
 
-
+    
     ## fsts
     if(from.fst){
 ### reads unique fsts
@@ -218,12 +226,12 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     do.pb <- do.pb <- !quiet && progress && nsplits>1
     if(do.pb){
         ## progress tracker
-            pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
-                                 max = nsplits, # Maximum value of the progress bar
-                                 ##initial = n.done,
-                                 style = 3,    # Progress bar style (also available style = 1 and style = 2)
-                                 ## width = 50,   # Progress bar width. Defaults to getOption("width")
-                                 char = "=")
+        pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+                             max = nsplits, # Maximum value of the progress bar
+                             ##initial = n.done,
+                             style = 3,    # Progress bar style (also available style = 1 and style = 2)
+                             ## width = 50,   # Progress bar width. Defaults to getOption("width")
+                             char = "=")
     }
     
     res.list <- lapply(1:nsplits,function(count){
