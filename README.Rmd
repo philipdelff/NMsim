@@ -57,8 +57,16 @@ where `dir.sims` may be needed because the model in this case may be in a read-o
 
 Notice, that could be any working Nonmem model as long as the provided simulation data set is sufficient to run it. We are ready to plot:
 
+
+```{r,include=FALSE,eval=FALSE}
+data.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"))
+simres <- NMsim(file.mod=system.file("examples/nonmem/xgxr021.mod",package="NMsim"),
+                data=data.sim,
+                dir.sims="vignettes/simulate-results")
+```
+
 ```{r,include=FALSE,eval=TRUE}
-simres <- NMreadSim("vignettes/simulate-results/NMsim_xgxr021_noname_paths.rds")
+simres <- NMreadSim("vignettes/simulate-results/xgxr021_noname_MetaData.rds")
 ```
 
 ```{r,eval=TRUE,fig.height = 4, fig.width = 7}

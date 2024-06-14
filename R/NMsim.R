@@ -834,7 +834,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ###### Messaging to user
     if(!quiet) {
-        message(sprintf("\nLocation(s) of Intermediate files and Nonmem execution:\n%s",
+        message(sprintf("Location(s) of Intermediate files and Nonmem execution:\n%s",
                         dt.models[,paste(paste0("  ",unique(dir.sim)),collapse="\n")]))
         message(sprintf("Location of final result files:\n%s\n",
                         dt.models[,paste(paste0("  ",unique(dirname(path.rds))),collapse="\n")]))
