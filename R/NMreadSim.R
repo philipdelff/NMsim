@@ -108,8 +108,11 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,progres
     
     
     res.all <- NULL
-    if(sum(dt.x$is.simRes)){
-        res.simRes <- NMreadSimRes(x[dt.x$is.simRes])
+    if(sum(dt.x$is.simRes|dt.x$is.fst)){
+        if(!quiet && any(dt.x$is.fst)){
+            message("Reading results from `fst` file directly.\nPlease read the MetaData file instead to preserve model-related information.")
+        }
+        res.simRes <- NMreadSimRes(x[dt.x$is.simRes|dt.x$is.fst])
         if(is.null(res.all)){
             res.all <- res.simRes
         } else {
@@ -129,7 +132,7 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,progres
     }
     
     ##    res.all <- rbind(res.simRes,res.modTab,fill=TRUE)
-
+    
     res.all <- as.fun(res.all)
     addClass(res.all,"NMsimRes")
     return(res.all)

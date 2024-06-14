@@ -105,6 +105,13 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
     if(missing(progress)) progress <- NULL
     if(is.null(progress)) progress <- TRUE
+    ## Previous versions did not save path.results, so 
+    if(! "NMsimVersion"%in%colnames(modtab) ){
+        modtab[,path.results:=fnExtension(fnAppend(path.rds.read,"res"),"fst")]
+    } else {
+        modtab[NMsimVersion<="0.1.941",path.results:=file.res.data]
+    }
+
     rdstab <- unique(modtab[,.(path.results,path.rds.read)])
     if(nrow(rdstab)>1) stop("modtab must be related to only one rds file.")
     

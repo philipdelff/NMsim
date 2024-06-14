@@ -796,7 +796,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         dt.models[,dir.res:=..dir.res]
     }
     
-     if(is.null(file.res)){
+    if(is.null(file.res)){
         dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"rds"),"MetaData"))]
         dt.models[,path.results:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"fst"),"Results"))]
     } else {
@@ -834,11 +834,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ###### Messaging to user
     if(!quiet) {
-    message(sprintf("\nLocation(s) of Intermediate files and Nonmem execution:\n%s",
-                    dt.models[,paste(paste0("  ",unique(dir.sim)),collapse="\n")]))
-    message(sprintf("Location of final result files:\n%s\n",
-                    dt.models[,paste(paste0("  ",unique(dirname(path.rds))),collapse="\n")]))
-    
+        message(sprintf("\nLocation(s) of Intermediate files and Nonmem execution:\n%s",
+                        dt.models[,paste(paste0("  ",unique(dir.sim)),collapse="\n")]))
+        message(sprintf("Location of final result files:\n%s\n",
+                        dt.models[,paste(paste0("  ",unique(dirname(path.rds))),collapse="\n")]))
+        
         message(sprintf("* Writing %d simulation control stream(s) and simulation data set(s)",dt.models[,.N]))
     }
     
@@ -1180,9 +1180,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(!quiet) {
             if(nmquiet){
                 message(paste0("* Executing Nonmem",ifelse(method.execute=="psn"," (using PSN)","")," in background"))
-                } else {
-                    message(paste("* Executing Nonmem",ifelse(method.execute=="psn","(using PSN)","")))
-                }
+            } else {
+                message(paste("* Executing Nonmem",ifelse(method.execute=="psn","(using PSN)","")))
+            }
         }
 
         dt.models[,unlink(path.rds)]
