@@ -67,3 +67,25 @@ test_that("Basic",{
 
 })
 
+
+test_that("Reading fst directly",{
+    fileRef <- "testReference/NMreadSim_01.rds"
+    ## ref <- readRDS(fileRef)
+    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim_paths_res.fst")
+library(fst)
+    res1 <- read_fst("testOutput/xgxr021_sd1_NMreadSim_paths_res.fst",as.data.table=T)
+
+    fix.time(res1)
+    
+    expect_equal_to_reference(res1,fileRef)
+
+    if(F){
+        ref <- readRDS(fileRef)
+        compareCols(res1,ref)
+
+        compareCols(attributes(res1)$NMsimModTab,
+                    attributes(ref)$NMsimModTab,keep.names=FALSE)
+    }
+
+})
+

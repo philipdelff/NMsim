@@ -12,7 +12,9 @@
 ##'     be stored next to the input control stream and ending in .lst
 ##'     instead of .mod. The .ext file must also be present. If
 ##'     simulating known subjects, the .phi is necessary too.
-##' @param data The simulation data as a data.frame.
+##' @param data The simulation data as a \code{data.frame} or a list
+##'     of \code{data.frame}s. If a list, the model(s) will be run on
+##'     each of the data sets in the list.
 ##' @param dir.sims The directory in which NMsim will store all
 ##'     generated files. Default is to create a folder called `NMsim`
 ##'     next to `file.mod`.
@@ -25,8 +27,9 @@
 ##' @param script The path to the script where this is run. For
 ##'     stamping of dataset so results can be traced back to code.
 ##' @param subproblems Number of subproblems to use as
-##'     \code{SUBPROBLEMS} in \code{$SIMULATION} block in Nonmem. The default
-##'     is subproblem=0 which means not to use \code{SUBPROBLEMS}.
+##'     \code{SUBPROBLEMS} in \code{$SIMULATION} block in Nonmem. The
+##'     default is subproblem=0 which means not to use
+##'     \code{SUBPROBLEMS}.
 ##' @param reuse.results If simulation results found on file, should
 ##'     they be used? If TRUE and reading the results fail, the
 ##'     simulations will still be rerun.
@@ -55,7 +58,7 @@
 ##'     (say to choose a different pool of seeds to draw from).
 ##'
 ##'
-##' In case \code{method.sim=NMsim_known}, seed is not used and will be set to 1.
+##' In case \code{method.sim=NMsim_EBE}, seeds are not used.
 ##'
 ##' @param seed Deprecated. See \code{seed.R} and \code{seed.nm}.
 ##' @param args.psn.execute A charachter string that will be passed as
@@ -112,7 +115,7 @@
 ##'     PSN's execute), and "direct" (just run Nonmem directly and
 ##'     dump all the temporary files). "nmsim" has advantages over
 ##'     "psn" that makes it the only supported method when
-##'     type.sim="NMsim_known". "psn" has the simple advantage that
+##'     type.sim="NMsim_EBE". "psn" has the simple advantage that
 ##'     the path to nonmem does not have to be specified if "execute"
 ##'     is in the system search path. So as long as you know where
 ##'     your Nonmem executable is, "nmsim" is recommended. The default
@@ -271,9 +274,9 @@
 ##'     all methods creating a \code{$SIMULATION} section.
 ##'
 ##' Notice, the following functions are internally available to
-##' `NMsim` so you can run them by say \code{method.sim=NMsim_known}
+##' `NMsim` so you can run them by say \code{method.sim=NMsim_EBE}
 ##' without quotes. To see the code of that method, type
-##' \code{NMsim_known}.
+##' \code{NMsim_EBE}.
 ##' 
 ##' \itemize{
 ##' 
@@ -288,23 +291,34 @@
 ##'
 ##' \item \code{NMsim_typical} Deprecated. Use \code{typical=TRUE} instead. 
 ##' 
-##' \item \code{NMsim_known} Simulates _known_ subjects, meaning that
-##' it reuses ETA values from estimation run. This is what is refered
-##' to as emperical Bayes estimates. The .phi file from the estimation
-##' run must be found next to the .lst file from the estimation.This
-##' means that ID values in the (simulation) input data must be ID
-##' values that were used in the estimation too. Runs an
-##' \code{$ESTIMATION MAXEVAL=0} but pulls in ETAs for the ID's found
-##' in data. No \code{$SIMULATION} step is run which may affect how
-##' for instance residual variability is simulated, if at all.
+##' \item \code{NMsim_EBE} Simulates _known_ ETAs. By default, the ETA
+##' values are automatically taken from the estimation run. This is
+##' what is refered to as emperical Bayes estimates, hence the name of
+##' the method "NMsim_EBE". However, the user can also provide a
+##' different `.phi` file which may contain simulated ETA values (see
+##' the `file.phi` argument). ID values in the simulation data set
+##' must match ID values in the phi file for this step to work. If
+##' refering to estimated subjects, the .phi file from the estimation
+##' run must be found next to the .lst file from the estimation with
+##' the same file name stem (say `run1.lst` and `run1.phi`). Again, ID
+##' values in the (simulation) input data must be ID values that were
+##' used in the estimation too. The method Runs an \code{$ESTIMATION
+##' MAXEVAL=0} but pulls in ETAs for the ID's found in data. No
+##' \code{$SIMULATION} step is run which unfortunately means no
+##' residual error will be simulated.
 ##'
 ##' \item \code{NMsim_VarCov} Like \code{NMsim_default} but `$THETA`,
 ##' `$OMEGA`, and `SIGMA` are drawn from distribution estimated in
 ##' covariance step. This means that a successful covariance step must
-##' be available from the estimation. In case the simulation leads to
-##' negative diagonal elements in $OMEGA and $SIGMA, those values are
-##' truncated at zero. For simulation with parameter variability based
-##' on bootstrap results, use \code{NMsim_default}.
+##' be available from the estimation. NB. A multivariate normal
+##' distribution is used for all parameters, including `$OMEGA` and
+##' `$SIGMA` which is not the correct way to do this. In case the
+##' simulation leads to negative diagonal elements in $OMEGA and
+##' $SIGMA, those values are truncated at zero. This method is only
+##' valid for simulation of `$THETA` variability. The method accepts a
+##' table of parameter values that can be produced with other tools
+##' than `NMsim`. For simulation with parameter variability based on
+##' bootstrap results, use \code{NMsim_default}.
 ##'
 ##' }
 ##' @import NMdata
@@ -782,14 +796,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         dt.models[,dir.res:=..dir.res]
     }
     
-    if(missing(file.res)) file.res <- NULL
-    
-    if(is.null(file.res)){
-        dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"rds"),"paths"))]
+     if(is.null(file.res)){
+        dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"rds"),"MetaData"))]
+        dt.models[,path.results:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"fst"),"Results"))]
     } else {
         dt.models[,path.rds:=fnExtension(file.res,"rds")]
+        dt.models[,path.results:=fnAppend(fnExtension(file.res,"rds"),"Results")]
     }
     ## dt.models[,path.rds.exists:=file.exists(path.rds)]
+
     
     dt.models[,path.rds.exists:=file.exists(path.rds)]
 ### reading results from prior run
@@ -816,11 +831,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                     }   
     },by=.(ROWMODEL)
     ]
-    
 
 ###### Messaging to user
     if(!quiet) {
-        message(sprintf("Writing %d simulation control stream(s) and simulation data set(s).\nNonmem to be executed here:\n",dt.models[,.N]),dt.models[,paste(unique(dir.sim),collapse="\n")])
+    message(sprintf("\nLocation(s) of Intermediate files and Nonmem execution:\n%s",
+                    dt.models[,paste(paste0("  ",unique(dir.sim)),collapse="\n")]))
+    message(sprintf("Location of final result files:\n%s\n",
+                    dt.models[,paste(paste0("  ",unique(dirname(path.rds))),collapse="\n")]))
+    
+        message(sprintf("* Writing %d simulation control stream(s) and simulation data set(s)",dt.models[,.N]))
     }
     
 ### Generate the first version of file.sim.
@@ -1159,13 +1178,17 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(execute){
 ##### Messaging user
         if(!quiet) {
-            message(paste("Executing Nonmem",ifelse(method.execute=="psn","(using PSN)","")))
-            }
+            if(nmquiet){
+                message(paste0("* Executing Nonmem",ifelse(method.execute=="psn"," (using PSN)","")," in background"))
+                } else {
+                    message(paste("* Executing Nonmem",ifelse(method.execute=="psn","(using PSN)","")))
+                }
+        }
 
         dt.models[,unlink(path.rds)]
-        file.res.data <- fnAppend(fnExtension(dt.models[,path.rds],"fst"),"res")
-        if(any(file.exists(file.res.data))){
-            unlink(file.res.data[file.exists(file.res.data)])
+        ## file.res.data <- fnAppend(fnExtension(dt.models[,path.rds],"fst"),"res")
+        if(any(file.exists(dt.models[,path.results]))){
+            unlink(dt.models[file.exists(path.results),unlink(path.results)])
         }
 
         ## run sim
@@ -1242,7 +1265,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ##### Messaging user
 ### we are controlling this messaging better from NMreadSim()
-        ## if(!quiet) message("\nCollecting results.")
+        if(!quiet) message("* Collecting Nonmem results")
         simres <- NMreadSim(unlist(files.rds),wait=wait,progress=progress,quiet=quiet)
     }
     
@@ -1254,12 +1277,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## if(execute && (wait.exec||wait)){
     if(is.NMsimRes(simres) || (execute && (wait.exec||wait))){
         if(!quiet){
-            message("\nSimulation results returned. Re-read them without re-simulating using:\n",paste(sprintf("NMreadSim(\"%s\")",dt.models[,unique(path.rds)]),collapse="\n"))
+            message("\nSimulation results returned. Re-read them without re-simulating using:\n",paste(sprintf("  simres <- NMreadSim(\"%s\")",dt.models[,unique(path.rds)]),collapse="\n"))
         }
         return(returnSimres(simres))
     } else {
         if(!quiet){
-            message(sprintf("\nSimulation results not returned. Read them with:\nNMreadSim(\"%s\")\nThe first time the results are read, they will be efficiently stored in the simulation results folder. Until then, they only exist as Nonmem result files.",paste(dt.models[,unique(path.rds)],collapse=",")))
+            message(sprintf("\nSimulation results not returned. Read them with:\n  simres <- NMreadSim(\"%s\")\nThe first time the results are read, they will be efficiently stored in the simulation results folder. Until then, they only exist as Nonmem result files.",paste(dt.models[,unique(path.rds)],collapse=",")))
         }
         addClass(dt.models,"NMsimModTab")
         return(invisible(dt.models[,unique(path.rds)]))

@@ -41,7 +41,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
             })
 
             tab.paths <- rbindlist(tab.paths.list,fill=TRUE)
-            tab.paths[,file.res.data:=fnAppend(fnExtension(x,"fst"),"res")]
+            ## tab.paths[,file.res.data:=fnAppend(fnExtension(x,"fst"),"res")]
 
             
         } else if(is.NMsimModTab(x)){
@@ -105,7 +105,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
     if(missing(progress)) progress <- NULL
     if(is.null(progress)) progress <- TRUE
-    rdstab <- unique(modtab[,.(file.res.data,path.rds.read)])
+    rdstab <- unique(modtab[,.(path.results,path.rds.read)])
     if(nrow(rdstab)>1) stop("modtab must be related to only one rds file.")
     
 ####### Now we have a NMSimModels object to process.
@@ -129,13 +129,13 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
 ### if we have an fst, read it and return results
     if(check.time){
-        from.fst <- rdstab[,!is.null(file.res.data) &&
-                            file.exists(file.res.data) &&
-                            file.mtime(file.res.data)>file.mtime(path.rds.read)
+        from.fst <- rdstab[,!is.null(path.results) &&
+                            file.exists(path.results) &&
+                            file.mtime(path.results)>file.mtime(path.rds.read)
                            ]
     } else {
-        from.fst <- rdstab[,!is.null(file.res.data) &&
-                            file.exists(file.res.data)]
+        from.fst <- rdstab[,!is.null(path.results) &&
+                            file.exists(path.results)]
     }
 
 
@@ -143,7 +143,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     ## fsts
     if(from.fst){
 ### reads unique fsts
-        res.list <- lapply(modtab[,unique(file.res.data)],read_fst,as.data.table=TRUE)
+        res.list <- lapply(modtab[,unique(path.results)],read_fst,as.data.table=TRUE)
         res <- rbindlist(res.list,fill=TRUE)
 
         setattr(res,"NMsimModTab",modtab)
@@ -202,7 +202,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     }
 
 
-    message("Reading Nonmem results")
+    ## if(!quiet) message("Reading Nonmem results")
     
 
     tab.split <- split(modtab,by="ROWMODEL2")
@@ -278,9 +278,9 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     setattr(res,"NMsimModTab",modtab)
     addClass(res,"NMsimRes")
 
-    if(!is.null(rdstab$file.res.data)){
+    if(!is.null(rdstab$path.results)){
         NMwriteData(res,
-                    file=rdstab$file.res.data,
+                    file=rdstab$path.results,
                     formats.write="fst",
                     genText=F,
                     quiet=TRUE)
