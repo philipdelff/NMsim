@@ -62,8 +62,11 @@ test_that("Basic",{
         ref <- readRDS(fileRef)
         compareCols(res1,ref)
 
-        compareCols(attributes(res1)$NMsimModTab,
-                    attributes(ref)$NMsimModTab,keep.names=FALSE)
+        compareCols(
+            attributes(res1)$NMsimModTab
+           ,
+            attributes(ref)$NMsimModTab
+           ,keep.names=FALSE)
     }
 
 })
@@ -72,7 +75,7 @@ test_that("Basic",{
 test_that("Reading fst directly",{
     ## NMdataConf(as.fun="data.table")
     
-    fileRef <- "testReference/NMreadSim_01.rds"
+    fileRef <- "testReference/NMreadSim_02.rds"
     ## ref <- readRDS(fileRef)
     res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim_paths_res.fst")
     ## library(fst)

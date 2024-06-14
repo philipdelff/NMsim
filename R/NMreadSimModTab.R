@@ -99,7 +99,9 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     args.NMscanData <- NULL
     file.res.data <- NULL
     funs.transform <- NULL
+    NMsimVersion <- NULL
     path.rds.read <- NULL
+    path.results <- NULL
     path.lst.read <- NULL
     ROWTMP <- NULL
     

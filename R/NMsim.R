@@ -403,6 +403,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     psn <- NULL
     par.type <- NULL
     path.rds <- NULL
+    path.results <- NULL
     pathResFromists <- NULL
     pathSimsFromRes <- NULL
     path.sim <- NULL
@@ -1281,7 +1282,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         }
         return(returnSimres(simres))
     } else {
-        if(!quiet){
+        if(!quiet & execute){
             message(sprintf("\nSimulation results not returned. Read them with:\n  simres <- NMreadSim(\"%s\")\nThe first time the results are read, they will be efficiently stored in the simulation results folder. Until then, they only exist as Nonmem result files.",paste(dt.models[,unique(path.rds)],collapse=",")))
         }
         addClass(dt.models,"NMsimModTab")
