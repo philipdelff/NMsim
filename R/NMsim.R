@@ -727,6 +727,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             if(any(duplicated(names.data))) stop("If data is a list of data sets, the list elements must be uniquely named.")
             names.data[names.data==""] <- as.character(which(names.data==""))
         }
+
+        ## data sets must not be empty
+        if(any(sapply(data,function(x)x[,.N==0]))){
+            stop("Empty data set provided. If `data` is a list of data sets, make sure all of them are non-empty.")
+        }
         
         dt.data <- data.table(DATAROW=1:length(data),data.name=names.data)
         if(dt.data[,.N]==1) dt.data[,data.name:=""]
