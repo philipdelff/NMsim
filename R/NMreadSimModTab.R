@@ -7,7 +7,7 @@
 ##' @keywords internal
 
 NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=FALSE,quiet=FALSE,progress,as.fun){
-
+    
 
     ROWTMP <- NULL
     path.lst.read <- NULL
@@ -93,7 +93,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
 ##' @keywords internal
 ##' @import utils
 NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,skip.missing=FALSE,progress,as.fun){
-
+    
     . <- NULL
     ROWMODEL2 <- NULL
     args.NMscanData <- NULL
@@ -110,17 +110,13 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     ## Previous versions did not save path.results, so 
 
     
-    if(! "NMsimVersion"%in%colnames(modtab) ){
-        modtab[,path.results:=fnExtension(fnAppend(path.rds.read,"res"),"fst")]
-    } else {
-        if("file.res.data" %in% colnames(modtab)){
-            modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
-        } else {
+    if(!"path.results"%in%colnames(modtab)){
+        if(! "NMsimVersion"%in%colnames(modtab) || !"file.res.data" %in% colnames(modtab)){
             modtab[,path.results:=fnExtension(fnAppend(path.rds.read,"res"),"fst")]
+        } else {
+                modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
         }
-        
     }
-
     
     rdstab <- unique(modtab[,.(path.results,path.rds.read)])
     if(nrow(rdstab)>1) stop("modtab must be related to only one rds file.")
@@ -175,7 +171,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     if(!done){
         if(wait){
             turns <- 0
-            if(!done) message("Waiting for Nonmem to finish simulating")
+            if(!done) message("* Waiting for Nonmem to finish")
             
             ## progress tracker
             n.lsts <- modtab[,.N]
@@ -225,6 +221,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     tab.split <- split(modtab,by="ROWMODEL2")
     nsplits <- length(tab.split)
 
+    if(!quiet) message("* Collecting Nonmem results")
     do.pb <- do.pb <- !quiet && progress && nsplits>1
     if(do.pb){
         ## progress tracker

@@ -27,7 +27,6 @@
 
 
 NMsim_EBE <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
-    
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
 
     . <- NULL
@@ -72,7 +71,7 @@ NMsim_EBE <- function(file.sim,file.mod,data.sim,file.phi,return.text=FALSE){
 
     ## phi file required
 ### read estimation phi file and select subjects to be simulated
-
+    
 ### generate new phi file
     data.sim[,rowtmp:=.I]
     dt.id.order <- data.sim[,.SD[1],by=.(ID=as.character(ID)),.SDcols=cc(rowtmp)]

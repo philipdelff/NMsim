@@ -46,7 +46,7 @@
 NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,progress,as.fun){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
-
+    
     . <- NULL
     path.sim.lst <- NULL
     pathResFromSims <- NULL

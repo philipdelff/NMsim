@@ -365,7 +365,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,quiet=FALSE
                  ,check.mod = TRUE
                  ,seed
-                 ,format.data.complete="fst"
+                 ,format.data.complete="rds"
                  ,...
                   ){
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -802,7 +802,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         dt.models[,path.results:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"fst"),"Results"))]
     } else {
         dt.models[,path.rds:=fnExtension(file.res,"rds")]
-        dt.models[,path.results:=fnAppend(fnExtension(file.res,"rds"),"Results")]
+        dt.models[,path.results:=fnAppend(fnExtension(file.res,"fst"),"Results")]
     }
     ## dt.models[,path.rds.exists:=file.exists(path.rds)]
 
@@ -835,7 +835,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ###### Messaging to user
     if(!quiet) {
-        message(sprintf("Location(s) of Intermediate files and Nonmem execution:\n%s",
+        message(sprintf("Location(s) of intermediate files and Nonmem execution:\n%s",
                         dt.models[,paste(paste0("  ",unique(dir.sim)),collapse="\n")]))
         message(sprintf("Location of final result files:\n%s\n",
                         dt.models[,paste(paste0("  ",unique(dirname(path.rds))),collapse="\n")]))
@@ -1180,9 +1180,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ##### Messaging user
         if(!quiet) {
             if(nmquiet){
-                message(paste0("* Executing Nonmem",ifelse(method.execute=="psn"," (using PSN)","")," in background"))
+                message(paste0("* Starting Nonmem job(s)",ifelse(method.execute=="psn"," (using PSN)","")," in background"))
             } else {
-                message(paste("* Executing Nonmem",ifelse(method.execute=="psn","(using PSN)","")))
+                message(paste("* Starting Nonmem job(s)",ifelse(method.execute=="psn","(using PSN)","")))
             }
         }
 
@@ -1266,7 +1266,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ##### Messaging user
 ### we are controlling this messaging better from NMreadSim()
-        if(!quiet) message("* Collecting Nonmem results")
+        ## if(!quiet) message("* Collecting Nonmem results")
         simres <- NMreadSim(unlist(files.rds),wait=wait,progress=progress,quiet=quiet)
     }
     
