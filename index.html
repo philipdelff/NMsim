@@ -103,17 +103,7 @@
 <code class="sourceCode R"><span><span class="va">data.sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples/derived/dat_sim1.csv"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples/nonmem/xgxr021.mod"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span>,</span>
 <span>                data<span class="op">=</span><span class="va">data.sim</span>,</span>
-<span>                dir.sims<span class="op">=</span><span class="st">"."</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Location(s) of intermediate files and Nonmem execution:</span></span>
-<span><span class="co">#&gt;   ./xgxr021_noname</span></span>
-<span><span class="co">#&gt; Location of final result files:</span></span>
-<span><span class="co">#&gt;   .</span></span>
-<span><span class="co">#&gt; * Writing 1 simulation control stream(s) and simulation data set(s)</span></span>
-<span><span class="co">#&gt; * Starting Nonmem job(s) (using PSN) in background</span></span>
-<span><span class="co">#&gt; * Collecting Nonmem results</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Simulation results returned. Re-read them without re-simulating using:</span></span>
-<span><span class="co">#&gt;   simres &lt;- NMreadSim("./xgxr021_noname_MetaData.rds")</span></span></code></pre></div>
+<span>                dir.sims<span class="op">=</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
 <p>where <code>dir.sims</code> may be needed because the model in this case may be in a read-only location.</p>
 <p>Notice, that could be any working Nonmem model as long as the provided simulation data set is sufficient to run it. We are ready to plot:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
