@@ -298,6 +298,8 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
                     formats.write="fst",
                     genText=F,
                     quiet=TRUE)
+        ## this message may confuse because the user may think this has not happened if they don't see the message. And the message will only appear the first time data is being read.
+        ## message("Results have been efficiently stored in results folder.")
     }
 
 

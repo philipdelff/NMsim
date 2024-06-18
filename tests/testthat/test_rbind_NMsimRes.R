@@ -48,7 +48,7 @@ if(F){
 test_that("Basic",{
 
     fileRef <- "testReference/rbind_NMsimRes_01.rds"
-    res1 <- NMreadSim("testOutput/xgxr021_default_01_paths.rds")
+    res1 <- NMreadSim("testOutput/xgxr021_default_01_MetaData.rds")
 
     res1 <- res1[,rep:=1]
     res2 <- copy(res1)[,rep:=2]

@@ -252,12 +252,13 @@
 ##'     it is only recommended to disable this if you are fully aware
 ##'     of such a feature of your control stream, you know how it
 ##'     impacts simulation, and you want to get rid of warnings.
-##' @param format.data.complete Controls what format the complete
-##'     input data set is saved in. This should be of no interest to
-##'     the user and is only included to allow to revert the change
-##'     from using `rds` in version 0.1.0 to using `fst`. Possible
-##'     values are `fst` (default), `rds` (previously default) and
-##'     `csv`. Users should not need this argument.
+##' @param format.data.complete For development purposes - users do
+##'     not need this argument. Controls what format the complete
+##'     input data set is saved in.  Possible values are `rds`
+##'     (default), `fst` (experimental) and `csv`. `fst` may be faster
+##'     and use less disk space but factor levels may be lost from
+##'     input data to output data. `csv` will also lead to loss of
+##'     additional information such as factor levels.
 ##' @param ... Additional arguments passed to \code{method.sim}.
 ##' @return A data.frame with simulation results (same number of rows
 ##'     as input data). If `sge=TRUE` a character vector with paths to
@@ -804,10 +805,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(is.null(file.res)){
         dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"rds"),"MetaData"))]
-        dt.models[,path.results:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"fst"),"Results"))]
+        dt.models[,path.results:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"fst"),"ResultsData"))]
     } else {
         dt.models[,path.rds:=fnExtension(file.res,"rds")]
-        dt.models[,path.results:=fnAppend(fnExtension(file.res,"fst"),"Results")]
+        dt.models[,path.results:=fnAppend(fnExtension(file.res,"fst"),"ResultsData")]
     }
     ## dt.models[,path.rds.exists:=file.exists(path.rds)]
 

@@ -1,13 +1,13 @@
 Package: NMsim
 Type: Package
 Title: Seamless 'Nonmem' Simulation Platform
-Version: 0.1.0.944
+Version: 0.1.0.950
 Authors@R: c(person("Philip", "Delff", email = "philip@delff.dk",role = c("aut","cre")),
   person("Matthew","Fidler", role = c("ctb"), email = "matt.fidler@novartis.com", comment="Co-author on NMreadCov"))
 Maintainer: Philip Delff <philip@delff.dk>
 Description: A complete and seamless 'Nonmem' simulation interface from within R. Turns 'Nonmem' control streams into simulation control streams, executes them with specified simulation input data and returns the results. The simulation is performed by 'Nonmem', eliminating time spent and risks of re-implementation of models in other tools.
 License: MIT + file LICENSE
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Roxygen: list(roclets=c("collate", "namespace", "rd", "vignette"))
 Depends: R (>= 3.5.0)
 Imports:

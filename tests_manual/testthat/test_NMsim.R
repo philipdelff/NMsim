@@ -66,7 +66,8 @@ test_that("basic - default",{
     expect_equal_to_reference(simres,fileRef)
 
     if(F){
-        compareCols(simres,readRDS(fileRef),keep.names=FALSE)
+        ref <- readRDS(fileRef)
+        compareCols(simres,ref,keep.names=FALSE)
         compareCols(attributes(simres)$NMsimModTab,attributes(readRDS(fileRef))$NMsimModTab,keep.names=FALSE)
         simres.nometa <- copy(simres)
         unNMsimRes(simres.nometa)
