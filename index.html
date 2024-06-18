@@ -104,12 +104,12 @@
 <span><span class="va">simres</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples/nonmem/xgxr021.mod"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span>,</span>
 <span>                data<span class="op">=</span><span class="va">data.sim</span>,</span>
 <span>                dir.sims<span class="op">=</span><span class="st">"."</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Location(s) of Intermediate files and Nonmem execution:</span></span>
+<span><span class="co">#&gt; Location(s) of intermediate files and Nonmem execution:</span></span>
 <span><span class="co">#&gt;   ./xgxr021_noname</span></span>
 <span><span class="co">#&gt; Location of final result files:</span></span>
 <span><span class="co">#&gt;   .</span></span>
 <span><span class="co">#&gt; * Writing 1 simulation control stream(s) and simulation data set(s)</span></span>
-<span><span class="co">#&gt; * Executing Nonmem (using PSN) in background</span></span>
+<span><span class="co">#&gt; * Starting Nonmem job(s) (using PSN) in background</span></span>
 <span><span class="co">#&gt; * Collecting Nonmem results</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Simulation results returned. Re-read them without re-simulating using:</span></span>
@@ -125,7 +125,7 @@
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="va">x</span><span class="op">[</span><span class="va">variable</span><span class="op">!=</span><span class="st">"Y"</span><span class="op">]</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="va">x</span><span class="op">[</span><span class="va">variable</span><span class="op">==</span><span class="st">"Y"</span><span class="op">]</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Hours since first dose"</span>,y<span class="op">=</span><span class="st">"Concentration (ng/mL)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
+<p><img src="reference/figures/README-simple-sim-1.png" width="100%"></p>
 <p>This example was a simulation of a multiple dose regimen with a loading dose using a model estimated on single dose data. It is from the first vignette <a href="https://philipdelff.github.io/NMsim/articles/NMsim-basics.html"><code>NMsim-basics.html</code></a>.</p>
 <div class="section level2">
 <h2 id="supported-types-of-simulations">Supported types of simulations<a class="anchor" aria-label="anchor" href="#supported-types-of-simulations"></a>
