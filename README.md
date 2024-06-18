@@ -44,16 +44,6 @@ data.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"
 simres <- NMsim(file.mod=system.file("examples/nonmem/xgxr021.mod",package="NMsim"),
                 data=data.sim,
                 dir.sims=".")
-#> Location(s) of intermediate files and Nonmem execution:
-#>   ./xgxr021_noname
-#> Location of final result files:
-#>   .
-#> * Writing 1 simulation control stream(s) and simulation data set(s)
-#> * Starting Nonmem job(s) (using PSN) in background
-#> * Collecting Nonmem results
-#> 
-#> Simulation results returned. Re-read them without re-simulating using:
-#>   simres <- NMreadSim("./xgxr021_noname_MetaData.rds")
 ```
 
 where `dir.sims` may be needed because the model in this case may be in
