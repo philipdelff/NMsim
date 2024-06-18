@@ -669,6 +669,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         ## dir.create(dir.res)
         res.dc <- tryCatch(dir.create(dir.res),warning=function(w)w)
         if("warning"%in%class(res.dc)){
+            message(dir.res)
             stop("Problems creating dir.res. Please check that the parent directory exists and is writable.")
         }
         

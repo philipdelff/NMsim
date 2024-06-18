@@ -14,6 +14,7 @@ knitr::opts_chunk$set(
 library(NMdata)
 library(data.table)
 library(NMsim)
+NMdataConf(reset=TRUE)
 ```
 
 
@@ -69,7 +70,7 @@ simres <- NMsim(file.mod=system.file("examples/nonmem/xgxr021.mod",package="NMsi
 simres <- NMreadSim("vignettes/simulate-results/xgxr021_noname_MetaData.rds")
 ```
 
-```{r,eval=TRUE,fig.height = 4, fig.width = 7}
+```{r,simple-sim,eval=TRUE,fig.height = 4, fig.width = 7}
 library(ggplot2)
 datl <- as.data.table(simres) |>
     melt(measure.vars=cc(PRED,IPRED,Y))

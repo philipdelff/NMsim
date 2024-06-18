@@ -44,12 +44,12 @@ data.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"
 simres <- NMsim(file.mod=system.file("examples/nonmem/xgxr021.mod",package="NMsim"),
                 data=data.sim,
                 dir.sims=".")
-#> Location(s) of Intermediate files and Nonmem execution:
+#> Location(s) of intermediate files and Nonmem execution:
 #>   ./xgxr021_noname
 #> Location of final result files:
 #>   .
 #> * Writing 1 simulation control stream(s) and simulation data set(s)
-#> * Executing Nonmem (using PSN) in background
+#> * Starting Nonmem job(s) (using PSN) in background
 #> * Collecting Nonmem results
 #> 
 #> Simulation results returned. Re-read them without re-simulating using:
@@ -73,7 +73,7 @@ ggplot(datl,aes(TIME,value,colour=variable))+
     labs(x="Hours since first dose",y="Concentration (ng/mL)")
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-simple-sim-1.png" width="100%" />
 
 This example was a simulation of a multiple dose regimen with a loading
 dose using a model estimated on single dose data. It is from the first
