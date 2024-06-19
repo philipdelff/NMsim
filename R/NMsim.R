@@ -872,6 +872,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
         dt.models[,
         {
+            if(!file.exists(fnExtension(file.mod,"lst"))){stop("When using method.update.inits=\"psn\", an output control stream with file name extensions .lst must be located next to the input control stream. Consider also `method.update.inits=\"nmsim\"`.")}
             cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",normalizePath(cmd.update.inits,mustWork=FALSE),fn.sim.tmp,normalizePath(file.mod))
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
@@ -1186,10 +1187,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(execute){
 ##### Messaging user
         if(!quiet) {
-            if(nmquiet){
-                message(paste0("* Starting Nonmem job(s)",ifelse(method.execute=="psn"," (using PSN)","")," in background"))
+            if(wait.exec){
+                message(paste("* Executing Nonmem job(s)",ifelse(method.execute=="psn","(using PSN)","")))
             } else {
-                message(paste("* Starting Nonmem job(s)",ifelse(method.execute=="psn","(using PSN)","")))
+                message(paste0("* Starting Nonmem job(s)",ifelse(method.execute=="psn"," (using PSN)","")," in background"))
             }
         }
 
