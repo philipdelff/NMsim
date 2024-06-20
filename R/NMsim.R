@@ -337,8 +337,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   ## tab.ext=NULL,
                   script=NULL,subproblems=NULL,
                   reuse.results=FALSE,
-                  seed.R=NULL,
-                  seed.nm=NULL,
+                  seed.R,
+                  seed.nm,
                   args.psn.execute,
                   table.vars,
                   table.options,
@@ -532,11 +532,26 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
 
 ### seed.R
+    if(missing(seed.R)) seed.R <- NULL
     if(!is.null(seed.R)){
         set.seed(seed.R)
     }
+    if(missing(seed.nm)) seed.nm <- NULL
     
     ## seed.nm
+    ## seed is deprecated
+    if(!missing(seed)){
+        if(!is.null(seed.nm)){
+            stop("`seed` and `seed.nm` supplied. Use `seed.nm` and not the deprecated `seed`.")
+        }
+        message("`seed` is deprecated. Use `seed.nm`. See argument `seed.R` too.")
+        seed.nm <- seed
+        seed <- NULL
+    }
+
+
+
+    
     ## if(missing(seed)) seed <- NULL
     ## arg.seed is the user-supplied seed. Don't confuse with seed.args
 ### in case of "asis", how should the user be allowed to disable touching the seed? seed.nm="asis"? 
@@ -567,10 +582,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## if(missing(modelname)){
     modelname <- NULL
     ## }
-    file.mod.named <- FALSE
-    if(!is.null(names(file.mod))){
-        file.mod.named <- TRUE
-    }
     
     if(missing(col.row)) col.row <- NULL
     col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
@@ -581,15 +592,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     input.archive <- inputArchiveDefault
 
-    ## seed is deprecated
-    if(!missing(seed)){
-        if(!missing(seed.nm)){
-            stop("`seed` and `seed.nm` supplied. Use `seed.nm` and not the deprecated `seed`.")
-        }
-        message("`seed` is deprecated. Use `seed.nm`. See argument `seed.R` too.")
-        seed.nm <- seed
-    }
-    if(missing(seed.nm)) seed.nm <- NULL
 
     
 
