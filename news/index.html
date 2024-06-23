@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.951</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.953</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,14 +71,18 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="nmsim-011">NMsim 0.1.1<a class="anchor" aria-label="anchor" href="#nmsim-011"></a></h2>
+<p>While no critical and generally only few bugs have been found in NMsim 0.1.0, NMsim 0.1.1 includes many minor improvements and upgrades. The interface feels smoother too. I want to thank Ron Keizer for feedback and advice.</p>
 <div class="section level3">
 <h3 id="new-features-0-1-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1"></a></h3>
-<ul><li><p>Simpler messaging, progress trackers.</p></li>
-<li><p>Provide parameter table for simulations</p></li>
+<ul><li><p><code><a href="../reference/NMsim.html">NMsim()</a></code> has a much reduced and improved messaging to the user. If more than one model or data set is supplied or generated, progress trackers will be shown while starting Nonmem, while waiting for Nonmem to finish, and while collecting the simulation results.</p></li>
+<li><p>The messages include information about where intermediate files and final results files are stored.</p></li>
+<li><p>Names of files containing final results have been renamed to be more intuitive. The previous <code>_paths.rds</code> will now be called <code>_MetaData.rds</code>. The results, once read and compressed, will be in a file called <code>_ResultsData.fst</code>. Notice, both these files are required to fully recover simulation results. Thanks to Brian Reilly for discussions on this and many other design aspects.</p></li>
+<li><p>It is now possible to provide specific parameters (<code>THETA</code>, <code>OMEGA</code> and <code>SIGMA</code>) for Nonmem simulation. <code><a href="../reference/NMsim.html">NMsim()</a></code> table for simulations. See argument <code>file.ext</code> and <code>NMsim_VarCov</code>’s argument <code>ext</code>.</p></li>
 <li><p>New arguments to control seeds. <code>NMsim</code> can either use R’s <code>set.seed</code> before generating the seeds for Nonmem. Detailed control of the seeds, including how many to include and the distribution of the random sources in Nonmem, can be controlled using the <code>seed.nm</code> argument. This way, the user can add random processes to the estimated control stream. The actual Nonmem seed values can also be provided.</p></li>
-<li><p><code>method.sim=NMsim_typical()</code> has been replaced by argument <code>typical=TRUE</code>.</p></li>
-<li><p>Cleaned messaging. Improved for <code><a href="../reference/NMreadSim.html">NMreadSim()</a></code>.</p></li>
-<li><p>Check for presence of .ext</p></li>
+<li><p><code>method.sim=NMsim_typical()</code> has been replaced by argument <code>typical=TRUE</code>. This means typical subject simulations can now be combined with other simulations methods like <code>NMsim_VarCov</code>.</p></li>
+<li><p><code><a href="../reference/NMsim.html">NMsim()</a></code> now adds a column called <code>sim</code> which carries the name of the simulation defined by the <code>name.sim</code> argument.</p></li>
+<li><p>Several checks for existence and concistency of files are implemented.</p></li>
+<li><p>The native Nonmem execution method now also works for estimation.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bugfixes-0-1-1">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-0-1-1"></a></h3>
@@ -88,6 +92,7 @@
 <div class="section level3">
 <h3 id="other-changes-0-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1"></a></h3>
 <ul><li><p><code><a href="../reference/NMsim_known.html">NMsim_known()</a></code> renamed to <code><a href="../reference/NMsim_EBE.html">NMsim_EBE()</a></code>.</p></li>
+<li><p>Generated control streams have been stripped off of the “NMsim_” prefix. These files are located in <code>NMsim</code> generated folders so the prefix was uninformative.</p></li>
 <li><p>In case of multi-threaded (cluster) execution and something went wrong <code><a href="../reference/NMexec.html">NMexec()</a></code> used to write some output files from Nonmem in the current working directory. All these are now being written to the model execution directory for clarity and tidyness.</p></li>
 </ul></div>
 </div>
