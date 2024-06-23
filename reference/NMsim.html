@@ -223,7 +223,8 @@ streams.</p></dd>
     0 and 2147483647 (the values supported by Nonmem) for each
     simulation. You can pass a function that will be evaluated
     (say to choose a different pool of seeds to draw from).</p>
-
+<p>To avoid changing an exisiting seed in a control stream, use
+<code>seed.nm="asis"</code>.</p>
 <p>In case <code>method.sim=NMsim_EBE</code>, seeds are not used.</p></dd>
 
 
