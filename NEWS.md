@@ -1,17 +1,37 @@
 # NMsim 0.1.1
+While no critical and generally only few bugs have been found in NMsim
+0.1.0, NMsim 0.1.1 includes many minor improvements and upgrades. The
+interface feels smoother too. I want to thank Ron Keizer for feedback
+and advice.
 
 ## New features
-* Simpler messaging, progress trackers.
+* `NMsim()` has a much reduced and improved messaging to the user. If
+  more than one model or data set is supplied or generated, progress
+  trackers will be shown while starting Nonmem, while waiting for
+  Nonmem to finish, and while collecting the simulation results. 
+  
+*  The messages include information about where intermediate files and
+   final results files are stored.
 
-* Provide parameter table for simulations
+* Names of files containing final results have been renamed to be more
+  intuitive. The previous `_paths.rds` will now be called
+  `_MetaData.rds`. The results, once read and compressed, will be in a
+  file called `_ResultsData.fst`. Notice, both these files are
+  required to fully recover simulation results.  Thanks to Brian
+  Reilly for discussions on this and many other design aspects.
+
+* It is now possible to provide specific parameters (`THETA`, `OMEGA` and `SIGMA`) for Nonmem simulation. `NMsim()` table for simulations. See argument `file.ext` and `NMsim_VarCov`'s argument `ext`.
 
 * New arguments to control seeds. `NMsim` can either use R's `set.seed` before generating the seeds for Nonmem. Detailed control of the seeds, including how many to include and the distribution of the random sources in Nonmem, can be controlled using the `seed.nm` argument. This way, the user can add random processes to the estimated control stream. The actual Nonmem seed values can also be provided.
 
-* `method.sim=NMsim_typical()` has been replaced by argument `typical=TRUE`.
+* `method.sim=NMsim_typical()` has been replaced by argument `typical=TRUE`. This means typical subject simulations can now be combined with other simulations methods like `NMsim_VarCov`.
 
-* Cleaned messaging. Improved for `NMreadSim()`.
+* `NMsim()` now adds a column called `sim` which carries the name of
+  the simulation defined by the `name.sim` argument.
 
-* Check for presence of .ext
+* Several checks for existence and concistency of files are implemented.
+
+* The native Nonmem execution method now also works for estimation.
 
 ## Bugfixes 
 * Running `rbind` on results from `NMsim` would throw errors. Thanks
@@ -24,6 +44,10 @@
 ## Other changes
 
 * `NMsim_known()` renamed to `NMsim_EBE()`.
+
+* Generated control streams have been stripped off of the "NMsim_"
+  prefix. These files are located in `NMsim` generated folders so the
+  prefix was uninformative.
 
 * In case of multi-threaded (cluster) execution and something went
   wrong `NMexec()` used to write some output files from Nonmem in the

@@ -232,7 +232,9 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
                              ## width = 50,   # Progress bar width. Defaults to getOption("width")
                              char = "=")
     }
-    
+
+    ### this is needed for nc>1
+    ## Sys.sleep(5)
     res.list <- lapply(1:nsplits,function(count){
         dat <- tab.split[[count]]
         res <- dat[,{
@@ -291,7 +293,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     res <- as.fun(res)
     setattr(res,"NMsimModTab",modtab)
     addClass(res,"NMsimRes")
-
+    
     if(!is.null(rdstab$path.results)){
         NMwriteData(res,
                     file=rdstab$path.results,

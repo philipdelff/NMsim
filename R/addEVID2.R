@@ -42,8 +42,18 @@
 ##' seq.time.sd <- data.table(regimen="SD",TIME=seq(0,6))
 ##' seq.time.md <- data.table(regimen="MD",TIME=c(0,4,12,24))
 ##' seq.time <- rbind(seq.time.sd,seq.time.md)
-##' 
 ##' addEVID2(dt.doses,time.sim=seq.time,CMT=2)
+##'
+##' ## an observed sample scheme and additional simulation times
+##' dense <- c(seq(0.5,3,by=.5),4:6,seq(8,12,by=4),18,24)
+##' trough <- seq(0,6*24,by=24)
+##' sim.extra <- 0:(24*6)
+##' time.all <- c(dense,dense+24*5,trough,sim.extra) |>
+##'     unique() |>
+##'     sort()
+##' dt.sample <- data.table(TIME=time.all)[,isobs:=as.numeric(TIME%in%c(dense,trough))]
+##' dat.sim <- addEVID2(doses,time.sim=dt.sample,CMT=2)
+##' 
 ##' @import data.table
 ##' @import NMdata
 ##' @return A data.frame with dosing records

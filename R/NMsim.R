@@ -57,6 +57,8 @@
 ##'     simulation. You can pass a function that will be evaluated
 ##'     (say to choose a different pool of seeds to draw from).
 ##'
+##' To avoid changing an exisiting seed in a control stream, use
+##' \code{seed.nm="asis"}.
 ##'
 ##' In case \code{method.sim=NMsim_EBE}, seeds are not used.
 ##'
@@ -718,9 +720,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         data <- list(data)
         data <- lapply(data,as.data.table)
 
-        col.sim <- tmpcol(names=sapply(data,names),base="sim")
-        if(col.sim != "sim") warning(sprintf("column sim exists, name.sim written to column %s instead.",col.sim))
-        data <- lapply(data,function(x) x[,(col.sim):=..name.sim])
     }
     if(!is.null(data) && is.list(data) && !is.data.frame(data)) {
         names.data <- names(data)
@@ -736,6 +735,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(any(sapply(data,function(x)x[,.N==0]))){
             stop("Empty data set provided. If `data` is a list of data sets, make sure all of them are non-empty.")
         }
+
+        col.sim <- tmpcol(names=sapply(data,names),base="sim")
+        if(col.sim != "sim") warning(sprintf("column sim exists, name.sim written to column %s instead.",col.sim))
+        data <- lapply(data,function(x) x[,(col.sim):=..name.sim])
         
         dt.data <- data.table(DATAROW=1:length(data),data.name=names.data)
         if(dt.data[,.N]==1) dt.data[,data.name:=""]
