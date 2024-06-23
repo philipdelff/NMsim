@@ -1,4 +1,7 @@
-
+library(NMdata)
+NMdataConf(path.nonmem="c:/nm75g64/run/nmfe75.bat")
+library(devtools)
+load_all()
 
 context("NMexec")
 
@@ -29,7 +32,7 @@ test_that("default - no sge",{
     file.mod <- "testData/nonmem/xgxr022.mod"
 
     ## set.seed(43)
-    res <- NMexec(file.mod,sge=FALSE  )
+    res <- NMexec(file.mod,sge=FALSE  ,path.nonmem="c:/nm75g64/run/nmfe75.bat",method.execute = "NMsim")
 
     expect_equal_to_reference(simres,fileRef)
 
