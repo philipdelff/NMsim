@@ -33,11 +33,13 @@ and advice.
 
 * The native Nonmem execution method now also works for estimation.
 
+* `pnm` files are now saved with the model for transparency. 
+
 ## Bugfixes 
 * Running `rbind` on results from `NMsim` would throw errors. Thanks
   to Simone Cassani for reporting this. Fixed.
 
-* Using other file name extensions than ".mod" on input control
+* Using other file name extensions than `.mod` on input control
   streams in combination with `NMdataConf(file.mod)` would make NMsim
   fail. Thanks to Brian Reilly for reporting. Fixed.
   
