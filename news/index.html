@@ -83,11 +83,12 @@
 <li><p><code><a href="../reference/NMsim.html">NMsim()</a></code> now adds a column called <code>sim</code> which carries the name of the simulation defined by the <code>name.sim</code> argument.</p></li>
 <li><p>Several checks for existence and concistency of files are implemented.</p></li>
 <li><p>The native Nonmem execution method now also works for estimation.</p></li>
+<li><p><code>pnm</code> files are now saved with the model for transparency.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bugfixes-0-1-1">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-0-1-1"></a></h3>
 <ul><li><p>Running <code>rbind</code> on results from <code>NMsim</code> would throw errors. Thanks to Simone Cassani for reporting this. Fixed.</p></li>
-<li><p>Using other file name extensions than “.mod” on input control streams in combination with <code>NMdataConf(file.mod)</code> would make NMsim fail. Thanks to Brian Reilly for reporting. Fixed.</p></li>
+<li><p>Using other file name extensions than <code>.mod</code> on input control streams in combination with <code>NMdataConf(file.mod)</code> would make NMsim fail. Thanks to Brian Reilly for reporting. Fixed.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="other-changes-0-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1"></a></h3>
