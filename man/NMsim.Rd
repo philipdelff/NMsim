@@ -115,6 +115,8 @@ Default is to draw seeds betwen
     simulation. You can pass a function that will be evaluated
     (say to choose a different pool of seeds to draw from).
 
+To avoid changing an exisiting seed in a control stream, use
+\code{seed.nm="asis"}.
 
 In case \code{method.sim=NMsim_EBE}, seeds are not used.}
 

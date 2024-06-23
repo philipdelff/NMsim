@@ -20,16 +20,28 @@ and advice.
   required to fully recover simulation results.  Thanks to Brian
   Reilly for discussions on this and many other design aspects.
 
-* It is now possible to provide specific parameters (`THETA`, `OMEGA` and `SIGMA`) for Nonmem simulation. `NMsim()` table for simulations. See argument `file.ext` and `NMsim_VarCov`'s argument `ext`.
+* It is now possible to provide specific parameters (`THETA`, `OMEGA`
+  and `SIGMA`) for Nonmem simulation. `NMsim()` table for
+  simulations. See argument `file.ext` and `NMsim_VarCov`'s argument
+  `ext`.
 
-* New arguments to control seeds. `NMsim` can either use R's `set.seed` before generating the seeds for Nonmem. Detailed control of the seeds, including how many to include and the distribution of the random sources in Nonmem, can be controlled using the `seed.nm` argument. This way, the user can add random processes to the estimated control stream. The actual Nonmem seed values can also be provided.
+* New arguments to control seeds. `NMsim` can either use R's
+  `set.seed` before generating the seeds for Nonmem. Detailed control
+  of the seeds, including how many to include and the distribution of
+  the random sources in Nonmem, can be controlled using the `seed.nm`
+  argument. This way, the user can add random processes to the
+  estimated control stream. The actual Nonmem seed values can also be
+  provided.
 
-* `method.sim=NMsim_typical()` has been replaced by argument `typical=TRUE`. This means typical subject simulations can now be combined with other simulations methods like `NMsim_VarCov`.
+* `method.sim=NMsim_typical()` has been replaced by argument
+  `typical=TRUE`. This means typical subject simulations can now be
+  combined with other simulations methods like `NMsim_VarCov`.
 
 * `NMsim()` now adds a column called `sim` which carries the name of
   the simulation defined by the `name.sim` argument.
 
-* Several checks for existence and concistency of files are implemented.
+* Several checks for existence and consistency of files are
+  implemented.
 
 * The native Nonmem execution method now also works for estimation.
 

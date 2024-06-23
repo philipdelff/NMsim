@@ -42,24 +42,32 @@ The resulting data set is ordered by ID, TIME, and
     EVID. You may have to reorder for your specific needs.
 }
 \examples{
-library(data.table)
-## Users should not use setDTthreads. This is for CRAN to only use 1 core.
-data.table::setDTthreads(1) 
 (doses1 <- NMcreateDoses(TIME=c(0,12,24,36),AMT=c(2,1)))
 addEVID2(doses1,time.sim=seq(0,28,by=4),CMT=2)
 
 ## two named compartments
 dt.doses <- NMcreateDoses(TIME=c(0,12),AMT=10,CMT=1)
 seq.time <- c(0,4,12,24)
-dt.cmt <- data.table(CMT=c(2,3),analyte=c("parent","metabolite"))
+dt.cmt <- data.frame(CMT=c(2,3),analyte=c("parent","metabolite"))
 res <- addEVID2(dt.doses,time.sim=seq.time,CMT=dt.cmt)
 
 ## Separate sampling schemes depending on covariate values
-dt.doses <- NMcreateDoses(TIME=data.table(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1)
+dt.doses <- NMcreateDoses(TIME=data.frame(regimen=c("SD","MD","MD"),TIME=c(0,0,12)),AMT=10,CMT=1)
 
-seq.time.sd <- data.table(regimen="SD",TIME=seq(0,6))
-seq.time.md <- data.table(regimen="MD",TIME=c(0,4,12,24))
+seq.time.sd <- data.frame(regimen="SD",TIME=seq(0,6))
+seq.time.md <- data.frame(regimen="MD",TIME=c(0,4,12,24))
 seq.time <- rbind(seq.time.sd,seq.time.md)
-
 addEVID2(dt.doses,time.sim=seq.time,CMT=2)
+
+## an observed sample scheme and additional simulation times
+df.doses <- NMcreateDoses(TIME=0,AMT=50,addl=list(ADDL=2,II=24))
+dense <- c(seq(1,3,by=.1),4:6,seq(8,12,by=4),18,24)
+trough <- seq(0,3*24,by=24)
+sim.extra <- seq(0,(24*3),by=2)
+time.all <- c(dense,dense+24*3,trough,sim.extra)
+time.all <- sort(unique(time.all))
+dt.sample <- data.frame(TIME=time.all)
+dt.sample$isobs <- as.numeric(dt.sample$TIME\%in\%c(dense,trough))
+dat.sim <- addEVID2(dt.doses,time.sim=dt.sample,CMT=2)
+
 }
