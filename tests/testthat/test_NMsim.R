@@ -66,3 +66,27 @@ if(FALSE){
 
 
 }
+
+test_that("modify.model",{
+
+    fileRef <- "testReference/NMsim_02.rds"
+        
+    file.mod <- "testData/nonmem/xgxr025.mod"
+    sim1 <- NMsim(file.mod=file.mod,
+                  data=dat.sim,
+                  dir.sim="testOutput",
+                  name.sim = "sd1_modify",
+                  seed.nm=2342,
+                  modify.model=list(pk=add("CL=CL/2","V2=V2*2"),
+                                    error=overwrite("W=1","W=2")),
+                  execute=FALSE,
+                  method.update.inits="nmsim")
+
+    mod <- NMreadSection("testOutput/xgxr025_sd1_modify/xgxr025_sd1_modify.mod")
+    
+
+    ## ref <- readRDS(fileRef)
+    expect_equal_to_reference(mod,fileRef)
+
+
+})
