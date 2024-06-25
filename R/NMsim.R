@@ -283,7 +283,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,file.res
                  ,wait
                  ,quiet=FALSE
-                  ,check.mod = TRUE
+                 ,check.mod = TRUE
                  ,...
                   ){
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -497,6 +497,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
     
     input.archive <- inputArchiveDefault
+
+    if(missing(modify.model)) modify.model <- NULL
+    if(!missing(list.sections)){
+        if(!is.null(modify.model)){
+            stop("both list.sections (deprecated argument) and modify.model supplied. Please use only modify.model.")
+        }
+        message("\'list.sections\' is deprecated. Please use \'modify.model\'.")
+    }
+
+
     
 ###  Section end: Checking aguments
 
@@ -659,7 +669,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     dt.models[,run.sim:=modelname(fn.sim)]
 
     
-### todo name by data set
     ## dir.sim is the model-individual directory in which the model will be run
     dt.models[,
               dir.sim:=file.path(dir.sims,paste(name.mod,name.sim,sep="_"))]
@@ -870,18 +879,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ###  Section end: Output tables
     
 
-#### Section start: Additional control stream modifications specified by user - list.sections ####
-    if( !missing(list.sections) && !is.null(list.sections) ){
+#### Section start: Additional control stream modifications specified by user - modify.model ####
+    if( !is.null(modify.model) ){
 ### This requires NMdata >=0.1.0.905
-        if(packageVersion("NMdata")<"0.1.1") warning("list.sections argument requires NMdata>=0.1.1. Please upgrade NMdata.") 
         dt.models[,{
-            NMwriteSection(files=path.sim,list.sections=list.sections)
+            NMwriteSection(files=path.sim,list.sections=modify.model)
         },by=.(ROWMODEL)]
     }
     
-### Section end: Additional control stream modifications specified by user - list.sections
+### Section end: Additional control stream modifications specified by user - modify.model
 
-    
     ## fun simulation method
     dt.models.gen <- dt.models[,
                                method.sim(file.sim=path.sim,file.mod=file.mod,data.sim=data[[DATAROW]],...)
@@ -981,10 +988,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 name.sim <- names.sections[grepl("^(SIM|SIMULATION)$",names.sections)]
                 section.sim <- all.sections.sim[[name.sim]]
                 
-                #if(!is.null(seed)){
+                                        #if(!is.null(seed)){
                 section.sim <- gsub("\\([0-9]+\\)","",section.sim)
                 section.sim <- paste(section.sim,seed)
-                #}
+                                        #}
                 if(subproblems>0){
                     section.sim <- gsub("SUBPROBLEMS *= *[0-9]*"," ",section.sim)
                     section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
