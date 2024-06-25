@@ -1,5 +1,8 @@
 $PROBLEM PK. Tests of modifications to column names in $INPUT
 
+;;;;;; WARNING: Q is so large in the estimate that it makes sims break!
+
+
 ;; One variable is dropped, BBW is a new name.         
 ;| Variables 15/20 |;
 $INPUT ROW ID NOMTIME TIME EVID CMT AMT DV FLAG STUDY

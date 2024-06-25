@@ -1,6 +1,8 @@
 ## library(devtools)
 ## if(F){
 library(NMdata)
+### NMsim does not put "ROW" first with NMdata 0.1.5. Not sure why.
+stopifnot(packageVersion("NMdata")>="0.1.6")
 library(data.table)
 data.table::setDTthreads(1)
 
@@ -54,7 +56,7 @@ test_that("Basic",{
 
 if(FALSE){
 
-    file.mod <- "testData/nonmem/xgxr025.mod"
+    file.mod <- "testData/nonmem/xgxr021.mod"
     sim1 <- NMsim(file.mod=file.mod,
                   data=dat.sim,
                   dir.sim="testOutput",
@@ -71,7 +73,7 @@ test_that("modify.model",{
 
     fileRef <- "testReference/NMsim_02.rds"
         
-    file.mod <- "testData/nonmem/xgxr025.mod"
+    file.mod <- "testData/nonmem/xgxr021.mod"
     sim1 <- NMsim(file.mod=file.mod,
                   data=dat.sim,
                   dir.sim="testOutput",
@@ -82,7 +84,7 @@ test_that("modify.model",{
                   execute=FALSE,
                   method.update.inits="nmsim")
 
-    mod <- NMreadSection("testOutput/xgxr025_sd1_modify/xgxr025_sd1_modify.mod")
+    mod <- NMreadSection("testOutput/xgxr021_sd1_modify/xgxr021_sd1_modify.mod")
     
 
     ## ref <- readRDS(fileRef)
@@ -95,8 +97,8 @@ test_that("NMsim_EBE",{
 
     fileRef <- "testReference/NMsim_EBE_03.rds"
         
-    file.mod <- "testData/nonmem/xgxr025.mod"
-    res <- NMscanInput(file.mod,apply.filters=T)
+    file.mod <- "testData/nonmem/xgxr021.mod"
+    res <- NMscanInput(file.mod,file.mod=file.mod,apply.filters=T)
     
     dat.sim.ebe <- dat.sim[ID==1]
     dat.sim.ebe[,ID:=unique(res$ID)[1]]
@@ -110,7 +112,7 @@ test_that("NMsim_EBE",{
                   execute=FALSE,
                   method.update.inits="nmsim")
 
-    mod <- NMreadSection("testOutput/xgxr025_sd1_EBE/xgxr025_sd1_EBE.mod")
+    mod <- NMreadSection("testOutput/xgxr021_sd1_EBE/xgxr021_sd1_EBE.mod")
     
 
     ## ref <- readRDS(fileRef)
@@ -140,6 +142,5 @@ test_that("NMsim_VarCov",{
 
     ## ref <- readRDS(fileRef)
     expect_equal_to_reference(mod,fileRef)
-
 
 })
