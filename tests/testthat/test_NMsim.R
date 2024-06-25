@@ -90,3 +90,56 @@ test_that("modify.model",{
 
 
 })
+
+test_that("NMsim_EBE",{
+
+    fileRef <- "testReference/NMsim_EBE_03.rds"
+        
+    file.mod <- "testData/nonmem/xgxr025.mod"
+    res <- NMscanInput(file.mod,apply.filters=T)
+    
+    dat.sim.ebe <- dat.sim[ID==1]
+    dat.sim.ebe[,ID:=unique(res$ID)[1]]
+
+    sim1 <- NMsim(file.mod=file.mod,
+                  data=dat.sim.ebe,
+                  dir.sim="testOutput",
+                  name.sim = "sd1_EBE",
+                  method.sim=NMsim_EBE,
+                  seed.nm=2342,
+                  execute=FALSE,
+                  method.update.inits="nmsim")
+
+    mod <- NMreadSection("testOutput/xgxr025_sd1_EBE/xgxr025_sd1_EBE.mod")
+    
+
+    ## ref <- readRDS(fileRef)
+    expect_equal_to_reference(mod,fileRef)
+
+
+})
+
+test_that("NMsim_VarCov",{
+
+    fileRef <- "testReference/NMsim_VarCov_04.rds"
+        
+    file.mod <- "testData/nonmem/xgxr032.mod"
+
+    sim1 <- NMsim(file.mod=file.mod,
+                  data=dat.sim,
+                  dir.sim="testOutput",
+                  name.sim = "sd1_VarCov",
+                  method.sim=NMsim_VarCov,
+                  seed.nm=2342,
+                  seed.R=2,
+                  execute=FALSE,
+                  method.update.inits="nmsim")
+
+    mod <- NMreadSection("testOutput/xgxr032_sd1_VarCov/xgxr032_sd1_VarCov_1.mod")
+    
+
+    ## ref <- readRDS(fileRef)
+    expect_equal_to_reference(mod,fileRef)
+
+
+})
