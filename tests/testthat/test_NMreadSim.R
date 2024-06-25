@@ -52,7 +52,7 @@ if(F){
 test_that("Basic",{
     fileRef <- "testReference/NMreadSim_01.rds"
     ## ref <- readRDS(fileRef)
-    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim_paths.rds")
+    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim_MetaData.rds")
 
     fix.time(res1)
     
@@ -77,7 +77,7 @@ test_that("Reading fst directly",{
     
     fileRef <- "testReference/NMreadSim_02.rds"
     ## ref <- readRDS(fileRef)
-    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim_paths_res.fst")
+    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim_ResultsData.fst")
     ## library(fst)
     ## res1 <- read_fst("testOutput/xgxr021_sd1_NMreadSim_paths_res.fst",as.data.table=T)
 
