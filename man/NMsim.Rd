@@ -10,16 +10,18 @@ NMsim(
   dir.sims,
   name.sim,
   order.columns = TRUE,
+  file.ext = NULL,
   script = NULL,
   subproblems = NULL,
   reuse.results = FALSE,
-  seed,
-  args.seed = NULL,
+  seed.R,
+  seed.nm,
   args.psn.execute,
   table.vars,
   table.options,
   text.sim = "",
   method.sim = NMsim_default,
+  typical = FALSE,
   execute = TRUE,
   sge = FALSE,
   nc = 1,
@@ -28,12 +30,13 @@ NMsim(
   method.update.inits,
   create.dirs = TRUE,
   dir.psn,
-  list.sections,
+  modify.model,
   sim.dir.from.scratch = TRUE,
   col.row,
   args.NMscanData,
   path.nonmem = NULL,
-  nmquiet = FALSE,
+  nmquiet = TRUE,
+  progress,
   as.fun,
   suffix.sim,
   text.table,
@@ -43,17 +46,22 @@ NMsim(
   wait,
   quiet = FALSE,
   check.mod = TRUE,
+  seed,
+  list.sections,
+  format.data.complete = "rds",
   ...
 )
 }
 \arguments{
 \item{file.mod}{Path(s) to the input control stream(s) to run the
-simulation on. The outpult control stream is for now assumed
-to be stored next to the input control stream and ending in
-.lst instead of .mod. The .ext file must also be present. If
+simulation on. The output control stream is for now assumed to
+be stored next to the input control stream and ending in .lst
+instead of .mod. The .ext file must also be present. If
 simulating known subjects, the .phi is necessary too.}
 
-\item{data}{The simulation data as a data.frame.}
+\item{data}{The simulation data as a \code{data.frame} or a list
+of \code{data.frame}s. If a list, the model(s) will be run on
+each of the data sets in the list.}
 
 \item{dir.sims}{The directory in which NMsim will store all
 generated files. Default is to create a folder called `NMsim`
@@ -64,25 +72,54 @@ suffix. A short string describing the sim is recommended like
 "ph3_regimens".}
 
 \item{order.columns}{reorder columns by calling
-NMdata::NMorderColumns before saving dataset and running
-simulations? Default is TRUE.}
+\code{NMdata::NMorderColumns} before saving dataset and
+running simulations? Default is TRUE.}
+
+\item{file.ext}{Optionally provide a parameter estimate file from
+Nonmem. This is normally not needed since `NMsim` will by
+default use the ext file stored next to the input control
+stream (replacing the file name extension with `.ext`). If
+using method.update.inits="psn", this argument cannot be
+used. If you want provide parameters to be used for the
+simulation, look at the `ext` argument to `NMsim_VarCov`.}
 
 \item{script}{The path to the script where this is run. For
 stamping of dataset so results can be traced back to code.}
 
-\item{subproblems}{Number of subproblems to use as SUBPROBLEMS in
-$SIMULATION block in Nonmem. The default is subproblem=0 which
-means not to use SUBPROBLEMS.}
+\item{subproblems}{Number of subproblems to use as
+\code{SUBPROBLEMS} in \code{$SIMULATION} block in Nonmem. The
+default is subproblem=0 which means not to use
+\code{SUBPROBLEMS}.}
 
 \item{reuse.results}{If simulation results found on file, should
 they be used? If TRUE and reading the results fail, the
 simulations will still be rerun.}
 
-\item{seed}{Seed to pass to Nonmem. Default is to draw one betwen
-0 and 2147483647 (the values supported by Nonmem) for each
-simulation. You can pass a function that will be evaluated
-(say to choose a different pool of seeds to draw from). In
-case type.sim=known, seed is not used and will be set to 1.}
+\item{seed.R}{A value passed to \code{set.seed()}. It may be
+better use \code{seed.R} rather than calling \code{set.seed()}
+manually because the seed can then be captured and stored by
+\code{NMsim()} for reproducibility. See \code{seed.nm} for
+finer control of the seeds that are used in the Nonmem control
+streams.}
+
+\item{seed.nm}{Control Nonmem seeds. If a numeric, a vector or a
+    `data.frame`, these are used as the the seed values (a single
+    value or vector will be recycled so make sure the dimesnsions
+    are right, the number of columns in a \code{data.frame} will
+    dictate the number of seeds in each Nonmem control stream. Use
+    a list with elements `values`, and `dist` and others for
+    detailed control of the random sources. See \code{?NMseed} for
+    details on what arguments can be passed this way.
+
+Default is to draw seeds betwen
+    0 and 2147483647 (the values supported by Nonmem) for each
+    simulation. You can pass a function that will be evaluated
+    (say to choose a different pool of seeds to draw from).
+
+To avoid changing an exisiting seed in a control stream, use
+\code{seed.nm="asis"}.
+
+In case \code{method.sim=NMsim_EBE}, seeds are not used.}
 
 \item{args.psn.execute}{A charachter string that will be passed as
 arguments PSN's `execute`.}
@@ -121,6 +158,9 @@ step. See details section on oter methods, and see examples
 and especially vignettes on how to use the different provided
 methods.}
 
+\item{typical}{Run with all ETAs fixed to zero? Technically all ETAs=0 is obtained by replacing
+\code{$OMEGA} by a zero matrix. Default is FALSE.}
+
 \item{execute}{Execute the simulation or only prepare it?
 `execute=FALSE` can be useful if you want to do additional
 tweaks or simulate using other parameter estimates.}
@@ -143,24 +183,41 @@ transform, the contents must be the function to apply.}
 PSN's execute), and "direct" (just run Nonmem directly and
 dump all the temporary files). "nmsim" has advantages over
 "psn" that makes it the only supported method when
-type.sim="NMsim_known". "psn" has the simple advantage that
+type.sim="NMsim_EBE". "psn" has the simple advantage that
 the path to nonmem does not have to be specified if "execute"
 is in the system search path. So as long as you know where
 your Nonmem executable is, "nmsim" is recommended. The default
 is "nmsim" if path.nonmem is specified, and "psn" if not.}
 
-\item{method.update.inits}{The initial estimates must be updated
-from the estimated model before running the simulation. NMsim
-supports two ways of doing this: "psn" which uses PSN's
-"update_inits", and "nmsim" which uses a simple internal
-method. The advantage of "psn" is it keeps comments in the
-control stream and is a method known to many. The advantages
-of "nmsim" are it does not require PSN, and that it is very
-robust. "nmsim" fixes the whole OMEGA and SIGMA matrices as
-single blocks making the $OMEGA and $SIGMA sections of the
-control streams less easy to read. On the other hand, this
-method is robust because it avoids any interpretation of BLOCK
-structure or other code in the control streams.}
+\item{method.update.inits}{The initial values of all parameters
+    are by updated from the estimated model before running the
+    simulation. NMsim can do this with a native function or use
+    PSN to do it - or the step can be skipped to not update the
+    values. The possible values are
+
+\itemize{
+
+\item{"psn"}
+    uses PSN's "update_inits". Requires a functioning PSN
+    installation and possibly that \code{dir.psn} is correctly
+    set. The advantages of this method are that it keeps comments
+    in the control stream and that it is a method known to many.
+
+\item{"nmsim"}
+ Uses a simple internal method to update the parameter values
+based on the ext file.  The advantages of "nmsim" are it does not
+require PSN, and that it is very robust. "nmsim" fixes the whole
+OMEGA and SIGMA matrices as single blocks making the $OMEGA and
+$SIGMA sections of the control streams less easy to read. On the
+other hand, this method is robust because it avoids any
+interpretation of BLOCK structure or other code in the control
+streams.
+
+\item{"none"} Do nothing. This is useful if the model to simulate
+has not been estimated but parameter values have been manually put
+into the respective sections in the control stream.
+
+}}
 
 \item{create.dirs}{If the directories specified in dir.sims and
 dir.res do not exists, should it be created? Default is TRUE.}
@@ -172,7 +229,7 @@ system's search path. So if you can run 'execute' and
 need to specify this unless you want to explicitly use a
 specific installation of PSN on your system.}
 
-\item{list.sections}{Named list of additional control stream
+\item{modify.model}{Named list of additional control stream
 section edits. Note, these can be functions that define how to
 edit sections. This is an advanced feature which is not needed
 to run most simulations. It is however powerful for some types
@@ -217,7 +274,12 @@ is a made up example). No default is available. You should be
 able to figure this out through how you normally execute
 Nonmem, or ask a colleague.}
 
-\item{nmquiet}{Silent messages from Nonmem.}
+\item{nmquiet}{Silent messages from Nonmem. The default is `TRUE`.}
+
+\item{progress}{Track progress? Default is `TRUE` if `quiet` is
+FALSE and more than one model is being simulated. The progress
+tracking is based on the number of models completed, not the
+status of the individual models.}
 
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say `tibble::as_tibble`) in as.fun to convert to
@@ -248,13 +310,16 @@ simulated, see `file.res` to get just one file refering to all
 simulation results.}
 
 \item{file.res}{Path to an rds file that will contain a table of
-the simulated models. This is useful for subsequently
-retrieving all the results using `NMreadSim()`. The default is
-to create a file called `NMsim_paths.rds` under the model
-simulation directory. However, if multiple models are
-simulated, this will result in multiple rds files. Specifying
-a path ensures that one rds file containing information about
-all simulated models will be created.}
+the simulated models and other metadata. This is needed for
+subsequently retrieving all the results using
+`NMreadSim()`. The default is to create a file called
+`NMsim_..._paths.rds` under the \code{dir.res} directory where
+... is based on the model name. However, if multiple models
+(\code{file.mod}) are simulated, this will result in multiple
+rds files. Specifying a path ensures that one rds file
+containing information about all simulated models will be
+created. Notice if \code{file.res} is supplied, \code{dir.res}
+is not used.}
 
 \item{wait}{Wait for simulations to finish? Default is to do so if
 simulations are run locally but not to if they are sent to the
@@ -265,13 +330,23 @@ files to read will be returned. Pass them through
 to finish).}
 
 \item{quiet}{If TRUE, messages from what is going on will be
-suppressed to the extend implemented.}
+suppressed.}
 
 \item{check.mod}{Check the provided control streams for contents
 that may cause issues for simulation. Default is `TRUE`, and
 it is only recommended to disable this if you are fully aware
 of such a feature of your control stream, you know how it
 impacts simulation, and you want to get rid of warnings.}
+
+\item{seed}{Deprecated. See \code{seed.R} and \code{seed.nm}.}
+
+\item{format.data.complete}{For development purposes - users do
+not need this argument. Controls what format the complete
+input data set is saved in.  Possible values are `rds`
+(default), `fst` (experimental) and `csv`. `fst` may be faster
+and use less disk space but factor levels may be lost from
+input data to output data. `csv` will also lead to loss of
+additional information such as factor levels.}
 
 \item{...}{Additional arguments passed to \code{method.sim}.}
 }
@@ -290,20 +365,20 @@ get the most out of this.
 }
 \details{
 Loosely speaking, the argument \code{method.sim} defines
-    _what_ NMsim will do, \code{method.executes} define _how_ it
+    _what_ NMsim will do, \code{method.execute} define _how_ it
     does it. \code{method.sim} takes a function that converts an
     estimation control stream into whatever should be
     run. Features like replacing `$INPUT`, `$DATA`, `$TABLE`, and
     handling seeds are NMsim features that are done in addition to
-    the \code{method.sim}. Also the \code{list.sections} argument
+    the \code{method.sim}. Also the \code{modeify.model} argument
     is handled in addition to the \code{method.sim}. The
     \code{subproblems} and \code{seed} arguments are available to
     all methods creating a \code{$SIMULATION} section.
 
 Notice, the following functions are internally available to
-`NMsim` so you can run them by say \code{method.sim=NMsim_known}
+`NMsim` so you can run them by say \code{method.sim=NMsim_EBE}
 without quotes. To see the code of that method, type
-\code{NMsim_known}.
+\code{NMsim_EBE}.
 
 \itemize{
 
@@ -316,29 +391,36 @@ more. Use this for instance if you already created a simulation
 (or estimation actually) control stream and want NMsim to run it
 on different data sets.
 
-\item \code{NMsim_typical} Like \code{NMsim_default} but with all
-ETAs=0, giving a "typical subject" simulation. Do not confuse this
-with a "reference subject" simulation which has to do with
-covariate values. Technically all ETAs=0 is obtained by replacing
-\code{$OMEGA} by a zero matrix.
+\item \code{NMsim_typical} Deprecated. Use \code{typical=TRUE} instead. 
 
-\item \code{NMsim_known} Simulates _known_ subjects, meaning that
-it reuses ETA values from estimation run. This is what is refered
-to as emperical Bayes estimates. The .phi file from the estimation
-run must be found next to the .lst file from the estimation.This
-means that ID values in the (simulation) input data must be ID
-values that were used in the estimation too. Runs an
-\code{$ESTIMATION MAXEVAL=0} but pulls in ETAs for the ID's found
-in data. No \code{$SIMULATION} step is run which may affect how
-for instance residual variability is simulated, if at all.
+\item \code{NMsim_EBE} Simulates _known_ ETAs. By default, the ETA
+values are automatically taken from the estimation run. This is
+what is refered to as emperical Bayes estimates, hence the name of
+the method "NMsim_EBE". However, the user can also provide a
+different `.phi` file which may contain simulated ETA values (see
+the `file.phi` argument). ID values in the simulation data set
+must match ID values in the phi file for this step to work. If
+refering to estimated subjects, the .phi file from the estimation
+run must be found next to the .lst file from the estimation with
+the same file name stem (say `run1.lst` and `run1.phi`). Again, ID
+values in the (simulation) input data must be ID values that were
+used in the estimation too. The method Runs an \code{$ESTIMATION
+MAXEVAL=0} but pulls in ETAs for the ID's found in data. No
+\code{$SIMULATION} step is run which unfortunately means no
+residual error will be simulated.
 
 \item \code{NMsim_VarCov} Like \code{NMsim_default} but `$THETA`,
 `$OMEGA`, and `SIGMA` are drawn from distribution estimated in
 covariance step. This means that a successful covariance step must
-be available from the estimation. In case the simulation leads to
-negative diagonal elements in $OMEGA and $SIGMA, those values are
-truncated at zero. For simulation with parameter variability based
-on bootstrap results, use \code{NMsim_default}.
+be available from the estimation. NB. A multivariate normal
+distribution is used for all parameters, including `$OMEGA` and
+`$SIGMA` which is not the correct way to do this. In case the
+simulation leads to negative diagonal elements in $OMEGA and
+$SIGMA, those values are truncated at zero. This method is only
+valid for simulation of `$THETA` variability. The method accepts a
+table of parameter values that can be produced with other tools
+than `NMsim`. For simulation with parameter variability based on
+bootstrap results, use \code{NMsim_default}.
 
 }
 }

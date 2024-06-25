@@ -316,8 +316,8 @@ The other way to simulate multiple subjects is making use of Nonmem's `SUBPROBLE
 simres.n1000.2 <- NMsim(file.mod=file.mod,
                         data=dat.sim,
                         subproblems=1000,
-                        dir.sims="~/NMsim_vignette", ## where to store simulation files
-                        dir.res="simulate-results", ## where to store simulation files
+                        dir.sims="~/NMsim_vignette", ## where to save and run Nonmem simulations
+                        dir.res="simulate-results", ## where to save simulation results
                         name.sim="N1000_subproblems",
                         )
 simres.n1000.2 <- as.data.table(simres.n1000.2)[,ID:=.GRP,by=.(NMREP,ID,trt)]

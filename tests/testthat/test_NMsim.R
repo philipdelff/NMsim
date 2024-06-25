@@ -4,6 +4,10 @@ library(NMdata)
 library(data.table)
 data.table::setDTthreads(1)
 
+NMdataConf(
+    path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
+    dir.sims="testOutput/simtmp",dir.res="testOutput/simres")
+
 dt.amt <- data.table(DOSE=c(100,400))
 dt.amt[,AMT:=DOSE*1000]
 dt.amt
@@ -36,11 +40,12 @@ test_that("Basic",{
     sim1 <- NMsim(file.mod=file.mod,
                   data=dat.sim,
                   dir.sim="testOutput",
-                  suffix.sim = "sd1",
-                  seed=2342,
+                  name.sim = "sd1",
+                  seed.nm=2342,
                   execute=FALSE,
                   method.update.inits="nmsim")
 
+    ## ref <- readRDS(fileRef)
     expect_equal_to_reference(sim1,fileRef)
 
 })
@@ -56,8 +61,7 @@ if(FALSE){
                   suffix.sim = "sd1",
                   seed=2342,
                   ## execute=FALSE,
-                  method.update.inits="nmsim",
-                  
+                  method.update.inits="nmsim"
                   )
 
 

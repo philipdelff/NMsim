@@ -135,17 +135,19 @@ ENDIF
                                                         "TTESIM = A(2)",
                                                         "ENDIF",
                                                         "DUMMY=EPS(1)")
-                                    ,DATA=function(x) c(x,"$ABB COMRES=2")
+,DATA=function(x) c(x,"$ABB COMRES=2")
 ##,SIMULATION = function(x) c(x,"(1992 UNIFORM)")
 ,THETA=function(x) c(x,"$SIGMA 1 FIX")
 ,SUBROUTINE=function(x)(sub("TOL=9","TOL=6",x))
-                                     )
-                 ,args.seed=list(dist=c("","","UNIFORM"))
-                 ,table.vars=c("PRED","CHZ", "SUR", "HAZNOW","TTESIM")
-                 ,nsims=100
+)
+,args.seed=list(dist=c("","","UNIFORM"))
+,table.vars=c("PRED","CHZ", "SUR", "HAZNOW","TTESIM")
+## ,nsims=100
+,subproblems=100
                   )
 
 sres.vpc[,TIME:=TTESIM]
+
 
 
 ## install.packages("tidyvpc")
@@ -153,6 +155,9 @@ sres.vpc[,TIME:=TTESIM]
 ## install.packages("vpc")
 
 library(vpc)
+
+## setnames(obs.tte ,"TTE","TIME")
+obs.tte[,TIME:=TTE]
 
 vpc1 <- vpc_tte(
     sim = sres.vpc[EVID==0],

@@ -25,6 +25,10 @@
 ##'     simulation results. If an `.fst` file was already generated
 ##'     and is found next to the `_paths.rds`, the path to the Nonmem
 ##'     simulation results is not used.
+##' @param progress Track progress? Default is `TRUE` if `quiet` is
+##'     FALSE and more than one model is being read. The progress
+##'     tracking is based on the number of models completed/read, not
+##'     the status of the individual models.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say `tibble::as_tibble`) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use
@@ -39,10 +43,10 @@
 
 
 
-NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun){
+NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,progress,as.fun){
 
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
-
+    
     . <- NULL
     path.sim.lst <- NULL
     pathResFromSims <- NULL
@@ -61,7 +65,8 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
     if(missing(dir.sims)) dir.sims <- NULL
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
-
+    if(missing(progress)) progress <- NULL
+    
     if(is.data.frame(x)) x <- list(x)
 ### recognized formats:
     ## NMsimRes - return x
@@ -103,8 +108,11 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
     
     
     res.all <- NULL
-    if(sum(dt.x$is.simRes)){
-        res.simRes <- NMreadSimRes(x[dt.x$is.simRes])
+    if(sum(dt.x$is.simRes|dt.x$is.fst)){
+        if(!quiet && any(dt.x$is.fst)){
+            message("Reading results from `fst` file directly.\nPlease read the MetaData file instead to preserve model-related information.")
+        }
+        res.simRes <- NMreadSimRes(x[dt.x$is.simRes|dt.x$is.fst])
         if(is.null(res.all)){
             res.all <- res.simRes
         } else {
@@ -114,16 +122,17 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,as.fun)
 
     if(sum(dt.x$is.ModTab)){
         res.modTab <- NMreadSimModTab(x[dt.x$is.ModTab],check.time=check.time,
-                                      dir.sims=dir.sims,wait=wait,quiet=quiet)
+                                      dir.sims=dir.sims,wait=wait,quiet=quiet,
+                                      progress=progress)
         if(is.null(res.all)){
             res.all <- res.modTab
         } else {
-            res.all <- rbind(res.all,res.modTab)  
+            res.all <- rbind(res.all,res.modTab)
         }
     }
     
     ##    res.all <- rbind(res.simRes,res.modTab,fill=TRUE)
-
+    
     res.all <- as.fun(res.all)
     addClass(res.all,"NMsimRes")
     return(res.all)

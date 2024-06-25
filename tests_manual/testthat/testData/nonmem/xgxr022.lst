@@ -1,4 +1,4 @@
-Mon Dec 25 19:46:38 EST 2023
+Mon Jun 10 17:17:14 EDT 2024
 $PROBLEM    021 with CL:V2 corr
 $INPUT      ROW ID NOMTIME TIME EVID CMT AMT DV FLAG STUDY BLQ CYCLE
             DOSE PART PROFDAY PROFTIME WEIGHTB eff0
@@ -67,10 +67,9 @@ NM-TRAN MESSAGES
  IT IS POSSIBLE THAT SOME WARNING MESSAGES WERE SUPPRESSED.
 
 License Registered to: Vertex Pharmaceuticals Inc
-Expiration Date:    14 JAN 2024
-Current Date:       25 DEC 2023
-  **** WARNING!!! Days until program expires :  24 ****
-  **** CONTACT idssoftware@iconplc.com FOR RENEWAL ****
+Expiration Date:    14 JAN 2025
+Current Date:       10 JUN 2024
+Days until program expires : 219
 1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.5.0
  ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
  CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
@@ -213,7 +212,7 @@ Current Date:       25 DEC 2023
  PK SUBROUTINE NOT CALLED AT NONEVENT (ADDITIONAL OR LAGGED) DOSE TIMES.
 0ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.
 
- #PARA: PARAFILE=/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/NMexec.pnm, PROTOCOL=MPI, NODES= 72
+ #PARA: PARAFILE=/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/xgxr022.pnm, PROTOCOL=MPI, NODES= 72
 
 1
 
@@ -324,9 +323,9 @@ Current Date:       25 DEC 2023
  TOTAL EFFECTIVE ETAS (NIND*NETA):                           180
   
  #TERE:
- Elapsed estimation  time in seconds:     2.29
- Elapsed covariance  time in seconds:     1.70
- Elapsed postprocess time in seconds:     1.14
+ Elapsed estimation  time in seconds:     3.71
+ Elapsed covariance  time in seconds:     2.29
+ Elapsed postprocess time in seconds:     1.26
 1
  
  
@@ -828,7 +827,7 @@ Current Date:       25 DEC 2023
 +       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
          ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
  
- Elapsed finaloutput time in seconds:     0.06
- #CPUT: Total CPU Time in Seconds,       78.238
+ Elapsed finaloutput time in seconds:     0.09
+ #CPUT: Total CPU Time in Seconds,       55.045
 Stop Time:
-Mon Dec 25 19:46:55 EST 2023
+Mon Jun 10 17:17:44 EDT 2024

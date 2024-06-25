@@ -5,7 +5,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://namespaces.oreilly.com/xmlnut/address output.xsd"
 xmlns:nm="http://namespaces.oreilly.com/xmlnut/address"
 >
-<nm:start_datetime>2023-12-25T19:46:50.045</nm:start_datetime>
+<nm:start_datetime>2024-06-10T17:17:36.265</nm:start_datetime>
 <nm:control_stream><![CDATA[
 $PROBLEM    021 with CL:V2 corr
 $INPUT      ROW ID NOMTIME TIME EVID CMT AMT DV FLAG STUDY BLQ CYCLE
@@ -77,10 +77,9 @@ $TABLE      ROW TVKA TVV2 TVV3 TVCL KA V2 V3 CL Q PRED IPRED Y NOPRINT
 <nm:nonmem nm:version='7.5.0'>
 <nm:license_information><![CDATA[
 License Registered to: Vertex Pharmaceuticals Inc
-Expiration Date:    14 JAN 2024
-Current Date:       25 DEC 2023
-  **** WARNING!!! Days until program expires :  24 ****
-  **** CONTACT idssoftware@iconplc.com FOR RENEWAL ****
+Expiration Date:    14 JAN 2025
+Current Date:       10 JUN 2024
+Days until program expires : 219
 ]]></nm:license_information>
 <nm:program_information><![CDATA[
 1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.5.0
@@ -265,7 +264,7 @@ Current Date:       25 DEC 2023
 <nm:val nm:name='5'>1000000.0000000000</nm:val>
 </nm:theta_ub>
 <nm:estimation nm:number='1' nm:type='0'>
-<nm:parallel_est nm:parafile='/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/NMexec.pnm' nm:protocol='MPI' nm:nodes='72'/>
+<nm:parallel_est nm:parafile='/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/xgxr022.pnm' nm:protocol='MPI' nm:nodes='72'/>
 <nm:table_series>1</nm:table_series>
 <nm:estimation_method>focei</nm:estimation_method>
 <nm:estimation_title>First Order Conditional Estimation with Interaction</nm:estimation_title>
@@ -339,8 +338,8 @@ Current Date:       25 DEC 2023
 <nm:etabar>
 <nm:row nm:rname='SUBPOP1'>
 <nm:col nm:cname='ETA1'>0.0000000000000000</nm:col>
-<nm:col nm:cname='ETA2'>-9.4743413376555726E-003</nm:col>
-<nm:col nm:cname='ETA3'>2.5563613659042236E-002</nm:col>
+<nm:col nm:cname='ETA2'>-9.4743413376555657E-003</nm:col>
+<nm:col nm:cname='ETA3'>2.5563613659042240E-002</nm:col>
 <nm:col nm:cname='ETA4'>0.0000000000000000</nm:col>
 <nm:col nm:cname='ETA5'>0.0000000000000000</nm:col>
 </nm:row>
@@ -349,7 +348,7 @@ Current Date:       25 DEC 2023
 <nm:row nm:rname='SUBPOP1'>
 <nm:col nm:cname='ETA1'>0.0000000000000000</nm:col>
 <nm:col nm:cname='ETA2'>4.1160647724000458E-002</nm:col>
-<nm:col nm:cname='ETA3'>4.9537891396782198E-002</nm:col>
+<nm:col nm:cname='ETA3'>4.9537891396782212E-002</nm:col>
 <nm:col nm:cname='ETA4'>0.0000000000000000</nm:col>
 <nm:col nm:cname='ETA5'>0.0000000000000000</nm:col>
 </nm:row>
@@ -366,7 +365,7 @@ Current Date:       25 DEC 2023
 <nm:etabarpval>
 <nm:row nm:rname='SUBPOP1'>
 <nm:col nm:cname='ETA1'>1.0000000000000000</nm:col>
-<nm:col nm:cname='ETA2'>0.81795229694429117</nm:col>
+<nm:col nm:cname='ETA2'>0.81795229694429150</nm:col>
 <nm:col nm:cname='ETA3'>0.60582531106935666</nm:col>
 <nm:col nm:cname='ETA4'>1.0000000000000000</nm:col>
 <nm:col nm:cname='ETA5'>1.0000000000000000</nm:col>
@@ -376,7 +375,7 @@ Current Date:       25 DEC 2023
 <nm:row nm:rname='SUBPOP1'>
 <nm:col nm:cname='ETA1'>0.0000000000000000</nm:col>
 <nm:col nm:cname='ETA2'>7.2261905702060814</nm:col>
-<nm:col nm:cname='ETA3'>4.4987381509566937</nm:col>
+<nm:col nm:cname='ETA3'>4.4987381509566831</nm:col>
 <nm:col nm:cname='ETA4'>0.0000000000000000</nm:col>
 <nm:col nm:cname='ETA5'>0.0000000000000000</nm:col>
 </nm:row>
@@ -385,7 +384,7 @@ Current Date:       25 DEC 2023
 <nm:row nm:rname='SUBPOP1'>
 <nm:col nm:cname='ETA1'>0.0000000000000000</nm:col>
 <nm:col nm:cname='ETA2'>13.930202838842810</nm:col>
-<nm:col nm:cname='ETA3'>8.7950898524046579</nm:col>
+<nm:col nm:cname='ETA3'>8.7950898524046259</nm:col>
 <nm:col nm:cname='ETA4'>0.0000000000000000</nm:col>
 <nm:col nm:cname='ETA5'>0.0000000000000000</nm:col>
 </nm:row>
@@ -425,18 +424,18 @@ Current Date:       25 DEC 2023
 </nm:epsshrinksd>
 <nm:epsshrinkvr>
 <nm:row nm:rname='SUBPOP1'>
-<nm:col nm:cname='EPS1'>20.393063545231950</nm:col>
+<nm:col nm:cname='EPS1'>20.393063545231939</nm:col>
 <nm:col nm:cname='EPS2'>100.00000000000000</nm:col>
 </nm:row>
 </nm:epsshrinkvr>
-<nm:estimation_elapsed_time>2.29</nm:estimation_elapsed_time>
-<nm:parallel_cov nm:parafile='/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/NMexec.pnm' nm:protocol='MPI' nm:nodes='72'/>
+<nm:estimation_elapsed_time>3.71</nm:estimation_elapsed_time>
+<nm:parallel_cov nm:parafile='/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/xgxr022.pnm' nm:protocol='MPI' nm:nodes='72'/>
 <nm:covariance_information><![CDATA[
 ]]></nm:covariance_information>
 <nm:covariance_status nm:error='0' nm:numnegeigenvalues='-1' nm:mineigenvalue='0.0000000000000000' nm:maxeigenvalue='0.0000000000000000' nm:rms='0.0000000000000000'/>
-<nm:covariance_elapsed_time>1.70</nm:covariance_elapsed_time>
-<nm:parallel_fnleta nm:parafile='/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/NMexec.pnm' nm:protocol='MPI' nm:nodes='72'/>
-<nm:parallel_wres nm:parafile='/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/NMexec.pnm' nm:protocol='MPI' nm:nodes='72'/>
+<nm:covariance_elapsed_time>2.29</nm:covariance_elapsed_time>
+<nm:parallel_fnleta nm:parafile='/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/xgxr022.pnm' nm:protocol='MPI' nm:nodes='72'/>
+<nm:parallel_wres nm:parafile='/data/home/philipde/wdirs/NMsim/tests_manual/testthat/testData/nonmem/xgxr022.pnm' nm:protocol='MPI' nm:nodes='72'/>
 <nm:final_objective_function_text>MINIMUM VALUE OF OBJECTIVE FUNCTION</nm:final_objective_function_text>
 <nm:final_objective_function>-1710.3735054308333</nm:final_objective_function>
 <nm:theta>
@@ -1571,11 +1570,11 @@ Current Date:       25 DEC 2023
 </nm:invcovariance>
 </nm:estimation>
 <nm:post_process_times>
-<nm:post_elapsed_time>1.14</nm:post_elapsed_time>
-<nm:finaloutput_elapsed_time>0.06</nm:finaloutput_elapsed_time>
+<nm:post_elapsed_time>1.26</nm:post_elapsed_time>
+<nm:finaloutput_elapsed_time>0.09</nm:finaloutput_elapsed_time>
 </nm:post_process_times>
 </nm:problem>
 </nm:nonmem>
-<nm:stop_datetime>2023-12-25T19:46:55.654</nm:stop_datetime>
-<nm:total_cputime>78.238</nm:total_cputime>
+<nm:stop_datetime>2024-06-10T17:17:44.073</nm:stop_datetime>
+<nm:total_cputime>55.045</nm:total_cputime>
 </nm:output>

@@ -11,6 +11,7 @@ NMreadSimModTab(
   wait = FALSE,
   skip.missing = FALSE,
   quiet = FALSE,
+  progress,
   as.fun
 )
 }
@@ -45,6 +46,11 @@ generated.  Default is not to wait.}
 
 \item{quiet}{Turn off some messages about what is going on?
 Default is to report the messages.}
+
+\item{progress}{Track progress? Default is `TRUE` if `quiet` is
+FALSE and more than one model is being simulated. The progress
+tracking is based on the number of models completed, not the
+status of the individual models.}
 
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say `tibble::as_tibble`) in as.fun to convert to

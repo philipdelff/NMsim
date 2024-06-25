@@ -15,8 +15,8 @@ navbar:
     - github
   components:
    home:
-    title: Sim Nonmem
-    desc: Really good
+    title: Simulation of Nonmem models from R
+    desc: A seamless Nonmem simulation platform
     icon: fas fa-home fa-lg
     href: index.html
    articles:
@@ -26,7 +26,7 @@ navbar:
         href: articles/NMsim-basics.html
       - text: Simulations for VPCs 
         href: articles/NMsim-VPC.html
-      - text: NMsim Configuration
+      - text: Requirements and Configuration
         href: articles/NMsim-config.html
       - text: Simulate known subjects
         href: articles/NMsim-known.html

@@ -2,36 +2,14 @@
 % Please edit documentation in R/NMsim_known.R
 \name{NMsim_known}
 \alias{NMsim_known}
-\title{Known subject simulation method}
+\title{NMsim_known is an old name for NMsim_EBE()}
 \usage{
-NMsim_known(file.sim, file.mod, data.sim, file.phi, return.text = FALSE)
+NMsim_known(...)
 }
 \arguments{
-\item{file.sim}{See \code{?NMsim}.}
-
-\item{file.mod}{See \code{?NMsim}.}
-
-\item{data.sim}{See \code{?NMsim}.}
-
-\item{file.phi}{A phi file to take the known subjects from. The
-default is to replace the filename extension on file.mod with
-.phi. A different .phi file would be used if you want to reuse
-subjects simulated in a previous simulation.}
-
-\item{return.text}{If TRUE, just the text will be returned, and
-resulting control stream is not written to file.}
-}
-\value{
-Path to simulation control stream
+\item{...}{Everything passed to NMsim_EBE()}
 }
 \description{
-Simulates _known_ subjects, meaning that it reuses ETA values from
-estimation run. This is what is refered to as emperical Bayes
-estimates. The .phi file from the estimation run must be found
-next to the .lst file from the estimation.This means that ID
-values in the (simulation) input data must be ID values that were
-used in the estimation too. Runs an \code{$ESTIMATION MAXEVAL=0}
-but pulls in ETAs for the ID's found in data. No
-\code{$SIMULATION} step is run which may affect how for instance
-residual variability is simulated, if at all.
+NMsim_known is an old name for NMsim_EBE()
 }
+\keyword{internal}

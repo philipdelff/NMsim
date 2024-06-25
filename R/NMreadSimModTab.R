@@ -1,9 +1,13 @@
 ##' Read simulation results from rds objects and/or NMsimModTab objects
 ##' @inheritParams NMreadSim
+##' @param progress Track progress? Default is `TRUE` if `quiet` is
+##'     FALSE and more than one model is being simulated. The progress
+##'     tracking is based on the number of models completed, not the
+##'     status of the individual models.
 ##' @keywords internal
 
-NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=FALSE,quiet=FALSE,as.fun){
-
+NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=FALSE,quiet=FALSE,progress,as.fun){
+    
 
     ROWTMP <- NULL
     path.lst.read <- NULL
@@ -14,7 +18,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
 
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
-
+    if(missing(progress)) progress <- NULL
     
 
     ## read all rds files to get everything into just one table.
@@ -37,7 +41,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
             })
 
             tab.paths <- rbindlist(tab.paths.list,fill=TRUE)
-            tab.paths[,file.res.data:=fnAppend(fnExtension(x,"fst"),"res")]
+            ## tab.paths[,file.res.data:=fnAppend(fnExtension(x,"fst"),"res")]
 
             
         } else if(is.NMsimModTab(x)){
@@ -68,7 +72,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
     
     
     ## res <- NMreadSimModTabOne(modtab=modtab,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
-    res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,skip.missing=skip.missing,quiet=quiet,as.fun=as.fun)
+    res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,skip.missing=skip.missing,quiet=quiet,as.fun=as.fun,progress=progress)
 
     
     
@@ -87,18 +91,34 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
 ##' Read simulation results from an rds or a NMsimModTab object
 ##' @inheritParams NMreadSim
 ##' @keywords internal
-NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,skip.missing=FALSE,as.fun){
-
+##' @import utils
+NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,skip.missing=FALSE,progress,as.fun){
+    
     . <- NULL
     ROWMODEL2 <- NULL
     args.NMscanData <- NULL
     file.res.data <- NULL
     funs.transform <- NULL
+    NMsimVersion <- NULL
     path.rds.read <- NULL
+    path.results <- NULL
     path.lst.read <- NULL
     ROWTMP <- NULL
+    
+    if(missing(progress)) progress <- NULL
+    if(is.null(progress)) progress <- TRUE
+    ## Previous versions did not save path.results, so 
 
-    rdstab <- unique(modtab[,.(file.res.data,path.rds.read)])
+    
+    if(!"path.results"%in%colnames(modtab)){
+        if(! "NMsimVersion"%in%colnames(modtab) || !"file.res.data" %in% colnames(modtab)){
+            modtab[,path.results:=fnExtension(fnAppend(path.rds.read,"res"),"fst")]
+        } else {
+                modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
+        }
+    }
+    
+    rdstab <- unique(modtab[,.(path.results,path.rds.read)])
     if(nrow(rdstab)>1) stop("modtab must be related to only one rds file.")
     
 ####### Now we have a NMSimModels object to process.
@@ -122,21 +142,21 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
 ### if we have an fst, read it and return results
     if(check.time){
-        from.fst <- rdstab[,!is.null(file.res.data) &&
-                            file.exists(file.res.data) &&
-                            file.mtime(file.res.data)>file.mtime(path.rds.read)
+        from.fst <- rdstab[,!is.null(path.results) &&
+                            file.exists(path.results) &&
+                            file.mtime(path.results)>file.mtime(path.rds.read)
                            ]
     } else {
-        from.fst <- rdstab[,!is.null(file.res.data) &&
-                            file.exists(file.res.data)]
+        from.fst <- rdstab[,!is.null(path.results) &&
+                            file.exists(path.results)]
     }
 
 
-
+    
     ## fsts
     if(from.fst){
 ### reads unique fsts
-        res.list <- lapply(modtab[,unique(file.res.data)],read_fst,as.data.table=TRUE)
+        res.list <- lapply(modtab[,unique(path.results)],read_fst,as.data.table=TRUE)
         res <- rbindlist(res.list,fill=TRUE)
 
         setattr(res,"NMsimModTab",modtab)
@@ -147,16 +167,43 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
     lsts.found <- modtab[,file.exists(path.lst.read)]
     done <- all(lsts.found)
+
     if(!done){
         if(wait){
             turns <- 0
-            if(!done) message("Waiting for Nonmem to finish simulating...")
+            if(!done) message("* Waiting for Nonmem to finish")
+            
+            ## progress tracker
+            n.lsts <- modtab[,.N]
+            do.pb <- !quiet && progress && n.lsts>1
+            if(do.pb){
+                ## set up progress bar
+                n.done <- sum(file.exists(modtab[,path.lst.read]))
+                pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+                                     max = n.lsts, # Maximum value of the progress bar
+                                     initial = n.done,
+                                     style = 3,    # Progress bar style (also available style = 1 and style = 2)
+                                     ## width = 50,   # Progress bar width. Defaults to getOption("width")
+                                     char = "=")
+            }
+
+            
             while(!done){
                 Sys.sleep(5)
-                done <- all(file.exists(modtab[,path.lst.read]))
+                n.done <- sum(file.exists(modtab[,path.lst.read]))
+                done <- n.done==n.lsts
                 turns <- turns+1
+
+                if(do.pb){
+                    setTxtProgressBar(pb, n.done)
+                }
+                
             }
-            if(turns>0) message("Nonmem finished.")
+            ## if(turns>0) message("Nonmem finished.")
+            if(do.pb){
+                close(pb)
+                ## message("")
+            }
         } else {
             if(skip.missing){
                 message(sprintf("%d/%d model runs found",sum(lsts.found),length(lsts.found)))
@@ -166,12 +213,38 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
             }
         }
     }
+
+
+    ## if(!quiet) message("Reading Nonmem results")
     
 
-        res.list <- lapply(split(modtab,by="ROWMODEL2"),function(dat){
+    tab.split <- split(modtab,by="ROWMODEL2")
+    nsplits <- length(tab.split)
+
+    if(!quiet) message("* Collecting Nonmem results")
+    do.pb <- do.pb <- !quiet && progress && nsplits>1
+    if(do.pb){
+        ## progress tracker
+        pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
+                             max = nsplits, # Maximum value of the progress bar
+                             ##initial = n.done,
+                             style = 3,    # Progress bar style (also available style = 1 and style = 2)
+                             ## width = 50,   # Progress bar width. Defaults to getOption("width")
+                             char = "=")
+    }
+
+    ### this is needed for nc>1
+    ## Sys.sleep(5)
+    res.list <- lapply(1:nsplits,function(count){
+        dat <- tab.split[[count]]
         res <- dat[,{
             ## the rds table must keep NMscanData arguments
             args.NM <- args.NMscanData[[1]]
+            if( "file.mod" %in% names(args.NM)){
+                
+                stop("Do not use file.mod in args.NMscanData. NMsim created the simulation control streams so as a user you do not need to help NMsim find them.")
+            }
+            args.NM$file.mod <- function(file) fnExtension(file,".mod")
             if(! "quiet" %in% names(args.NM)){
                 args.NM$quiet <- TRUE
             }
@@ -179,7 +252,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
             ## put this in try and report better info if broken
             this.res <- try(do.call(NMscanData,
                                     c(list(file=path.lst.read),args.NM)
-                                    ))
+                                    ),silent=TRUE)
             if(inherits(this.res,"try-error")){
                 if(!quiet) {
                     lines.lst <- readLines(path.lst.read)
@@ -198,9 +271,21 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
             this.res
         },by=.(ROWMODEL2)]
+
+        if(do.pb){
+            setTxtProgressBar(pb, count)
+        }
+
+        
         res
         
     })
+
+    if(do.pb){
+        close(pb)
+        ##        message("")
+    }
+    
     res <- rbindlist(res.list,fill=TRUE)
     res[,ROWMODEL2:=NULL]
 
@@ -208,15 +293,18 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     res <- as.fun(res)
     setattr(res,"NMsimModTab",modtab)
     addClass(res,"NMsimRes")
-
-    if(!is.null(rdstab$file.res.data)){
+    
+    if(!is.null(rdstab$path.results)){
         NMwriteData(res,
-                    file=rdstab$file.res.data,
+                    file=rdstab$path.results,
                     formats.write="fst",
                     genText=F,
                     quiet=TRUE)
+        ## this message may confuse because the user may think this has not happened if they don't see the message. And the message will only appear the first time data is being read.
+        ## message("Results have been efficiently stored in results folder.")
     }
 
 
     res
+
 }

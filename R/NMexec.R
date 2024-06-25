@@ -227,7 +227,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                 dat.inp <- NMscanInput(file=file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
             } else {
                 ## dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
-                dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",quiet=TRUE)
+                dat.inp <- NMscanInput(file=file.mod,file.mod=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",quiet=TRUE)
             }
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
@@ -235,7 +235,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 
         if((sge && nc > 1)||(sge && method.execute=="psn")){
             if(nc>1){
-                file.pnm <- file.path(rundir,"NMexec.pnm")
+                ## file.pnm <- file.path(rundir,"NMexec.pnm")
+                file.pnm <- fnExtension(file.mod,"pnm")
                 pnm <- NMgenPNM(nc=nc,file=file.pnm)
             }
         }
@@ -279,7 +280,10 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 ##### for nc>1 this can be used <nc> is nc evaluated
                     ## qsub -pe orte <nc> -V -N <name for qstat> -j y -cwd -b y /opt/NONMEM/nm75/run/nmfe75 psn.mod psn.lst -background -parafile=/path/to/pnm [nodes]=<nc>
                 } else {
-                    string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
+                    ### executing from getwd()
+                    ## string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
+                    ## executing from model execution dir.
+                    string.cmd <- sprintf('cd \"%s\"; qsub -pe orte %s -V -N NMsim -j y -cwd -b y \"%s\" \"%s\" \"%s\" -background -parafile=%s [nodes]=%s; cd \"%s\"' ,dirname(file.mod),nc,path.nonmem,basename(file.mod),fnExtension(basename(file.mod),"lst"),basename(pnm),nc,getwd())
                 }
                 wait <- TRUE
             } else {

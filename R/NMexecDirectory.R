@@ -49,7 +49,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
         copy.data <- TRUE
     }     
     if(missing(files.needed)) files.needed <- NULL
-    extr.data <- NMextractDataFile(file.mod,file.data="extract")
+    extr.data <- NMextractDataFile(file.mod,file.mod=file.mod,file.data="extract")
     
     if(is.null(extr.data$path.csv) && !is.null(extr.data$path)){
         extr.data$path.csv <- extr.data$path
@@ -98,7 +98,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
             sec.data.new <- paste("$DATA",sec.data.new)
         }
     }
-    NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp)
+    NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp,quiet=TRUE)
 
 ### copy .phi if found
     ## file.copy(fnExtension(file.mod,"phi"),dir.tmp)
@@ -118,13 +118,14 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
         lines.bash <- c(
             "#!/bin/bash"
            ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
+           ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),dir.mod.abs)
 ### this works when file.mod is a relative path
             ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
             ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
 
 ### copy wanted files back to orig location of file.mod 
            ,paste("find . -type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} ",dir.mod.abs," \\;")
-           ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),dir.mod.abs)
+
            ,""
         )
         
