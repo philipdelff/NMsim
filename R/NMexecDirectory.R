@@ -118,13 +118,13 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
         lines.bash <- c(
             "#!/bin/bash"
            ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-           ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),dir.mod.abs)
+           ,sprintf("cp \'%s\' \'%s\'",paste(meta.tables[,name],collapse=" "),dir.mod.abs)
 ### this works when file.mod is a relative path
             ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
             ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
 
 ### copy wanted files back to orig location of file.mod 
-           ,paste("find . -type f -name",paste0("\'*.",exts.cp,"\'")," -exec cp {} ",dir.mod.abs," \\;")
+           ,paste0("find . -type f -name ",paste0("\'*.",exts.cp,"\'")," -exec cp {} \'",dir.mod.abs,"\' \\;")
 
            ,""
         )

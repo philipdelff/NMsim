@@ -1,6 +1,6 @@
-# NMsim 0.1.1
+# NMsim 0.2.0
 While no critical and generally only few bugs have been found in NMsim
-0.1.0, NMsim 0.1.1 includes many minor improvements and upgrades. The
+0.1.0, NMsim 0.2.0 includes several improvements and upgrades. The
 interface feels smoother too. I want to thank Ron Keizer for feedback
 and advice.
 
@@ -10,13 +10,18 @@ and advice.
   trackers will be shown while starting Nonmem, while waiting for
   Nonmem to finish, and while collecting the simulation results. 
   
-*  The messages include information about where intermediate files and
-   final results files are stored.
+* The messages include information about where intermediate files and
+  final results files are stored.
+  
+* `NMexec()` has improved support for
+  estimation. `method.execute="nmsim"` and `method.execute="psn"` both
+  work on linux and windows, even though less thoroughly tested on
+  windows. Thank you to Boris Grinshpun for testing.
 
-* Names of files containing final results have been renamed to be more
-  intuitive. The previous `_paths.rds` will now be called
-  `_MetaData.rds`. The results, once read and compressed, will be in a
-  file called `_ResultsData.fst`. Notice, both these files are
+* Names of files containing final results from `NMsim()` have been
+  renamed to be more intuitive. The previous `_paths.rds` will now be
+  called `_MetaData.rds`. The results, once read and compressed, will
+  be in a file called `_ResultsData.fst`. Notice, both these files are
   required to fully recover simulation results.  Thanks to Brian
   Reilly for discussions on this and many other design aspects.
 

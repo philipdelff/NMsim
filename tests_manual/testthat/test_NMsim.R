@@ -282,6 +282,63 @@ test_that("basic - spaces in paths",{
 })
 
 
+test_that("space in file name",{
+
+    fnroot <- "xgxr022"
+    lapply(file.path("testData/nonmem",paste0(fnroot,".",cc(mod,lst,ext))),function(file){
+        file.copy(file,file.path(dirname(file),paste0("xgxr 022.",fnExtension(file))))
+    })
+    file.mod <- "testData/nonmem/xgxr 022.mod"
+
+
+    set.seed(43)
+    simres1 <- NMsim(file.mod=c(file.mod),
+                     data=dt.sim,
+                     table.vars="PRED IPRED",
+                     dir.sims="testOutput",
+                     name.sim="space2"
+                    ,path.nonmem=path.nonmem
+                     )
+
+    set.seed(43)
+    simres2 <- NMsim(file.mod=c("yo 3"=file.mod),
+                     data=dt.sim,
+                     table.vars="PRED IPRED",
+                     dir.sims="testOutput",
+                     name.sim="space2"
+                     )
+
+    
+    set.seed(43)
+    simres3 <- NMsim(file.mod=c(file.mod),
+                     data=dt.sim,
+                     table.vars="PRED IPRED",
+                     dir.sims="testOutput",
+                     name.sim="space2"
+                    ,path.nonmem=path.nonmem
+                     )
+
+    set.seed(43)
+    simres4 <- NMsim(file.mod=c("yo 4"=file.mod),
+                     data=dt.sim,
+                     table.vars="PRED IPRED",
+                     dir.sims="testOutput",
+                     name.sim="space2"
+                    ,path.nonmem=path.nonmem
+                     )
+
+    expect_equal(unique(
+        nrow(simres1)
+       ,
+        nrow(simres2)
+       ,
+        nrow(simres3),
+        nrow(simres4)
+    ),4)
+    
+
+})
+
 test_that("SAEM - default",{
 
     fileRef <- "testReference/NMsim_05.rds"
@@ -322,8 +379,6 @@ test_that("SAEM - known",{
     ## source("~/wdirs/NMsim/devel/genPhiFile.R")
     ## res <- NMscanData(file.mod)
     ## genPhiFile(res,file="testOutput/tmp_etas.phi")
-    NMdataConf(dir.sims="testOutput/simtmp")
-    NMdataConf(dir.res="testOutput/simres")
 
     
     set.seed(43)
