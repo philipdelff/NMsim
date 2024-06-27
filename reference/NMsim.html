@@ -20,7 +20,7 @@ get the most out of this."><!-- mathjax --><script src="https://cdnjs.cloudflare
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.961</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.962</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -333,7 +333,7 @@ is "nmsim" if path.nonmem is specified, and "psn" if not.</p></dd>
 <li><p>"nmsim"
  Uses a simple internal method to update the parameter values
 based on the ext file.  The advantages of "nmsim" are it does not
-require PSN, and that it is very robust. "nmsim" fixes the whole
+require PSN, and that it does not rely on code-interpretation for generation of simulation control streams. "nmsim" fixes the whole
 OMEGA and SIGMA matrices as single blocks making the $OMEGA and
 $SIGMA sections of the control streams less easy to read. On the
 other hand, this method is robust because it avoids any
@@ -341,7 +341,9 @@ interpretation of BLOCK structure or other code in the control
 streams.</p></li>
 <li><p>"none" Do nothing. This is useful if the model to simulate
 has not been estimated but parameter values have been manually put
-into the respective sections in the control stream.</p></li>
+into the respective sections in the control stream.</p>
+<p>On linux/mac, The default is to use "PSN" if found. On Windows, "nmsim"
+is the default.</p></li>
 </ul></dd>
 
 
@@ -365,8 +367,7 @@ section edits. Note, these can be functions that define how to
 edit sections. This is an advanced feature which is not needed
 to run most simulations. It is however powerful for some types
 of analyses, like modifying parameter values. See vignettes
-for further information. Documentation still under
-development.</p></dd>
+for further information.</p></dd>
 
 
 <dt>sim.dir.from.scratch</dt>
@@ -505,7 +506,7 @@ impacts simulation, and you want to get rid of warnings.</p></dd>
 
 
 <dt>list.sections</dt>
-<dd><p>Deprecated. Use modfy.model.</p></dd>
+<dd><p>Deprecated. Use modify.model instead.</p></dd>
 
 
 <dt>format.data.complete</dt>
