@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.960</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.961</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,22 +118,19 @@ argument, NMsim will re-use the estimation data for the simulation. That
 is the simulation we need for a VPC. We will use an example model
 included with NMsim:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">file.project</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span>,<span class="va">...</span><span class="op">)</span></span>
-<span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu">file.project</span><span class="op">(</span><span class="st">"nonmem/xgxr032.mod"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples/nonmem/xgxr032.mod"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span></span>
 <span><span class="fu">NMdataConf</span><span class="op">(</span>path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe75"</span><span class="op">)</span></span>
 <span><span class="fu">NMdataConf</span><span class="op">(</span>dir.sims<span class="op">=</span><span class="st">"~/NMsim_vignette"</span>,</span>
-<span>           dir.res<span class="op">=</span><span class="st">"simulate-results"</span>,</span>
-<span>           allow.unknown<span class="op">=</span><span class="cn">TRUE</span> <span class="co">## necessary for dir.sims and dir.res</span></span>
-<span>           <span class="co">## until NMdata 0.1.5</span></span>
+<span>           dir.res<span class="op">=</span><span class="st">"simulate-results"</span></span>
 <span>           <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">43</span><span class="op">)</span></span>
 <span><span class="co">## notice the data argument is not used.</span></span>
 <span><span class="va">simres.vpc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span><span class="va">file.mod</span>,</span>
 <span>                    table.vars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PRED"</span>,<span class="st">"IPRED"</span>, <span class="st">"Y"</span><span class="op">)</span>,</span>
-<span>                    name.sim<span class="op">=</span><span class="st">"vpc_01"</span></span>
-<span>                   ,subproblems<span class="op">=</span><span class="fl">500</span></span>
-<span>                   ,as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span></code></pre></div>
+<span>                    name.sim<span class="op">=</span><span class="st">"vpc_01"</span>,</span>
+<span>                    subproblems<span class="op">=</span><span class="fl">500</span></span>
+<span>                    <span class="op">)</span></span></code></pre></div>
 <p>The performed simulation is similar to the one produced by the
 <code>VPC</code> function in <code>PSN</code>. However, there are some
 important differences.</p>
@@ -165,11 +162,11 @@ following simple code shows how to get from the results from
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://philipdelff.github.io/NMdata/" class="external-link">NMdata</a></span><span class="op">)</span></span>
 <span><span class="co">## read the data as it was used in the Nonmem model</span></span>
-<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMscanData</a></span><span class="op">(</span><span class="va">file.mod</span>,as.fun<span class="op">=</span><span class="st">"data.table"</span>,quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://philipdelff.github.io/NMdata/reference/NMscanData.html" class="external-link">NMscanData</a></span><span class="op">(</span><span class="va">file.mod</span>,quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## only plot observation events from estimation data set</span></span>
-<span><span class="va">data.obs</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">]</span></span>
+<span><span class="va">data.obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">res</span>,<span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">## Only plot simulated observation events</span></span>
-<span><span class="va">data.sim</span> <span class="op">&lt;-</span> <span class="va">simres.vpc</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">]</span></span>
+<span><span class="va">data.sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">simres.vpc</span>,<span class="va">EVID</span><span class="op">==</span><span class="fl">0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## run vpc</span></span>
 <span><span class="va">vpc1</span> <span class="op">&lt;-</span></span>
