@@ -1,7 +1,7 @@
 library(NMdata)
-path.nonmem <- "c:/nm75g64/run/nmfe75.bat"
-path.nonmem = "/opt/NONMEM/nm75/run/nmfe75"
-NMdataConf(path.nonmem=path.nonmem)
+## path.nonmem <- "c:/nm75g64/run/nmfe75.bat"
+## path.nonmem = "/opt/NONMEM/nm75/run/nmfe75"
+## NMdataConf(path.nonmem=path.nonmem)
 library(devtools)
 load_all()
 
