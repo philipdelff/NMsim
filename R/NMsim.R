@@ -862,8 +862,9 @@ if(reuse.results && all(path.rds.exists==TRUE)){
                         dt.models[,paste(paste0("  ",unique(dir.sim)),collapse="\n")]))
         message(sprintf("Location of final result files:\n%s\n",
                         dt.models[,paste(paste0("  ",unique(dirname(path.rds))),collapse="\n")]))
-        
-        message(sprintf("* Writing %d simulation control stream(s) and simulation data set(s)",dt.models[,.N]))
+        ## It would be nice to say how many. But we dont know until after NMsim_method()
+        ## message(sprintf("* Writing %d simulation control stream(s) and simulation data set(s)",dt.models[,.N]))
+        message(sprintf("* Writing simulation control stream(s) and simulation data set(s)"))
     }
     
 ### Generate the first version of file.sim.
@@ -1120,9 +1121,11 @@ if(reuse.results && all(path.rds.exists==TRUE)){
 
 ### if typical
     if(typical){
-        dt.mods.sim <- dt.models[,.(mod=typicalize(file.sim=path.sim,file.mod=file.mod,return.text=TRUE,file.ext=file.ext)),by=ROWMODEL2]
+        dt.mods.sim <- dt.models[,.(mod=typicalize(file.sim=path.sim,file.mod=file.mod,return.text=TRUE,file.ext=file.ext)),by=.(ROWMODEL2,path.sim)]
         ## write results
-        dt.models[,writeTextFile(dt.mods.sim[ROWMODEL2==ROWMODEL,mod],file=path.sim),by=ROWMODEL2]
+        
+        ## dt.models[,writeTextFile(dt.mods.sim[ROWMODEL2==ROWMODEL,mod],file=path.sim),by=ROWMODEL2]
+        dt.mods.sim[,writeTextFile(lines=mod,file=unique(path.sim)),by=ROWMODEL2]
     }
 
     
