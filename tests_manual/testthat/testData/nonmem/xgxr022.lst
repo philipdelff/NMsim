@@ -1,4 +1,4 @@
-Mon Jun 10 17:17:14 EDT 2024
+Thu Jun 27 14:25:28 EDT 2024
 $PROBLEM    021 with CL:V2 corr
 $INPUT      ROW ID NOMTIME TIME EVID CMT AMT DV FLAG STUDY BLQ CYCLE
             DOSE PART PROFDAY PROFTIME WEIGHTB eff0
@@ -68,8 +68,8 @@ NM-TRAN MESSAGES
 
 License Registered to: Vertex Pharmaceuticals Inc
 Expiration Date:    14 JAN 2025
-Current Date:       10 JUN 2024
-Days until program expires : 219
+Current Date:       27 JUN 2024
+Days until program expires : 202
 1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.5.0
  ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
  CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
@@ -323,9 +323,9 @@ Days until program expires : 219
  TOTAL EFFECTIVE ETAS (NIND*NETA):                           180
   
  #TERE:
- Elapsed estimation  time in seconds:     3.71
- Elapsed covariance  time in seconds:     2.29
- Elapsed postprocess time in seconds:     1.26
+ Elapsed estimation  time in seconds:     2.39
+ Elapsed covariance  time in seconds:     1.45
+ Elapsed postprocess time in seconds:     1.14
 1
  
  
@@ -827,7 +827,7 @@ Days until program expires : 219
 +       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
          ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
  
- Elapsed finaloutput time in seconds:     0.09
- #CPUT: Total CPU Time in Seconds,       55.045
+ Elapsed finaloutput time in seconds:     0.06
+ #CPUT: Total CPU Time in Seconds,       51.832
 Stop Time:
-Mon Jun 10 17:17:44 EDT 2024
+Thu Jun 27 14:25:45 EDT 2024

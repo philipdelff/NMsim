@@ -1,7 +1,11 @@
 library(NMdata)
-NMdataConf(path.nonmem="c:/nm75g64/run/nmfe75.bat")
+path.nonmem <- "c:/nm75g64/run/nmfe75.bat"
+path.nonmem = "/opt/NONMEM/nm75/run/nmfe75"
+NMdataConf(path.nonmem=path.nonmem)
 library(devtools)
 load_all()
+
+
 
 context("NMexec")
 
@@ -18,35 +22,65 @@ test_that("default",{
     file.mod <- "testData/nonmem/xgxr022.mod"
 
     ## set.seed(43)
-    res <- NMexec(file.mod  )
+    ### notice, this returns NULL
+    res <- NMexec(file.mod ,method.execute="psn" )
 
-    expect_equal_to_reference(simres,fileRef)
+    expect_equal_to_reference(res,fileRef)
 
+    if(F){
+        ref <- readRDS(fileRef)
+    }
+    
 })
 
-
-test_that("default - no sge",{
+test_that("method.exec=nmsim",{
 
     fileRef <- "testReference/NMexec_02.rds"
 
     file.mod <- "testData/nonmem/xgxr022.mod"
 
     ## set.seed(43)
-    res <- NMexec(file.mod,sge=FALSE  ,path.nonmem="c:/nm75g64/run/nmfe75.bat",method.execute = "NMsim")
+    res <- NMexec(file.mod,method.execute = "NMsim")
 
-    expect_equal_to_reference(simres,fileRef)
+    expect_equal_to_reference(res,fileRef)
+
+    if(F){
+        ref <- readRDS(fileRef)
+        ref
+    }
+
 
 })
 
-test_that("default - specify no of threads",{
+
+test_that("default - no sge - method.exec=nmsim",{
 
     fileRef <- "testReference/NMexec_03.rds"
 
     file.mod <- "testData/nonmem/xgxr022.mod"
 
     ## set.seed(43)
+    res <- NMexec(file.mod,sge=FALSE  ,path.nonmem=path.nonmem,method.execute = "NMsim")
+
+    expect_equal_to_reference(res,fileRef)
+
+    if(F){
+        ref <- readRDS(fileRef)
+        ref
+    }
+
+
+})
+
+test_that("default - specify no of threads",{
+
+    fileRef <- "testReference/NMexec_04.rds"
+
+    file.mod <- "testData/nonmem/xgxr022.mod"
+
+    ## set.seed(43)
     res <- NMexec(file.mod,nc=72)
 
-    expect_equal_to_reference(simres,fileRef)
+    expect_equal_to_reference(res,fileRef)
 
 })
