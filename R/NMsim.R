@@ -172,6 +172,7 @@
 ##'     of analyses, like modifying parameter values. See vignettes
 ##'     for further information. Documentation still under
 ##'     development.
+##' @param list.sections Deprecated. Use modfy.model.
 ##' @param create.dirs If the directories specified in dir.sims and
 ##'     dir.res do not exists, should it be created? Default is TRUE.
 ##' @param sim.dir.from.scratch If TRUE (default) this will wipe the

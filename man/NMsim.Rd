@@ -340,6 +340,8 @@ impacts simulation, and you want to get rid of warnings.}
 
 \item{seed}{Deprecated. See \code{seed.R} and \code{seed.nm}.}
 
+\item{list.sections}{Deprecated. Use modfy.model.}
+
 \item{format.data.complete}{For development purposes - users do
 not need this argument. Controls what format the complete
 input data set is saved in.  Possible values are `rds`
