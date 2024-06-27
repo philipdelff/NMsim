@@ -78,6 +78,7 @@ NMsim_VarCov <- function(file.sim,file.mod,data.sim,nsims,ext,write.ext=NULL){
         ests <- ests[par.type%in%c("THETA","SIGMA","OMEGA")]
         ests <- ests[match(ests$parameter,colnames(covmat))]
         newpars <- mvrnorm(n=nsims,Sigma=covmat,mu=ests$est)
+        newpars <- round(newpars,8)
 ### as.list first is because without it, this will fail for
 ### nsims=1. This is because a single-column data.table would be
 ### created in that case, and then SUBMODEL and further steps

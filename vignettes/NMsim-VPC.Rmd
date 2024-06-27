@@ -45,13 +45,10 @@ re-use the estimation data for the simulation. That is the simulation
 we need for a VPC. We will use an example model included with NMsim:
 
 ```{r,eval=TRUE}
-file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
-file.mod <- file.project("nonmem/xgxr032.mod")
+file.mod <- system.file("examples/nonmem/xgxr032.mod",package="NMsim")
 NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 NMdataConf(dir.sims="~/NMsim_vignette",
-           dir.res="simulate-results",
-           allow.unknown=TRUE ## necessary for dir.sims and dir.res
-           ## until NMdata 0.1.5
+           dir.res="simulate-results"
            )
 ```
 
@@ -60,9 +57,9 @@ set.seed(43)
 ## notice the data argument is not used.
 simres.vpc <- NMsim(file.mod,
                     table.vars=c("PRED","IPRED", "Y"),
-                    name.sim="vpc_01"
-                   ,subproblems=500
-                   ,as.fun="data.table")
+                    name.sim="vpc_01",
+                    subproblems=500
+                    )
 ```
 
 The performed simulation is similar to the one produced by the `VPC` function in `PSN`. However, there are some important differences.
@@ -89,11 +86,11 @@ library(ggplot2)
 library(tidyvpc)
 library(NMdata)
 ## read the data as it was used in the Nonmem model
-res <- NMscanData(file.mod,as.fun="data.table",quiet=TRUE)
+res <- NMscanData(file.mod,quiet=TRUE)
 ## only plot observation events from estimation data set
-data.obs <- res[EVID==0]
+data.obs <- subset(res,EVID==0)
 ## Only plot simulated observation events
-data.sim <- simres.vpc[EVID==0]
+data.sim <- subset(simres.vpc,EVID==0)
 
 ## run vpc
 vpc1 <-

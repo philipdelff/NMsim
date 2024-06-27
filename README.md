@@ -12,7 +12,7 @@ status](https://www.r-pkg.org/badges/version/NMsim)](https://CRAN.R-project.org/
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/NMsim)](https://cran.r-project.org/package=NMsim)
 [![Codecov test
-coverage](https://codecov.io/gh/philipdelff/NMsim/branch/master/graph/badge.svg)](https://app.codecov.io/gh/philipdelff/NMsim?branch=master)
+coverage](https://codecov.io/gh/philipdelff/NMsim/branch/main/graph/badge.svg)](https://app.codecov.io/gh/philipdelff/NMsim?branch=main)
 
 <!-- [![R-CMD-check](https://github.com/philipdelff/NMsim/workflows/R-CMD-check/badge.svg)](https://github.com/philipdelff/NMsim/actions) -->
 <!-- badges: end -->

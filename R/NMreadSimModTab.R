@@ -71,10 +71,13 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
     ]
     
     
-    ## res <- NMreadSimModTabOne(modtab=modtab,check.time=check.time,dir.sims=dir.sims,wait=wait,quiet=quiet,as.fun=as.fun)
+### rather than reading one rds at a time, we should read all the
+### rds's, stack them, and then read the object as
+### one. NMreadSimModTabOne checks that there is only one rds but I'm
+### sure that requirement is needed anymore. Could try to combine
+### these and run at once. Would require more testing.
     res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,skip.missing=skip.missing,quiet=quiet,as.fun=as.fun,progress=progress)
-
-    
+        
     
     res <- rbindlist(res.list,fill=TRUE)
 
@@ -114,7 +117,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
         if(! "NMsimVersion"%in%colnames(modtab) || !"file.res.data" %in% colnames(modtab)){
             modtab[,path.results:=fnExtension(fnAppend(path.rds.read,"res"),"fst")]
         } else {
-                modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
+            modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
         }
     }
     
@@ -233,7 +236,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
                              char = "=")
     }
 
-    ### this is needed for nc>1
+### this is needed for nc>1
     ## Sys.sleep(5)
     res.list <- lapply(1:nsplits,function(count){
         dat <- tab.split[[count]]
@@ -283,7 +286,6 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
     if(do.pb){
         close(pb)
-        ##        message("")
     }
     
     res <- rbindlist(res.list,fill=TRUE)

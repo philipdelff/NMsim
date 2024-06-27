@@ -141,7 +141,7 @@
 ##' \item{"nmsim"}
 ##'  Uses a simple internal method to update the parameter values
 ##' based on the ext file.  The advantages of "nmsim" are it does not
-##' require PSN, and that it is very robust. "nmsim" fixes the whole
+##' require PSN, and that it does not rely on code-interpretation for generation of simulation control streams. "nmsim" fixes the whole
 ##' OMEGA and SIGMA matrices as single blocks making the $OMEGA and
 ##' $SIGMA sections of the control streams less easy to read. On the
 ##' other hand, this method is robust because it avoids any
@@ -151,6 +151,9 @@
 ##' \item{"none"} Do nothing. This is useful if the model to simulate
 ##' has not been estimated but parameter values have been manually put
 ##' into the respective sections in the control stream.
+##'
+##' On linux/mac, The default is to use "PSN" if found. On Windows, "nmsim"
+##' is the default.
 ##' 
 ##' }
 ##' 
@@ -825,13 +828,13 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         dt.models[,path.rds:=fnExtension(file.res,"rds")]
         dt.models[,path.results:=fnAppend(fnExtension(file.res,"fst"),"ResultsData")]
     }
-    ## dt.models[,path.rds.exists:=file.exists(path.rds)]
 
-    
-    dt.models[,path.rds.exists:=file.exists(path.rds)]
+    ### path.rds.exists is whether the metadata rds existed prior to this function call. We don't want to save that in dt.models
+    path.rds.exists <- dt.models[,file.exists(path.rds)]
 ### reading results from prior run
     ## if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
-    if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
+    ## if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
+if(reuse.results && all(path.rds.exists==TRUE)){
         if(!quiet) message(sprintf("Reading from simulation results on file:\n%s",dt.models[,paste(unique(path.rds),collapse="\n")]))
         simres <- try(NMreadSim(dt.models[,path.rds],wait=wait,quiet=quiet,progress=progress))
         if(!inherits(simres,"try-error")) {
@@ -860,8 +863,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                         dt.models[,paste(paste0("  ",unique(dir.sim)),collapse="\n")]))
         message(sprintf("Location of final result files:\n%s\n",
                         dt.models[,paste(paste0("  ",unique(dirname(path.rds))),collapse="\n")]))
-        
-        message(sprintf("* Writing %d simulation control stream(s) and simulation data set(s)",dt.models[,.N]))
+        ## It would be nice to say how many. But we dont know until after NMsim_method()
+        ## message(sprintf("* Writing %d simulation control stream(s) and simulation data set(s)",dt.models[,.N]))
+        message(sprintf("* Writing simulation control stream(s) and simulation data set(s)"))
     }
     
 ### Generate the first version of file.sim.
@@ -1118,9 +1122,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ### if typical
     if(typical){
-        dt.mods.sim <- dt.models[,.(mod=typicalize(file.sim=path.sim,file.mod=file.mod,return.text=TRUE,file.ext=file.ext)),by=ROWMODEL2]
+        dt.mods.sim <- dt.models[,.(mod=typicalize(file.sim=path.sim,file.mod=file.mod,return.text=TRUE,file.ext=file.ext)),by=.(ROWMODEL2,path.sim)]
         ## write results
-        dt.models[,writeTextFile(dt.mods.sim[ROWMODEL2==ROWMODEL,mod],file=path.sim),by=ROWMODEL2]
+        
+        ## dt.models[,writeTextFile(dt.mods.sim[ROWMODEL2==ROWMODEL,mod],file=path.sim),by=ROWMODEL2]
+        dt.mods.sim[,writeTextFile(lines=mod,file=unique(path.sim)),by=ROWMODEL2]
     }
 
     
