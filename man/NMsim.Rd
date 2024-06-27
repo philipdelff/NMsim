@@ -206,7 +206,7 @@ is "nmsim" if path.nonmem is specified, and "psn" if not.}
 \item{"nmsim"}
  Uses a simple internal method to update the parameter values
 based on the ext file.  The advantages of "nmsim" are it does not
-require PSN, and that it is very robust. "nmsim" fixes the whole
+require PSN, and that it does not rely on code-interpretation for generation of simulation control streams. "nmsim" fixes the whole
 OMEGA and SIGMA matrices as single blocks making the $OMEGA and
 $SIGMA sections of the control streams less easy to read. On the
 other hand, this method is robust because it avoids any
@@ -216,6 +216,9 @@ streams.
 \item{"none"} Do nothing. This is useful if the model to simulate
 has not been estimated but parameter values have been manually put
 into the respective sections in the control stream.
+
+On linux/mac, The default is to use "PSN" if found. On Windows, "nmsim"
+is the default.
 
 }}
 
@@ -234,8 +237,7 @@ section edits. Note, these can be functions that define how to
 edit sections. This is an advanced feature which is not needed
 to run most simulations. It is however powerful for some types
 of analyses, like modifying parameter values. See vignettes
-for further information. Documentation still under
-development.}
+for further information.}
 
 \item{sim.dir.from.scratch}{If TRUE (default) this will wipe the
 simulation directory before running new simulations. The
@@ -339,6 +341,8 @@ of such a feature of your control stream, you know how it
 impacts simulation, and you want to get rid of warnings.}
 
 \item{seed}{Deprecated. See \code{seed.R} and \code{seed.nm}.}
+
+\item{list.sections}{Deprecated. Use modify.model instead.}
 
 \item{format.data.complete}{For development purposes - users do
 not need this argument. Controls what format the complete
