@@ -44,16 +44,16 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-vignettes">Vignettes</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-vignettes">
-    <a class="dropdown-item" href="../articles/NMsim-basics.html">Simulation of new subjects</a>
+    <a class="dropdown-item" href="../articles/NMsim-basics.html">Simulation of New Subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-VPC.html">Simulations for VPCs</a>
     <a class="dropdown-item" href="../articles/NMsim-config.html">Requirements and Configuration</a>
-    <a class="dropdown-item" href="../articles/NMsim-known.html">Simulate known subjects</a>
-    <a class="dropdown-item" href="../articles/NMsim-TypSubj.html">Simulate typical subjects</a>
-    <a class="dropdown-item" href="../articles/NMsim-ParamUncertain.html">Simulations with parameter uncertainty</a>
+    <a class="dropdown-item" href="../articles/NMsim-known.html">Simulate Known Subjects</a>
+    <a class="dropdown-item" href="../articles/NMsim-TypSubj.html">Simulate Typical Subjects</a>
+    <a class="dropdown-item" href="../articles/NMsim-ParamUncertain.html">Simulations with Parameter Uncertainty</a>
     <a class="dropdown-item" href="../articles/NMsim-DataCreate.html">Creation of Simulation Data Sets</a>
-    <a class="dropdown-item" href="../articles/NMsim-ResidVar.html">Simulation with residual variability</a>
-    <a class="dropdown-item" href="../articles/NMsim-varyPars.html">Varying parameter values</a>
-    <a class="dropdown-item" href="../articles/NMsim-ReuseSimSubjects.html">Reuse simulated subjects</a>
+    <a class="dropdown-item" href="../articles/NMsim-ResidVar.html">Simulation with Residual Variability</a>
+    <a class="dropdown-item" href="../articles/NMsim-varyPars.html">Varying Parameter Values</a>
+    <a class="dropdown-item" href="../articles/NMsim-ReuseSimSubjects.html">Reuse Simulated Subjects</a>
     <a class="dropdown-item" href="../articles/NMsim-speed.html">Debugging, Speed, and Disk Space</a>
   </div>
 </li>
@@ -99,7 +99,7 @@
 
     
     
-<p>Built 2024-06-27 using NMsim 0.1.0.962.</p>
+<p>Built 2024-07-01 using NMsim 0.1.0.962.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -190,22 +190,19 @@ estimated model) to use for the example:</p>
 <code class="sourceCode R"><span><span class="va">file.mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples/nonmem/xgxr021.mod"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span></span></code></pre></div>
 <p>Simulation with known ETA values is only possible through NMsim’s
 internal Nonmem execution method. That means, we need to provide the
-path to the Nonmem executable. Also, We configure locations where
-<code>NMsim</code> will store and run Nonmem control streams
-(<code>dir.sims</code>) and where it will save the final results file.
-Finally, because this vignette uses some <code>data.table</code> code we
-tell <code>NMsim</code> to return <code>data.table</code>s.</p>
+path to the Nonmem executable.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">NMdataConf</span><span class="op">(</span>path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe75"</span>,</span>
-<span>           dir.sims<span class="op">=</span><span class="st">"simulate-tmp"</span>,</span>
-<span>           dir.res<span class="op">=</span><span class="st">"simulate-results"</span>,</span>
-<span>           as.fun<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">NMdataConf</span><span class="op">(</span>path.nonmem<span class="op">=</span><span class="st">"/opt/NONMEM/nm75/run/nmfe75"</span><span class="op">)</span></span></code></pre></div>
+<p>For a simulation data set we are using the multiple dose simulation
+data set with a loading dose generated in the <a href="https://philipdelff.github.io/NMsim/articles/NMsim-DataCreate.html">Creation
+of Simulation Data Sets</a>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## read model results just to extract the observed ID's</span></span>
 <span><span class="va">res.mod</span> <span class="op">&lt;-</span> <span class="fu">NMscanData</span><span class="op">(</span><span class="va">file.mod</span>,quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>ID<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">res.mod</span><span class="op">$</span><span class="va">ID</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Repeat the simulation data set for each ID and order accordingly</span></span>
+<span><span class="va">dat.sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples/derived/dat_sim1.csv"</span>,package<span class="op">=</span><span class="st">"NMsim"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">dat.sim.known</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">ids</span>,</span>
 <span>                       <span class="va">dat.sim</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dat.sim</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ID"</span><span class="op">)</span><span class="op">)</span>,with<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span></span>
 <span>                       <span class="op">)</span></span>
@@ -221,7 +218,7 @@ tell <code>NMsim</code> to return <code>data.table</code>s.</p>
 <span>                      <span class="op">)</span></span></code></pre></div>
 <p>And the simulation results are plotted for each subject.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">simres.known</span><span class="op">)</span><span class="op">[</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span><span class="op">]</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">TIME</span>,<span class="va">IPRED</span>,colour<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">simres.known</span>,<span class="va">EVID</span><span class="op">==</span><span class="fl">2</span><span class="op">)</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">TIME</span>,<span class="va">IPRED</span>,colour<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">ID</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="NMsim-known_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
