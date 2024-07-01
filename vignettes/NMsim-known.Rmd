@@ -163,14 +163,18 @@ For a simulation data set we are using the multiple dose simulation data set wit
 
 
 ```{r,eval=FALSE}
-## read model results just to extract the observed ID's
+## read model results just to extract the observed ID's. Notice, if
+## your model uses covariates, those should be retrieved too.
 res.mod <- NMscanData(file.mod,quiet=TRUE)
 ids <- data.frame(ID=unique(res.mod$ID))
 
 ## Repeat the simulation data set for each ID and order accordingly
 dat.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"))
+## we will merge with all the observed subjects in stead of the single
+## ID in the original data set.
+dat.sim$ID <- NULL
 dat.sim.known <- merge(ids,
-                       dat.sim[,setdiff(colnames(dat.sim),c("ID")),with=FALSE]
+                       dat.sim
                        )
 setorder(dat.sim.known,ID,TIME,EVID)
 ## check data
