@@ -62,7 +62,7 @@ unlink(found.files)
 run.simuls <- FALSE
 NMdataConf(as.fun="data.table")
 
-dat.sim <- read_fst("simulate-results/dat_sim.fst",as.data.table=TRUE)
+dat.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"))
 ```
 
 
@@ -153,14 +153,13 @@ First thing, we decide on a model (an input control stream of an estimated model
 file.mod <- system.file("examples/nonmem/xgxr021.mod",package="NMsim")
 ```
 
-Simulation with known ETA values is only possible through NMsim's internal Nonmem execution method. That means, we need to provide the path to the Nonmem executable. Also, We configure locations where `NMsim` will store and run Nonmem control streams (`dir.sims`) and where it will save the final results file. Finally, because this vignette uses some `data.table` code we tell `NMsim` to return `data.table`s.
+Simulation with known ETA values is only possible through NMsim's internal Nonmem execution method. That means, we need to provide the path to the Nonmem executable.
 
 ```{r,eval=TRUE}
-NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
-           dir.sims="simulate-tmp",
-           dir.res="simulate-results",
-           as.fun="data.table")
+NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75")
 ```
+
+For a simulation data set we are using the multiple dose simulation data set with a loading dose generated in the [Creation of Simulation Data Sets](https://philipdelff.github.io/NMsim/articles/NMsim-DataCreate.html).
 
 
 ```{r,eval=FALSE}
@@ -169,6 +168,7 @@ res.mod <- NMscanData(file.mod,quiet=TRUE)
 ids <- data.frame(ID=unique(res.mod$ID))
 
 ## Repeat the simulation data set for each ID and order accordingly
+dat.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"))
 dat.sim.known <- merge(ids,
                        dat.sim[,setdiff(colnames(dat.sim),c("ID")),with=FALSE]
                        )
@@ -191,7 +191,7 @@ simres.known <- NMreadSim(file.fst)
 
 And the simulation results are plotted for each subject.
 ```{r,eval=TRUE}
-ggplot(as.data.table(simres.known)[EVID==2],aes(TIME,IPRED,colour=factor(ID)))+
+ggplot(subset(simres.known,EVID==2),aes(TIME,IPRED,colour=factor(ID)))+
     geom_line()+
     theme(legend.position="none")
 ```

@@ -9,7 +9,7 @@
 
 *** DONE Rename method.execute="directory" to method.execute="nmsim"
 
-*** TODO [#A] Warn against method.execute="nmsim" for NMexec directly
+*** CANCELED Warn against method.execute="nmsim" for NMexec directly
 
 *** CANCELED Disable method.update.inits="nmsim". 
 Wrote NMcreateMatLines instead which uses BLOCK structures as
@@ -44,6 +44,10 @@ Path to nonmem, psn, other ways to exec.
 
 ** NMexec
 
+*** TODO [#B] Move selection of method.execute from NMsim
+Now that method.execute="nmsim" works for general execution, it should
+be default method on all systems, and there is no reason why NMsim
+handles this differently than NMexec.
 *** DONE if using path.nonmem, test that it exists
 *** TODO [#B] Check for existence of input data
 Currently, we get an error from NMscanInput. It would be clearer if
@@ -105,11 +109,11 @@ Purpose: Add seeds to $SIM
 
 I don't think we will need to interpret existing SIM. The user will
 have to supply what dists are needed.
-*** TODO [#A] Make sure NMsim uses seed and args.seed meaningfully mean
+*** DONE Make sure NMsim uses seed and args.seed meaningfully mean
 
 ** NMsim
 
-*** TODO [#B] Drop NMsim from file names
+*** DONE Drop NMsim from file names
 In NMsim(), it happens here:
 #+begin_src R
 dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
@@ -140,7 +144,7 @@ ENDIF
 *** DONE No spaces in .mod files
 See test_manual "list of data sets - spaces in data names"
 *** DONE More useful error than the NMscanTables error
-*** TODO [#A] Tell more than "Writing"
+*** DONE Tell more than "Writing"
 *** DONE dir.res should not be needed when file.res is provided
 *** DONE Create only one rds per .mod
 *** DONE Should invisibly return the table of models
@@ -184,7 +188,7 @@ NMsim will run even if only .mod exists. But it is natural to expect
 the model estimate to be used. Hence, checks for existence of at least
 .ext file should be done. Issue warning if something missing. 
 **** DONE What if .phi or others needed?
-**** TODO [#B] Check for existence of ext file before attempting parameter initial vals update
+**** DONE Check for existence of ext file before attempting parameter initial vals update
 *** DONE Support method.sim="asis" for doing nothing to the control stream.
 *** DONE Support additional args to methods
 For now, ellipses used
@@ -266,7 +270,7 @@ The vpc sim is about sim of the orig dataset with SUBPROBLEM
 ** NMsim_known
 *** TODO [#B] throw error if no subjects are found in phi
 ** NMsim_typical
-*** TODO [#C] Use $ETAS rather than $OMEGA
+*** CANCELED Use $ETAS rather than $OMEGA
 Just repeat 0 for as many ETAS as used
 $ETAS 0 0 0 
 https://nmhelp.tingjieguo.com/$etasphis.htm

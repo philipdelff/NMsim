@@ -22,25 +22,25 @@ navbar:
    articles:
       text: Vignettes
       menu:
-      - text: Simulation of new subjects
+      - text: Simulation of New Subjects
         href: articles/NMsim-basics.html
       - text: Simulations for VPCs 
         href: articles/NMsim-VPC.html
       - text: Requirements and Configuration
         href: articles/NMsim-config.html
-      - text: Simulate known subjects
+      - text: Simulate Known Subjects
         href: articles/NMsim-known.html
-      - text: Simulate typical subjects
+      - text: Simulate Typical Subjects
         href: articles/NMsim-TypSubj.html
-      - text: Simulations with parameter uncertainty
+      - text: Simulations with Parameter Uncertainty
         href: articles/NMsim-ParamUncertain.html
       - text: Creation of Simulation Data Sets
         href: articles/NMsim-DataCreate.html
-      - text: Simulation with residual variability
+      - text: Simulation with Residual Variability
         href: articles/NMsim-ResidVar.html
-      - text: Varying parameter values
+      - text: Varying Parameter Values
         href: articles/NMsim-varyPars.html
-      - text: Reuse simulated subjects
+      - text: Reuse Simulated Subjects
         href: articles/NMsim-ReuseSimSubjects.html
       - text: Debugging, Speed, and Disk Space
         href: articles/NMsim-speed.html
