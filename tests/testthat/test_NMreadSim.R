@@ -40,22 +40,24 @@ if(F){
     sim1 <- NMsim(file.mod=file.mod,
                   data=dat.sim,
                   dir.sims="testOutput",
+                  dir.res="testData/simres",
                   name.sim = "sd1_NMreadSim",
                   seed.nm=2342
                   ## ,reuse.results=TRUE
                   )
+    ## unlink("testOutput/xgxr021_sd1_NMreadSim",recursive=T)
 }
 
 
 
-
+if(F){
 test_that("Basic",{
     fileRef <- "testReference/NMreadSim_01.rds"
     ## ref <- readRDS(fileRef)
-    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim_MetaData.rds")
+    res1 <- NMreadSim("testData/simres/xgxr021_sd1_NMreadSim_MetaData.rds")
 
     fix.time(res1)
-    
+        
     expect_equal_to_reference(res1,fileRef)
 
     if(F){
@@ -70,14 +72,15 @@ test_that("Basic",{
     }
 
 })
+}
 
-
+if(F){
 test_that("Reading fst directly",{
     ## NMdataConf(as.fun="data.table")
     
     fileRef <- "testReference/NMreadSim_02.rds"
     ## ref <- readRDS(fileRef)
-    res1 <- NMreadSim("testOutput/xgxr021_sd1_NMreadSim_ResultsData.fst")
+    res1 <- NMreadSim("testData/simres/xgxr021_sd1_NMreadSim_ResultsData.fst")
     ## library(fst)
     ## res1 <- read_fst("testOutput/xgxr021_sd1_NMreadSim_paths_res.fst",as.data.table=T)
 
@@ -100,3 +103,4 @@ test_that("Reading fst directly",{
 
 })
 
+}

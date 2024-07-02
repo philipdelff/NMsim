@@ -130,7 +130,7 @@ with older R versions.
 # NMsim 0.0.8
 
 ## New features
-* `NMsim` 0.0.7 would generate an `rds` file with paths to simulation
+* `NMsim` 0.0.1 would generate an `rds` file with paths to simulation
   files and results for each model+data set simulated. This has been
   changed to now only generate one table per model. This makes it
   simpler to read simulation results in some cases.
@@ -151,11 +151,21 @@ with older R versions.
   modification times needed to check for this. `NMsim` will delete the
   `fst` files if it finds any so normally it should not be a problem
   to skip this check.
-  
+
+* `modify.model` is the argument to use to modify the control stream
+  after `NMsim` is done preparing the simulation. A couple of helper
+  functions are available making it really easy to add contents (very
+  commonly used) or modify contents. 
+
 * `NMsim` now tries to reuse stored results if
   `reuse.results=TRUE`. It does so in a simple way - if they exist,
   they will be attempted read - so be careful to rerun simulations
   without this option if you change any arguments.
+  
+* `NMsim` will by default add a `DV` column with `NA` values if `DV`
+  is not in input data. Nonmem most often needs that column, and it is
+  uninformative for simulations. Disable this feature by using
+  `auto.dv=FALSE`.
   
 * The `transform` option has been integrated into the table of
   simulations created by `NMsim()`. This means even if the results are

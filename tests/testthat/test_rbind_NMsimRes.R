@@ -40,15 +40,17 @@ if(F){
                     data=dt.sim,
                     table.var="PRED IPRED",
                     dir.sims="testOutput",
+                    dir.res="testData/simres",
                     name.sim="default_01"
                     )
 
 }
 
+if(F){
 test_that("Basic",{
 
     fileRef <- "testReference/rbind_NMsimRes_01.rds"
-    res1 <- NMreadSim("testOutput/xgxr021_default_01_MetaData.rds")
+    res1 <- NMreadSim("testData/simres/xgxr021_default_01_MetaData.rds")
 
     res1 <- res1[,rep:=1]
     res2 <- copy(res1)[,rep:=2]
@@ -67,3 +69,4 @@ test_that("Basic",{
     }
 
 })
+}

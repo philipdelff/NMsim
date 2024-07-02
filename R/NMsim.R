@@ -173,7 +173,7 @@
 ##'     edit sections. This is an advanced feature which is not needed
 ##'     to run most simulations. It is however powerful for some types
 ##'     of analyses, like modifying parameter values. See vignettes
-##'     for further information. 
+##'     for further information.
 ##' @param list.sections Deprecated. Use modify.model instead.
 ##' @param create.dirs If the directories specified in dir.sims and
 ##'     dir.res do not exists, should it be created? Default is TRUE.
@@ -198,6 +198,11 @@
 ##'     using method.update.inits="psn", this argument cannot be
 ##'     used. If you want provide parameters to be used for the
 ##'     simulation, look at the `ext` argument to `NMsim_VarCov`.
+##' @param auto.dv Add a column called `DV` to simulation data sets if
+##'     a column of that name is not found? Nonmem is generally
+##'     dependent on a `DV` column in input data but this is typically
+##'     uninformative in simulation data sets and hence easily
+##'     forgotten when generating simulation data sets.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say `tibble::as_tibble`) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use
@@ -231,11 +236,11 @@
 ##'     the simulated models and other metadata. This is needed for
 ##'     subsequently retrieving all the results using
 ##'     `NMreadSim()`. The default is to create a file called
-##'     `NMsim_..._paths.rds` under the \code{dir.res} directory where
-##'     ... is based on the model name. However, if multiple models
-##'     (\code{file.mod}) are simulated, this will result in multiple
-##'     rds files. Specifying a path ensures that one rds file
-##'     containing information about all simulated models will be
+##'     `NMsim_..._MetaData.rds` under the \code{dir.res} directory
+##'     where ... is based on the model name. However, if multiple
+##'     models (\code{file.mod}) are simulated, this will result in
+##'     multiple rds files. Specifying a path ensures that one rds
+##'     file containing information about all simulated models will be
 ##'     created. Notice if \code{file.res} is supplied, \code{dir.res}
 ##'     is not used.
 ##' @param wait Wait for simulations to finish? Default is to do so if
@@ -369,6 +374,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,dir.res
                  ,file.res
                  ,wait
+                 ,auto.dv=TRUE
                  ,quiet=FALSE
                  ,check.mod = TRUE
                  ,seed
@@ -388,6 +394,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     directory <- NULL
     dir.data.sim <- NULL
     dir.sim <- NULL
+    DV <- NULL
     est <- NULL
     fn.data <- NULL
     f.exists <- NULL
@@ -698,6 +705,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(missing(subproblems)|| is.null(subproblems)) subproblems <- 0
 
+    if(subproblems>0 &&
+       !is.null(table.vars) &&
+       packageVersion("NMdata")<"1.1.7"){
+        tabv2 <- paste(table.vars,collapse=" ")
+        tabv2 <- gsub(" +"," ",tabv2 )
+        if(length(strsplit(tabv2," ")[[1]])<3){
+            message("Using less than three variables in table.vars in combination with subproblems may cause issues with NMdata versions <=0.1.6. If you get an error, try to add any variable or two to table.vars.")
+        }
+    }
+    
     dt.models <- data.table(file.mod=file.mod)
     dt.models[,run.mod:=fnExtension(basename(file.mod),"")]
     dt.models[,name.mod:=run.mod]
@@ -748,7 +765,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         }
 
         col.sim <- tmpcol(names=sapply(data,names),base="sim")
-        if(col.sim != "sim") warning(sprintf("column sim exists, name.sim written to column %s instead.",col.sim))
+        if(col.sim != "sim") message(sprintf("column sim exists, name.sim written to column %s instead.",col.sim))
         data <- lapply(data,function(x) x[,(col.sim):=..name.sim])
         
         dt.data <- data.table(DATAROW=1:length(data),data.name=names.data)
@@ -760,6 +777,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(is.null(data)){
         dt.models[,data.name:=""]
     } else {
+        if(auto.dv){
+            data <- lapply(data,function(x){
+                if("DV"%in%colnames(x)){
+                    x
+                } else {
+                    x[,DV:=NA]
+                    x
+                }})
+        }
         if(order.columns) data <- lapply(data,NMorderColumns)
     }
 
@@ -822,6 +848,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(is.null(file.res)){
         dt.models[,path.rds:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"rds"),"MetaData"))]
+        ## dt.models[,path.rds:=pathSimMeta())]
         dt.models[,path.results:=file.path(dir.res,fnAppend(fnExtension(fn.sim.predata,"fst"),"ResultsData"))]
     } else {
         dt.models[,path.rds:=fnExtension(file.res,"rds")]
@@ -1306,7 +1333,7 @@ if(reuse.results && all(path.rds.exists==TRUE)){
         return(returnSimres(simres))
     } else {
         if(!quiet & execute){
-            message(sprintf("\nSimulation results not returned. Read them with:\n  simres <- NMreadSim(\"%s\")\nThe first time the results are read, they will be efficiently stored in the simulation results folder. Until then, they only exist as Nonmem result files.",paste(dt.models[,unique(path.rds)],collapse=",")))
+            message(sprintf("\nSimulation results not returned. Read them with:\n  simres <- NMreadSim(c(\"%s\"))\nThe first time the results are read, they will be efficiently stored in the simulation results folder. Until then, they only exist as Nonmem result files.",paste(dt.models[,unique(path.rds)],collapse="\",\n    \"")))
         }
         addClass(dt.models,"NMsimModTab")
         return(invisible(dt.models[,unique(path.rds)]))

@@ -44,6 +44,7 @@ NMsim(
   dir.res,
   file.res,
   wait,
+  auto.dv = TRUE,
   quiet = FALSE,
   check.mod = TRUE,
   seed,
@@ -315,11 +316,11 @@ simulation results.}
 the simulated models and other metadata. This is needed for
 subsequently retrieving all the results using
 `NMreadSim()`. The default is to create a file called
-`NMsim_..._paths.rds` under the \code{dir.res} directory where
-... is based on the model name. However, if multiple models
-(\code{file.mod}) are simulated, this will result in multiple
-rds files. Specifying a path ensures that one rds file
-containing information about all simulated models will be
+`NMsim_..._MetaData.rds` under the \code{dir.res} directory
+where ... is based on the model name. However, if multiple
+models (\code{file.mod}) are simulated, this will result in
+multiple rds files. Specifying a path ensures that one rds
+file containing information about all simulated models will be
 created. Notice if \code{file.res} is supplied, \code{dir.res}
 is not used.}
 
@@ -330,6 +331,12 @@ when simulations are done. If not waiting, path(s) to `rds`
 files to read will be returned. Pass them through
 `NMreadSim()` (which also supports waiting for the simulations
 to finish).}
+
+\item{auto.dv}{Add a column called `DV` to simulation data sets if
+a column of that name is not found? Nonmem is generally
+dependent on a `DV` column in input data but this is typically
+uninformative in simulation data sets and hence easily
+forgotten when generating simulation data sets.}
 
 \item{quiet}{If TRUE, messages from what is going on will be
 suppressed.}
