@@ -979,8 +979,6 @@ if(reuse.results && all(path.rds.exists==TRUE)){
         }
 
         
-        ## if(order.columns) data <- lapply(data,NMorderColumns)
-        ##data <- NMorderColumns(data)
 ### save data and replace $input and $data
 #### multiple todo: save only for each unique path.data
         
