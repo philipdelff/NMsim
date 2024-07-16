@@ -1,4 +1,14 @@
-# NMsim 0.2.0
+# NMsim 0.1.3
+
+## Other changes
+* addEVID2 will no longer add a DV=NA column if DV is not in the input
+  data set.
+
+# NMsim 0.1.2
+No changes since 0.1.1 except for disabling a test that was failing on
+some systems due to technical reasons.
+
+# NMsim 0.1.1
 While no critical and generally only few bugs have been found in NMsim
 0.1.0, NMsim 0.2.0 includes several improvements and upgrades. The
 interface feels smoother too. I want to thank Ron Keizer for feedback

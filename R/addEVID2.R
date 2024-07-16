@@ -101,7 +101,7 @@ addEVID2 <- function(doses,time.sim,CMT,EVID=2,as.fun){
     }
     dt.obs[
        ,EVID:=..EVID][
-       ,DV:=NA_real_][
+       ## ,DV:=NA_real_][
        ,MDV:=1]
     
 

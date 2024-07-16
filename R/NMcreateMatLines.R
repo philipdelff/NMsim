@@ -45,7 +45,7 @@ NMcreateMatLines <- function(omegas,type){
         if(nis.block>0){
             ## omegas.this <- omegas.long[i>=i.this&i<=(i.this+nis.block)&j<=(i.this+nis.block)]
             ## omegas.this[,value.use:=value]
-            values.this[values.this==0] <- 1e-30
+            ## values.this[values.this==0] <- 1e-30
 
             values.this <- omegas.long[i>=i.this&i<=(i.this+nis.block)&j<=(i.this+nis.block),value]
             values.this[values.this==0] <- 1e-30

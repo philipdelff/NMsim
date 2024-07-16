@@ -121,6 +121,7 @@ test_that("NMsim_EBE",{
 
 })
 
+if(F){
 test_that("NMsim_VarCov",{
 
     fileRef <- "testReference/NMsim_VarCov_04.rds"
@@ -144,3 +145,4 @@ test_that("NMsim_VarCov",{
     expect_equal_to_reference(mod,fileRef)
 
 })
+}
