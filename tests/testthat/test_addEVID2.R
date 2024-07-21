@@ -13,10 +13,13 @@ test_that("Basic",{
     res <- addEVID2(df.doses,time.sim=seq.time,CMT=2)
 
     df.doses
-    res
-
+    
     expect_equal_to_reference(res,fileRef)
-
+    if(F){
+        res
+        readRDS(fileRef)
+    }
+    
 })
 
 
@@ -32,7 +35,12 @@ test_that("Multiple compartments",{
     ## res
     ## readRDS(fileRef)
     expect_equal_to_reference(res,fileRef)
-
+    
+    if(F){
+        res
+        readRDS(fileRef)
+    }
+    
 })
 
 
@@ -51,6 +59,11 @@ test_that("compartments with covariates",{
 
     expect_equal_to_reference(res,fileRef)
 
+    if(F){
+        res
+        readRDS(fileRef)
+    }
+
 })
 
 
@@ -64,10 +77,12 @@ test_that("data.frame CMT",{
     res <- addEVID2(df.doses,time.sim=seq.time,CMT=c(2,3),as.fun=as.data.frame)
 
     df.doses
-    res
-    ## readRDS(fileRef)
     
     expect_equal_to_reference(res,fileRef)
+    if(F){
+        res
+        readRDS(fileRef)
+    }
 
 })
 
@@ -88,6 +103,12 @@ test_that("time with covariates",{
     
     expect_equal_to_reference(res,fileRef)
 
+    if(F){
+        res
+        readRDS(fileRef)
+    }
+
+
 })
 
 test_that("EVID=0",{
@@ -100,4 +121,9 @@ test_that("EVID=0",{
 
     expect_equal_to_reference(res,fileRef)
 
+    if(F){
+        res
+        readRDS(fileRef)
+    }
+    
 })
