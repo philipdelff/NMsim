@@ -141,6 +141,8 @@ Nonmem data sets using `NMdata::NMcheckData` and summarize the number
 of doses and observations:
 
 ```{r}
+## until NMdata 0.1.7 NMcheckData requires a DV column
+dat.sim[,DV:=NA_real_]
 NMdata::NMcheckData(dat.sim,type.data="sim")
 ```
 

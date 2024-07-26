@@ -292,7 +292,6 @@ dat.sim.1000[,ID:=.GRP,by=.(ID,trt)]
 ## order with respect to new IDs
 setorder(dat.sim.1000,trt,ID,TIME,EVID)
 ## check dataset
-dat.sim.1000[,DV:=NA_real_]
 NMcheckData(dat.sim.1000,type.data="sim")
 ```
 
