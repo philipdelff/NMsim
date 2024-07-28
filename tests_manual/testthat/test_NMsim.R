@@ -22,6 +22,8 @@ setorder(dt.sim.known,ID,TIME,EVID,CMT)
 
 ## NMdataConf(dir.psn="/opt/psn")
 path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
+dir.psn <- "/opt/psn"
+NMdataConf(dir.psn=dir.psn)
 ##
 path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 file.exists(path.nonmem)
