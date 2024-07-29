@@ -16,8 +16,7 @@ NMsimTestConf <- function(path.nonmem,dir.psn,method.execute,must.work=FALSE){
         res$path.nonmem <- simpleCharArg("path.nonmem",res$path.nonmem,default=NULL,accepted=NULL,lower=FALSE)
     }
     if(is.null(res$path.nonmem)) res$path.nonmem <- "none"
-    res$exists.path.nonmem <- ifelse(res$path.nonmem=="",NA,file.exists(res$path.nonmem))
-
+    res$exists.path.nonmem <- ifelse(res$path.nonmem=="",NA,searchExecutable(res$path.nonmem))
 
     ## dir.psn
     if(missing(dir.psn)) dir.psn <- NULL
@@ -35,13 +34,14 @@ NMsimTestConf <- function(path.nonmem,dir.psn,method.execute,must.work=FALSE){
     if(res$system.type=="windows"){
         res$exists.dir.psn <- any(grepl(pattern="^execute.*",list.files(res$dir.psn)))
     }
+    res$exists.psn.execute <- searchExecutable("execute",dir.extra=res$dir.psn)
     
     ## method.execute
     if(missing(method.execute)) method.execute <- NULL
     ## if path.nonmem is provided, default method.execute is directory. If not, it is psn
     if(res$exists.path.nonmem) {
         method.execute.def <- "nmsim"
-    } else if(res$exists.dir.psn) {
+    } else if(res$exists.psn.execute) {
         method.execute.def <- "psn"
     } else {
         method.execute.def <- "none"
@@ -51,9 +51,12 @@ NMsimTestConf <- function(path.nonmem,dir.psn,method.execute,must.work=FALSE){
         stop("When method.execute is direct or nmsim, path.nonmem must be provided.")
     }
 
-    if(res$system.type=="windows"){
-        message('Windows support is new in NMsim and may be limited. You may need to avoid spaces and some special characters in directory and file names.')
-    }
+    ######## TODO integrate metod.update.inits
+
+    
+    ## if(res$system.type=="windows"){
+    ##     message('Windows support is new in NMsim and may be limited. You may need to avoid spaces and some special characters in directory and file names.')
+    ## }
 
     if(must.work && res$method.execute=="none"){
         stop("No execution method found. Check path.nonmem and (if wanted) dir.psn.")
@@ -67,15 +70,15 @@ NMsimTestConf <- function(path.nonmem,dir.psn,method.execute,must.work=FALSE){
 
 }
 
-searchInPath <- function(cmd,system.type){
+## searchInPath <- function(cmd,system.type){
 
-    res.num <- switch(system.type,
-           windows=suppressWarnings(shell(shQuote(sprintf("where /q %s || EXIT /B",cmd)))),
-           ## linux=system(sprintf("which %s",cmd),ignore.stdout=T)
-           linux=system(sprintf("command -v %s",cmd))
-           )
-    ## TRUE means found, FALSE means not found
-    res.num==0
+##     res.num <- switch(system.type,
+##            windows=suppressWarnings(shell(shQuote(sprintf("where /q %s || EXIT /B",cmd)))),
+##            ## linux=system(sprintf("which %s",cmd),ignore.stdout=T)
+##            linux=system(sprintf("command -v %s",cmd))
+##            )
+##     ## TRUE means found, FALSE means not found
+##     res.num==0
 
-}
+## }
 

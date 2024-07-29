@@ -1,16 +1,25 @@
 ## on win
-check_executable <- function(cmd) {
+searchExecutable <- function(cmd,dir.extra) {
 
     ## append .ext if missing - this will not work if cmd="my.script"
-    cmd <- fnExtension(cmd,".exe")
+    if(.Platform$OS.type=="windows"){
+        cmd <- fnExtension(cmd,".exe")
+    }
     
     ## Check if the cmd is an absolute file path
     if (file.exists(cmd)) {
         return(TRUE)
     }
+
+    ## Check if the cmd is available in dir.extra
+    if (any(file.exists(file.path(dir.extra,cmd)))) {
+        return(TRUE)
+    }
+    
+    path_sep <- ifelse(.Platform$OS.type=="windows",";",":")
     
     ## Get the PATH environment variable
-    paths <- strsplit(Sys.getenv("PATH"), ";")[[1]]
+    paths <- strsplit(Sys.getenv("PATH"), split=path_sep)[[1]]
     
     ## Check if the cmd is in any of the directories listed in PATH
     for (path in paths) {

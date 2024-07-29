@@ -792,7 +792,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 if("DV"%in%colnames(x)){
                     x
                 } else {
-                    x[,DV:=NA]
+                    x[,DV:=NA_real_]
                     if(!"MDV"%in%colnames(x)){
                         x[,MDV:=1]
                     }
@@ -925,7 +925,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     if(method.update.inits=="psn"){
 ### this next line is done already. I think it should be removed but testing needed.
-        cmd.update.inits <- file.psn(dir.psn,"update_inits")
+        cmd.update.inits <- file.psn(NMsimConf$dir.psn,"update_inits")
 
         dt.models[,
         {
