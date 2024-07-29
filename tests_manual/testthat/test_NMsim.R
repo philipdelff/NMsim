@@ -7,6 +7,7 @@ packageVersion("NMdata")
 library(devtools)
 load_all(export_all=FALSE)
 
+NMdataConf(reset=TRUE)
 NMdataConf(dir.psn=NULL)
 NMdataConf(as.fun="data.table")
 NMdataConf(dir.sims="testOutput/simtmp")
@@ -22,8 +23,8 @@ setorder(dt.sim.known,ID,TIME,EVID,CMT)
 
 ## NMdataConf(dir.psn="/opt/psn")
 path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
-dir.psn <- "/opt/psn"
-NMdataConf(dir.psn=dir.psn)
+## dir.psn <- "/opt/psn"
+## NMdataConf(dir.psn=dir.psn)
 ##
 path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 file.exists(path.nonmem)
