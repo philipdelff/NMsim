@@ -1,11 +1,33 @@
-NMsimTestConf <- function(path.nonmem,dir.psn,method.execute,must.work=FALSE){
+##' Summarize and test NMsim configuration
+##' @param path.nonmem See ?NMsim
+##' @param dir.psn See ?NMsim
+##' @param method.execute See ?NMsim
+##' @param must.work Throw an error if the configuration does not seem
+##'     to match system.
+##' @param system.type See ?NMsim
+##' @export
+
+NMsimTestConf <- function(path.nonmem,dir.psn,method.execute,must.work=FALSE,system.type){
+
+    psn <- NULL
+    direct <- NULL
+    nmsim <- NULL
+    none <- NULL
+
+    if(missing(system.type)) system.type <- NULL
     
     res <- list()
 
     res$version.NMsim <- packageVersion("NMsim")
     res$version.NMdata <- packageVersion("NMdata")
-    res$system <- Sys.info()['sysname']
-    res$system.type <- getSystemType()
+
+    res$sysname <- NA
+    if(is.null(system.type)){
+        res$sysname <- Sys.info()[['sysname']]
+        res$system.type <- getSystemType(sysname=res$sysname)
+    } else {
+        res$system.type <- system.type
+    }
     
     ## path.nonmem
     if(missing(path.nonmem)) path.nonmem <- NULL
@@ -17,7 +39,7 @@ NMsimTestConf <- function(path.nonmem,dir.psn,method.execute,must.work=FALSE){
     }
     if(is.null(res$path.nonmem)) res$path.nonmem <- "none"
     res$exists.path.nonmem <- ifelse(res$path.nonmem=="",NA,searchExecutable(res$path.nonmem))
-
+    
     ## dir.psn
     if(missing(dir.psn)) dir.psn <- NULL
     res$dir.psn <- try(NMdata:::NMdataDecideOption("dir.psn",dir.psn),silent=TRUE)
@@ -51,7 +73,7 @@ NMsimTestConf <- function(path.nonmem,dir.psn,method.execute,must.work=FALSE){
         stop("When method.execute is direct or nmsim, path.nonmem must be provided.")
     }
 
-    ######## TODO integrate metod.update.inits
+######## TODO integrate metod.update.inits
 
     
     ## if(res$system.type=="windows"){

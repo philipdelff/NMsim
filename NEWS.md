@@ -1,5 +1,19 @@
 # NMsim 0.1.3
 
+## New features
+`NMsimTestConf()` - Function to summarize and test configuration. 
+
+## Bugfixes
+* `NMexec()` would fail on linux when run on models with multiple
+  `$TABLE` statements. Fixed.
+
+* `NMsim`'s internal method to update parameter initial values had an
+  issue running on models with `$OMEGA` block structures. Fixed.
+
+* `NMreadSim()` would fail if working directory had been
+  changed. Fixed.
+
+
 ## Other changes
 * addEVID2 will no longer add a DV=NA column if DV is not in the input
   data set.

@@ -1,5 +1,5 @@
 ## on win
-searchExecutable <- function(cmd,dir.extra) {
+searchExecutable <- function(cmd,dir.extra=NULL) {
 
     ## append .ext if missing - this will not work if cmd="my.script"
     if(.Platform$OS.type=="windows"){
@@ -12,8 +12,10 @@ searchExecutable <- function(cmd,dir.extra) {
     }
 
     ## Check if the cmd is available in dir.extra
-    if (any(file.exists(file.path(dir.extra,cmd)))) {
-        return(TRUE)
+    if(!is.null(dir.extra)){
+        if (any(file.exists(file.path(dir.extra,cmd)))) {
+            return(TRUE)
+        }
     }
     
     path_sep <- ifelse(.Platform$OS.type=="windows",";",":")

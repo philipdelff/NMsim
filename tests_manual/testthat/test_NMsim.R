@@ -108,7 +108,7 @@ test_that("basic - sge - dont wait",{
     expect_equal_to_reference(simres2,fileRef)
 
 
-    if(F){
+     if(F){
         ref <- readRDS(fileRef)
         compareCols(simres2,ref)
 
@@ -143,6 +143,14 @@ test_that("basic - sge - wait",{
     fix.time(simres3)
     
     expect_equal_to_reference(simres3,fileRef)
+
+    if(F){
+        ref <- readRDS(fileRef)
+        compareCols(simres3,ref)
+
+        compareCols(attributes(simres3)$NMsimModTab,
+                    attributes(ref)$NMsimModTab)
+    }
 
 })
 

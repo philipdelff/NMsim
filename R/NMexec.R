@@ -164,12 +164,15 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     if(missing(dir.psn)) dir.psn <- NULL
     if(missing(path.nonmem)) path.nonmem <- NULL
     if(missing(method.execute)) method.execute <- NULL
+    if(missing(system.type)) system.type <- NULL
+    
+    NMsimConf <- NMsimTestConf(path.nonmem=path.nonmem,system.type=system.type)
+    ## todo integrate in NMsimTestConf
 
-    NMsimConf <- NMsimTestConf(path.nonmem=path.nonmem)
     cmd.execute <- file.psn(NMsimConf$dir.psn,"execute")
 
-    if(missing(system.type)) system.type <- NULL
-    system.type <- getSystemType(system.type)
+    
+    ## system.type <- getSystemType(system.type)
 
 
     if(missing(input.archive)||is.null(input.archive)){
