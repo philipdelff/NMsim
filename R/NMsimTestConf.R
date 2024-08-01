@@ -92,15 +92,3 @@ NMsimTestConf <- function(path.nonmem,dir.psn,method.execute,must.work=FALSE,sys
 
 }
 
-## searchInPath <- function(cmd,system.type){
-
-##     res.num <- switch(system.type,
-##            windows=suppressWarnings(shell(shQuote(sprintf("where /q %s || EXIT /B",cmd)))),
-##            ## linux=system(sprintf("which %s",cmd),ignore.stdout=T)
-##            linux=system(sprintf("command -v %s",cmd))
-##            )
-##     ## TRUE means found, FALSE means not found
-##     res.num==0
-
-## }
-

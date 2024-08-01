@@ -247,7 +247,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         }
 
 
-        if((sge && nc > 1)||(sge && method.execute=="psn")){
+        if((sge && nc > 1)||(sge && NMsimConf$method.execute=="psn")){
             if(nc>1){
                 ## file.pnm <- file.path(rundir,"NMexec.pnm")
                 file.pnm <- fnExtension(file.mod,"pnm")
@@ -255,8 +255,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             }
         }
 
-        if(method.execute=="psn"){
-            ##if(system.tpe=="linux"){
+        if(NMsimConf$method.execute=="psn"){
+            ##if(system.type=="linux"){
             
             string.cmd <- sprintf('cd "%s"; "%s" %s',rundir,cmd.execute ,args.psn.execute)
             ##}
@@ -271,19 +271,20 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             }
             string.cmd <- paste(string.cmd,basename(file.mod))
         }
-        if(method.execute=="direct"){
-            if(is.null(path.nonmem) || path.nonmem=="") stop("when method.execute=='direct', path.nonmem must be provided.")
-            if(!file.exists(path.nonmem)){
-                stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
-            }
-            string.cmd <- callNonmemDirect(file.mod,path.nonmem)
-        }
-        if(method.execute=="nmsim"){
-            if(is.null(path.nonmem) || path.nonmem=="") stop("when method.execute=='nmsim', path.nonmem must be provided.")
-            if(!file.exists(path.nonmem)){
-                stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
-            }
-            string.cmd <- NMexecDirectory(file.mod,path.nonmem,files.needed=files.needed,system.type=system.type,dir.data=dir.data)
+        ## if(NMsimConf$method.execute=="direct"){
+        ##     if(is.null(path.nonmem) || path.nonmem=="") stop("when method.execute=='direct', path.nonmem must be provided.")
+        ##     if(!file.exists(path.nonmem)){
+        ##         stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
+        ##     }
+        ##     string.cmd <- callNonmemDirect(file.mod,path.nonmem)
+        ## }
+
+        if(NMsimConf$method.execute=="nmsim"){
+            ## if(is.null(path.nonmem) || path.nonmem=="") stop("when method.execute=='nmsim', path.nonmem must be provided.")
+            ## if(!file.exists(path.nonmem)){
+            ##     stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
+            ## }
+            string.cmd <- NMexecDirectory(file.mod,NMsimConf$path.nonmem,files.needed=files.needed,system.type=NMsimConf$system.type,dir.data=dir.data)
             if(sge) {
 
                 if(nc==1){
@@ -299,20 +300,20 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 ### executing from getwd()
                     ## string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
                     ## executing from model execution dir.
-                    string.cmd <- sprintf('cd \"%s\"; qsub -pe orte %s -V -N NMsim -j y -cwd -b y \"%s\" \"%s\" \"%s\" -background -parafile=%s [nodes]=%s; cd \"%s\"' ,dirname(file.mod),nc,path.nonmem,basename(file.mod),fnExtension(basename(file.mod),"lst"),basename(pnm),nc,getwd())
+                    string.cmd <- sprintf('cd \"%s\"; qsub -pe orte %s -V -N NMsim -j y -cwd -b y \"%s\" \"%s\" \"%s\" -background -parafile=%s [nodes]=%s; cd \"%s\"' ,dirname(file.mod),nc,NMsimConf$path.nonmem,basename(file.mod),fnExtension(basename(file.mod),"lst"),basename(pnm),nc,getwd())
                 }
                 wait <- TRUE
             } else {
-                if(system.type=="linux"){
+                if(NMsimConf$system.type=="linux"){
                     string.cmd <- sprintf("cd \"%s\"; \"./%s\"",dirname(string.cmd),basename(string.cmd))
                 } 
-                if(system.type=="windows"){
+                if(NMsimConf$system.type=="windows"){
                     string.cmd <- sprintf("CD \"%s\";call \"%s\"",dirname(string.cmd),basename(string.cmd))
                 }
             }
         }
         
-        if(system.type=="windows"){
+        if(NMsimConf$system.type=="windows"){
             
             ## contents.bat <- gsub(";","\n",string.cmd)
             ## cat(contents.bat,file=path.script)
@@ -324,7 +325,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 
             shell(shQuote(paste("call", path.script),type="cmd") )
         }
-        if(system.type=="linux"){
+        if(NMsimConf$system.type=="linux"){
             
             if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
             if(!wait) string.cmd <- paste(string.cmd,"&")

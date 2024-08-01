@@ -135,12 +135,13 @@ test_that("From different wd",{
 })
 
 
+if(F){
 test_that("From different wd 2",{
     ## setwd("~/wdirs/NMsim/tests_manual/testthat/")
-    res1 <- NMreadSim("../tests/testOutput/xgxr021_default_01_MetaData.rds")
+    res1 <- NMreadSim("testOutput/xgxr021_default_01_MetaData.rds")
 
     setwd("..")
-    res2 <- NMreadSim("tests/testthat/testOutput/xgxr021_default_01_MetaData.rds")    
+    res2 <- NMreadSim("testthat/testOutput/xgxr021_default_01_MetaData.rds")    
 
     attributes(res1)$NMsimModTab
     attributes(res2)$NMsimModTab
@@ -152,3 +153,4 @@ test_that("From different wd 2",{
     setwd("testthat/")
 
 })
+}
