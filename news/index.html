@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2.902</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2.912</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,6 +49,16 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.3" id="nmsim-013">NMsim 0.1.3<a class="anchor" aria-label="anchor" href="#nmsim-013"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-1-3">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-3"></a></h3>
+<p><code><a href="../reference/NMsimTestConf.html">NMsimTestConf()</a></code> - Function to summarize and test configuration.</p>
+</div>
+<div class="section level3">
+<h3 id="bugfixes-0-1-3">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-0-1-3"></a></h3>
+<ul><li><p><code><a href="../reference/NMexec.html">NMexec()</a></code> would fail on linux when run on models with multiple <code>$TABLE</code> statements. Fixed.</p></li>
+<li><p><code>NMsim</code>’s internal method to update parameter initial values had an issue running on models with <code>$OMEGA</code> block structures. Fixed.</p></li>
+<li><p><code><a href="../reference/NMreadSim.html">NMreadSim()</a></code> would fail if working directory had been changed. Fixed.</p></li>
+</ul></div>
 <div class="section level3">
 <h3 id="other-changes-0-1-3">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-3"></a></h3>
 <ul><li>addEVID2 will no longer add a DV=NA column if DV is not in the input data set.</li>
