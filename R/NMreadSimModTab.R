@@ -41,7 +41,8 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
                 }
                 
                 tab.paths[,path.rds.read:=file]
-                tab.paths[,path.results.read:=file.path(dirname(file),basename(path.results))]
+#### path.results does not exist for all old versions. Move to ..One and make dependent on version?
+                ## tab.paths[,path.results.read:=file.path(dirname(file),basename(path.results))]
             })
 
             tab.paths <- rbindlist(tab.paths.list,fill=TRUE)
@@ -125,6 +126,9 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
             modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
         }
     }
+
+#### path.results does not exist for all old versions. Move to ..One and make dependent on version?
+    modtab[,path.results.read:=file.path(dirname(path.results),basename(path.results))]
     
     rdstab <- unique(modtab[,.(path.results.read
                               ,path.rds.read)])
