@@ -8,7 +8,7 @@
 
 NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=FALSE,quiet=FALSE,progress,as.fun){
     
-
+    
     ROWTMP <- NULL
     path.lst.read <- NULL
     path.rds.read <- NULL
@@ -25,7 +25,9 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
     unwrapRDS <- function(x){
         path.rds.read <- NULL
         file.res.data <- NULL
-        
+        path.results.read <- NULL
+        path.results <- NULL
+
         if(is.character(x)) {
             ##  an rds, read it, make sure its NMSimModels, check for fst,  and proceed with NMSimModels
             
@@ -37,7 +39,10 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
                     }
                     message("x is not a NMsimModTab object. This can be OK if it was generated using earlier versions of NMsim. However, you may need to provide `dir.sims` for this to work.")
                 }
+                
                 tab.paths[,path.rds.read:=file]
+#### path.results does not exist for all old versions. Move to ..One and make dependent on version?
+                ## tab.paths[,path.results.read:=file.path(dirname(file),basename(path.results))]
             })
 
             tab.paths <- rbindlist(tab.paths.list,fill=TRUE)
@@ -52,7 +57,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
         }
         tab.paths
     }
-
+    
     res.list <- lapply(x,unwrapRDS)
     modtab <- rbindlist(res.list,fill=TRUE)
     
@@ -77,7 +82,7 @@ NMreadSimModTab <- function(x,check.time=FALSE,dir.sims,wait=FALSE,skip.missing=
 ### sure that requirement is needed anymore. Could try to combine
 ### these and run at once. Would require more testing.
     res.list <- lapply(split(modtab,by="path.rds.read"),NMreadSimModTabOne,check.time=check.time,dir.sims=dir.sims,wait=wait,skip.missing=skip.missing,quiet=quiet,as.fun=as.fun,progress=progress)
-        
+    
     
     res <- rbindlist(res.list,fill=TRUE)
 
@@ -105,6 +110,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     NMsimVersion <- NULL
     path.rds.read <- NULL
     path.results <- NULL
+    path.results.read <- NULL
     path.lst.read <- NULL
     ROWTMP <- NULL
     
@@ -120,8 +126,12 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
             modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
         }
     }
+
+#### path.results does not exist for all old versions. Move to ..One and make dependent on version?
+    modtab[,path.results.read:=file.path(dirname(path.results),basename(path.results))]
     
-    rdstab <- unique(modtab[,.(path.results,path.rds.read)])
+    rdstab <- unique(modtab[,.(path.results.read
+                              ,path.rds.read)])
     if(nrow(rdstab)>1) stop("modtab must be related to only one rds file.")
     
 ####### Now we have a NMSimModels object to process.
@@ -142,16 +152,16 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 ### incompatible columns can be combined.
     
     
-
+    
 ### if we have an fst, read it and return results
     if(check.time){
-        from.fst <- rdstab[,!is.null(path.results) &&
-                            file.exists(path.results) &&
-                            file.mtime(path.results)>file.mtime(path.rds.read)
+        from.fst <- rdstab[,!is.null(path.results.read) &&
+                            file.exists(path.results.read) &&
+                            file.mtime(path.results.read)>file.mtime(path.rds.read)
                            ]
     } else {
-        from.fst <- rdstab[,!is.null(path.results) &&
-                            file.exists(path.results)]
+        from.fst <- rdstab[,!is.null(path.results.read) &&
+                            file.exists(path.results.read)]
     }
 
 
@@ -159,7 +169,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     ## fsts
     if(from.fst){
 ### reads unique fsts
-        res.list <- lapply(modtab[,unique(path.results)],read_fst,as.data.table=TRUE)
+        res.list <- lapply(modtab[,unique(path.results.read)],read_fst,as.data.table=TRUE)
         res <- rbindlist(res.list,fill=TRUE)
 
         setattr(res,"NMsimModTab",modtab)
@@ -296,9 +306,9 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     setattr(res,"NMsimModTab",modtab)
     addClass(res,"NMsimRes")
     
-    if(!is.null(rdstab$path.results)){
+    if(!is.null(rdstab$path.results.read)){
         NMwriteData(res,
-                    file=rdstab$path.results,
+                    file=rdstab$path.results.read,
                     formats.write="fst",
                     genText=F,
                     quiet=TRUE)

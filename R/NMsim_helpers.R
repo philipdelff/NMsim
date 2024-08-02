@@ -1,6 +1,6 @@
 ##' @keywords internal
 ##' 
-adjust.method.update.inits <- function(method.update.inits,system.type,file.psn,dir.psn,cmd.update.inits,file.ext){
+adjust.method.update.inits <- function(method.update.inits,system.type,dir.psn,cmd.update.inits,file.ext){
 
     psn <- NULL
     nmsim <- NULL
@@ -30,10 +30,11 @@ adjust.method.update.inits <- function(method.update.inits,system.type,file.psn,
         }
     }
 
+    
     method.update.inits <- simpleCharArg("method.update.inits",method.update.inits,"nmsim",cc(psn,nmsim,none))
     ## if update.inits with psn, it needs to be available
     if(method.update.inits=="psn"){
-        cmd.update.inits <- file.psn(dir.psn,"update_inits")        
+        cmd.update.inits <- file.psn(dir.psn,"update_inits")
         if(system.type=="linux" && suppressWarnings(system(paste(cmd.update.inits,"-h"),ignore.stdout = TRUE)!=0)){
             stop('Attempting to use PSN\'s update_inits but it was not found. Look at the dir.psn argument or use method.update.inits="nmsim"')
         }
@@ -49,7 +50,8 @@ adjust.method.update.inits <- function(method.update.inits,system.type,file.psn,
 }
 
 
-##' Drop spaces and odd characters
+##' Drop spaces and odd characters. Use to ensure generated file names
+##' are usable.
 ##' @param x a string to clean
 ##' @keywords internal
 ##' @examples
@@ -71,5 +73,8 @@ cleanStrings <- function(x){
     x
 }
 
-
-
+file.psn <- function(dir.psn,file.psn){
+    if(dir.psn=="none") stop("PSN not found")
+    if(dir.psn=="") return(file.psn)
+    file.path(dir.psn,file.psn)
+}

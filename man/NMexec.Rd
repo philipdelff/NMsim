@@ -16,7 +16,7 @@ NMexec(
   args.psn.execute,
   update.only = FALSE,
   nmquiet = FALSE,
-  method.execute = "psn",
+  method.execute,
   dir.psn,
   path.nonmem,
   system.type,

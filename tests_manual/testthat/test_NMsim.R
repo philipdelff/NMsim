@@ -7,6 +7,7 @@ packageVersion("NMdata")
 library(devtools)
 load_all(export_all=FALSE)
 
+NMdataConf(reset=TRUE)
 NMdataConf(dir.psn=NULL)
 NMdataConf(as.fun="data.table")
 NMdataConf(dir.sims="testOutput/simtmp")
@@ -22,6 +23,8 @@ setorder(dt.sim.known,ID,TIME,EVID,CMT)
 
 ## NMdataConf(dir.psn="/opt/psn")
 path.nonmem <- "/opt/nonmem/nm751/run/nmfe75"
+## dir.psn <- "/opt/psn"
+## NMdataConf(dir.psn=dir.psn)
 ##
 path.nonmem <- "/opt/NONMEM/nm75/run/nmfe75" 
 file.exists(path.nonmem)
@@ -67,7 +70,7 @@ test_that("basic - default",{
 
     if(F){
         ref <- readRDS(fileRef)
-        compareCols(simres,ref,keep.names=FALSE)
+        compareCols(simres,ref,keep.names=TRUE)
         compareCols(attributes(simres)$NMsimModTab,attributes(readRDS(fileRef))$NMsimModTab,keep.names=FALSE)
         simres.nometa <- copy(simres)
         unNMsimRes(simres.nometa)
@@ -103,7 +106,7 @@ test_that("basic - sge - dont wait",{
     fix.time(simres2)
     
     expect_equal_to_reference(simres2,fileRef)
-
+    
 
     if(F){
         ref <- readRDS(fileRef)
@@ -140,6 +143,14 @@ test_that("basic - sge - wait",{
     fix.time(simres3)
     
     expect_equal_to_reference(simres3,fileRef)
+
+    if(F){
+        ref <- readRDS(fileRef)
+        compareCols(simres3,ref)
+
+        compareCols(attributes(simres3)$NMsimModTab,
+                    attributes(ref)$NMsimModTab)
+    }
 
 })
 
@@ -825,3 +836,40 @@ test_that("basic - ctl",{
     NMdataConf(file.mod=NULL)
 
 })
+
+
+### todo sim with ETA correlations with both update methods
+
+test_that("basic - default",{
+    
+    fileRef <- "testReference/NMsim_12.rds"
+
+    file.mod <- "testData/nonmem/xgxr022.mod"
+
+    simres <- NMsim(file.mod,
+                    data=dt.sim,
+                    table.var="PRED IPRED Y ETAS(1:LAST)",
+                    name.sim="covetas_01",
+                    subproblems=5,
+                    path.nonmem=path.nonmem,
+                    method.update.inits="nmsim",
+                    seed.R=43
+                    )
+
+    simres[,ID:=.GRP,.(ID,NMREP)]
+
+    NMreadExt(file.mod)[par.type=="OMEGA" & i%in%c(2,3)&j%in%c(2,3)]
+    omega.sim <- NMreadSection("testOutput/simtmp/xgxr022_covetas_01/xgxr022_covetas_01.mod",section="OMEGA")
+    
+### a check that nonmem uses te right dist is unnecessary
+    ## cor(findCovs(simres,by="ID")[,.(ETA1,ETA2,ETA3,ETA4,ETA5)])
+    ## cov2cor(dt2mat(NMreadExt(file.mod)[par.type=="OMEGA"]))
+    
+
+    expect_equal_to_reference(omega.sim,fileRef)
+
+    
+
+})
+
+

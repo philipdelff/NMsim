@@ -2,7 +2,8 @@
 % Please edit documentation in R/NMsim_helpers.R
 \name{cleanStrings}
 \alias{cleanStrings}
-\title{Drop spaces and odd characters}
+\title{Drop spaces and odd characters. Use to ensure generated file names
+are usable.}
 \usage{
 cleanStrings(x)
 }
@@ -10,7 +11,8 @@ cleanStrings(x)
 \item{x}{a string to clean}
 }
 \description{
-Drop spaces and odd characters
+Drop spaces and odd characters. Use to ensure generated file names
+are usable.
 }
 \examples{
 NMsim:::cleanStrings("e w\% # ff!l3:t,3?.csv")

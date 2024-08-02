@@ -109,7 +109,7 @@ and `.lst` respetively), parameter estimates (`.ext`).
 <!-- The following plot shows the data for no other reason than pointing out clearly that the data informing the model was single dose, and we will be simulating a different dosing regimen. -->
 
 ```{r,include=FALSE,echo=FALSE}
-file.mod <- file.project("nonmem/xgxr021.mod")
+file.mod <- system.file("examples/nonmem/xgxr021.mod",package="NMsim")
 res <- NMscanInput(file.mod,quiet=TRUE)
 ggplot(res[!is.na(DV)],aes(TIME,DV))+
     geom_point()+
@@ -136,7 +136,7 @@ single dose study.
 
 
 ```{r,sim-simplest,eval=FALSE}
-file.mod <- file.project("nonmem/xgxr021.mod")
+file.mod <- system.file("examples/nonmem/xgxr021.mod",package="NMsim")
 
 simres <- NMsim(file.mod=file.mod,
                 data=dat.sim)
@@ -202,7 +202,7 @@ Notice a few things about the returned data:
 Before we continue with that model, we want to compare a simulation based on this model to another model we are considering. `NMsim` can do this and collect the data into one object:
 
 ```{r,sim-twomodels,eval=FALSE}
-files.2.mod <- file.project(c("nonmem/xgxr021.mod","nonmem/xgxr114.mod"))
+files.2.mod <- system.file(c("examples/nonmem/xgxr021.mod","examples/nonmem/xgxr114.mod"),package="NMsim")
 simres.2models <- NMsim(file.mod=files.2.mod,
                         data=dat.sim,
                         file.res="simulate-results/simres_2models_paths.rds"

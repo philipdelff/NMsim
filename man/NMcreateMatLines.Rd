@@ -7,8 +7,8 @@
 NMcreateMatLines(omegas, type)
 }
 \arguments{
-\item{omegas}{See NMdata::NMreadExt and the pars element returned by that
-function.}
+\item{omegas}{See NMdata::NMreadExt and the pars element returned
+by that function.}
 
 \item{type}{The matrix type. OMEGA or SIGMA - case in-sensitive.}
 }

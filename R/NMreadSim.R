@@ -61,7 +61,7 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,progres
     ROWEL <- NULL
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
-
+    
     if(missing(dir.sims)) dir.sims <- NULL
     if(missing(as.fun)) as.fun <- NULL
     as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)

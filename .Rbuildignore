@@ -47,6 +47,9 @@ LINK.LNK
 ^inst/examples/nonmem/xgxr022.+
 ^inst/examples/nonmem/bs.+
 ^inst/examples/nonmem/NMsim
+^inst/examples/nonmem/.*\.dir.+
+^inst/examples/nonmem/.*\.xml
+^inst/examples/nonmem/.*\.msf
 ^inst/examples/simulations/.+
 ^inst/examples/R/NMexec_run_estimates.R
 ^vignettes$
