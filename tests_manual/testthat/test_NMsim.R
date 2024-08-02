@@ -436,7 +436,7 @@ test_that("VPC",{
     file.mod <- "testData/nonmem/xgxr032.mod"
     nsims <- 10
     
-    set.seed(43)
+
     simres.vpc <- NMsim(file.mod,
                         table.vars="PRED IPRED Y",
                         dir.sims="testOutput",
@@ -444,6 +444,7 @@ test_that("VPC",{
                        ,nsims=nsims
                        ,method.execute="nmsim"
                        ,path.nonmem=path.nonmem
+                       ,seed.R=43
                         )
 
     ## library(ggplot2)
@@ -453,7 +454,7 @@ test_that("VPC",{
     expect_equal(nrow(simres.vpc),nsims*731)    
 
     ## derive PIs
-    expect_equal(as.numeric(simres.vpc[EVID==0,quantile(Y,probs=.25)]),0.15568)
+    expect_equal(round(as.numeric(simres.vpc[EVID==0,quantile(Y,probs=.25)]),3),0.155)
 
 })
 

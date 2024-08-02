@@ -126,9 +126,9 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
             modtab[NMsimVersion<="0.1.0.941",path.results:=file.res.data]
         }
     }
-
-#### path.results does not exist for all old versions. Move to ..One and make dependent on version?
-    modtab[,path.results.read:=file.path(dirname(path.results),basename(path.results))]
+    
+### Assuming that rds and fst are next to each other
+    modtab[,path.results.read:=file.path(dirname(path.rds.read),basename(path.results))]
     
     rdstab <- unique(modtab[,.(path.results.read
                               ,path.rds.read)])
