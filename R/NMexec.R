@@ -131,36 +131,6 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
-    if(F){
-        ## dir.psn
-        if(missing(dir.psn)) dir.psn <- NULL
-        dir.psn <- try(NMdata:::NMdataDecideOption("dir.psn",dir.psn))
-        if(inherits(dir.psn,"try-error")){
-            dir.psn <- NULL
-            dir.psn <- simpleCharArg("dir.psn",dir.psn,"",accepted=NULL,lower=FALSE)
-        }
-        fun.file.psn <- function(dir.psn,file.psn){
-            if(dir.psn=="") return(file.psn)
-            file.path(dir.psn,file.psn)
-        }
-        ## cmd.execute is a reference to PSN's execute and only points to the PSN executable
-        cmd.execute <- fun.file.psn(dir.psn,"execute")
-
-        method.execute <- tolower(gsub(" ","",method.execute))
-        if(!method.execute %in% c("psn","direct","nmsim")){
-            stop("method.execute must be one of psn, direct, and nmsim.")
-        }
-        
-        ## path.nonmem
-        ## if(missing(path.nonmem)||is.null(path.nonmem)) path.nonmem <- "nmfe75"
-        if(missing(path.nonmem)) path.nonmem <- NULL
-        path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem))
-        if(inherits(path.nonmem,"try-error")){
-            path.nonmem <- NULL
-            path.nonmem <- simpleCharArg("path.nonmem",path.nonmem,NULL,accepted=NULL,lower=FALSE)
-        }
-    }
-
     if(missing(dir.psn)) dir.psn <- NULL
     if(missing(path.nonmem)) path.nonmem <- NULL
     if(missing(method.execute)) method.execute <- NULL
@@ -271,19 +241,10 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             }
             string.cmd <- paste(string.cmd,basename(file.mod))
         }
-        ## if(NMsimConf$method.execute=="direct"){
-        ##     if(is.null(path.nonmem) || path.nonmem=="") stop("when method.execute=='direct', path.nonmem must be provided.")
-        ##     if(!file.exists(path.nonmem)){
-        ##         stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
-        ##     }
-        ##     string.cmd <- callNonmemDirect(file.mod,path.nonmem)
-        ## }
+
 
         if(NMsimConf$method.execute=="nmsim"){
-            ## if(is.null(path.nonmem) || path.nonmem=="") stop("when method.execute=='nmsim', path.nonmem must be provided.")
-            ## if(!file.exists(path.nonmem)){
-            ##     stop(paste("The supplied path to the Nonmem executable is invalid:",path.nonmem))
-            ## }
+
             string.cmd <- NMexecDirectory(file.mod,NMsimConf$path.nonmem,files.needed=files.needed,system.type=NMsimConf$system.type,dir.data=dir.data)
             if(sge) {
 

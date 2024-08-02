@@ -468,31 +468,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
     if(missing(data)) data <- NULL
 
-    if(F){
-        ## dir.psn - should use NMdataConf setup
-        if(missing(dir.psn)) dir.psn <- NULL
-        dir.psn <- try(NMdata:::NMdataDecideOption("dir.psn",dir.psn),silent=TRUE)
-        if(inherits(dir.psn,"try-error")){
-            dir.psn <- NULL
-            dir.psn <- simpleCharArg("dir.psn",dir.psn,"",accepted=NULL,lower=FALSE)
-        }
-        ## file.psn <- function(dir.psn,file.psn){
-        ##     if(dir.psn=="") return(file.psn)
-        ##     file.path(dir.psn,file.psn)
-        ## }
-        
-        ## path.nonmem
-        if(missing(path.nonmem)) path.nonmem <- NULL
-        path.nonmem <- try(NMdata:::NMdataDecideOption("path.nonmem",path.nonmem),silent=TRUE)
-        if(inherits(path.nonmem,"try-error")){
-            path.nonmem <- NULL
-            
-            path.nonmem <- simpleCharArg("path.nonmem",path.nonmem,default=NULL,accepted=NULL,lower=FALSE)
-        }
-
-        if(missing(system.type)) system.type <- NULL
-        system.type <- getSystemType(system.type)
-    }
 
     if(missing(args.NMscanData)) args.NMscanData <- NULL
     if(!is.null(args.NMscanData)){
@@ -520,26 +495,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 
     if(nc>1){message("nc>1 may not work depending on your system configuration. It has only been tested on linux. Please notice there are other and most often more efficient methods to speed up simulations. See discussions on the NMsim website.")}
-
-    if(F){
-        ### now integrated in NMsimTestConf
-        ## method.execute
-        if(missing(method.execute)) method.execute <- NULL
-        ## if path.nonmem is provided, default method.execute is directory. If not, it is psn
-        if(is.null(path.nonmem)) {
-            method.execute.def <- "psn"
-        } else {
-            method.execute.def <- "nmsim"
-        }
-        method.execute <- simpleCharArg("method.execute",method.execute,method.execute.def,cc(psn,direct,nmsim))
-        if(method.execute%in%cc(direct,nmsim) && is.null(path.nonmem)){
-            stop("When method.execute is direct or nmsim, path.nonmem must be provided.")
-        }
-        
-        if(NMsimConf$system.type=="windows"){
-            message('Windows support is new in NMsim and may be limited. You may need to avoid spaces and some special characters in directory and file names.')
-        }
-    }    
+    
 
     ## args.psn.execute
     if(missing(args.psn.execute)) args.psn.execute <- NULL
