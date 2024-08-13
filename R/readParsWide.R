@@ -55,6 +55,7 @@
 ##' tab.ext <- readParsCsv(tab.simpar)
 ##' NMsim(...,method.sim=NMsim_VarCov,tab.ext=tab.ext)
 ##' }
+##' @export
 
 readParsWide <- function(data,col.model=NULL,strings.par.type=c(THETA="^T.*",OMEGA="^O.*",SIGMA="^S."),as.fun){
 

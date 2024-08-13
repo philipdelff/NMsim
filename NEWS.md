@@ -1,7 +1,12 @@
 # NMsim 0.1.3
 
 ## New features
-`NMsimTestConf()` - Function to summarize and test configuration. 
+* `NMsimTestConf()` - Function to summarize and test configuration. 
+
+* `readParsWide()` - A function to read wide-format parameter tables -
+  is now exported. This is useful when simulating with parameter
+  values that have been sampled outside Nonmem, e.g. using the
+  `simpar` package.
 
 ## Bugfixes
 * `NMexec()` would fail on linux when run on models with multiple

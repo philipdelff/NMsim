@@ -11,6 +11,6 @@ add <- function(...,.pos="end"){
 overwrite <- function(...){
 
     function(x){
-        gsub(...,x)
+        gsub(...,x=x)
     }
 }
