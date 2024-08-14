@@ -1,0 +1,56 @@
+{
+    "bbi_version": "v3.3.0",
+    "model_name": "mod_lorlatinib_estimate.mod",
+    "original_model": "mod_lorlatinib_estimate.mod",
+    "model_path": "/data/sandbox/trunk/analysis/NMsim/models/mod_lorlatinib_estimate.mod",
+    "data_path": "../../derived_data/simulated_nonmem_dataset_mod_lorlatinib.csv",
+    "data_md5": "2de249eb8591fc151304a7826f4302c2",
+    "model_md5": "5714b17deca0581641f46e8135bc1162",
+    "model_filename": "mod_lorlatinib_estimate",
+    "model_extension": "mod",
+    "original_path": "/data/sandbox/trunk/analysis/NMsim/models",
+    "output_dir": "/data/sandbox/trunk/analysis/NMsim/models/mod_lorlatinib_estimate",
+    "configuration": {
+        "overwrite": true,
+        "clean_lvl": 1,
+        "git": true,
+        "save_config": true,
+        "output_dir": "{{ .Name }}",
+        "threads": 12,
+        "local": {
+            "create_child_dirs": true
+        },
+        "nonmem": {
+            "nm73gf": {
+                "home": "/opt/NONMEM/nm73gf",
+                "executable": "nmfe73",
+                "nmqual": true
+            },
+            "nm73gf_nmfe": {
+                "home": "/opt/NONMEM/nm73gf_nmfe",
+                "executable": "nmfe73"
+            },
+            "nm74gf": {
+                "home": "/opt/NONMEM/nm74gf",
+                "executable": "nmfe74",
+                "nmqual": true
+            },
+            "nm74gf_nmfe": {
+                "home": "/opt/NONMEM/nm74gf_nmfe",
+                "executable": "nmfe74"
+            },
+            "nm75": {
+                "home": "/opt/NONMEM/nm75",
+                "executable": "nmfe75",
+                "default": true
+            }
+        },
+        "parallel": true,
+        "nmfe_options": {
+            "maxlim": 2
+        },
+        "mpi_exec_path": "/usr/local/mpich3/bin/mpiexec",
+        "parallel_timeout": 2147483647
+    },
+    "error": null
+}
