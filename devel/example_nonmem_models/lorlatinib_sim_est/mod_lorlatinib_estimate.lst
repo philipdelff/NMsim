@@ -7,7 +7,7 @@ $INPUT  REC ID TIME EVID CMT AMT II ADDL RATE DV MDV BALB BWT
         DOSCUMA DOSCUMN PDOSAMT PPI ROUT SD TAPD TDOSE TPDOS WNCL
 
 
-$DATA ../../derived_data/simulated_nonmem_dataset_mod_lorlatinib.csv IGNORE=@
+$DATA ../derived_data/simulated_nonmem_dataset_mod_lorlatinib.csv IGNORE=@
 $SUBROUTINE ADVAN4 TRANS4
 $PK
 
