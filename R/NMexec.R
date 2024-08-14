@@ -135,8 +135,9 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     if(missing(path.nonmem)) path.nonmem <- NULL
     if(missing(method.execute)) method.execute <- NULL
     if(missing(system.type)) system.type <- NULL
+    if(missing(files.needed)) files.needed <- NULL
     
-    NMsimConf <- NMsimTestConf(path.nonmem=path.nonmem,system.type=system.type)
+    NMsimConf <- NMsimTestConf(path.nonmem=path.nonmem,method.execute=method.execute,system.type=system.type)
     ## todo integrate in NMsimTestConf
 
     cmd.execute <- file.psn(NMsimConf$dir.psn,"execute")
@@ -151,6 +152,10 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     if(isFALSE(input.archive)){
         input.archive <- function(file) FALSE
     }
+
+    if(missing(nc)) nc <- NULL
+    nc <- NMdata:::NMdataDecideOption("nc",nc,allow.unknown = TRUE)
+    if(is.null(nc)) nc <- 64
     
     
     ## args.psn.execute
@@ -189,7 +194,6 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         ## files.exec <- findUpdated(fnExtension(files.all,"lst"))
         files.exec <- findUpdated(files.all)
     }
-
     
     for(file.mod in files.exec){
         file.mod <- NMdata:::filePathSimple(file.mod)
@@ -220,8 +224,10 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         if((sge && nc > 1)||(sge && NMsimConf$method.execute=="psn")){
             if(nc>1){
                 ## file.pnm <- file.path(rundir,"NMexec.pnm")
-                file.pnm <- fnExtension(file.mod,"pnm")
+                ## file.pnm <- fnExtension(file.mod,"pnm")
+                file.pnm <- file.path(rundir,fnExtension(basename(file.mod),"pnm"))
                 pnm <- NMgenPNM(nc=nc,file=file.pnm)
+                files.needed <- unique(c(files.needed,pnm) )
             }
         }
 
@@ -242,7 +248,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             string.cmd <- paste(string.cmd,basename(file.mod))
         }
 
-
+        
         if(NMsimConf$method.execute=="nmsim"){
 
             string.cmd <- NMexecDirectory(file.mod,NMsimConf$path.nonmem,files.needed=files.needed,system.type=NMsimConf$system.type,dir.data=dir.data)
@@ -261,7 +267,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 ### executing from getwd()
                     ## string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
                     ## executing from model execution dir.
-                    string.cmd <- sprintf('cd \"%s\"; qsub -pe orte %s -V -N NMsim -j y -cwd -b y \"%s\" \"%s\" \"%s\" -background -parafile=%s [nodes]=%s; cd \"%s\"' ,dirname(file.mod),nc,NMsimConf$path.nonmem,basename(file.mod),fnExtension(basename(file.mod),"lst"),basename(pnm),nc,getwd())
+                    string.cmd <- sprintf('cd \"%s\"; qsub -pe orte %s -V -N \"%s\" -j y -cwd -b y \"%s\" \"%s\" \"%s\" -background -parafile=%s [nodes]=%s; cd \"%s\"' ,dirname(string.cmd),nc,basename(file.mod),NMsimConf$path.nonmem,basename(file.mod),fnExtension(basename(file.mod),"lst"),basename(pnm),nc,getwd())
                 }
                 wait <- TRUE
             } else {

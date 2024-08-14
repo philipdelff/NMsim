@@ -98,7 +98,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
             sec.data.new <- paste("$DATA",sec.data.new)
         }
     }
-    NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp,quiet=TRUE)
+    NMwriteSection(files=file.mod,section="DATA",newlines=sec.data.new,newfile=file.mod.tmp,quiet=TRUE,backup = FALSE)
 
 ### copy .phi if found
     ## file.copy(fnExtension(file.mod,"phi"),dir.tmp)
