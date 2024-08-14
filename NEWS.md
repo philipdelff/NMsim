@@ -7,6 +7,11 @@
   is now exported. This is useful when simulating with parameter
   values that have been sampled outside Nonmem, e.g. using the
   `simpar` package.
+  
+* The `add()` function to be used in `NMsim()`'s `modify.model`
+  argument now supports prepending and appending of text lines to
+  control stream sections. The default is still to append and
+  `add("text",.pos="top")` will now prepend "text".
 
 ## Bugfixes
 * `NMexec()` would fail on linux when run on models with multiple
