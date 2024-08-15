@@ -1,0 +1,48 @@
+## How to develop a "simulation method" for NMsim
+
+`NMsim()`'s `method.sim` argument allows the user to specify how to process control streams before simulation. The value provided to `method.sim` must be a function, and it must accept a few pre-defined arguments. 
+
+The aim with `method.sim` is to process path.sim, re-save it, and return at least the path to the processed simulation control stream(s). The method can return multiple control stream paths if needed. As an example `NMsim_VarCov()` takes a `nsims` argument which - if greater than one - will make `NMsim_VarCov()` create multiple control streams with different parameter values.
+
+### What a simulation method should do and what it should not do
+Most importantly, the simulation method must not handle data sections
+like `$DATA`, `$INPUT`, and `$TABLE`. Other than that, it should prepare the control stream to perform whatever actions desired from the method. Look at the simplest possible simulation method, called `NMsim_asis()`
+
+```{r,eval=FALSE}
+> NMsim_asis
+function(file.sim,file.mod,data.sim){
+
+    return(file.sim)
+
+}
+<environment: namespace:NMsim>
+```
+
+This method does nothing to the control stream at all. This method can still be very useful though. If `NMsim(...,method.sim=NMsim_asis)` is run on an already prepared simulation control stream or even an estimation control stream, NMsim will still handle everything related to data. That way, NMsim_asis provides an R-interface to executing control streams on R-object data sets. In combination with the `modify.model` argument, this can actually be very powerful.
+
+
+### Simulation method arguments 
+
+`NMsim()` calls the method this way:
+
+```{r}
+method.sim(file.sim=path.sim,file.mod=file.mod,data.sim=data[[DATAROW]],...)
+```
+
+
+* `file.sim` is the path to the simulation control stream the method.sim will process. Notice, that file will exists by the time `method.sim` is called by `NMsim()`.
+
+* `file.mod` is the original control stream path passed to NMsim() in the argument of the same name.
+
+* `data.sim` is the input data set as provided in the `data` argument to `NMsim()`. It is important to understant that `NMsim()` handles everything related to input and output data outside the simulation methods. The simulation method does not need to process te simulation data at all, but in some cases the method will depend on the simulation data. As an example, `NMsim_EBE()` generates not only a control stream, it also generates a `.phi` file with individual random effect values. In order to generate that file with the right `ID` values, it needs to retrieve those ID's from the simulation data set.
+
+* ... Anything else that the method needs can be passed on from `NMsim()`. The already mentioned `nmsim` argument to `NMsim_VarCov()` is an example of this.
+
+Notice, while the method must accept these arguments, this does not mean the method must use all of them.
+
+### Simulation method results
+The simplest returned value from a simulation method is a single character value representing the path to the processed simulation control stream. Here are the possible formats of the returned object:
+
+* A vector (possibly of length 1) of strings. In this case the strings will be interpreted as paths to processed simulation control streams.
+
+* A data.table with at least one column of strings. Each row will be interpreted as representing one simulation. Each column represents paths to files that are needed to run the simulation. These files will be copied into the simulation directory before running Nonmem. An example where this format is used is `NMsim_EBE` which generates a `.phi` file which must be present when running Nonmem on the generated control stream. 
