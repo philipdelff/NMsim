@@ -4,6 +4,8 @@
 
 The aim with `method.sim` is to process path.sim, re-save it, and return at least the path to the processed simulation control stream(s). The method can return multiple control stream paths if needed. As an example `NMsim_VarCov()` takes a `nsims` argument which - if greater than one - will make `NMsim_VarCov()` create multiple control streams with different parameter values.
 
+A simulation method is passed to `NMsim()` as an argument. This means that the function can be defined anywhere available to the user. The user can in other word develop and use their own methods independedntly of the development of `NMsim`.
+
 ### What a simulation method should do and what it should not do
 Most importantly, the simulation method must not handle data sections
 like `$DATA`, `$INPUT`, and `$TABLE`. Other than that, it should prepare the control stream to perform whatever actions desired from the method. Look at the simplest possible simulation method, called `NMsim_asis()`
