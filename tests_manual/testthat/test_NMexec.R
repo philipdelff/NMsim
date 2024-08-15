@@ -92,7 +92,7 @@ test_that("multiple $TABLE",{
 
     file.mod <- "testData/nonmem/xgxr032.mod"
 
-    res <- NMexec(file.mod , path.nonmem=path.nonmem,sge=F)
+    res <- NMexec(file.mod , path.nonmem=path.nonmem,sge=T)
 
     ext.res <- NMreadExt(file.mod)
     dim.ext <- dim(ext.res)
