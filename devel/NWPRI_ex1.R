@@ -2,6 +2,7 @@
 library(devtools)
                                         # library(NMdata)
 library(here)
+
 ## devtools::load_all(here::here("wdirs/NMdata"))
 ## devtools::load_all(here::here("NMsim"))
 
@@ -10,6 +11,10 @@ if(F){
     devtools::load_all("~/wdirs/NMsim")
 }
 
+devtools::load_all(here::here("wdirs/NMdata"))
+devtools::load_all(here::here("wdirs/NMsim"))
+
+
 NMdataConf(as.fun="data.table"
           ,col.row="REC"
           ,path.nonmem="/opt/NONMEM/nm75/run/nmfe75"
@@ -17,8 +22,8 @@ NMdataConf(as.fun="data.table"
           ,dir.res="simres"
            ##    ,file.data=NMsim::inputArchiveDefault
            )
-file.mod <- "~/wdirs/NMsim/inst/examples/nonmem/xgxr033.mod"
-## file.mod <- here::here("models/mod_lorlatinib_estimate/mod_lorlatinib_estimate.mod")
+                                        # file.mod <- "~/wdirs/NMsim/inst/examples/nonmem/xgxr033.mod"
+file.mod <- here::here("wdirs/NMsim/devel/example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod")
 
 cov <- NMdata::NMreadCov(file.mod |> fnExtension(".cov"))
 
@@ -84,8 +89,11 @@ ext[par.type=="OMEGA",iblock:=i]
 
 omegas = ext[par.type=="OMEGA"]
 
-omega_offdiag = omegas[ i!=j & !(value==0 & FIX==1)]
-omega_blocks = omegas[ !(value==0 &FIX==1) & i %in% unique(c(omega_offdiag$i, omega_offdiag$j))]
+                                        #TODO: not sure if better to use !(value==0 & FIX==1) or !(value==0)   in the piece below. with FIX it will keep any estimated (but zero) off diagonals.
+                                        # omega_offdiag = omegas[ i!=j & !(value==0 & FIX==1)]
+omega_offdiag = omegas[ i!=j & !(value==0)]
+                                        # omega_blocks = omegas[ !(value==0 &FIX==1) & i %in% unique(c(omega_offdiag$i, omega_offdiag$j))]
+omega_blocks = omegas[ !(value==0 ) & i %in% unique(c(omega_offdiag$i, omega_offdiag$j))]
 
                                         # get non-block omegas and separate
 omega_nonblocks = 
@@ -242,11 +250,12 @@ NMsim(
                 paste0(gsub("\\)|\\(|,", "", omegas$parameter), " = ", omegas$parameter),
                 paste0(gsub("\\)|\\(|,", "", sigmas$parameter), " = ", sigmas$parameter)
             ),
+                                        #TODO: ideally prepend to $SIMULATION instead of append to $SIGMA.
         SIGMA = function(.x)
             c(.x, all.lines)
     ),
                                         # SIMULATION=function(.x) c(all.lines, .x)),
-                                        # add additional parameters/arguments to $SIMULATION using text.sim
+                                        # add additional parameters/arguments to $SIMULATION using text.sim; TRUE=PRIOR is required
     text.sim = "TRUE=PRIOR",
     table.vars = paste0(
         "PRED IPRED Y ",
