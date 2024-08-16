@@ -21,6 +21,7 @@ NMexec(
   path.nonmem,
   system.type,
   files.needed,
+  clean = 1,
   quiet = FALSE
 )
 }
@@ -118,6 +119,14 @@ supported. Default is to use \code{Sys.info()[["sysname"]]}.}
 specifies files to be copied into the temporary directory
 before Nonmem is run. Input control stream and simulation
 input data does not need to be specified.}
+
+\item{clean}{The degree of cleaning (file removal) to do after
+Nonmem execution. If `method.execute=="psn"`, this is passed
+to PSN's `execute`. If `method.execute=="nmsim"` a similar
+behavior is applied, even though not as granular. NMsim's
+internal method only distinguishes between 0 (no cleaning),
+any integer 1-4 (default, quite a bit of cleaning) and 5
+(remove temporary dir completely).}
 
 \item{quiet}{Suppress messages on what NMexec is doing? Default is
 FALSE.}

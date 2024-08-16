@@ -7,6 +7,8 @@ cleaningPatterns <- function(clean){
 
 NMrunLin <- function(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem,clean){
 
+name <- NULL
+    
     lines.bash <- c(
         "#!/bin/bash"
        ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
@@ -30,13 +32,6 @@ NMrunLin <- function(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem,clean){
                                             rm.if.pres)),collapse="\n")
                         )
         
-        ## lines.bash <- c(lines.bash
-        ##                ,rm.if.pres("nonmem")
-        ##                ,rm.if.pres("worker*")
-        ##                ,rm.if.pres("FDATA*")
-        ##                ,rm.if.pres("fort.*")
-        ##                ,rm.if.pres("WK_*")
-        ##                 )
     }
     if(clean==5){
         lines.bash <- c(lines.bash,

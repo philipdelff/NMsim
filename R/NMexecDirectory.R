@@ -25,6 +25,13 @@ callNonmemDirect <- function(file.mod,path.nonmem){
 ##'     where the input data file is stored. This would be ".." if the
 ##'     run directory is created in a directory where the data is
 ##'     stored.
+##' @param clean The degree of cleaning (file removal) to do after
+##'     Nonmem execution. If `method.execute=="psn"`, this is passed
+##'     to PSN's `execute`. If `method.execute=="nmsim"` a similar
+##'     behavior is applied, even though not as granular. NMsim's
+##'     internal method only distinguishes between 0 (no cleaning),
+##'     any integer 1-4 (default, quite a bit of cleaning) and 5
+##'     (remove temporary dir completely).
 ##' @import NMdata
 ##' @importFrom R.utils getAbsolutePath
 ##' @return A bash shell script for execution of Nonmem

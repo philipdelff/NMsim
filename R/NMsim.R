@@ -251,6 +251,13 @@
 ##'     files to read will be returned. Pass them through
 ##'     `NMreadSim()` (which also supports waiting for the simulations
 ##'     to finish).
+##' @param clean The degree of cleaning (file removal) to do after
+##'     Nonmem execution. If `method.execute=="psn"`, this is passed
+##'     to PSN's `execute`. If `method.execute=="nmsim"` a similar
+##'     behavior is applied, even though not as granular. NMsim's
+##'     internal method only distinguishes between 0 (no cleaning),
+##'     any integer 1-4 (default, quite a bit of cleaning) and 5
+##'     (remove temporary dir completely).
 ##' @param quiet If TRUE, messages from what is going on will be
 ##'     suppressed.
 ##' @param nmquiet Silent messages from Nonmem. The default is `TRUE`.
@@ -376,6 +383,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                  ,file.res
                  ,wait
                  ,auto.dv=TRUE
+                 ,clean
                  ,quiet=FALSE
                  ,check.mod = TRUE
                  ,seed
@@ -505,6 +513,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ##                                  ,accepted=NULL
     ##                                  ,clean=FALSE
     ##                                  ,lower=FALSE)
+    if(missing(clean)) clean <- 1
     
 
     if(missing(file.ext)) file.ext <- NULL
@@ -887,12 +896,15 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
         dt.models[,
         {
-            if(!file.exists(fnExtension(file.mod,"lst"))){stop("When using method.update.inits=\"psn\", an output control stream with file name extensions .lst must be located next to the input control stream. Consider also `method.update.inits=\"nmsim\"`.")}
+            if(!file.exists(fnExtension(file.mod,"lst"))){
+                stop("When using method.update.inits=\"psn\", an output control stream with file name extensions .lst must be located next to the input control stream. Consider also `method.update.inits=\"nmsim\"`.")
+            }
             cmd.update <- sprintf("%s --output_model=\"%s\" \"%s\"",normalizePath(cmd.update.inits,mustWork=FALSE),fn.sim.tmp,normalizePath(file.mod))
 ### would be better to write to another location than next to estimation model
             ## cmd.update <- sprintf("%s --output_model=%s %s",cmd.update.inits,file.path(".",fn.sim.tmp),file.mod)
             if(NMsimConf$system.type=="linux"){
                 ## print(paste(cmd.update,"2>/dev/null"))
+                
                 sys.res <- system(paste(cmd.update,"2>/dev/null"),wait=TRUE)
                 
                 if(sys.res!=0){
@@ -1258,7 +1270,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                    system.type=NMsimConf$system.type,
                    files.needed=files.needed.n,
                    input.archive=input.archive,
-                   dir.data="..")
+                   dir.data="..",clean=clean)
             
             ## simres.n <- list(lst=path.sim.lst)
             ## simres.n
