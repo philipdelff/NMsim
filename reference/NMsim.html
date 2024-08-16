@@ -110,6 +110,7 @@ get the most out of this.</p>
 <span>  <span class="va">file.res</span>,</span>
 <span>  <span class="va">wait</span>,</span>
 <span>  auto.dv <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">clean</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  check.mod <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">seed</span>,</span>
@@ -475,6 +476,16 @@ a column of that name is not found? Nonmem is generally
 dependent on a `DV` column in input data but this is typically
 uninformative in simulation data sets and hence easily
 forgotten when generating simulation data sets.</p></dd>
+
+
+<dt id="arg-clean">clean<a class="anchor" aria-label="anchor" href="#arg-clean"></a></dt>
+<dd><p>The degree of cleaning (file removal) to do after
+Nonmem execution. If `method.execute=="psn"`, this is passed
+to PSN's `execute`. If `method.execute=="nmsim"` a similar
+behavior is applied, even though not as granular. NMsim's
+internal method only distinguishes between 0 (no cleaning),
+any integer 1-4 (default, quite a bit of cleaning) and 5
+(remove temporary dir completely).</p></dd>
 
 
 <dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>

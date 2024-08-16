@@ -77,6 +77,7 @@ still be reproduced if the input data files should be updated.</p>
 <span>  <span class="va">path.nonmem</span>,</span>
 <span>  <span class="va">system.type</span>,</span>
 <span>  <span class="va">files.needed</span>,</span>
+<span>  clean <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -200,6 +201,16 @@ supported. Default is to use <code>Sys.info()[["sysname"]]</code>.</p></dd>
 specifies files to be copied into the temporary directory
 before Nonmem is run. Input control stream and simulation
 input data does not need to be specified.</p></dd>
+
+
+<dt id="arg-clean">clean<a class="anchor" aria-label="anchor" href="#arg-clean"></a></dt>
+<dd><p>The degree of cleaning (file removal) to do after
+Nonmem execution. If `method.execute=="psn"`, this is passed
+to PSN's `execute`. If `method.execute=="nmsim"` a similar
+behavior is applied, even though not as granular. NMsim's
+internal method only distinguishes between 0 (no cleaning),
+any integer 1-4 (default, quite a bit of cleaning) and 5
+(remove temporary dir completely).</p></dd>
 
 
 <dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
