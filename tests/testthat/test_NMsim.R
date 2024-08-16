@@ -72,7 +72,7 @@ if(FALSE){
 test_that("modify.model",{
 
     fileRef <- "testReference/NMsim_02.rds"
-        
+    
     file.mod <- "testData/nonmem/xgxr021.mod"
     sim1 <- NMsim(file.mod=file.mod,
                   data=dat.sim,
@@ -90,13 +90,20 @@ test_that("modify.model",{
     ## ref <- readRDS(fileRef)
     expect_equal_to_reference(mod,fileRef)
 
+    if(F){
+        ref <- readRDS(fileRef)
+        ref$OMEGA
+        mod$OMEGA 
+        ref$SIGMA
+        mod$SIGMA
+    }
 
 })
 
 test_that("NMsim_EBE",{
 
     fileRef <- "testReference/NMsim_EBE_03.rds"
-        
+    
     file.mod <- "testData/nonmem/xgxr021.mod"
     res <- NMscanInput(file.mod,file.mod=file.mod,apply.filters=T)
     
@@ -118,31 +125,39 @@ test_that("NMsim_EBE",{
     ## ref <- readRDS(fileRef)
     expect_equal_to_reference(mod,fileRef)
 
+    if(F){
+        ref <- readRDS(fileRef)
+        ref$OMEGA
+        mod$OMEGA 
+        ref$SIGMA
+        mod$SIGMA
+    }
+
 
 })
 
 if(F){
-test_that("NMsim_VarCov",{
+    test_that("NMsim_VarCov",{
 
-    fileRef <- "testReference/NMsim_VarCov_04.rds"
+        fileRef <- "testReference/NMsim_VarCov_04.rds"
         
-    file.mod <- "testData/nonmem/xgxr032.mod"
+        file.mod <- "testData/nonmem/xgxr032.mod"
 
-    sim1 <- NMsim(file.mod=file.mod,
-                  data=dat.sim,
-                  dir.sim="testOutput",
-                  name.sim = "sd1_VarCov",
-                  method.sim=NMsim_VarCov,
-                  seed.nm=2342,
-                  seed.R=2,
-                  execute=FALSE,
-                  method.update.inits="nmsim")
+        sim1 <- NMsim(file.mod=file.mod,
+                      data=dat.sim,
+                      dir.sim="testOutput",
+                      name.sim = "sd1_VarCov",
+                      method.sim=NMsim_VarCov,
+                      seed.nm=2342,
+                      seed.R=2,
+                      execute=FALSE,
+                      method.update.inits="nmsim")
 
-    mod <- NMreadSection("testOutput/xgxr032_sd1_VarCov/xgxr032_sd1_VarCov_1.mod")
-    
+        mod <- NMreadSection("testOutput/xgxr032_sd1_VarCov/xgxr032_sd1_VarCov_1.mod")
+        
 
-    ## ref <- readRDS(fileRef)
-    expect_equal_to_reference(mod,fileRef)
+        ## ref <- readRDS(fileRef)
+        expect_equal_to_reference(mod,fileRef)
 
-})
+    })
 }
