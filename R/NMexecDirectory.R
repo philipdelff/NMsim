@@ -32,7 +32,7 @@ callNonmemDirect <- function(file.mod,path.nonmem){
 
 ## do not export. NMexec will call this.
 
-NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",system.type){
+NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",system.type,clean){
     
     ## if(missing(method)||is.null(method)) method <- "directory"
     ## if(!(is.characther(method) && length(method)==1)||!method%in%cc(directory,direct)){
@@ -115,30 +115,15 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
 
     dir.mod.abs <- getAbsolutePath(dir.mod)
     if(system.type=="linux"){
-        lines.bash <- c(
-            "#!/bin/bash"
-           ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
-           ##,sprintf("cp \'%s\' \'%s\'",meta.tables[,name],dir.mod.abs)
-           ,
-            sprintf("cp \'%s\' \'%s\'",paste(meta.tables[,name],collapse="' '"),dir.mod.abs)
-### this works when file.mod is a relative path
-            ## ,paste("find",".","-type f -name",paste0("*.",exts.cp)," -exec cp {} ",file.path(getwd(),dir.mod)," \\;")
-            ## ,sprintf("cp %s %s",paste(meta.tables[,name],collapse=" "),file.path(getwd(),dir.mod))
 
-### copy wanted files back to orig location of file.mod 
-           ,paste0("find . -type f -name ",paste0("\'*.",exts.cp,"\'")," -exec cp {} \'",dir.mod.abs,"\' \\;")
-
-           ,""
-        )
-        
+        lines.script <- NMrunLin(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem=path.nonmem,clean=clean)
         path.script <- file.path(dir.tmp,"run_nonmem.sh")
-
-        writeTextFile(lines.bash,path.script)
+        writeTextFile(lines.script,path.script)
         Sys.chmod(path.script,mode="0577")
     }
     
     if(system.type=="windows"){
-        lines.script <- NMrunWin(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem=path.nonmem)
+        lines.script <- NMrunWin(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem=path.nonmem,clean=clean)
         path.script <- file.path(dir.tmp,"run_nonmem.bat")
         writeTextFile(lines.script,path.script)
     }
