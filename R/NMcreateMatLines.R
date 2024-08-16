@@ -54,7 +54,7 @@ NMcreateMatLines <- function(omegas,type){
             i.idx <- i.idx+nis.block+1
         } else {
             value.this <- omegas.long[i==i.this&j==i.this,value]
-            res <- paste(value.this)
+            res <- paste(value.this, "FIX")
             if(value.this==0){
                 res <- paste(res,"FIX")
             } 

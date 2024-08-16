@@ -36,7 +36,7 @@ method.sim(file.sim=path.sim,file.mod=file.mod,data.sim=data[[DATAROW]],...)
 
 * `file.mod` is the original control stream path passed to NMsim() in the argument of the same name.
 
-* `data.sim` is the input data set as provided in the `data` argument to `NMsim()`. It is important to understant that `NMsim()` handles everything related to input and output data outside the simulation methods. The simulation method does not need to process te simulation data at all, but in some cases the method will depend on the simulation data. As an example, `NMsim_EBE()` generates not only a control stream, it also generates a `.phi` file with individual random effect values. In order to generate that file with the right `ID` values, it needs to retrieve those ID's from the simulation data set.
+* `data.sim` is the input data set as provided in the `data` argument to `NMsim()`. It is important to understand that `NMsim()` handles everything related to input and output data outside the simulation methods. The simulation method does not need to process the simulation data at all, but in some cases the method will depend on the simulation data. As an example, `NMsim_EBE()` generates not only a control stream, it also generates a `.phi` file with individual random effect values. In order to generate that file with the right `ID` values, it needs to retrieve those ID's from the simulation data set.
 
 * ... Anything else that the method needs can be passed on from `NMsim()`. The already mentioned `nmsim` argument to `NMsim_VarCov()` is an example of this.
 
