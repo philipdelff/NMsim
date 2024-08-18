@@ -1,17 +1,45 @@
-##' @details
+##' Simulate with uncertainty using inverse-Wishart distribution for OMEGA and SIGMA parameters
 ##' @param file.sim See \code{?NMsim}.
 ##' @param file.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.
 ##' @param PLEV Used in \code{$PRIOR NWPRI PLEV=0.999}
+##' @details Simulate with parameter uncertainty. THETA parameters are
+##'     sampled from a multivariate normal distribution while OMEGA
+##'     and SIGMA are simulated from the inverse Wishart
+##'     distribution. Correlations of OMEGA and SIGMA parameters will
+##'     only be applied within modeled "blocks".
+##' @references DF calculation: NONMEM tutorial part II, supplement 1,
+##'     part C.
+##'     https://ascpt.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2Fpsp4.12422&file=psp412422-sup-0001-Supinfo1.pdf
+##' @seealso NMsim_VarCov
 ##' @import NMdata
 ##' @import data.table
-##' @references
-##' DF calculation: NONMEM tutorial part II, supplement 1, part C.
-##'  https://ascpt.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2Fpsp4.12422&file=psp412422-sup-0001-Supinfo1.pdf
 ##' @export
 
 NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
 
+. <- NULL
+DF <- NULL
+DF2 <- NULL
+FIX <- NULL
+N <- NULL
+blocksize <- NULL
+est <- NULL
+i <- NULL
+iblock <- NULL
+j <- NULL
+line <- NULL
+par.name <- NULL
+par.type <- NULL
+par.type.i <- NULL
+par.type.j <- NULL
+parameter.i <- NULL
+parameter.j <- NULL
+return.text <- NULL
+se <- NULL
+value <- NULL
+
+    
 ### NMsim_default() is run because it inserts $SIMULATION instead of
 ### $ESTIMATION and a few other things that are always needed.
     files.needed.def <- NMsim_default(file.sim=file.sim,file.mod,data.sim)
@@ -56,8 +84,8 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     lines.thetap <- c("$THETAP", paste(thetas[,est], "FIXED"))
     ## $THETAPV
     cov.l <- mat2dt(cov)
-    cov.l <- NMdata:::addParType(cov.l,suffix="i")
-    cov.l <- NMdata:::addParType(cov.l,suffix="j")
+    cov.l <- addParType(cov.l,suffix="i")
+    cov.l <- addParType(cov.l,suffix="j")
     lines.thetapv <-
         NMcreateMatLines(cov.l[par.type.i=="THETA"&par.type.j=="THETA", .(i=j, j=i, value, parameter.i, parameter.j, par.type.i,  par.name, par.type.j)], type="OMEGA")
     lines.thetapv <- sub("\\$OMEGA","\\$THETAPV",lines.thetapv)
