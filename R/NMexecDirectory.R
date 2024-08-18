@@ -126,7 +126,7 @@ NMexecDirectory <- function(file.mod,path.nonmem,files.needed,dir.data="..",syst
         lines.script <- NMrunLin(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem=path.nonmem,clean=clean)
         path.script <- file.path(dir.tmp,"run_nonmem.sh")
         writeTextFile(lines.script,path.script)
-        Sys.chmod(path.script,mode="0577")
+        Sys.chmod(path.script, mode = "0777", use_umask = FALSE)
     }
     
     if(system.type=="windows"){
