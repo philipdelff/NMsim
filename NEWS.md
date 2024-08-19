@@ -1,7 +1,9 @@
 # NMsim 0.1.3
 
 ## New features
-* `NMsimTestConf()` - Function to summarize and test configuration. 
+* `NMsimTestConf()` - Function to summarize and test
+  configuration. This is used internally and provides important
+  debugging information.
 
 * `readParsWide()` - A function to read wide-format parameter tables -
   is now exported. This is useful when simulating with parameter
@@ -20,6 +22,12 @@
   argument now supports prepending and appending of text lines to
   control stream sections. The default is still to append and
   `add("text",.pos="top")` will now prepend "text".
+  
+* Default number of cores to be used by `NMexec()` can be controlled
+  using `NMdataConf(nc=N)` where `N` is the desired default. Notice,
+  `NMsim()` will not use this default. This is because
+  parallellization is not as commonly used in simulation as in
+  estimation.
 
 ## Bugfixes
 * `NMexec()` would fail on linux when run on models with multiple

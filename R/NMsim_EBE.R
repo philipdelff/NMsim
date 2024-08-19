@@ -148,6 +148,6 @@ $ESTIMATION  MAXEVAL=0 NOABORT METHOD=1 INTERACTION FNLETA=2",basename(path.phi.
     
     
     files.needed <- data.table(path.sim=file.sim,files.needed=path.phi.sim)
-    files.needed
+    return(files.needed)
 }
 
