@@ -89,6 +89,9 @@
 ##'     internal method only distinguishes between 0 (no cleaning),
 ##'     any integer 1-4 (default, quite a bit of cleaning) and 5
 ##'     (remove temporary dir completely).
+##' @param backup Before running, should existing results files be
+##'     backed up in a sub directory? If not, the files will be
+##'     deleted before running. 
 ##' @param quiet Suppress messages on what NMexec is doing? Default is
 ##'     FALSE.
 ##' @details Use this to read the archived input data when retrieving
@@ -127,7 +130,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                    nc=64,dir.data=NULL,wait=FALSE, args.psn.execute,
                    update.only=FALSE,nmquiet=FALSE,
                    method.execute,dir.psn,path.nonmem,system.type,
-                   files.needed,clean=1,quiet=FALSE){
+                   files.needed,clean=1,backup=TRUE,quiet=FALSE){
     
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -135,6 +138,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     nid <- NULL
     input <- NULL
     result <- NULL
+    name <- NULL
     
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
@@ -214,16 +218,33 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         ## replace extension of fn.input based on path.input - prefer rds
         rundir <- dirname(file.mod)
 
+        exts <- c("\\.lst","\\.xml","\\.ext","\\.cov","\\.cor","\\.coi","\\.phi",".*msf","\\.msfi","\\.msfo","\\.shk","_input\\.rds")
+        exts.string <- paste0("(",paste(exts,collapse="|"),")")
+
+### backup previous results if any:
+        
+        files.found <- c(
+            list.files(rundir,pattern=sprintf("%s%s",fnExtension(basename(file.mod),""),exts.string)),
+            list.files(rundir,pattern=paste0("(",paste(NMscanTables(file.mod,meta.only=TRUE,as.fun="data.table")[,name],collapse="|"),")"))
+        )
+        ## make sure files.found does not contain input control stream or input data
+        if(length(files.found)){
+            if(backup){
+                dir.backup <- file.path(rundir,paste0("backup_",fnExtension(basename(file.mod),"")))
+                if(!dir.exists(dir.backup)){
+                    dir.create(dir.backup)
+                }
+                lapply(files.found,function(f) file.rename(file.path(rundir,f),file.path(dir.backup,f)))
+            } else {
+                lapply(file.path(rundir,files.found),unlink)
+            }
+        }
+        
         if(!isFALSE(input.archive(file.mod))){
             fn.input <- input.archive(file.mod)
 
             ## copy input data
-            if(packageVersion("NMdata")<"0.1.1"){
-                dat.inp <- NMscanInput(file=file.mod,translate=FALSE,applyFilters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
-            } else {
-                ## dat.inp <- NMscanInput(file=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",dir.data=dir.data,quiet=TRUE)
-                dat.inp <- NMscanInput(file=file.mod,file.mod=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",quiet=TRUE)
-            }
+            dat.inp <- NMscanInput(file=file.mod,file.mod=file.mod,translate=FALSE,apply.filters = FALSE,file.data="extract",quiet=TRUE)
             saveRDS(dat.inp,file=file.path(rundir,basename(fn.input)))
         }
 

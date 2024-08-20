@@ -45,7 +45,7 @@ Path to nonmem, psn, other ways to exec.
 ** TODO New function to apply time-varying covariates
 ** NMexec
 
-*** TODO [#B] Move selection of method.execute from NMsim
+*** DONE Move selection of method.execute from NMsim
 Now that method.execute="nmsim" works for general execution, it should
 be default method on all systems, and there is no reason why NMsim
 handles this differently than NMexec.
@@ -53,9 +53,7 @@ handles this differently than NMexec.
 *** TODO [#B] Check for existence of input data
 Currently, we get an error from NMscanInput. It would be clearer if
 this was checked by NMexec as a prerequisite.
-*** TODO [#B] Move existing results files to backup before running nonmem
-If this is not resolved, it is important. But right now NMsim is the
-priority, and NMsim already clears this before running.
+*** TODO [#A] Move existing results files to backup before running nonmem
 *** TODO Rename sge to parallel/cluster?
 It means if we send to the cluster. There is a slight difference of
 the implication in NMexec and NMsim. In NMexec, if we send to cluster
@@ -113,7 +111,8 @@ have to supply what dists are needed.
 *** DONE Make sure NMsim uses seed and args.seed meaningfully mean
 
 ** NMsim
-
+*** TODO [#A] When adding seed and SUBPROBLEMS, only add once
+If $SIMULATION spans more than one line, this is currently pasted repeatedly
 *** DONE Drop NMsim from file names
 In NMsim(), it happens here:
 #+begin_src R

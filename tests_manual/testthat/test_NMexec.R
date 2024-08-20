@@ -60,8 +60,8 @@ test_that("default - no sge - method.exec=nmsim",{
     file.mod <- "testData/nonmem/xgxr022.mod"
 
     ## set.seed(43)
-    res <- NMexec(file.mod,sge=FALSE  ,path.nonmem=path.nonmem,method.execute = "NMsim")
-
+    res <- NMexec(file.mod,sge=FALSE  ,path.nonmem=path.nonmem,method.execute = "NMsim",wait=T)
+    
     expect_equal_to_reference(res,fileRef)
 
     if(F){

@@ -22,6 +22,7 @@ NMexec(
   system.type,
   files.needed,
   clean = 1,
+  backup = TRUE,
   quiet = FALSE
 )
 }
@@ -127,6 +128,10 @@ behavior is applied, even though not as granular. NMsim's
 internal method only distinguishes between 0 (no cleaning),
 any integer 1-4 (default, quite a bit of cleaning) and 5
 (remove temporary dir completely).}
+
+\item{backup}{Before running, should existing results files be
+backed up in a sub directory? If not, the files will be
+deleted before running.}
 
 \item{quiet}{Suppress messages on what NMexec is doing? Default is
 FALSE.}
