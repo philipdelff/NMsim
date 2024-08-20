@@ -92,7 +92,44 @@ test_that("multiple $TABLE",{
 
     file.mod <- "testData/nonmem/xgxr032.mod"
 
+    res <- NMexec(file.mod , path.nonmem=path.nonmem,sge=F)
+
+    ext.res <- NMreadExt(file.mod)
+    dim.ext <- dim(ext.res)
+    expect_equal_to_reference(dim.ext,fileRef)
+
+    if(F){
+        ref <- readRDS(fileRef)
+    }
+    
+})
+
+
+test_that("multiple $TABLE on sge",{
+
+    fileRef <- "testReference/NMexec_05.rds"
+
+    file.mod <- "testData/nonmem/xgxr032.mod"
+
     res <- NMexec(file.mod , path.nonmem=path.nonmem,sge=T)
+
+    ext.res <- NMreadExt(file.mod)
+    dim.ext <- dim(ext.res)
+    expect_equal_to_reference(dim.ext,fileRef)
+
+    if(F){
+        ref <- readRDS(fileRef)
+    }
+    
+})
+
+test_that("multiple $TABLE",{
+
+    fileRef <- "testReference/NMexec_05.rds"
+
+    file.mod <- "testData/nonmem/xgxr032.mod"
+
+    res <- NMexec(file.mod , path.nonmem=path.nonmem,sge=F,clean=5)
 
     ext.res <- NMreadExt(file.mod)
     dim.ext <- dim(ext.res)

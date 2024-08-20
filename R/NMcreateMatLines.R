@@ -55,9 +55,9 @@ NMcreateMatLines <- function(omegas,type){
         } else {
             value.this <- omegas.long[i==i.this&j==i.this,value]
             res <- paste(value.this, "FIX")
-            if(value.this==0){
-                res <- paste(res,"FIX")
-            } 
+            ## if(value.this==0){
+            ##     res <- paste(res,"FIX")
+            ## } 
             loopres <- c(loopres,res)
             i.idx <- i.idx+1
         }

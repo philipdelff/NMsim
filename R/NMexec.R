@@ -82,6 +82,13 @@
 ##' @param system.type A charachter string, either \"windows\" or
 ##'     \"linux\" - case insensitive. Windows is only experimentally
 ##'     supported. Default is to use \code{Sys.info()[["sysname"]]}.
+##' @param clean The degree of cleaning (file removal) to do after
+##'     Nonmem execution. If `method.execute=="psn"`, this is passed
+##'     to PSN's `execute`. If `method.execute=="nmsim"` a similar
+##'     behavior is applied, even though not as granular. NMsim's
+##'     internal method only distinguishes between 0 (no cleaning),
+##'     any integer 1-4 (default, quite a bit of cleaning) and 5
+##'     (remove temporary dir completely).
 ##' @param quiet Suppress messages on what NMexec is doing? Default is
 ##'     FALSE.
 ##' @details Use this to read the archived input data when retrieving
@@ -120,7 +127,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                    nc=64,dir.data=NULL,wait=FALSE, args.psn.execute,
                    update.only=FALSE,nmquiet=FALSE,
                    method.execute,dir.psn,path.nonmem,system.type,
-                   files.needed,quiet=FALSE){
+                   files.needed,clean=1,quiet=FALSE){
     
     
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
@@ -162,7 +169,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     if(missing(args.psn.execute)) args.psn.execute <- NULL
     args.psn.execute <- simpleCharArg("args.psn.execute"
                                      ,args.psn.execute
-                                     ,default="-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi,shk"
+                                     ,default=sprintf("-clean=%s -model_dir_name -nm_output=xml,ext,cov,cor,coi,phi,shk",clean)
                                      ,accepted=NULL
                                      ,clean=FALSE
                                      ,lower=FALSE)
@@ -251,7 +258,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         
         if(NMsimConf$method.execute=="nmsim"){
             
-            string.cmd <- NMexecDirectory(file.mod,NMsimConf$path.nonmem,files.needed=files.needed,system.type=NMsimConf$system.type,dir.data=dir.data)
+            string.cmd <- NMexecDirectory(file.mod,NMsimConf$path.nonmem,files.needed=files.needed,system.type=NMsimConf$system.type,dir.data=dir.data,clean=clean)
             if(sge) {
 
                 if(nc==1){

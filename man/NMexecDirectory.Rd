@@ -9,7 +9,8 @@ NMexecDirectory(
   path.nonmem,
   files.needed,
   dir.data = "..",
-  system.type
+  system.type,
+  clean
 )
 }
 \arguments{
@@ -29,6 +30,14 @@ dir.data must be the relative path from where Nonmem is run to
 where the input data file is stored. This would be ".." if the
 run directory is created in a directory where the data is
 stored.}
+
+\item{clean}{The degree of cleaning (file removal) to do after
+Nonmem execution. If `method.execute=="psn"`, this is passed
+to PSN's `execute`. If `method.execute=="nmsim"` a similar
+behavior is applied, even though not as granular. NMsim's
+internal method only distinguishes between 0 (no cleaning),
+any integer 1-4 (default, quite a bit of cleaning) and 5
+(remove temporary dir completely).}
 }
 \value{
 A bash shell script for execution of Nonmem

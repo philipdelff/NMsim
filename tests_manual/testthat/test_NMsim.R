@@ -642,9 +642,9 @@ test_that("default with nc>1",{
 
 ##### it seems like for nc>1 we need to wait a little bit once Nonmem is done. This is not doing that and will most likely fail.
     ##Sys.sleep(5)
-    expect_error(
+    ##expect_error(
         simres <- NMreadSim(simtab,wait=T)
-    )
+##    )
 
     if(F){
         expect_equal(

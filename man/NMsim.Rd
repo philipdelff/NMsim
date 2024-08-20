@@ -45,6 +45,7 @@ NMsim(
   file.res,
   wait,
   auto.dv = TRUE,
+  clean,
   quiet = FALSE,
   check.mod = TRUE,
   seed,
@@ -337,6 +338,14 @@ a column of that name is not found? Nonmem is generally
 dependent on a `DV` column in input data but this is typically
 uninformative in simulation data sets and hence easily
 forgotten when generating simulation data sets.}
+
+\item{clean}{The degree of cleaning (file removal) to do after
+Nonmem execution. If `method.execute=="psn"`, this is passed
+to PSN's `execute`. If `method.execute=="nmsim"` a similar
+behavior is applied, even though not as granular. NMsim's
+internal method only distinguishes between 0 (no cleaning),
+any integer 1-4 (default, quite a bit of cleaning) and 5
+(remove temporary dir completely).}
 
 \item{quiet}{If TRUE, messages from what is going on will be
 suppressed.}
