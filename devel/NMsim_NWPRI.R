@@ -75,6 +75,11 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim){
     ## insert the lines into file.sim using NMdata::NMwriteSection(). Please see other simulation methods for inspiration - NMsim_typical is a simple one that shows the drill.
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim, section="SIMULATION", location="before", newlines=all.lines, backup=FALSE,quiet=TRUE)
     
+    if(return.text){
+        return(lines.sim)            
+    }
+    
+    writeTextFile(lines=lines.sim,file=file.sim)
     
     return(file.sim)
 
