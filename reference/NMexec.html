@@ -78,6 +78,7 @@ still be reproduced if the input data files should be updated.</p>
 <span>  <span class="va">system.type</span>,</span>
 <span>  <span class="va">files.needed</span>,</span>
 <span>  clean <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  backup <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -211,6 +212,12 @@ behavior is applied, even though not as granular. NMsim's
 internal method only distinguishes between 0 (no cleaning),
 any integer 1-4 (default, quite a bit of cleaning) and 5
 (remove temporary dir completely).</p></dd>
+
+
+<dt id="arg-backup">backup<a class="anchor" aria-label="anchor" href="#arg-backup"></a></dt>
+<dd><p>Before running, should existing results files be
+backed up in a sub directory? If not, the files will be
+deleted before running.</p></dd>
 
 
 <dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
