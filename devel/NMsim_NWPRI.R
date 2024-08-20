@@ -100,12 +100,6 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     
     writeTextFile(lines=lines.sim,file=file.sim)
     
-    if(return.text){
-        return(lines.sim)            
-    }
-    
-    writeTextFile(lines=lines.sim,file=file.sim)
-    
     return(file.sim)
 
 }

@@ -1,13 +1,18 @@
-file.mod <- "example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod"
 
+devtools::load_all(here::here("wdirs/NMdata"))
+NMdata::NMdataConf(as.fun = "data.table")
+devtools::load_all(here::here("wdirs/NMsim"))
 
+file.mod <- here::here("wdirs/NMsim/devel/example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod")
+dat.sim = "example_nonmem_models/derived_data/simulated_nonmem_dataset_mod_lorlatinib.csv"
+data.sim = data.table::fread(here::here("wdirs/NMsim/devel", dat.sim))
 ## need a relevant simulation data set
 
 
 simres <- NMsim(file.mod,
                 data=data.sim,
-                method.sim=NMsim_NWPRI
-                dir.sims
+                method.sim=NMsim_NWPRI,
+                subproblems=5
                 )
                 
 
