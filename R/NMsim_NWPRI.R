@@ -26,6 +26,7 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     blocksize <- NULL
     est <- NULL
     i <- NULL
+    imin <- NULL
     iblock <- NULL
     j <- NULL
     line <- NULL
@@ -48,19 +49,29 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     cov <- NMreadCov(fnExtension(file.mod,".cov"))
     pars <- NMreadExt(file.mod,return="pars",as.fun="data.table")[,value:=est]
 
-####### identifying iblock and blocksize. Needed until NMdata >= 0.1.7
+
 ### add OMEGA block information based on off diagonal values
     tab.blocks <- rbind(pars[par.type%in%c("OMEGA","SIGMA"),.(par.type,i=i,j=j,value)],
                         pars[par.type%in%c("OMEGA","SIGMA"),.(par.type,i=j,j=i,value)])[
         abs(value)>1e-9,.(iblock=min(i,j),blocksize=max(abs(j-i))+1),by=.(par.type,i)]
-    
-    pars <- mergeCheck(pars[,setdiff(colnames(pars),c("iblock","blocksize")),with=FALSE],tab.blocks,by=cc(par.type,i),all.x=T,quiet=TRUE)
+
+    ## pars0 <- copy(pars)
+    ## tab.blocks
+    pars <- mergeCheck(pars[,setdiff(colnames(pars),c("iblock","blocksize")),with=FALSE],
+                       tab.blocks,by=cc(par.type,i),all.x=T,quiet=TRUE)
+
+    ## pars[par.type%in%c("OMEGA","SIGMA"),.(i,j,iblock,blocksize,value)]
+
     pars[abs(i-j)>(blocksize-1),(c("iblock","blocksize")):=list(NA,NA)]
+    pars[!is.na(iblock),imin:=min(i),by=.(iblock)]
+    pars[j<imin,(c("iblock","blocksize")):=list(NA,NA)]
+    pars[,imin:=NULL]
 
+    ## pars[par.type%in%c("OMEGA","SIGMA"),.(i,j,iblock,blocksize,imin,value)]
+    
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&is.na(iblock),iblock:=i]
-    pars[par.type%in%c("OMEGA","SIGMA")&i==j&iblock==i,blocksize:=1]
+    pars[par.type%in%c("OMEGA","SIGMA")&i==j&iblock==i&is.na(blocksize),blocksize:=1]
 ### done add OMEGA/SIGMA blocks
-
     
 ### Add degrees of freedom for inverse-wishart distribution for OMEGA/SIGMA
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), N := 2*((est**2)/(se**2)) + 1]

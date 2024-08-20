@@ -1143,6 +1143,11 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     
 ### seed and subproblems
+    paste.end <- function(x,add,...){
+        c(x[0:(length(x)-1)],
+          paste(x[length(x)],add,...)
+          )
+    }
     if(do.seed || subproblems>0){
         dt.models[,{
             
@@ -1161,13 +1166,16 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 section.sim <- all.sections.sim[[name.sim]]
                 
                 section.sim <- gsub("\\([0-9]+\\)","",section.sim)
-                section.sim <- paste(section.sim,seed)
+                ## section.sim <- paste(section.sim,seed)
+                section.sim <- paste.end(section.sim,seed)
                                         #}
                 if(subproblems>0){
                     section.sim <- gsub("SUBPROBLEMS *= *[0-9]*"," ",section.sim)
-                    section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
+                    ## section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
+                    section.sim <- paste.end(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
                 }
-                section.sim <- paste(section.sim,text.sim)
+                ## section.sim <- paste(section.sim,text.sim)
+                section.sim <- paste.end(section.sim,text.sim)
                 lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="simulation",newlines=section.sim,quiet=TRUE,backup=FALSE)
                 writeTextFile(lines.sim,path.sim)
             }
@@ -1270,7 +1278,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                    system.type=NMsimConf$system.type,
                    files.needed=files.needed.n,
                    input.archive=input.archive,
-                   dir.data="..",clean=clean)
+                   dir.data="..",clean=clean,
+                   backup=FALSE)
             
             ## simres.n <- list(lst=path.sim.lst)
             ## simres.n

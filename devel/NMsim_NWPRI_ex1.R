@@ -8,6 +8,8 @@ load_all("~/wdirs/NMsim")
 file.mod <- "example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod"
 NMreadSection(file.mod,section="OMEGA")
 
+quiet <- NMreadSection(file.mod)[c("THETA","OMEGA","SIGMA")] |> lapply(function(x)cat(paste(paste(x,collapse="\n"),"\n\n")))
+
 NMreadExt(file.mod,return="pars",as.fun="data.table")[,.(par.name,i,j,iblock,blocksize,value)]
 ## need a relevant simulation data set
 
@@ -28,10 +30,12 @@ unloadNamespace("NMdata")
 load_all("~/wdirs/NMdata")
 load_all("~/wdirs/NMsim")
 
+NMdataConf()
+
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 ## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
 file.mod <- file.project("nonmem/xgxr032.mod")
-dat.sim <- read_fst("simulate-results/dat_sim.fst")
+dat.sim <- read_fst("~/wdirs/NMsim/vignettes/simulate-results/dat_sim.fst")
 
 simlsts.NWPRI <- NMsim(
     file.mod=file.mod,              ## Path to estimation input control stream
@@ -59,18 +63,21 @@ res <- NMscanData("/data/home/philipde/NMsim_vignette/tmp/xgxr032_NWPRI_man2.lst
 NMexec("/data/home/philipde/NMsim_vignette/tmp/xgxr032_NWPRI_man3.mod",sge=F)
 
 allres <- NMscanData("/data/home/philipde/NMsim_vignette/tmp/xgxr032_NWPRI_man3.lst",as.fun="data.table")
-
+allres[,LTVCL]
+allres[TIME==11,]
 
 ### Then I tried to remove FIX/FIXED from $OMEGAPD
-NMexec("/data/home/philipde/NMsim_vignette/tmp/xgxr032_NWPRI_man4.mod",sge=F)
+## NMexec("/data/home/philipde/NMsim_vignette/tmp/xgxr032_NWPRI_man4.mod",sge=F)
 
-allres <- NMscanData("/data/home/philipde/NMsim_vignette/tmp/xgxr032_NWPRI_man3.lst",as.fun="data.table")
+## allres <- NMscanData("/data/home/philipde/NMsim_vignette/tmp/xgxr032_NWPRI_man4.lst",as.fun="data.table")
 
 ## long format so calculations can be done by prediction type.
 allresl <- melt(allres[EVID==2],
                 measure.vars=c("PRED","IPRED"),
                 variable.name="pred.type",
                 value.name="pred.value")
+
+allresl[pred.type=="PRED"&TIME==8,pred.value]
 
 ## deriving median by model and time to have a single value per model
 ## and time point. This is only needed in case multiple subjects are
