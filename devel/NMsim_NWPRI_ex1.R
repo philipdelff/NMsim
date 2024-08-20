@@ -1,12 +1,18 @@
+#### testing NMdata::NMreadExt()
+unloadNamespace("NMsim")
+unloadNamespace("NMdata")
 
-devtools::load_all(here::here("wdirs/NMdata"))
-NMdata::NMdataConf(as.fun = "data.table")
-devtools::load_all(here::here("wdirs/NMsim"))
+load_all("~/wdirs/NMdata")
+load_all("~/wdirs/NMsim")
 
-file.mod <- here::here("wdirs/NMsim/devel/example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod")
-dat.sim = "example_nonmem_models/derived_data/simulated_nonmem_dataset_mod_lorlatinib.csv"
-data.sim = data.table::fread(here::here("wdirs/NMsim/devel", dat.sim))
+file.mod <- "example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod"
+NMreadSection(file.mod,section="OMEGA")
+
+NMreadExt(file.mod,return="pars",as.fun="data.table")[,.(par.name,i,j,iblock,blocksize,value)]
+
 ## need a relevant simulation data set
+
+### NMreadExt() test end
 
 
 simres <- NMsim(file.mod,
