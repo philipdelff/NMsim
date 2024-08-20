@@ -1,7 +1,17 @@
+#### testing NMdata::NMreadExt()
+unloadNamespace("NMsim")
+unloadNamespace("NMdata")
+
+load_all("~/wdirs/NMdata")
+load_all("~/wdirs/NMsim")
+
 file.mod <- "example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod"
+NMreadSection(file.mod,section="OMEGA")
 
-
+NMreadExt(file.mod,return="pars",as.fun="data.table")[,.(par.name,i,j,iblock,blocksize,value)]
 ## need a relevant simulation data set
+
+### NMreadExt() test end
 
 
 simres <- NMsim(file.mod,
