@@ -11,6 +11,7 @@ NMreadSection(file.mod,section="OMEGA")
 quiet <- NMreadSection(file.mod)[c("THETA","OMEGA","SIGMA")] |> lapply(function(x)cat(paste(paste(x,collapse="\n"),"\n\n")))
 
 NMreadExt(file.mod,return="pars",as.fun="data.table")[,.(par.name,i,j,iblock,blocksize,value)]
+
 ## need a relevant simulation data set
 
 ### NMreadExt() test end
@@ -18,8 +19,8 @@ NMreadExt(file.mod,return="pars",as.fun="data.table")[,.(par.name,i,j,iblock,blo
 
 simres <- NMsim(file.mod,
                 data=data.sim,
-                method.sim=NMsim_NWPRI
-                dir.sims
+                method.sim=NMsim_NWPRI,
+                subproblems=5
                 )
                 
 
