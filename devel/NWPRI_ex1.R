@@ -22,7 +22,7 @@ NMdataConf(as.fun="data.table"
           ,dir.res="simres"
            ##    ,file.data=NMsim::inputArchiveDefault
            )
-                                        # file.mod <- "~/wdirs/NMsim/inst/examples/nonmem/xgxr033.mod"
+                                        # file.mod <- here::here("wdirs/NMsim/inst/examples/nonmem/xgxr033.mod")
 file.mod <- here::here("wdirs/NMsim/devel/example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod")
 
 cov <- NMdata::NMreadCov(file.mod |> fnExtension(".cov"))
@@ -30,6 +30,9 @@ cov <- NMdata::NMreadCov(file.mod |> fnExtension(".cov"))
 ext <- NMreadExt(file.mod)
 ext
 
+if(is.null(ext$est) & !is.null(ext$value)) {
+  ext[, est:=value]
+  }
 setnames(ext,"est","value")
 
 ## create THETAP section
@@ -258,7 +261,7 @@ NMsim(
                                         # add additional parameters/arguments to $SIMULATION using text.sim; TRUE=PRIOR is required
     text.sim = "TRUE=PRIOR",
     table.vars = paste0(
-        "PRED IPRED Y ",
+        "PRED IPRED Y TVCL CL TVF1 F1 ",
         paste0(thetas$parameter, collapse = " "),
         " ",
         paste0(gsub("\\)|\\(|,", "", omegas$parameter), collapse = " "),
@@ -283,3 +286,19 @@ dplyr::select(d, NMREP, THETA1:SIGMA11) %>%
                                         # geom_density() + 
     facet_wrap(~ name, scales = "free") +
     theme_bw()
+
+# are there different parameter values for each NMREP?
+d %>% filter(ID==1,CMT==2,TIME<50) %>% ggplot(aes(x=TIME,y=IPRED,color=NMREP,group=NMREP))+geom_line()
+
+# Is the mean of the IPREDs different across NMREP? i.e. are the ETAS distributed around different PRED?
+d %>% 
+  filter(EVID==0) %>% 
+  summarise(PRED = median(IPRED), .by = c(NMREP, TIME,CMT)) %>% 
+  ggplot(aes(x=TIME,y=PRED,color=NMREP,group=NMREP))+
+  geom_line()
+
+
+d %>% 
+  distinct(NMREP,ID,TVF1,F1) %>% 
+  mutate( mf1 = mean(F1), .by = NMREP) %>% 
+  distinct(TVF1, mf1,NMREP)
