@@ -31,7 +31,7 @@
 ##'     to be available for further processing.
 ##' @param args.psn.execute A character string with arguments passed
 ##'     to execute. Default is
-##'     "-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi,shk".
+##'     "-model_dir_name -nm_output=coi,cor,cov,ext,phi,shk,xml".
 ##' @param update.only Only run model(s) if control stream or data
 ##'     updated since last run?
 ##' @param nmquiet Suppress terminal output from `Nonmem`. This is
@@ -173,7 +173,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     if(missing(args.psn.execute)) args.psn.execute <- NULL
     args.psn.execute <- simpleCharArg("args.psn.execute"
                                      ,args.psn.execute
-                                     ,default=sprintf("-clean=%s -model_dir_name -nm_output=cov,cor,coi,ext,lst,phi,shk,xml",clean)
+                                     ,default=sprintf("-clean=%s -model_dir_name -nm_output=coi,cor,cov,ext,phi,shk,xml",clean)
                                      ,accepted=NULL
                                      ,clean=FALSE
                                      ,lower=FALSE)
@@ -218,7 +218,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         ## replace extension of fn.input based on path.input - prefer rds
         rundir <- dirname(file.mod)
 
-        exts <- c("\\.lst","\\.xml","\\.ext","\\.cov","\\.cor","\\.coi","\\.phi",".*msf","\\.msfi","\\.msfo","\\.shk","_input\\.rds")
+        exts <- c("\\.cov","\\.cor","\\.coi","\\.ext","\\.lst",".*msf","\\.msfi","\\.msfo","\\.phi","_input\\.rds","\\.shk","\\.xml")
         exts.string <- paste0("(",paste(exts,collapse="|"),")")
 
 ### backup previous results if any:
@@ -235,10 +235,11 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                     unlink(dir.backup,recursive=TRUE)
                 }
                 dir.create(dir.backup)
-                lapply(files.found,function(f) file.rename(
+                lapply(c(files.found),function(f) file.rename(
                                                    from=file.path(rundir,f),
                                                    to=file.path(dir.backup,f)
-                                                   ))
+                                                  ))
+                file.copy(file.mod,dir.backup)
             } else {
                 lapply(file.path(rundir,files.found),unlink)
             }
@@ -338,4 +339,5 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     }
 
     return(invisible(NULL))
+
 }
