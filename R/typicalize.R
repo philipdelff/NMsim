@@ -13,6 +13,7 @@ typicalize <- function(file.sim,lines.sim,file.mod,return.text=FALSE,file.ext,Ne
     ## files.needed.def <- NMsim_default(file.sim=file.sim,file.mod,data.sim)
     if(!is.null(file.sim)){
         lines.sim <- readLines(file.sim)
+        sections.sim <- NMreadSection(lines=lines.sim)
     }
     
     if(missing(Netas)) Netas <- NULL
@@ -34,6 +35,10 @@ typicalize <- function(file.sim,lines.sim,file.mod,return.text=FALSE,file.ext,Ne
     lines.omega <- paste(c("$OMEGA",rep("0 FIX",Netas),""),collapse="\n")
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="omega",newlines=lines.omega,backup=FALSE,quiet=TRUE)
 
+### TODO create new omegap and omegapd sections
+    ## lines.omegap <- paste(c("$OMEGAP",rep("1E-30 FIX",Netas),""),collapse="\n")
+    ## lines.omegapd <- paste(c("$OMEGAPD",rep("1E5 FIX",Netas),""),collapse="\n")
+    
     if(return.text){
         return(lines.sim)            
     }

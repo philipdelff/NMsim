@@ -1,4 +1,5 @@
-##' Simulate with uncertainty using inverse-Wishart distribution for OMEGA and SIGMA parameters
+##' Simulate with uncertainty using inverse-Wishart distribution for
+##' OMEGA and SIGMA parameters
 ##' @param file.sim See \code{?NMsim}.
 ##' @param file.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.

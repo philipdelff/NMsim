@@ -173,7 +173,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     if(missing(args.psn.execute)) args.psn.execute <- NULL
     args.psn.execute <- simpleCharArg("args.psn.execute"
                                      ,args.psn.execute
-                                     ,default=sprintf("-clean=%s -model_dir_name -nm_output=xml,ext,cov,cor,coi,phi,shk",clean)
+                                     ,default=sprintf("-clean=%s -model_dir_name -nm_output=cov,cor,coi,ext,lst,phi,shk,xml",clean)
                                      ,accepted=NULL
                                      ,clean=FALSE
                                      ,lower=FALSE)
@@ -231,10 +231,14 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         if(length(files.found)){
             if(backup){
                 dir.backup <- file.path(rundir,paste0("backup_",fnExtension(basename(file.mod),"")))
-                if(!dir.exists(dir.backup)){
-                    dir.create(dir.backup)
+                if(dir.exists(dir.backup)){
+                    unlink(dir.backup,recursive=TRUE)
                 }
-                lapply(files.found,function(f) file.rename(file.path(rundir,f),file.path(dir.backup,f)))
+                dir.create(dir.backup)
+                lapply(files.found,function(f) file.rename(
+                                                   from=file.path(rundir,f),
+                                                   to=file.path(dir.backup,f)
+                                                   ))
             } else {
                 lapply(file.path(rundir,files.found),unlink)
             }

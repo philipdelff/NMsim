@@ -1278,7 +1278,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                    system.type=NMsimConf$system.type,
                    files.needed=files.needed.n,
                    input.archive=input.archive,
-                   dir.data="..",clean=clean,
+                   dir.data="..",
+                   clean=clean,
                    backup=FALSE)
             
             ## simres.n <- list(lst=path.sim.lst)

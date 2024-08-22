@@ -268,6 +268,8 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
                                     ),silent=TRUE)
             if(inherits(this.res,"try-error")){
                 if(!quiet) {
+### todo: look for lines.lst and recursively for nmtran_error.txt
+                    
                     lines.lst <- readLines(path.lst.read)
                     nlines <- length(lines.lst)
                     message(sprintf("Results could not be read from %s\nPasting the bottom of output control stream:\n----------------------------------------------\n%s\n----------------------------------------------",path.lst.read,paste(lines.lst[(nlines-25):nlines],collapse="\n")))
