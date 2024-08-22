@@ -1,16 +1,21 @@
 #### testing NMdata::NMreadExt()
 unloadNamespace("NMsim")
 unloadNamespace("NMdata")
+library(devtools)
+library(here)
+setwd("/data/sandbox/trunk/analysis/NMsim/wdirs")
+load_all("NMdata")
+load_all("NMsim")
 
-load_all("~/wdirs/NMdata")
-load_all("~/wdirs/NMsim")
+file.mod <- here::here("wdirs/NMsim/devel/example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod")
+data.sim <- fread(here("wdirs/NMsim/devel/example_nonmem_models/derived_data/simulated_nonmem_dataset_mod_lorlatinib.csv"))
 
-file.mod <- "example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod"
 NMreadSection(file.mod,section="OMEGA")
 
 quiet <- NMreadSection(file.mod)[c("THETA","OMEGA","SIGMA")] |> lapply(function(x)cat(paste(paste(x,collapse="\n"),"\n\n")))
 
-NMreadExt(file.mod,return="pars",as.fun="data.table")[,.(par.name,i,j,iblock,blocksize,value)]
+pars = NMreadExt(file.mod,return="pars",as.fun="data.table")[,.(parameter,par.name,i,j,iblock,blocksize,value)]
+pars[, parlab := stringr::str_remove_all(string = parameter, pattern = "\\(|\\)") %>% stringr::str_replace(",", "\\_")]
 
 ## need a relevant simulation data set
 
@@ -20,9 +25,39 @@ NMreadExt(file.mod,return="pars",as.fun="data.table")[,.(par.name,i,j,iblock,blo
 simres <- NMsim(file.mod,
                 data=data.sim,
                 method.sim=NMsim_NWPRI,
-                subproblems=5
+                method.execute = "nmsim",
+                path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
+                subproblems=500,
+                modify.model = list(
+                   # name the THETAS/OMEGAS/SIGMAS in $ERROR so we can compare the distributions to other methods. 
+                   ERROR = function(.x)
+                      c(
+                         .x,
+                         paste0(pars$parlab, " = ", pars$par.name)
+                      )
+                ),
+                table.vars = paste0(
+                   "PRED IPRED Y ",
+                   paste0(pars$parlab, collapse = " ")
+                )
                 )
                 
+
+library(tidyverse)
+dplyr::select(simres, NMREP, THETA1:SIGMA1_1 ) %>% 
+   distinct() %>% 
+   pivot_longer(!NMREP) %>%
+   # mutate(keep = ifelse(length(unique(value))==1, 0, 1), .by = name) %>% 
+   # filter(keep==1) %>% 
+   
+   ggplot(aes(x = value)) + 
+   geom_histogram(bins=25)+
+   # geom_density() + 
+   facet_wrap(~ name, scales = "free") +
+   theme_bw()
+
+
+
 
 #### The model shown in the NMsim-ParamUncertain vignette
 unloadNamespace("NMsim")
@@ -36,19 +71,38 @@ NMdataConf()
 file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
 ## file.project <- function(...)file.path("~/wdirs/NMsim/inst/examples",...)
 file.mod <- file.project("nonmem/xgxr032.mod")
-dat.sim <- read_fst("~/wdirs/NMsim/vignettes/simulate-results/dat_sim.fst")
+dat.sim <- read_fst(here::here("wdirs/NMsim/vignettes/simulate-results/dat_sim.fst"))
+pars = NMreadExt(file.mod,return="pars",as.fun="data.table")[,.(parameter,par.name,i,j,iblock,blocksize,value)]
+pars[, parlab := stringr::str_remove_all(string = parameter, pattern = "\\(|\\)") %>% stringr::str_replace(",", "\\_")]
 
 simlsts.NWPRI <- NMsim(
     file.mod=file.mod,              ## Path to estimation input control stream
     data=dat.sim                    ## simulation input data
-   ,dir.sims="~/NMsim_vignette/tmp" ## where to store temporary simulation files
+   ,dir.sims=here::here("wdirs/NMsim/devel/NMsim_vignette/tmp") ## where to store temporary simulation files
    ,dir.res="simulate-results"      ## where to store simulation results files
-   ,table.vars="PRED IPRED Y"         ## Let Nonmem write a minimum output table
+   ,modify.model = list(
+      # name the THETAS/OMEGAS/SIGMAS in $ERROR so we can compare the distributions to other methods. 
+      ERROR = function(.x) c(  .x,   paste0(pars$parlab, " = ", pars$par.name) )
+   )
+   ,table.vars = paste0( "PRED IPRED Y ", paste0(pars$parlab, collapse = " ") )   
    ,method.sim=NMsim_NWPRI         ## Var-Cov parameter sampling
    ,name.sim="NWPRI"               ## a recognizable directory name
    ,subproblems=500                       ## sampling 500 models
    ,sge=FALSE                        ## run simulations in parallel please
 )
+
+library(tidyverse)
+dplyr::select(simlsts.NWPRI, THETA1:NMREP ) %>% 
+   distinct() %>% 
+   pivot_longer(!NMREP) %>%
+   # mutate(keep = ifelse(length(unique(value))==1, 0, 1), .by = name) %>% 
+   # filter(keep==1) %>% 
+   
+   ggplot(aes(x = value)) + 
+   geom_histogram(bins=25)+
+   # geom_density() + 
+   facet_wrap(~ name, scales = "free") +
+   theme_bw()
 
 
 ### I tried changing the OMEGAPD values from 1 to 0. Same result.
