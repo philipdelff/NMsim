@@ -12,6 +12,12 @@
 
 NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
 
+    file.project <- function(...)file.path(system.file("examples",package="NMsim"),...)
+    file.mod <- file.project("nonmem/xgxr032.mod")
+    dat.sim <- read_fst(here::here("wdirs/NMsim/vignettes/simulate-results/dat_sim.fst"))
+    NMsim(file.mod, data = dat.sim, dir.sims = file.path("devel/example_nonmem_models/test_sim"), method.sim = NMsim_default, method.execute = "nmsim", path.nonmem = "/opt/NONMEM/nm75/run/nmfe75")
+    file.sim = "/data/sandbox/trunk/analysis/NMsim/wdirs/NMsim/devel/example_nonmem_models/test_sim/xgxr032_noname/xgxr032_noname.mod"
+    
 ### NMsim_default() is run because it inserts $SIMULATION instead of
 ### $ESTIMATION and a few other things that are always needed.
     files.needed.def <- NMsim_default(file.sim=file.sim,file.mod,data.sim)
@@ -28,7 +34,7 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     
     tab.blocks
 
-    pars <- mergeCheck(pars,tab.blocks,by=cc(par.type,i),all.x=T)
+    pars <- mergeCheck(pars[,!c("iblock","blocksize"),with=F],tab.blocks,by=cc(par.type,i),all.x=T)
     pars[abs(i-j)>(blocksize-1),(c("iblock","blocksize")):=list(NA,NA)]
 
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&is.na(iblock),iblock:=i]
@@ -64,7 +70,7 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     lines.thetapv = prettyMatLines(lines.thetapv)
     
     ## $OMEGAP
-    lines.omegap <- NMcreateMatLines(pars[par.type=="OMEGA"],type="OMEGA")
+    lines.omegap <- NMcreateMatLines(pars[par.type=="OMEGA",.(par.type,parameter,par.name,i,j,FIX,value=ifelse(value==0,1e-30,value))],type="OMEGA")
     lines.omegap <- sub("\\$OMEGA","\\$OMEGAP",lines.omegap)
                                         # below was for previous version of NMcreateMatLines where it would not add FIX after non-block omegas. This was updated (in testing now)
                                         # lines.omegap  = sapply(lines.omegap, FUN = function(.x) ifelse((!grepl("BLOCK",.x)&!grepl("FIX",.x)), paste0(.x, " FIX"), .x), USE.NAMES = FALSE)
@@ -74,7 +80,7 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     lines.omegapd = nwpri_df[par.type=="OMEGA"]$line
     
     ## $SIGMAP
-    lines.sigmap <- NMcreateMatLines(pars[par.type=="SIGMA"],type="SIGMA")
+    lines.sigmap <- NMcreateMatLines(pars[par.type=="SIGMA",.(par.type,parameter,par.name,i,j,FIX,value=ifelse(value==0,1e-30,value))],type="SIGMA")
     lines.sigmap <- sub("\\$SIGMA","\\$SIGMAP",lines.sigmap)
                                         # lines.sigmap  = sapply(lines.sigmap, FUN = function(.x) ifelse((!grepl("BLOCK",.x)&!grepl("FIX",.x)), paste0(.x, " FIX"), .x), USE.NAMES = FALSE)
     lines.sigmap <- lapply(X=lines.sigmap, FUN=function(.x) ifelse(grepl("BLOCK",.x), return(prettyMatLines(block_mat_string = .x)), return(.x))) |> unlist()
@@ -83,7 +89,7 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     lines.sigmapd = nwpri_df[par.type=="SIGMA"]$line
     
     ## $PRIOR
-    lines.prior = sprintf("$PRIOR NWPRI PLEV=%d",PLEV)
+    lines.prior = sprintf("$PRIOR NWPRI PLEV=%f",PLEV)
     
     all.lines = c(lines.prior, lines.thetap, lines.thetapv, lines.omegap, lines.omegapd, lines.sigmap, lines.sigmapd)
     

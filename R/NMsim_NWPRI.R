@@ -3,15 +3,19 @@
 ##' @param file.sim See \code{?NMsim}.
 ##' @param file.mod See \code{?NMsim}.
 ##' @param data.sim See \code{?NMsim}.
-##' @param PLEV Used in \code{$PRIOR NWPRI PLEV=0.999}
+##' @param PLEV Used in \code{$PRIOR NWPRI PLEV=0.999}. This is a 
+##'     NONMEM argument to the NWPRI subroutine. When PLEV < 1, a 
+##'     value of THETA will actually be obtained using a truncated 
+##'     multivariate normal distribution, i.e. from an ellipsoidal 
+##'     region R1 over which  only  a fraction of mass of the 
+##'     normal occurs. This fraction is given by PLEV.
 ##' @details Simulate with parameter uncertainty. THETA parameters are
 ##'     sampled from a multivariate normal distribution while OMEGA
-##'     and SIGMA are simulated from the inverse Wishart
+##'     and SIGMA are simulated from the inverse-Wishart
 ##'     distribution. Correlations of OMEGA and SIGMA parameters will
 ##'     only be applied within modeled "blocks".
-##' @references DF calculation: NONMEM tutorial part II, supplement 1,
-##'     part C.
-##'     https://ascpt.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2Fpsp4.12422&file=psp412422-sup-0001-Supinfo1.pdf
+##' @references
+##'     \href{https://ascpt.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2Fpsp4.12422&file=psp412422-sup-0001-Supinfo1.pdf}{inverse-Wishart degrees of freedom calculation for OMEGA and SIGMA: NONMEM tutorial part II, supplement 1, part C.}
 ##' @seealso NMsim_VarCov
 ##' @import NMdata
 ##' @import data.table
@@ -41,6 +45,8 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     se <- NULL
     value <- NULL
 
+
+    
     
 ### NMsim_default() is run because it inserts $SIMULATION instead of
 ### $ESTIMATION and a few other things that are always needed.
@@ -79,19 +85,19 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), DF := N-blocksize-1]
     ## DF cannot be smaller than the number of parameters in the block
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), DF := ifelse(DF<blocksize, blocksize, DF)]
-    ## If parameter is fixed, set DF=dimension of omega/sigma block for an uninformative distribution
+    # If parameter is fixed, set DF=block size to indicate we want a point estimate.
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), DF := ifelse(FIX==1, blocksize, DF)]
     ## take the minimum DF per omega/sigma matrix:
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), DF2 := min(DF, na.rm = TRUE), by = .(par.type,iblock)]
     
     nwpri_df = unique(pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock),.(par.type,iblock, DF2)])
-    nwpri_df[,line := paste0("$", par.type,"PD ", DF2, " FIXED")]
+    nwpri_df[,line := paste0("$", par.type,"PD ", DF2, " FIX")]
 ### done add degrees of freedom
     
     ## derive the different sets of new lines needed
     ## $THETAP section
     thetas <- pars[par.type=="THETA"][order(i)]
-    lines.thetap <- c("$THETAP", paste(thetas[,est], "FIXED"))
+    lines.thetap <- c("$THETAP", paste(thetas[,est], "FIX"))
     ## $THETAPV
     cov.l <- mat2dt(cov,as.fun="data.table")
     cov.l <- addParType(cov.l,suffix="i")
@@ -102,7 +108,8 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     lines.thetapv = prettyMatLines(lines.thetapv)
     
     ## $OMEGAP
-    lines.omegap <- NMcreateMatLines(pars[par.type=="OMEGA"],type="OMEGA")
+    # note: set 0 FIXED sigmas/omegas to 1e-30 to avoid non-semi-positive definite matrices error
+    lines.omegap <- NMcreateMatLines(pars[par.type=="OMEGA",.(par.type,parameter,par.name,i,j,FIX,value=ifelse(value==0,1e-30,value))],type="OMEGA")
     lines.omegap <- sub("\\$OMEGA","\\$OMEGAP",lines.omegap)
                                         # below was for previous version of NMcreateMatLines where it would not add FIX after non-block omegas. This was updated (in testing now)
                                         # lines.omegap  = sapply(lines.omegap, FUN = function(.x) ifelse((!grepl("BLOCK",.x)&!grepl("FIX",.x)), paste0(.x, " FIX"), .x), USE.NAMES = FALSE)
@@ -112,7 +119,8 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     lines.omegapd = nwpri_df[par.type=="OMEGA"]$line
     
     ## $SIGMAP
-    lines.sigmap <- NMcreateMatLines(pars[par.type=="SIGMA"],type="SIGMA")
+    # note: set 0 FIXED sigmas/omegas to 1e-30 to avoid non-semi-positive definite matrices error
+    lines.sigmap <- NMcreateMatLines(pars[par.type=="SIGMA",.(par.type,parameter,par.name,i,j,FIX,value=ifelse(value==0,1e-30,value))],type="SIGMA")
     lines.sigmap <- sub("\\$SIGMA","\\$SIGMAP",lines.sigmap)
                                         # lines.sigmap  = sapply(lines.sigmap, FUN = function(.x) ifelse((!grepl("BLOCK",.x)&!grepl("FIX",.x)), paste0(.x, " FIX"), .x), USE.NAMES = FALSE)
     lines.sigmap <- lapply(X=lines.sigmap, FUN=function(.x) ifelse(grepl("BLOCK",.x), return(prettyMatLines(block_mat_string = .x)), return(.x))) |> unlist()
