@@ -113,7 +113,8 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     lines.omegap <- sub("\\$OMEGA","\\$OMEGAP",lines.omegap)
                                         # below was for previous version of NMcreateMatLines where it would not add FIX after non-block omegas. This was updated (in testing now)
                                         # lines.omegap  = sapply(lines.omegap, FUN = function(.x) ifelse((!grepl("BLOCK",.x)&!grepl("FIX",.x)), paste0(.x, " FIX"), .x), USE.NAMES = FALSE)
-    lines.omegap <- lapply(X=lines.omegap, FUN=function(.x) ifelse(grepl("BLOCK",.x), return(prettyMatLines(block_mat_string = .x)), return(.x))) |> unlist()
+    lines.omegap <- lapply(X=lines.omegap, FUN=function(.x) ifelse(grepl("BLOCK",.x), return(prettyMatLines(block_mat_string = .x)), return(.x))) 
+    lines.omegap <- unlist(lines.omegap)
     
     ## $OMEGAPD
     lines.omegapd = nwpri_df[par.type=="OMEGA"]$line
@@ -123,7 +124,8 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     lines.sigmap <- NMcreateMatLines(pars[par.type=="SIGMA",.(par.type,parameter,par.name,i,j,FIX,value=ifelse(value==0,1e-30,value))],type="SIGMA")
     lines.sigmap <- sub("\\$SIGMA","\\$SIGMAP",lines.sigmap)
                                         # lines.sigmap  = sapply(lines.sigmap, FUN = function(.x) ifelse((!grepl("BLOCK",.x)&!grepl("FIX",.x)), paste0(.x, " FIX"), .x), USE.NAMES = FALSE)
-    lines.sigmap <- lapply(X=lines.sigmap, FUN=function(.x) ifelse(grepl("BLOCK",.x), return(prettyMatLines(block_mat_string = .x)), return(.x))) |> unlist()
+    lines.sigmap <- lapply(X=lines.sigmap, FUN=function(.x) ifelse(grepl("BLOCK",.x), return(prettyMatLines(block_mat_string = .x)), return(.x))) 
+    lines.sigmap <- unlist(lines.sigmap)
     
     ## $SIGMAPD
     lines.sigmapd = nwpri_df[par.type=="SIGMA"]$line
