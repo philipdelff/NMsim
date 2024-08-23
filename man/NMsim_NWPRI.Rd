@@ -2,7 +2,8 @@
 % Please edit documentation in R/NMsim_NWPRI.R
 \name{NMsim_NWPRI}
 \alias{NMsim_NWPRI}
-\title{Simulate with uncertainty using inverse-Wishart distribution for OMEGA and SIGMA parameters}
+\title{Simulate with uncertainty using inverse-Wishart distribution for
+OMEGA and SIGMA parameters}
 \usage{
 NMsim_NWPRI(file.sim, file.mod, data.sim, PLEV = 0.999)
 }
@@ -13,22 +14,26 @@ NMsim_NWPRI(file.sim, file.mod, data.sim, PLEV = 0.999)
 
 \item{data.sim}{See \code{?NMsim}.}
 
-\item{PLEV}{Used in \code{$PRIOR NWPRI PLEV=0.999}}
+\item{PLEV}{Used in \code{$PRIOR NWPRI PLEV=0.999}. This is a 
+NONMEM argument to the NWPRI subroutine. When PLEV < 1, a 
+value of THETA will actually be obtained using a truncated 
+multivariate normal distribution, i.e. from an ellipsoidal 
+region R1 over which  only  a fraction of mass of the 
+normal occurs. This fraction is given by PLEV.}
 }
 \description{
-Simulate with uncertainty using inverse-Wishart distribution for OMEGA and SIGMA parameters
+Simulate with uncertainty using inverse-Wishart distribution for
+OMEGA and SIGMA parameters
 }
 \details{
 Simulate with parameter uncertainty. THETA parameters are
     sampled from a multivariate normal distribution while OMEGA
-    and SIGMA are simulated from the inverse Wishart
+    and SIGMA are simulated from the inverse-Wishart
     distribution. Correlations of OMEGA and SIGMA parameters will
     only be applied within modeled "blocks".
 }
 \references{
-DF calculation: NONMEM tutorial part II, supplement 1,
-    part C.
-    https://ascpt.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2Fpsp4.12422&file=psp412422-sup-0001-Supinfo1.pdf
+
 }
 \seealso{
 NMsim_VarCov

@@ -62,7 +62,7 @@ to be available for further processing.}
 
 \item{args.psn.execute}{A character string with arguments passed
 to execute. Default is
-"-model_dir_name -nm_output=xml,ext,cov,cor,coi,phi,shk".}
+"-model_dir_name -nm_output=coi,cor,cov,ext,phi,shk,xml".}
 
 \item{update.only}{Only run model(s) if control stream or data
 updated since last run?}
