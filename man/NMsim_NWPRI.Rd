@@ -33,7 +33,7 @@ Simulate with parameter uncertainty. THETA parameters are
     only be applied within modeled "blocks".
 }
 \references{
-
+\href{https://ascpt.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002\%2Fpsp4.12422&file=psp412422-sup-0001-Supinfo1.pdf}{inverse-Wishart degrees of freedom calculation for OMEGA and SIGMA: NONMEM tutorial part II, supplement 1, part C.}
 }
 \seealso{
 NMsim_VarCov
