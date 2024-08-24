@@ -1168,8 +1168,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 section.sim <- all.sections.sim[[name.sim]]
                 
                 section.sim <- gsub("\\([0-9]+\\)","",section.sim)
-                ## section.sim <- paste(section.sim,seed)
-                section.sim <- sub("(SIM(ULATION)* +ONLYSIM(ULATION)*)",paste("\\1",seed),section.sim)
+                
+### pasting the seed after SIM(ULATION) and after ONLYSIM(ULATION) if the latter exists
+                section.sim <- sub("(SIM(ULATION)*( +ONLYSIM(ULATION)*)*) *",paste("\\1",seed),section.sim)
                 ## section.sim <- paste.end(section.sim,seed)
                                         #}
                 if(subproblems>0){

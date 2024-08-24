@@ -131,6 +131,8 @@ test_that("NMsim_EBE",{
         mod$OMEGA 
         ref$SIGMA
         mod$SIGMA
+        ref$SIMULATION
+        mod$SIMULATION
     }
 
 
