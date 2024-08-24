@@ -18,10 +18,11 @@
 ##' @seealso NMsim_VarCov
 ##' @import NMdata
 ##' @import data.table
+##' @author Brian Reilly, Philip Delff
 ##' @export
 
 NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
-
+    
     . <- NULL
     DF <- NULL
     DF2 <- NULL
@@ -134,11 +135,13 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     lines.prior = sprintf("$PRIOR NWPRI PLEV=%f",PLEV)
     
     all.lines = c(lines.prior, lines.thetap, lines.thetapv, lines.omegap, lines.omegapd, lines.sigmap, lines.sigmapd)
+
     
     ## insert the lines into file.sim using NMdata::NMwriteSection(). Please see other simulation methods for inspiration - NMsim_typical is a simple one that shows the drill.
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim, section="SIMULATION", location="before", newlines=all.lines, backup=FALSE,quiet=TRUE)
 
 ### add TRUE=PRIOR to $SIMULATION
+    
     lines.sim <- NMdata:::NMwriteSectionOne(lines=lines.sim,section="SIMULATION",location="after",newlines="TRUE=PRIOR",backup=FALSE,quiet=TRUE)
 
 ### update the simulation control stream

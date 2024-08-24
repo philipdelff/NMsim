@@ -1037,7 +1037,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     
 ###  Section end: Output tables
-    
+#### DEBUG Does the sim control stream have TABLES at this point?    
 
 #### Section start: Additional control stream modifications specified by user - modify.model ####
     if( !is.null(modify.model) ){
@@ -1148,6 +1148,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
           paste(x[length(x)],add,...)
           )
     }
+    
     if(do.seed || subproblems>0){
         dt.models[,{
             
@@ -1162,12 +1163,14 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 warning("More than one simulation section found. Subproblems and seed will not be applied.")
             }
             if(n.sim.sections == 1 ){
+                
                 name.sim <- names.sections[grepl("^(SIM|SIMULATION)$",names.sections)]
                 section.sim <- all.sections.sim[[name.sim]]
                 
                 section.sim <- gsub("\\([0-9]+\\)","",section.sim)
                 ## section.sim <- paste(section.sim,seed)
-                section.sim <- paste.end(section.sim,seed)
+                section.sim <- sub("(SIM(ULATION)* +ONLYSIM(ULATION)*)",paste("\\1",seed),section.sim)
+                ## section.sim <- paste.end(section.sim,seed)
                                         #}
                 if(subproblems>0){
                     section.sim <- gsub("SUBPROBLEMS *= *[0-9]*"," ",section.sim)
