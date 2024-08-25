@@ -35,7 +35,7 @@ NMsim(
   col.row,
   args.NMscanData,
   path.nonmem = NULL,
-  nmquiet = TRUE,
+  nmquiet,
   progress,
   as.fun,
   suffix.sim,
@@ -278,7 +278,9 @@ is a made up example). No default is available. You should be
 able to figure this out through how you normally execute
 Nonmem, or ask a colleague.}
 
-\item{nmquiet}{Silent messages from Nonmem. The default is `TRUE`.}
+\item{nmquiet}{Silent console messages from Nonmem? The default
+behaviour depends. It is FALSE if there is only one model to
+execute and `progress=FALSE`.}
 
 \item{progress}{Track progress? Default is `TRUE` if `quiet` is
 FALSE and more than one model is being simulated. The progress

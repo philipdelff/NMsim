@@ -38,3 +38,6 @@ Simulate with parameter uncertainty. THETA parameters are
 \seealso{
 NMsim_VarCov
 }
+\author{
+Brian Reilly, Philip Delff
+}

@@ -260,7 +260,9 @@
 ##'     (remove temporary dir completely).
 ##' @param quiet If TRUE, messages from what is going on will be
 ##'     suppressed.
-##' @param nmquiet Silent messages from Nonmem. The default is `TRUE`.
+##' @param nmquiet Silent console messages from Nonmem? The default
+##'     behaviour depends. It is FALSE if there is only one model to
+##'     execute and `progress=FALSE`.
 ##' @param progress Track progress? Default is `TRUE` if `quiet` is
 ##'     FALSE and more than one model is being simulated. The progress
 ##'     tracking is based on the number of models completed, not the
@@ -373,23 +375,23 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   col.row,
                   args.NMscanData,
                   path.nonmem=NULL,
-                  nmquiet=TRUE
-                 ,progress
-                 ,as.fun
-                 ,suffix.sim
-                 ,text.table
-                 ,system.type=NULL
-                 ,dir.res
-                 ,file.res
-                 ,wait
-                 ,auto.dv=TRUE
-                 ,clean
-                 ,quiet=FALSE
-                 ,check.mod = TRUE
-                 ,seed
-                 ,list.sections
-                 ,format.data.complete="rds"
-                 ,...
+                  nmquiet,
+                  progress,
+                 as.fun,
+                 suffix.sim,
+                 text.table,
+                 system.type=NULL,
+                 dir.res,
+                 file.res,
+                 wait,
+                 auto.dv=TRUE,
+                 clean,
+                 quiet=FALSE,
+                 check.mod = TRUE,
+                 seed,
+                 list.sections,
+                 format.data.complete="rds",
+                 ...
                   ){
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
     
@@ -540,7 +542,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 
 
-
     
     ## if(missing(seed)) seed <- NULL
     ## arg.seed is the user-supplied seed. Don't confuse with seed.args
@@ -591,7 +592,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     }
 
 
-    
 ###  Section end: Checking aguments
 
     ## if(!is.null(transform) && !transform!=FALSE) {message("transform is CURRENTLY NOT SUPPORTED. Will be back in the future.")}
@@ -617,6 +617,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         }
         message("argument \'text.table\' is deprecated. Please use \'table.vars\' and/or \'table.options\' instead.")
     }
+
+    if(missing(nmquiet)) nmquiet <- NULL
 
     if(missing(modelname)) modelname <- NULL
     ## modelname <- NMdataDecideOption("modelname",modelname)
@@ -682,8 +684,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     if(missing(subproblems)|| is.null(subproblems)) subproblems <- 0
 
     if(subproblems>0 &&
-       !is.null(table.vars) &&
-       packageVersion("NMdata")<"1.1.7"){
+       !is.null(table.vars)
+       ## this has not been resolved in NMdata
+       ## && packageVersion("NMdata")<"1.1.7"
+       ){
         tabv2 <- paste(table.vars,collapse=" ")
         tabv2 <- gsub(" +"," ",tabv2 )
         if(length(strsplit(tabv2," ")[[1]])<3){
@@ -1243,6 +1247,10 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             do.pb <- progress
         }
 
+        if(is.null(nmquiet)){
+            nmquiet <- !(dt.models[,.N]==1 && !do.pb && !quiet)
+        }
+        
         if(do.pb){
             ## set up progress bar
             pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
@@ -1273,6 +1281,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 unlink(path.sim.lst)
 
             }
+
             
             NMexec(files=path.sim,sge=sge,nc=nc,wait=wait.exec,
                    args.psn.execute=args.psn.execute,nmquiet=nmquiet,quiet=TRUE,
