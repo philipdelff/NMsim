@@ -9,9 +9,10 @@
 ##' but pulls in ETAs for the ID's found in data. No
 ##' \code{$SIMULATION} step is run which may affect how for instance
 ##' residual variability is simulated, if at all. You can also specify a different \code{.phi} file which can be a simulation result.
-##' 
-##' @param file.sim See \code{?NMsim}.
-##' @param file.mod See \code{?NMsim}.
+##'
+##' @param file.sim The path to the control stream to be edited. This function overwrites the contents of the file pointed to by file.sim.
+##' @param file.mod Path to the path to the original input control stream provided as `file.mod` to `NMsim()`.
+##' @param data.sim Included for compatibility with `NMsim()`. Not used.
 ##' @param data.sim See \code{?NMsim}.
 ##' @param file.phi A phi file to take the known subjects from. The
 ##'     default is to replace the filename extension on file.mod with

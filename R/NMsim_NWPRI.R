@@ -37,7 +37,7 @@
 NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
 
 
-    messageWrap("\nNMsim_NWPRI() currently only reliably simulates typical THETAs. Simulation with variability on OMEGA and SIGMA cannot be trust. Always run this method in NMsim with `typical=TRUE`",fun.msg=message)
+    NMdata:::messageWrap("\nNMsim_NWPRI() currently only reliably simulates typical THETAs. Simulation with variability on OMEGA and SIGMA cannot be trust. Always run this method in NMsim with `typical=TRUE`",fun.msg=message)
 
     if(packageVersion("NMdata")<"0.1.6.932"){
         stop("NMsim_NWPRI requires NMdata 0.1.7 or later.")
@@ -83,8 +83,8 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
 
 
 #### Section start: add OMEGA block information based on off diagonal values ####
-### This section is needed until relying on NMsim
-
+### This section is almost copied from NMdata::NMreadExt. Only mergeCheck() call because common.cols=drop.x is introduced in 0.1.7. However, with current requirement
+if(F){
     tab.blocks <- rbind(pars[par.type%in%c("OMEGA","SIGMA"),.(par.type,i=i,j=j,value)],
                         pars[par.type%in%c("OMEGA","SIGMA"),.(par.type,i=j,j=i,value)])[
         abs(value)>1e-9,.(iblock=min(i,j),blocksize=max(abs(j-i))+1),by=.(par.type,i)]
@@ -105,7 +105,8 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&is.na(iblock),iblock:=i]
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&iblock==i&is.na(blocksize),blocksize:=1]
-    
+}
+
 ###  Section end: add OMEGA block information based on off diagonal values
     
 ### Add degrees of freedom for inverse-wishart distribution for OMEGA/SIGMA
