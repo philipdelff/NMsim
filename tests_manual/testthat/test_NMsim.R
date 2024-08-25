@@ -643,8 +643,8 @@ test_that("default with nc>1",{
 ##### it seems like for nc>1 we need to wait a little bit once Nonmem is done. This is not doing that and will most likely fail.
     ##Sys.sleep(5)
     ##expect_error(
-        simres <- NMreadSim(simtab,wait=T)
-##    )
+    simres <- NMreadSim(simtab,wait=T)
+    ##    )
 
     if(F){
         expect_equal(
@@ -874,3 +874,64 @@ test_that("basic - default",{
 })
 
 
+test_that("Non-numeric DATE and TIME",{
+
+    ## requires NMdata 0.1.7
+    fileRef <- "testReference/NMsim_13.rds"
+    outfile <- "testOutput/NMsim_13.csv"
+
+    file.mod <- "testData/nonmem/xgxr022.mod"
+
+    dt.sim.char <- copy(dt.sim)
+
+    dt.sim.char[,time.tz:=as.POSIXct("2000/01/01")+TIME*3600]
+    dt.sim.char[,DATE:=as.character(as.Date(time.tz),format="%y/%m/%d")]
+    dt.sim.char[,TIME:=as.character(time.tz,format="%H:%M:%S")]
+    
+    simres <- NMsim(file.mod,
+                    data=dt.sim.char,
+                    table.var="TIME PRED IPRED",
+                    name.sim="timeAsChar_01",
+                    path.nonmem=path.nonmem,
+                    method.update.inits="nmsim",
+                    seed.R=43
+                    ##,quiet=TRUE
+                    )
+
+
+    ## TIME from input data
+    simres.inp <- NMsim(file.mod,
+                        data=dt.sim.char,
+                        table.var="PRED IPRED",
+                        name.sim="timeAsChar_02",
+                        path.nonmem=path.nonmem,
+                        method.update.inits="nmsim",
+                        seed.R=43,
+                        quiet=TRUE
+                        )
+
+    res <- list(timeout=simres[,lapply(.SD,NMisNumeric),.SDcols=cc(TIME,DATE)],
+                timein=simres.inp[,lapply(.SD,NMisNumeric),.SDcols=cc(TIME,DATE)]
+                )
+
+    expect_equal_to_reference(
+        res
+       ,fileRef)
+
+
+
+### DATE is not allowed in $TABLE
+    expect_error(
+            simres <- NMsim(file.mod,
+                    data=dt.sim.char,
+                    table.var="DATE TIME PRED IPRED",
+                    name.sim="timeAsChar_01",
+                    path.nonmem=path.nonmem,
+                    method.update.inits="nmsim",
+                    seed.R=43
+                    ##,quiet=TRUE
+                    )
+        )
+
+    
+})
