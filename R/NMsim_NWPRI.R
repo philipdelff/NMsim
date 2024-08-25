@@ -1,8 +1,16 @@
-##' Simulate with uncertainty using inverse-Wishart distribution for
-##' OMEGA and SIGMA parameters
-##' @param file.sim See \code{?NMsim}.
-##' @param file.mod See \code{?NMsim}.
-##' @param data.sim See \code{?NMsim}.
+##' Simulate with parameter variability using the NONMEM NWPRI subroutine
+##' 
+##' @description Modify control stream for simulation with uncertainty
+##'     using inverse-Wishart distribution for OMEGA and SIGMA
+##'     parameters
+##'
+##' This function does not run any simulations. To simulate, using
+##' this method, see `NMsim()`. See examples.
+##'
+##' 
+##' @param file.sim The path to the control stream to be edited. This function overwrites the contents of the file pointed to by file.sim.
+##' @param file.mod Path to the path to the original input control stream provided as `file.mod` to `NMsim()`.
+##' @param data.sim Included for compatibility with `NMsim()`. Not used.
 ##' @param PLEV Used in \code{$PRIOR NWPRI PLEV=0.999}. This is a 
 ##'     NONMEM argument to the NWPRI subroutine. When PLEV < 1, a 
 ##'     value of THETA will actually be obtained using a truncated 
@@ -15,13 +23,29 @@
 ##'     distribution. Correlations of OMEGA and SIGMA parameters will
 ##'     only be applied within modeled "blocks".
 ##' @references \href{https://ascpt.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002\%2Fpsp4.12422&file=psp412422-sup-0001-Supinfo1.pdf}{inverse-Wishart degrees of freedom calculation for OMEGA and SIGMA: NONMEM tutorial part II, supplement 1, part C.}
+
 ##' @seealso NMsim_VarCov
 ##' @import NMdata
 ##' @import data.table
 ##' @author Brian Reilly, Philip Delff
+##' @examples
+##' \dontrun{
+##' simres <- NMsim(file.path,method.sim=NMsim_WPRI,typical=TRUE,subproblems=500)
+##' }
 ##' @export
 
 NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
+
+
+    messageWrap("\nNMsim_NWPRI() currently only reliably simulates typical THETAs. Simulation with variability on OMEGA and SIGMA cannot be trust. Always run this method in NMsim with `typical=TRUE`",fun.msg=message)
+
+    if(packageVersion("NMdata")<"0.1.6.932"){
+        stop("NMsim_NWPRI requires NMdata 0.1.7 or later.")
+    }
+    
+
+### done add OMEGA/SIGMA blocks
+
     
     . <- NULL
     DF <- NULL
@@ -58,7 +82,9 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     pars <- NMreadExt(file.mod,return="pars",as.fun="data.table")[,value:=est]
 
 
-### add OMEGA block information based on off diagonal values
+#### Section start: add OMEGA block information based on off diagonal values ####
+### This section is needed until relying on NMsim
+
     tab.blocks <- rbind(pars[par.type%in%c("OMEGA","SIGMA"),.(par.type,i=i,j=j,value)],
                         pars[par.type%in%c("OMEGA","SIGMA"),.(par.type,i=j,j=i,value)])[
         abs(value)>1e-9,.(iblock=min(i,j),blocksize=max(abs(j-i))+1),by=.(par.type,i)]
@@ -79,7 +105,8 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&is.na(iblock),iblock:=i]
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&iblock==i&is.na(blocksize),blocksize:=1]
-### done add OMEGA/SIGMA blocks
+    
+###  Section end: add OMEGA block information based on off diagonal values
     
 ### Add degrees of freedom for inverse-wishart distribution for OMEGA/SIGMA
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), N := 2*((est**2)/(se**2)) + 1]

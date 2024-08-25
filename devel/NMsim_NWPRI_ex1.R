@@ -30,11 +30,6 @@ pars[, parlab := stringr::str_remove_all(string = parameter, pattern = "\\(|\\)"
 
 ### NMreadExt() test end
 
-### debug typicalize()
-file.mod <- file.path(wdirs,"NMsim/devel/example_nonmem_models/lorlatinib_sim_est/mod_lorlatinib_estimate.mod")
-### this messes up the example control stream - dont do it
-## NMsim:::typicalize(file.mod=file.mod,file.sim=file.mod)
-
 #### NMsim_NWPRI - not typical
 ## need a relevant simulation data set
 data.sim <- fread(file.path(wdirs,"NMsim/devel/example_nonmem_models/derived_data/simulated_nonmem_dataset_mod_lorlatinib.csv"))

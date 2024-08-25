@@ -1,16 +1,23 @@
 ##' Simulate with parameter values sampled from a covariance step
 ##'
-##' Like \code{NMsim_default} but `$THETA`, `$OMEGA`, and `SIGMA` are
-##' drawn from distribution estimated in covariance step. This means
-##' that a successful covariance step must be available from the
-##' estimation. In case the simulation leads to negative diagonal
-##' elements in $OMEGA and $SIGMA, those values are truncated at
-##' zero. For simulation with parameter variability based on bootstrap
-##' results, use \code{NMsim_default}.
+##' @description Like \code{NMsim_default} but `$THETA`, `$OMEGA`, and `SIGMA` are
+##' drawn from distribution estimated in covariance step. A successful
+##' covariance step must be available from the estimation. In case the
+##' simulation leads to negative diagonal elements in $OMEGA and
+##' $SIGMA, those values are truncated at zero. For simulation with
+##' parameter variability based on bootstrap results, use
+##' \code{NMsim_default}.
 ##'
-##' @param file.sim See \code{?NMsim}.
-##' @param file.mod See \code{?NMsim}.
-##' @param data.sim See \code{?NMsim}.
+##' This function does not run any simulations. To simulate, using
+##' this method, see `NMsim()`.
+##'
+##' @param file.sim The path to the control stream to be edited. This
+##'     function overwrites the contents of the file pointed to by
+##'     file.sim.
+##' @param file.mod Path to the path to the original input control
+##'     stream provided as `file.mod` to `NMsim()`.
+##' @param data.sim Included for compatibility with `NMsim()`. Not
+##'     used.
 ##' @param nsims Number of replications wanted. The default is 1. If
 ##'     greater, multiple control streams will be generated.
 ##' @param ext Parameter values in long format as created by

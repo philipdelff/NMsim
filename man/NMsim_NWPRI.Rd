@@ -2,17 +2,16 @@
 % Please edit documentation in R/NMsim_NWPRI.R
 \name{NMsim_NWPRI}
 \alias{NMsim_NWPRI}
-\title{Simulate with uncertainty using inverse-Wishart distribution for
-OMEGA and SIGMA parameters}
+\title{Simulate with parameter variability using the NONMEM NWPRI subroutine}
 \usage{
 NMsim_NWPRI(file.sim, file.mod, data.sim, PLEV = 0.999)
 }
 \arguments{
-\item{file.sim}{See \code{?NMsim}.}
+\item{file.sim}{The path to the control stream to be edited. This function overwrites the contents of the file pointed to by file.sim.}
 
-\item{file.mod}{See \code{?NMsim}.}
+\item{file.mod}{Path to the path to the original input control stream provided as `file.mod` to `NMsim()`.}
 
-\item{data.sim}{See \code{?NMsim}.}
+\item{data.sim}{Included for compatibility with `NMsim()`. Not used.}
 
 \item{PLEV}{Used in \code{$PRIOR NWPRI PLEV=0.999}. This is a 
 NONMEM argument to the NWPRI subroutine. When PLEV < 1, a 
@@ -22,8 +21,12 @@ region R1 over which  only  a fraction of mass of the
 normal occurs. This fraction is given by PLEV.}
 }
 \description{
-Simulate with uncertainty using inverse-Wishart distribution for
-OMEGA and SIGMA parameters
+Modify control stream for simulation with uncertainty
+    using inverse-Wishart distribution for OMEGA and SIGMA
+    parameters
+
+This function does not run any simulations. To simulate, using
+this method, see `NMsim()`. See examples.
 }
 \details{
 Simulate with parameter uncertainty. THETA parameters are
@@ -31,6 +34,11 @@ Simulate with parameter uncertainty. THETA parameters are
     and SIGMA are simulated from the inverse-Wishart
     distribution. Correlations of OMEGA and SIGMA parameters will
     only be applied within modeled "blocks".
+}
+\examples{
+\dontrun{
+simres <- NMsim(file.path,method.sim=NMsim_WPRI,typical=TRUE,subproblems=500)
+}
 }
 \references{
 \href{https://ascpt.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002\%2Fpsp4.12422&file=psp412422-sup-0001-Supinfo1.pdf}{inverse-Wishart degrees of freedom calculation for OMEGA and SIGMA: NONMEM tutorial part II, supplement 1, part C.}

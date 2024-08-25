@@ -7,11 +7,15 @@
 NMsim_VarCov(file.sim, file.mod, data.sim, nsims, ext, write.ext = NULL)
 }
 \arguments{
-\item{file.sim}{See \code{?NMsim}.}
+\item{file.sim}{The path to the control stream to be edited. This
+function overwrites the contents of the file pointed to by
+file.sim.}
 
-\item{file.mod}{See \code{?NMsim}.}
+\item{file.mod}{Path to the path to the original input control
+stream provided as `file.mod` to `NMsim()`.}
 
-\item{data.sim}{See \code{?NMsim}.}
+\item{data.sim}{Included for compatibility with `NMsim()`. Not
+used.}
 
 \item{nsims}{Number of replications wanted. The default is 1. If
 greater, multiple control streams will be generated.}
@@ -27,10 +31,13 @@ Character vector of simulation control stream paths
 }
 \description{
 Like \code{NMsim_default} but `$THETA`, `$OMEGA`, and `SIGMA` are
-drawn from distribution estimated in covariance step. This means
-that a successful covariance step must be available from the
-estimation. In case the simulation leads to negative diagonal
-elements in $OMEGA and $SIGMA, those values are truncated at
-zero. For simulation with parameter variability based on bootstrap
-results, use \code{NMsim_default}.
+drawn from distribution estimated in covariance step. A successful
+covariance step must be available from the estimation. In case the
+simulation leads to negative diagonal elements in $OMEGA and
+$SIGMA, those values are truncated at zero. For simulation with
+parameter variability based on bootstrap results, use
+\code{NMsim_default}.
+
+This function does not run any simulations. To simulate, using
+this method, see `NMsim()`.
 }
