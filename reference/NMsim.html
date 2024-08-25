@@ -100,7 +100,7 @@ get the most out of this.</p>
 <span>  <span class="va">col.row</span>,</span>
 <span>  <span class="va">args.NMscanData</span>,</span>
 <span>  path.nonmem <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  nmquiet <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">nmquiet</span>,</span>
 <span>  <span class="va">progress</span>,</span>
 <span>  <span class="va">as.fun</span>,</span>
 <span>  <span class="va">suffix.sim</span>,</span>
@@ -398,7 +398,9 @@ Nonmem, or ask a colleague.</p></dd>
 
 
 <dt id="arg-nmquiet">nmquiet<a class="anchor" aria-label="anchor" href="#arg-nmquiet"></a></dt>
-<dd><p>Silent messages from Nonmem. The default is `TRUE`.</p></dd>
+<dd><p>Silent console messages from Nonmem? The default
+behaviour depends. It is FALSE if there is only one model to
+execute and `progress=FALSE`.</p></dd>
 
 
 <dt id="arg-progress">progress<a class="anchor" aria-label="anchor" href="#arg-progress"></a></dt>
