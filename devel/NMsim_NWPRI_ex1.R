@@ -73,7 +73,7 @@ dplyr::select(simres, NMREP, THETA1:SIGMA1_1 ) %>%
 simpars.l <- findCovs(simres,by="NMREP") |>
     melt(measure.vars=pars$parlab)
 sumpars <- simpars.l[,.(mean=mean(value),sd=sd(value),median=median(value)),by=.(parlab=variable)]
-dt.pars <- mergeCheck(sumpars,pars[,.(parlab,val.ext=value,se.ext=se,FIX)],by="parlab")[
+dt.pars <- mergeCheck(sumpars,pars[,.(parlab,val.ext=value,se.ext=se,iblock,FIX)],by=cc(parlab))[
    ,diff.median:=percent(abs((median-val.ext)/val.ext))][
    ,diff.mean:=percent(abs((mean-val.ext)/val.ext))]
 dt.pars[FIX!=1,!("FIX")]
