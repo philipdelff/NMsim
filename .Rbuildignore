@@ -52,6 +52,8 @@ LINK.LNK
 ^inst/examples/nonmem/.*\.msf
 ^inst/examples/simulations/.+
 ^inst/examples/R/NMexec_run_estimates.R
+;; so far, there is nothing of real value here
+^inst/examples/R/*
 ^vignettes$
 .*_dir.*
 ^R/NMwritePreamble.R
