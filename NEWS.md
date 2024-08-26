@@ -6,14 +6,15 @@
 - New simulation method `NMsim_NWPRI()` to simulate with parameter
   uncertainty. This automates simulation with parameter uncertainty
   using Nonmem's `NWPRI` subroutine for models with a successful
-  covariance step. The strength of this approach is that the `OMEGA`
-  and `SIGMA` parameters are sampled from the theoretically adequate
-  inverse-Wishart distribution. The method automates all steps
-  including determination of the degrees of freedom for the
-  inverse-Wishart distribution, and of course preparation and
-  execution of Nonmem control streams. Moreover, it is much faster
+  covariance step. For now this method only works for `THETA` since 
+  we have found that the parameter distributions sampled for 
+  `OMEGA` and `SIGMA` do not always match the model estimates and 
+  therefore cannot be trusted. To ensure that only `THETA` are 
+  sampled and simulated, this method should only be run using the
+  `typical=TRUE` argument. This method is much faster
   than the existing methods in NMsim for simulation with parameter
-  uncertainty (`NMsim_VarCov()`). Big thanks to Brian Reilly for his
+  uncertainty (`NMsim_VarCov()`). This method depends on `NMdata` 
+  version 1.6.32 or greater. Big thanks to Brian Reilly for his
   excellent work on this important contribution.
 
 * The `add()` function to be used in `NMsim()`'s `modify.model`
