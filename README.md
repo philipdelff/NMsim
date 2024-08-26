@@ -19,7 +19,7 @@ coverage](https://codecov.io/gh/philipdelff/NMsim/branch/main/graph/badge.svg)](
 
 Please make sure to read this at
 [`The NMsim website`](https://philipdelff.github.io/NMsim/) where you
-can browse several vignettes with examples on speecific topics.
+can browse several vignettes with examples on specific topics.
 
 `NMsim` is an R package that can simulate Nonmem models (using the
 `NMsim` function) based on just a simulation data set and a path to an

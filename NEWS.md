@@ -14,7 +14,7 @@
   `typical=TRUE` argument. This method is much faster
   than the existing methods in NMsim for simulation with parameter
   uncertainty (`NMsim_VarCov()`). This method depends on `NMdata` 
-  version 1.6.32 or greater. Big thanks to Brian Reilly for his
+  version 0.1.7 or greater. Big thanks to Brian Reilly for his
   excellent work on this important contribution.
 
 * The `add()` function to be used in `NMsim()`'s `modify.model`

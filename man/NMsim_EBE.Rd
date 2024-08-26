@@ -7,9 +7,9 @@
 NMsim_EBE(file.sim, file.mod, data.sim, file.phi, return.text = FALSE)
 }
 \arguments{
-\item{file.sim}{See \code{?NMsim}.}
+\item{file.sim}{The path to the control stream to be edited. This function overwrites the contents of the file pointed to by file.sim.}
 
-\item{file.mod}{See \code{?NMsim}.}
+\item{file.mod}{Path to the path to the original input control stream provided as `file.mod` to `NMsim()`.}
 
 \item{data.sim}{See \code{?NMsim}.}
 
