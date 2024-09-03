@@ -10,8 +10,8 @@ navbar:
     left:
     - home
     - articles
-    - cheatsheet
     - reference
+    - news
     - github
   components:
    home:
@@ -44,3 +44,6 @@ navbar:
         href: articles/NMsim-ReuseSimSubjects.html
       - text: Debugging, Speed, and Disk Space
         href: articles/NMsim-speed.html
+  news:
+    text: News
+    href: news/index.html

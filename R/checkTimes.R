@@ -44,7 +44,11 @@ checkTimes <- function(file.lst,use.input=TRUE,nminfo.input=NULL,file.mod,tz.lst
     if(use.input){
         if(is.null(nminfo.input)){
             
-            dt.input <- NMscanInput(file.lst,file.mod=file.mod,quiet=TRUE)
+            dt.input <- try(NMscanInput(file.mod,file.mod=file.mod,quiet=TRUE))
+            ## if("try-error" %in% class(dt.input)){
+            ##     browser()
+            ## }
+            
             nminfo.input <- NMinfo(dt.input)
         }
         logtime.inp <- max(nminfo.input$tables$file.logtime)
@@ -57,6 +61,9 @@ checkTimes <- function(file.lst,use.input=TRUE,nminfo.input=NULL,file.mod,tz.lst
     ## testtime.lst <- mtime.lst
     if(is.na(logtime.lst)){
         testtime.lst <- mtime.lst
+        if(is.na(mtime.lst)){
+            testtime.lst <- -Inf
+        }
         time.method.lst <- "mtime"
     }
     
