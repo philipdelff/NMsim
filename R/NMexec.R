@@ -153,7 +153,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 
     cmd.execute <- file.psn(NMsimConf$dir.psn,"execute")
 
-    
+
     ## system.type <- getSystemType(system.type)
 
 

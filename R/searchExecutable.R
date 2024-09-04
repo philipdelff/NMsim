@@ -1,10 +1,10 @@
 ## on win
 searchExecutable <- function(cmd,dir.extra=NULL) {
-
+    
     ## append .ext if missing - this will not work if cmd="my.script"
-    if(.Platform$OS.type=="windows"){
-        cmd <- fnExtension(cmd,".exe")
-    }
+    ## if(.Platform$OS.type=="windows" && fnExtension(cmd)=="" ){
+    ##     cmd <- fnExtension(cmd,".exe")
+    ## }
     
     ## Check if the cmd is an absolute file path
     if (file.exists(cmd)) {
