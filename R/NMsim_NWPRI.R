@@ -37,13 +37,13 @@
 NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
 
 
-    NMdata:::messageWrap("\nNMsim_NWPRI() currently only reliably simulates typical THETAs. Simulation with variability on OMEGA and SIGMA cannot be trust. Always run this method in NMsim with `typical=TRUE`",fun.msg=message)
+    NMdata:::messageWrap("\nNMsim_NWPRI() currently only reliably simulates typical THETAs. Simulation with variability on OMEGA and SIGMA cannot be trusted. Always run this method in NMsim with `typical=TRUE`",fun.msg=message)
 
     if(packageVersion("NMdata")<"0.1.6.932"){
         stop("NMsim_NWPRI requires NMdata 0.1.7 or later.")
     }
     
-
+    
 ### done add OMEGA/SIGMA blocks
 
     
@@ -82,39 +82,14 @@ NMsim_NWPRI <- function(file.sim,file.mod,data.sim,PLEV=0.999){
     pars <- NMreadExt(file.mod,return="pars",as.fun="data.table")[,value:=est]
 
 
-#### Section start: add OMEGA block information based on off diagonal values ####
-### This section is almost copied from NMdata::NMreadExt. Only mergeCheck() call because common.cols=drop.x is introduced in 0.1.7. However, with current requirement
-if(F){
-    tab.blocks <- rbind(pars[par.type%in%c("OMEGA","SIGMA"),.(par.type,i=i,j=j,value)],
-                        pars[par.type%in%c("OMEGA","SIGMA"),.(par.type,i=j,j=i,value)])[
-        abs(value)>1e-9,.(iblock=min(i,j),blocksize=max(abs(j-i))+1),by=.(par.type,i)]
-
-    ## pars0 <- copy(pars)
-    ## tab.blocks
-    pars <- mergeCheck(pars[,setdiff(colnames(pars),c("iblock","blocksize")),with=FALSE],
-                       tab.blocks,by=cc(par.type,i),all.x=T,quiet=TRUE)
-
-    ## pars[par.type%in%c("OMEGA","SIGMA"),.(i,j,iblock,blocksize,value)]
-
-    pars[abs(i-j)>(blocksize-1),(c("iblock","blocksize")):=list(NA,NA)]
-    pars[!is.na(iblock),imin:=min(i),by=.(iblock)]
-    pars[j<imin,(c("iblock","blocksize")):=list(NA,NA)]
-    pars[,imin:=NULL]
-
-    ## pars[par.type%in%c("OMEGA","SIGMA"),.(i,j,iblock,blocksize,imin,value)]
-    
-    pars[par.type%in%c("OMEGA","SIGMA")&i==j&is.na(iblock),iblock:=i]
-    pars[par.type%in%c("OMEGA","SIGMA")&i==j&iblock==i&is.na(blocksize),blocksize:=1]
-}
-
-###  Section end: add OMEGA block information based on off diagonal values
+### Skipping add OMEGA block information based on off diagonal values - relying on NMdata::NMreadExt()
     
 ### Add degrees of freedom for inverse-wishart distribution for OMEGA/SIGMA
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), N := 2*((est**2)/(se**2)) + 1]
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), DF := N-blocksize-1]
     ## DF cannot be smaller than the number of parameters in the block
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), DF := ifelse(DF<blocksize, blocksize, DF)]
-    # If parameter is fixed, set DF=block size to indicate we want a point estimate.
+                                        # If parameter is fixed, set DF=block size to indicate we want a point estimate.
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), DF := ifelse(FIX==1, blocksize, DF)]
     ## take the minimum DF per omega/sigma matrix:
     pars[par.type%in%c("OMEGA","SIGMA")&i==j&!is.na(iblock), DF2 := min(DF, na.rm = TRUE), by = .(par.type,iblock)]
@@ -137,7 +112,7 @@ if(F){
     lines.thetapv = prettyMatLines(lines.thetapv)
     
     ## $OMEGAP
-    # note: set 0 FIXED sigmas/omegas to 1e-30 to avoid non-semi-positive definite matrices error
+                                        # note: set 0 FIXED sigmas/omegas to 1e-30 to avoid non-semi-positive definite matrices error
     lines.omegap <- NMcreateMatLines(pars[par.type=="OMEGA",.(par.type,parameter,par.name,i,j,FIX,value=ifelse(value==0,1e-30,value))],type="OMEGA")
     lines.omegap <- sub("\\$OMEGA","\\$OMEGAP",lines.omegap)
                                         # below was for previous version of NMcreateMatLines where it would not add FIX after non-block omegas. This was updated (in testing now)
@@ -149,7 +124,7 @@ if(F){
     lines.omegapd = nwpri_df[par.type=="OMEGA"]$line
     
     ## $SIGMAP
-    # note: set 0 FIXED sigmas/omegas to 1e-30 to avoid non-semi-positive definite matrices error
+                                        # note: set 0 FIXED sigmas/omegas to 1e-30 to avoid non-semi-positive definite matrices error
     lines.sigmap <- NMcreateMatLines(pars[par.type=="SIGMA",.(par.type,parameter,par.name,i,j,FIX,value=ifelse(value==0,1e-30,value))],type="SIGMA")
     lines.sigmap <- sub("\\$SIGMA","\\$SIGMAP",lines.sigmap)
                                         # lines.sigmap  = sapply(lines.sigmap, FUN = function(.x) ifelse((!grepl("BLOCK",.x)&!grepl("FIX",.x)), paste0(.x, " FIX"), .x), USE.NAMES = FALSE)
