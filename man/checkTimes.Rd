@@ -6,15 +6,17 @@
 be re-run}
 \usage{
 checkTimes(
-  file.lst,
+  file,
   use.input = TRUE,
   nminfo.input = NULL,
   file.mod,
-  tz.lst = NULL
+  tz.lst = NULL,
+  use.tmp = TRUE
 )
 }
 \arguments{
-\item{file.lst}{The output control stream.}
+\item{file}{Path to Nonmem-created file. Typically an output
+control stream.}
 
 \item{use.input}{Scan input data for updates too? Default is TRUE.}
 

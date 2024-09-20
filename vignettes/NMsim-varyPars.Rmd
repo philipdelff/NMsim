@@ -14,8 +14,8 @@ header-includes:
 ---
 
 ```{r,include = FALSE}
+library(data.table)
 library(NMdata)
-library(fst)
 library(ggplot2)
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
@@ -25,7 +25,12 @@ knitr::opts_chunk$set(
                      ,cache=FALSE
                   )
 
-## NMdataConf(dir.psn="/opt/psn")
+NMdataConf(as.fun="data.table",
+           dir.sims="~/NMsim_vignette",
+           dir.res="simulate-results",
+           allow.unknown=TRUE ## necessary for dir.sims and dir.res
+           ## until NMdata 0.1.5
+           )
 
 ## this changes data.table syntax. I think we can do without.
 ## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
@@ -43,30 +48,41 @@ Sometimes we want to simulate with some modification to the estimated model. NMs
 
 The SAD study was run with a fast solution formulation. We want to see how a slower absorption rate would affect the PK prediction for the multiple dose regimen. In the model estimate, `TVKA=2.17`. We now try with a four times slower absorption:
 
+Notice, until NMsim 0.1.0, the `modify.model` argument was called `modify.model`. The helper functions `add` and `overwrite` were introduced with NMsim 0.1.3. Until then, custom modification functions had to be provided like described in the section "Edit control stream using customized functions".
+
 ```{r,eval=FALSE}
+file.mod <- system.file("examples/nonmem/xgxr021.mod",package="NMsim")
+dat.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"))
+
 simres <- NMsim(file.mod=file.mod
                ,data=dat.sim
                ,dir.sims="~/NMsim_vignette" ## where to store simulation files
-               ,seed=12345
+               ,name.sim="original"
+               ,seed.R=12345
                 )
 
 simres.slowabs <- NMsim(file.mod=file.mod,
                         data=dat.sim
                        ,dir.sims="~/NMsim_vignette" ## where to store simulation files
                        ,name.sim="slower_abs"
-                       ,seed=12345
-                       ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/4","KA=KA/4"))
+                       ,seed.R=12345
+                       ##,modfiy.model=list(PK=function(x)c(x,"TVKA=TVKA/4","KA=KA/4"))
+                       ,modify.model=list(PK=add("TVKA=TVKA/4","KA=KA/4"))
                         )
 
 ```
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres_slowabs.fst"
-if(run.simuls){
-    write_fst(simres.slowabs,path=file.fst)
-} else {
-    simres.slowabs <- read_fst(file.fst,as.data.table=TRUE)
-}
-simres <- read_fst("simulate-results/simres.fst",as.data.table=TRUE)
+simres <- NMreadSim("simulate-results/xgxr021_original_MetaData.rds")
+simres.slowabs <- NMreadSim("simulate-results/xgxr021_slower_abs_MetaData.rds")
+
+
+## file.fst <- "simulate-results/simres_slowabs.fst"
+## if(run.simuls){
+##     write_fst(simres.slowabs,path=file.fst)
+## } else {
+##     simres.slowabs <- read_fst(file.fst,as.data.table=TRUE)
+## }
+## simres <- read_fst("simulate-results/simres.fst",as.data.table=TRUE)
 ```
 
 ```{r,eval=TRUE}
@@ -76,16 +92,20 @@ rbind(simres,simres.slowabs) |>
 
 ```
 
-We used `list.sections` to modify the `$PK` section. We used it to
+We used `modify.model` to modify the `$PK` section. We used it to
 append two lines. We could use it to modify any section in the model,
 and we could essentially do any modification. However, appending to
 `$PK` or `$PRED` is simple and often both robust and flexible enough.
 
-That was a very spcific analysis of one specific `KA` value. It is often more convenient to control the numeric changes to the model using the simulation input data set rather than hard-coding numerical values into `list.sections`. The following tries a number of fold changes to `KA`.
+That was a very spcific analysis of one specific `KA` value. It is
+often more convenient to control the numeric changes to the model
+using the simulation input data set rather than hard-coding numerical
+values into `modify.model`. The following tries a number of fold
+changes to `KA`.
 
 ```{r,include=TRUE,eval=FALSE}
-NMdataConf(as.fun="data.table")
-dat.sim.varka <- egdt(dat.sim,data.table(KASCALE=c(1,4,10)))
+setDT(dat.sim)
+dat.sim.varka <- dat.sim[,data.table(KASCALE=c(1,4,10)),by=dat.sim]
 dat.sim.varka[,ID:=.GRP,by=.(KASCALE,ID)]
 setorder(dat.sim.varka,ID,TIME,EVID)
 
@@ -94,17 +114,19 @@ simres.varka <- NMsim(file.mod=file.mod,
                      ,dir.sims="~/NMsim_vignette" ## where to store simulation files
                      ,name.sim="varka"
                      ,seed=12345
-                     ,list.sections=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
+                     ## ,modify.model=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
+                     ,modify.model=list(PK=add("TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
                       )
 
 ```
 ```{r,include=FALSE,eval=TRUE}
-file.fst <- "simulate-results/simres_varka.fst"
-if(run.simuls){
-    write_fst(simres.varka,path=file.fst)
-} else {
-    simres.varka <- read_fst(file.fst,as.data.table=TRUE)
-}
+## file.fst <- "simulate-results/simres_varka.fst"
+## if(run.simuls){
+##     write_fst(simres.varka,path=file.fst)
+## } else {
+##     simres.varka <- read_fst(file.fst,as.data.table=TRUE)
+## }
+simres.varka <- NMreadSim("simulate-results/xgxr021_varka_MetaData.rds")
 ```
 
 ```{r,eval=TRUE}
@@ -113,7 +135,60 @@ geom_line()+
 labs(colour="Fold absorption prolongation")
 ```
 
+## Edit control stream using customized functions
+The `modify.model` argument can be used to apply customized functions
+to control stream sections. In the example above, we used 
+```{r,eval=FALSE}
+modify.model=list(PK=add("TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
+```
+This is exactly the same as creating a custom function that adds those two lines (text strings to a vector of text strings each representing a line in the control stream)
+
+```{r,eval=FALSE}
+modify.model=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
+```
+
+We can use this notation to modify `TVKA` when it is first defined in
+the control stream.
+
+
 
 
 <!-- ## Using NMsim to validate reimplementations of models -->
+
+```{r,include=TRUE,eval=FALSE}
+setDT(dat.sim)
+dat.sim.varka <- dat.sim[,data.table(KASCALE=c(1,4,10)),by=dat.sim]
+dat.sim.varka[,ID:=.GRP,by=.(KASCALE,ID)]
+setorder(dat.sim.varka,ID,TIME,EVID)
+
+simres.varka2 <- NMsim(file.mod=file.mod,
+                      data=dat.sim.varka
+                     ,dir.sims="~/NMsim_vignette" ## where to store simulation files
+                     ,name.sim="varka2"
+                     ,seed.R=12345
+                     ,modify.model=list(PK=function(x) sub("(.*TVKA *=.*)","\\1/KASCALE",x))
+                      )
+
+```
+
+```{r,include=FALSE,eval=TRUE}
+## file.fst <- "simulate-results/simres_varka.fst"
+## if(run.simuls){
+##     write_fst(simres.varka,path=file.fst)
+## } else {
+##     simres.varka <- read_fst(file.fst,as.data.table=TRUE)
+## }
+simres.varka2 <- NMreadSim("simulate-results/xgxr021_varka2_MetaData.rds")
+```
+
+```{r}
+simres.both <- rbind(simres.varka[,method:="add()"],
+                     simres.varka2[,method:="custom/sub()"]
+                     )
+
+ggplot(simres.both[EVID==2],aes(TIME,PRED,colour=factor(KASCALE)))+
+geom_line()+
+    labs(colour="Fold absorption prolongation")+
+    facet_wrap(~method)
+```
 

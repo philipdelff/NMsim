@@ -1,3 +1,20 @@
+# NMsim 0.1.4
+
+## New features
+
+* `NMsim()`
+
+- No longer requires a `.ext` file if updating parameter values using
+  PSN's `update_inits`. It is still recommended to keep the `.ext`
+  file since it provides higher accuracy than the `.lst` file. 
+
+* `NMexec()`
+
+- When submitting all updated models, `NMexec()` will now by default
+  try to detect if a model is already running before submitting it.
+
+- Provides a summary of models to be submitted before starting to do so. 
+
 # NMsim 0.1.3
 
 ## New features

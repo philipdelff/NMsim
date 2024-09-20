@@ -152,8 +152,8 @@
 ##' has not been estimated but parameter values have been manually put
 ##' into the respective sections in the control stream.
 ##'
-##' On linux/mac, The default is to use "PSN" if found. On Windows, "nmsim"
-##' is the default.
+##' On linux/mac, The default is to use "PSN" if found. On Windows,
+##' "nmsim" is the default.
 ##' 
 ##' }
 ##' 
@@ -519,6 +519,8 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
 
     if(missing(file.ext)) file.ext <- NULL
+    
+    if(missing(method.update.inits)) method.update.inits <- NULL
     method.update.inits <- adjust.method.update.inits(method.update.inits,system.type=NMsimConf$system.type,dir.psn=NMsimConf$dir.psn,cmd.update.inits=cmd.update.inits,file.ext=file.ext)
     
     
@@ -773,6 +775,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         if(order.columns) data <- lapply(data,NMorderColumns)
     }
 
+
     
 
 ### name.mod and name.sim are confusing. name.mod is the name
@@ -846,6 +849,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     ## if(reuse.results && all(dt.models[,path.rds.exists==TRUE])){
     if(reuse.results && all(path.rds.exists==TRUE)){
         if(!quiet) message(sprintf("Reading from simulation results on file:\n%s",dt.models[,paste(unique(path.rds),collapse="\n")]))
+        
         simres <- try(NMreadSim(dt.models[,path.rds],wait=wait,quiet=quiet,progress=progress))
         if(!inherits(simres,"try-error")) {
             return(returnSimres(simres))
@@ -887,10 +891,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 ##### todo all file.xyz arguments must be NULL or of equal length. And this should be done per model
     
-    ## if(!file.exists(file.ext) && method.update.inits!="none"){
-    ##     stop("No ext file found. Did you forget to copy it? Normally, NMsim needs that file to find estimated parameter values. If you do not have an ext file and you are running a simulation that does not need it, please use `method.update.inits=\"none\"`")
-    ## }
-    if(method.update.inits!="none" && any(dt.models[,!file.exists(file.ext)])){
+    if(method.update.inits=="nmsim" && any(dt.models[,!file.exists(file.ext)])){
         stop(paste("ext file(s) not found. Did you forget to copy it? Normally, NMsim needs that file to find estimated parameter values. If you do not have an ext file and you are running a simulation that does not need it, please use `method.update.inits=\"none\"`. Was expecting to find ",paste(dt.models[!file.exists(file.ext),file.ext],collapse="\n"),sep=""))
     }
     
@@ -971,8 +972,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         
         
         ## format.data.complete <- "fst"
-        nmtext <- NMwriteData(data.this,file=path.data,quiet=TRUE,args.NMgenText=list(dir.data="."),script=script
-                             ,formats.write=c("csv",format.data.complete))
+        nmtext <- NMwriteData(data.this,file=path.data,
+                              args.NMgenText=list(dir.data=".")
+                             ,formats.write=c("csv",format.data.complete)
+                              ,csv.trunc.as.nm=TRUE
+                              ,script=script
+                              ,quiet=TRUE)
         
         ## input
         if(exists("section.input")){
@@ -1043,15 +1048,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 ###  Section end: Output tables
 #### DEBUG Does the sim control stream have TABLES at this point?    
 
-#### Section start: Additional control stream modifications specified by user - modify.model ####
-    if( !is.null(modify.model) ){
-### This requires NMdata >=0.1.0.905
-        dt.models[,{
-            NMwriteSection(files=path.sim,list.sections=modify.model,quiet=TRUE,backup=FALSE)
-        },by=.(ROWMODEL)]
-    }
-    
-### Section end: Additional control stream modifications specified by user - modify.model
 
     ## fun simulation method
     dt.models.gen <- dt.models[,
@@ -1189,6 +1185,18 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
             }
         },by=.(ROWMODEL2)]
     }
+
+
+
+    #### Section start: Additional control stream modifications specified by user - modify.model ####
+    if( !is.null(modify.model) ){
+### This requires NMdata >=0.1.0.905
+        dt.models[,{
+            NMwriteSection(files=path.sim,list.sections=modify.model,quiet=TRUE,backup=FALSE)
+        },by=.(ROWMODEL)]
+    }
+    
+### Section end: Additional control stream modifications specified by user - modify.model
 
 
 

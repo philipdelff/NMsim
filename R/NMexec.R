@@ -204,8 +204,12 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
     if(update.only){
         ## files.exec <- findUpdated(fnExtension(files.all,"lst"))
         files.exec <- findUpdated(files.all)
+        if(length(files.exec)>0){
+            message(length(files.exec)," model(s) to be executed:\n",paste(files.exec,collapse=",\n"),"\n")
+        }
     }
-    
+
+
     for(file.mod in files.exec){
         file.mod <- NMdata:::filePathSimple(file.mod)
         if(!quiet) message(paste0("Executing ",file.mod))
@@ -236,8 +240,8 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
                 }
                 dir.create(dir.backup)
                 lapply(c(files.found),function(f) file.rename(
-                                                   from=file.path(rundir,f),
-                                                   to=file.path(dir.backup,f)
+                                                      from=file.path(rundir,f),
+                                                      to=file.path(dir.backup,f)
                                                   ))
                 file.copy(file.mod,dir.backup)
             } else {

@@ -219,8 +219,8 @@ streams.
 has not been estimated but parameter values have been manually put
 into the respective sections in the control stream.
 
-On linux/mac, The default is to use "PSN" if found. On Windows, "nmsim"
-is the default.
+On linux/mac, The default is to use "PSN" if found. On Windows,
+"nmsim" is the default.
 
 }}
 

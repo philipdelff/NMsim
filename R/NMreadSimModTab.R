@@ -117,7 +117,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     if(missing(progress)) progress <- NULL
     if(is.null(progress)) progress <- TRUE
     ## Previous versions did not save path.results, so 
-
+    
     
     if(!"path.results"%in%colnames(modtab)){
         if(! "NMsimVersion"%in%colnames(modtab) || !"file.res.data" %in% colnames(modtab)){
@@ -246,11 +246,13 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
                              char = "=")
     }
 
+    
 ### this is needed for nc>1
     ## Sys.sleep(5)
     res.list <- lapply(1:nsplits,function(count){
         dat <- tab.split[[count]]
         res <- dat[,{
+            
             ## the rds table must keep NMscanData arguments
             args.NM <- args.NMscanData[[1]]
             if( "file.mod" %in% names(args.NM)){
