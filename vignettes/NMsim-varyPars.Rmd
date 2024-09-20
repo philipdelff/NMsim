@@ -104,19 +104,23 @@ using the simulation input data set rather than hard-coding numerical
 values into `modify.model`. The following tries a number of fold
 changes to `KA`.
 
-```{r,include=TRUE,eval=FALSE}
+```{r,expand-input-dt,eval=TRUE}
 setDT(dat.sim)
+## this repeats dat.sim for each of the values in KASCAL - effectively
+## an outer join
 dat.sim.varka <- dat.sim[,data.table(KASCALE=c(1,4,10)),by=dat.sim]
 dat.sim.varka[,ID:=.GRP,by=.(KASCALE,ID)]
 setorder(dat.sim.varka,ID,TIME,EVID)
+```
 
+```{r,include=TRUE,eval=FALSE}
 simres.varka <- NMsim(file.mod=file.mod,
                       data=dat.sim.varka
                      ,dir.sims="~/NMsim_vignette" ## where to store simulation files
                      ,name.sim="varka"
                      ,seed=12345
                      ## ,modify.model=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
-                     ,modify.model=list(PK=add("TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
+                     ,modify.model=list(PK=add(c("TVKA=TVKA/KASCALE","KA=KA/KASCALE")))
                       )
 
 ```
@@ -140,7 +144,7 @@ labs(colour="Fold absorption prolongation")
 The `modify.model` argument can be used to apply customized functions
 to control stream sections. In the example above, we used 
 ```{r,eval=FALSE}
-modify.model=list(PK=add("TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
+modify.model=list(PK=add(c("TVKA=TVKA/KASCALE","KA=KA/KASCALE")))
 ```
 This is exactly the same as creating a custom function that adds those two lines (text strings to a vector of text strings each representing a line in the control stream)
 
@@ -157,11 +161,6 @@ the control stream.
 <!-- ## Using NMsim to validate reimplementations of models -->
 
 ```{r,include=TRUE,eval=FALSE}
-setDT(dat.sim)
-dat.sim.varka <- dat.sim[,data.table(KASCALE=c(1,4,10)),by=dat.sim]
-dat.sim.varka[,ID:=.GRP,by=.(KASCALE,ID)]
-setorder(dat.sim.varka,ID,TIME,EVID)
-
 simres.varka2 <- NMsim(file.mod=file.mod,
                       data=dat.sim.varka
                      ,dir.sims="~/NMsim_vignette" ## where to store simulation files
