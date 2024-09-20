@@ -17,6 +17,7 @@ header-includes:
 library(data.table)
 library(NMdata)
 library(ggplot2)
+library(NMsim)
 ##knitr::opts_chunk$set(dev = "cairo_pdf")
 knitr::opts_chunk$set(
                       collapse = TRUE
