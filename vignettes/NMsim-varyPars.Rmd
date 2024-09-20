@@ -159,8 +159,8 @@ This is exactly the same as creating a custom function that adds those two lines
 modify.model=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))
 ```
 
-We can use this notation to modify `TVKA` when it is first defined in
-the control stream.
+We can use a difference custom function to modify `TVKA` when it is first defined in
+the control stream. The following uses a regular expression to substitute 
 
 
 
@@ -173,7 +173,12 @@ simres.varka2 <- NMsim(file.mod=file.mod,
                      ,dir.sims="~/NMsim_vignette" ## where to store simulation files
                      ,name.sim="varka2"
                      ,seed.R=12345
-                     ,modify.model=list(PK=function(x) sub("(.*TVKA *=.*)","\\1/KASCALE",x))
+                     ,modify.model=list(PK=function(x) {
+                         ## identify line number if first definition of TVKA
+                         idx.line1.TVKA <- min(grep(" *TVKA *=",x))
+                         ## add /KASCALE after dropping potential comments
+                         x[idx.line1.TVKA] <- paste(sub(";.*","",x[idx.line1.TVKA]),"/KASCALE")
+                         x})
                       )
 
 ```
