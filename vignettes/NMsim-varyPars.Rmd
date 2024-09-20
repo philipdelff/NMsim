@@ -51,6 +51,11 @@ The SAD study was run with a fast solution formulation. We want to see how a slo
 
 Notice, until NMsim 0.1.0, the `modify.model` argument was called `modify.model`. The helper functions `add` and `overwrite` were introduced with NMsim 0.1.3. Until then, custom modification functions had to be provided like described in the section "Edit control stream using customized functions".
 
+```{r,include=FALSE,eval=TRUE}
+file.mod <- system.file("examples/nonmem/xgxr021.mod",package="NMsim")
+dat.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"))
+```
+
 ```{r,eval=FALSE}
 file.mod <- system.file("examples/nonmem/xgxr021.mod",package="NMsim")
 dat.sim <- read.csv(system.file("examples/derived/dat_sim1.csv",package="NMsim"))
