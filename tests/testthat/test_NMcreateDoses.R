@@ -2,6 +2,8 @@ library(data.table)
 data.table::setDTthreads(1)
 library(NMdata)
 
+NMdataConf(reset=TRUE)
+
 context("NMcreateDoses")
 
 test_that("Basic",{
