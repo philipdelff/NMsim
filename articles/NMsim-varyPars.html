@@ -125,7 +125,7 @@ section “Edit control stream using customized functions”.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simres</span>,<span class="va">simres.slowabs</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">TIME</span>,<span class="va">PRED</span>,colour<span class="op">=</span><span class="va">model</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-varyPars_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
+<p><img src="NMsim-varyPars_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 <p>We used <code>modify.model</code> to modify the <code>$PK</code>
 section. We used it to append two lines. We could use it to modify any
 section in the model, and we could essentially do any modification.
@@ -138,23 +138,25 @@ numerical values into <code>modify.model</code>. The following tries a
 number of fold changes to <code>KA</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">dat.sim</span><span class="op">)</span></span>
+<span><span class="co">## this repeats dat.sim for each of the values in KASCAL - effectively</span></span>
+<span><span class="co">## an outer join</span></span>
 <span><span class="va">dat.sim.varka</span> <span class="op">&lt;-</span> <span class="va">dat.sim</span><span class="op">[</span>,<span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>KASCALE<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">4</span>,<span class="fl">10</span><span class="op">)</span><span class="op">)</span>,by<span class="op">=</span><span class="va">dat.sim</span><span class="op">]</span></span>
 <span><span class="va">dat.sim.varka</span><span class="op">[</span>,<span class="va">ID</span><span class="op">:=</span><span class="va">.GRP</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">KASCALE</span>,<span class="va">ID</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">dat.sim.varka</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">simres.varka</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
+<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">dat.sim.varka</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simres.varka</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                      data<span class="op">=</span><span class="va">dat.sim.varka</span></span>
 <span>                     ,dir.sims<span class="op">=</span><span class="st">"~/NMsim_vignette"</span> <span class="co">## where to store simulation files</span></span>
 <span>                     ,name.sim<span class="op">=</span><span class="st">"varka"</span></span>
 <span>                     ,seed<span class="op">=</span><span class="fl">12345</span></span>
 <span>                     <span class="co">## ,modify.model=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))</span></span>
-<span>                     ,modify.model<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu">add</span><span class="op">(</span><span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span></span>
+<span>                     ,modify.model<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu">add</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">simres.varka</span><span class="op">[</span><span class="va">simres.varka</span><span class="op">$</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span>,<span class="op">]</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">TIME</span>,<span class="va">PRED</span>,colour<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">KASCALE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>colour<span class="op">=</span><span class="st">"Fold absorption prolongation"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-varyPars_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
+<p><img src="NMsim-varyPars_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="edit-control-stream-using-customized-functions">Edit control stream using customized functions<a class="anchor" aria-label="anchor" href="#edit-control-stream-using-customized-functions"></a>
@@ -162,30 +164,25 @@ number of fold changes to <code>KA</code>.</p>
 <p>The <code>modify.model</code> argument can be used to apply
 customized functions to control stream sections. In the example above,
 we used</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">modify.model</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu">add</span><span class="op">(</span><span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">modify.model</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu">add</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>This is exactly the same as creating a custom function that adds
 those two lines (text strings to a vector of text strings each
 representing a line in the control stream)</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">modify.model</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We can use this notation to modify <code>TVKA</code> when it is first
 defined in the control stream.</p>
 <!-- ## Using NMsim to validate reimplementations of models -->
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setDT.html" class="external-link">setDT</a></span><span class="op">(</span><span class="va">dat.sim</span><span class="op">)</span></span>
-<span><span class="va">dat.sim.varka</span> <span class="op">&lt;-</span> <span class="va">dat.sim</span><span class="op">[</span>,<span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>KASCALE<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">4</span>,<span class="fl">10</span><span class="op">)</span><span class="op">)</span>,by<span class="op">=</span><span class="va">dat.sim</span><span class="op">]</span></span>
-<span><span class="va">dat.sim.varka</span><span class="op">[</span>,<span class="va">ID</span><span class="op">:=</span><span class="va">.GRP</span>,by<span class="op">=</span><span class="fu">.</span><span class="op">(</span><span class="va">KASCALE</span>,<span class="va">ID</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorder</a></span><span class="op">(</span><span class="va">dat.sim.varka</span>,<span class="va">ID</span>,<span class="va">TIME</span>,<span class="va">EVID</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">simres.varka2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simres.varka2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                      data<span class="op">=</span><span class="va">dat.sim.varka</span></span>
 <span>                     ,dir.sims<span class="op">=</span><span class="st">"~/NMsim_vignette"</span> <span class="co">## where to store simulation files</span></span>
 <span>                     ,name.sim<span class="op">=</span><span class="st">"varka2"</span></span>
 <span>                     ,seed.R<span class="op">=</span><span class="fl">12345</span></span>
 <span>                     ,modify.model<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"(.*TVKA *=.*)"</span>,<span class="st">"\\1/KASCALE"</span>,<span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simres.both</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simres.varka</span><span class="op">[</span>,<span class="va">method</span><span class="op">:=</span><span class="st">"add()"</span><span class="op">]</span>,</span>
 <span>                     <span class="va">simres.varka2</span><span class="op">[</span>,<span class="va">method</span><span class="op">:=</span><span class="st">"custom/sub()"</span><span class="op">]</span></span>
 <span>                     <span class="op">)</span></span>
@@ -194,7 +191,7 @@ defined in the control stream.</p>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>colour<span class="op">=</span><span class="st">"Fold absorption prolongation"</span><span class="op">)</span><span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">method</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NMsim-varyPars_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
+<p><img src="NMsim-varyPars_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
