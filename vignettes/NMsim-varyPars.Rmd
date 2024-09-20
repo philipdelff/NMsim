@@ -33,6 +33,8 @@ NMdataConf(as.fun="data.table",
            ## until NMdata 0.1.5
            )
 
+theme_set(theme_bw()+theme(legend.position = "bottom"))
+
 ## this changes data.table syntax. I think we can do without.
 ## knitr::opts_chunk$set(tidy.opts=list(width.cutoff=60), tidy=TRUE)
 run.simuls <- FALSE
