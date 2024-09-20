@@ -171,8 +171,9 @@ those two lines (text strings to a vector of text strings each
 representing a line in the control stream)</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">modify.model</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>We can use this notation to modify <code>TVKA</code> when it is first
-defined in the control stream.</p>
+<p>We can use a difference custom function to modify <code>TVKA</code>
+when it is first defined in the control stream. The following uses a
+regular expression to substitute</p>
 <!-- ## Using NMsim to validate reimplementations of models -->
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simres.varka2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
@@ -180,7 +181,12 @@ defined in the control stream.</p>
 <span>                     ,dir.sims<span class="op">=</span><span class="st">"~/NMsim_vignette"</span> <span class="co">## where to store simulation files</span></span>
 <span>                     ,name.sim<span class="op">=</span><span class="st">"varka2"</span></span>
 <span>                     ,seed.R<span class="op">=</span><span class="fl">12345</span></span>
-<span>                     ,modify.model<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"(.*TVKA *=.*)"</span>,<span class="st">"\\1/KASCALE"</span>,<span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span>                     ,modify.model<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>                         <span class="co">## identify line number if first definition of TVKA</span></span>
+<span>                         <span class="va">idx.line1.TVKA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">" *TVKA *="</span>,<span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span>                         <span class="co">## add /KASCALE after dropping potential comments</span></span>
+<span>                         <span class="va">x</span><span class="op">[</span><span class="va">idx.line1.TVKA</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">";.*"</span>,<span class="st">""</span>,<span class="va">x</span><span class="op">[</span><span class="va">idx.line1.TVKA</span><span class="op">]</span><span class="op">)</span>,<span class="st">"/KASCALE"</span><span class="op">)</span></span>
+<span>                         <span class="va">x</span><span class="op">}</span><span class="op">)</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simres.both</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simres.varka</span><span class="op">[</span>,<span class="va">method</span><span class="op">:=</span><span class="st">"add()"</span><span class="op">]</span>,</span>
