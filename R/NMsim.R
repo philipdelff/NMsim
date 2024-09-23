@@ -937,17 +937,20 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
     
     dt.models[,{
+        
 ### note: insert test for whether run is needed here
         ## if data is NULL, we will re-use data used in file.mod. Adding row counter if not found.
         rewrite.data.section <- TRUE
+        
+
         if(is.null(data)){
-            data.this <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL)
+            data.this <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL,as.fun="data.table")
             ## col.row <- tmpcol(data,base="ROW")
             if(!col.row %in% colnames(data.this)){
                 data.this[,(col.row):=.I]
                 setcolorder(data.this,col.row)
                 message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
-                section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE)
+                section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE,as.fun="data.table")
                 section.input <- paste("$INPUT",col.row,section.input)
             } else {
                 section.input <- FALSE
