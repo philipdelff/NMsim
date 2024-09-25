@@ -102,10 +102,14 @@
 <p><code>NMsim</code> has a flexible way to define simulation methods. The following methods are currently provided:</p>
 <ul>
 <li>Simulation of new subjects (default or explicitly with <code>method.sim=NMsim_default</code>)</li>
-<li>Simulation of a typical subject (ETAs equal 0, <code>method.sim=NMsim_typical</code>)</li>
 <li>Simulation of subjects already estimated in Nonmem model (<code>method.sim=NMsim_known</code>)</li>
 <li>Simulation with parameter uncertainty based on a Nonmem covariance step (<code>method.sim=NMsim_VarCov</code>)</li>
 <li>Simulation “as is” in case you already prepared a simulation control stream and just want to automate the use of it in combination with simulation data sets (<code>method.sim=NMsim_asis</code>)</li>
+</ul>
+<p>In addition, <code>NMsim</code> provides other features to further modify the simulation control stream</p>
+<ul>
+<li>Simulation of typical subjects with all ETAs equal 0 (<code>typical=TRUE</code>)</li>
+<li>Custom modification of control stream sections (<code>modify.sections</code> argument)</li>
 </ul>
 <p>To learn how to run these simulations on your Nonmem models, get started with <a href="https://philipdelff.github.io/NMsim/articles/NMsim-basics.html"><code>NMsim-basics.html</code></a>. It is really easy.</p>
 <p>In addition, <code>NMsim</code> can simulate multiple models at a time. E.g., if a bootstrap run of a model is available, NMsim can run the simulation with each of the bootstrap models and collect all the results in one dataset. This provides a robust and easy way to simulate a Nonmem model with uncertainty.</p>
