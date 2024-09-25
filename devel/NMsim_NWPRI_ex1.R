@@ -11,7 +11,7 @@ library(stringr)
 ### lets try to make the directories in the script only depend on wdirs. And maybe one more for setwd if needed
 ## wdirs <- "/data/sandbox/trunk/analysis/NMsim/wdirs"
 ## setwd("/data/sandbox/trunk/analysis/NMsim/wdirs")
-wdirs <- "."
+wdirs <- "~/wdirs"
 load_all(file.path(wdirs,"NMdata"))
 load_all(file.path(wdirs,"NMsim"))
 
@@ -25,10 +25,9 @@ NMreadSection(file.mod,section="OMEGA")
 
 quiet <- NMreadSection(file.mod,keep.empty=F)[c("THETA","OMEGA","SIGMA")] |> lapply(function(x)cat(paste(paste(x,collapse="\n"),"\n\n")))
 
+## reading estimated parameters to generate TABLE statements with all parameters - generally not necessary.
 pars <- NMreadExt(file.mod,return="pars",as.fun="data.table")
 pars[, parlab := stringr::str_remove_all(string = parameter, pattern = "\\(|\\)") %>% stringr::str_replace(",", "\\_")]
-
-### NMreadExt() test end
 
 #### NMsim_NWPRI - not typical
 ## need a relevant simulation data set
@@ -39,7 +38,7 @@ simres <- NMsim(file.mod,
                 data=data.sim,
                 method.sim=NMsim_NWPRI,
                 method.execute = "nmsim",
-                subproblems=1000,
+                subproblems=500,
                 name.sim="nwpri",
                 modify.model = list(
                                         # name the THETAS/OMEGAS/SIGMAS in $ERROR so we can compare the distributions to other methods. 

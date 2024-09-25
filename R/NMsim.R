@@ -942,7 +942,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         ## if data is NULL, we will re-use data used in file.mod. Adding row counter if not found.
         rewrite.data.section <- TRUE
         
-
         if(is.null(data)){
             data.this <- NMscanInput(file.mod,recover.cols=FALSE,translate=FALSE,apply.filters=FALSE,col.id=NULL,as.fun="data.table")
             ## col.row <- tmpcol(data,base="ROW")

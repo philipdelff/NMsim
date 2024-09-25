@@ -16,6 +16,24 @@
   - Provides a summary of models to be submitted before starting to do
     so.
 
+## Bugfixes
+
+* `NMsim()`
+  - When not providing a simulation data set - typically a simulation for a VPC - `NMsim()` would fail with messages like
+  
+  ```{r,eval=FALSE}
+Error in `:=`((col.sim), ..name.sim) : 
+  Check that is.data.table(DT) == TRUE. Otherwise, := and `:=`(...) are defined for use in j, once only and in particular ways. See help(":=").
+  ```
+  
+  The issue has been fixed. If using NMsim 0.1.3 or earlier, the workaround is to do `NMdataConf(as.fun="data.table")`. Then after having the simulation results as a data.table, convert it with `as.data.frame()` or as preferred. 
+  
+  Notice, `NMdataConf()`  affects the succeeding `NMsim()` calls but also other NMdata and NMsim function calls. When the VPC simulation has run, you may not want to continue
+  recieving data.tables, you should reset the default value for
+  as.fun: `NMdataConf(as.fun=NULL)` which will turn it back to
+  returning data.frames by default. If you prefer tibbles, you can do
+  `NMdataConf(as.fun=tibble::as_tibble)`. Generally, if you prefer to work with something that is not data.frames (data.table and tibble the most common alternatives), it is recommended to use `NMdataConf()` to customize your default. 
+
 # NMsim 0.1.3
 
 ## New features
