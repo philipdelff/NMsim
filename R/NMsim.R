@@ -198,11 +198,14 @@
 ##'     using method.update.inits="psn", this argument cannot be
 ##'     used. If you want provide parameters to be used for the
 ##'     simulation, look at the `ext` argument to `NMsim_VarCov`.
-##' @param auto.dv Add a column called `DV` to simulation data sets if
-##'     a column of that name is not found? Nonmem is generally
+##' @param auto.dv Add a column called `DV` to input data sets if a
+##'     column of that name is not found? Nonmem is generally
 ##'     dependent on a `DV` column in input data but this is typically
 ##'     uninformative in simulation data sets and hence easily
-##'     forgotten when generating simulation data sets.
+##'     forgotten when generating simulation data sets. If
+##'     \code{auto.dv=TRUE} and no `DV` column is found, `DV=NA` will
+##'     be added. In this case (`auto.dv=TRUE` and no `DV` column
+##'     found) a `MDV=1` column will also be added if none found.
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say `tibble::as_tibble`) in as.fun to convert to
 ##'     something else. If data.tables are wanted, use

@@ -5,16 +5,18 @@ cleaningPatterns <- function(clean){
     c("nonmem","worker*","FDATA*","fort.*","WK_*")
 }
 
+
+
 NMrunLin <- function(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem,clean){
 
-name <- NULL
+    name <- NULL
     
     lines.bash <- c(
         "#!/bin/bash"
        ,sprintf("%s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
 ### copy output tables back
         ## ,sprintf("cp \'%s\' \'%s\'",paste(meta.tables[,name],collapse="' '"),dir.mod.abs)
-        ,paste0("find . -type f -name ",paste0("\'",meta.tables[,name],"\'")," -exec cp {} \'",dir.mod.abs,"\' \\;")
+       ,paste0("find . -type f -name ",paste0("\'",meta.tables[,name],"\'")," -exec cp {} \'",dir.mod.abs,"\' \\;")
 ### copy wanted files back to orig location of file.mod 
        ,paste0("find . -type f -name ",paste0("\'*.",exts.cp,"\'")," -exec cp {} \'",dir.mod.abs,"\' \\;")
        ,""
@@ -41,6 +43,7 @@ name <- NULL
     
     lines.bash
 }
+
 
 ##sprintf("call %s %s %s",path.nonmem,fn.mod,fnExtension(fn.mod,".lst"))
 NMrunWin <- function(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem,clean){
@@ -77,8 +80,8 @@ NMrunWin <- function(fn.mod,dir.mod.abs,exts.cp,meta.tables,path.nonmem,clean){
 
     if(clean==5){
         lines.bat <- c(lines.bat,
-                        sprintf("CD .. & rd /s /q \"%s\"",dir.mod.abs)
-                        )
+                       sprintf("CD .. & rd /s /q \"%s\"",dir.mod.abs)
+                       )
     }
     
     lines.bat

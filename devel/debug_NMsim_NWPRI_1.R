@@ -105,4 +105,8 @@ dt.pars[FIX!=1,!("FIX")]
 
 ## manual edits of the sim control stream
 NMexec("simtmp_NWPRI/mod_lorlatinib_estimate_NWPRI/mod_lorlatinib_estimate_NWPRI_2.mod",sge=F)
+NMexec("simtmp_NWPRI/xgxr032_NWPRI/xgxr032_NWPRI_2.mod",sge=F)
+
 simres <- NMscanData("simtmp_NWPRI/mod_lorlatinib_estimate_NWPRI/mod_lorlatinib_estimate_NWPRI_2.lst")
+simres <- NMscanData("simtmp_NWPRI/xgxr032_NWPRI/xgxr032_NWPRI_2.lst")
+

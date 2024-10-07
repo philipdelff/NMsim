@@ -289,6 +289,7 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
         if(NMsimConf$method.execute=="nmsim"){
             
             string.cmd <- NMexecDirectory(file.mod,NMsimConf$path.nonmem,files.needed=files.needed,system.type=NMsimConf$system.type,dir.data=dir.data,clean=clean)
+            dir.tmp <- dirname(string.cmd)
             if(sge) {
 
                 if(nc==1){
@@ -304,11 +305,20 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 ### executing from getwd()
                     ## string.cmd <- sprintf('cd %s; qsub -pe orte %s -V -N NMsim -j y -cwd -b y %s %s %s -background -parafile=%s [nodes]=%s' ,getwd(),nc,path.nonmem,file.mod,fnExtension(file.mod,"lst"),pnm,nc)
                     ## executing from model execution dir.
+                    jobname <- basename(file.mod)
+                    ## qsub does not allow a jobname to start in a numeric
+                    if(grepl("^ *[0-9]",jobname)) {
+                        jobname <- paste0("NMsim_",jobname)
+                    }
                     string.cmd <- sprintf('cd \"%s\"; qsub -pe orte %s -V -N \"%s\" -j y -cwd -b y \"./%s\" -background -parafile=%s [nodes]=%s; cd \"%s\"'
-                                         ,dirname(string.cmd),nc,basename(file.mod)
-                                          ## ,NMsimConf$path.nonmem,basename(file.mod),fnExtension(basename(file.mod),"lst")
+                                         ,dirname(string.cmd)
+                                         ,nc
+                                         ,jobname
                                          ,basename(string.cmd)
-                                         ,basename(pnm),nc,getwd())
+                                         ##,basename(pnm)
+                                         ,getAbsolutePath(pnm)
+                                         ,nc
+                                         ,getwd())
                 }
                 wait <- TRUE
             } else {
@@ -334,10 +344,11 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
             shell(shQuote(paste("call", path.script),type="cmd") )
         }
         if(NMsimConf$system.type=="linux"){
-            
             if(nmquiet) string.cmd <- paste(string.cmd, ">/dev/null 2>&1")
             if(!wait) string.cmd <- paste(string.cmd,"&")
-            
+            if(exists("dir.tmp") && !is.null(dir.tmp)) {          
+                writeTextFile(string.cmd,file.path(dir.tmp,"NMexec_command.txt"))
+            }
             system(string.cmd,ignore.stdout=nmquiet)
         }
     }
