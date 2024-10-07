@@ -7,7 +7,7 @@ Authors@R: c(person("Philip", "Delff", email = "philip@delff.dk",role = c("aut",
 Maintainer: Philip Delff <philip@delff.dk>
 Description: A complete and seamless 'Nonmem' simulation interface within R. Turns 'Nonmem' control streams into simulation control streams, executes them with specified simulation input data and returns the results. The simulation is performed by 'Nonmem', eliminating manual work and risks of re-implementation of models in other tools.
 License: MIT + file LICENSE
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Roxygen: list(roclets=c("collate", "namespace", "rd", "vignette"))
 Depends: R (>= 3.5.0)
 Imports:

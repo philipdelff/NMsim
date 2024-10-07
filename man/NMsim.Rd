@@ -335,11 +335,14 @@ files to read will be returned. Pass them through
 `NMreadSim()` (which also supports waiting for the simulations
 to finish).}
 
-\item{auto.dv}{Add a column called `DV` to simulation data sets if
-a column of that name is not found? Nonmem is generally
+\item{auto.dv}{Add a column called `DV` to input data sets if a
+column of that name is not found? Nonmem is generally
 dependent on a `DV` column in input data but this is typically
 uninformative in simulation data sets and hence easily
-forgotten when generating simulation data sets.}
+forgotten when generating simulation data sets. If
+\code{auto.dv=TRUE} and no `DV` column is found, `DV=NA` will
+be added. In this case (`auto.dv=TRUE` and no `DV` column
+found) a `MDV=1` column will also be added if none found.}
 
 \item{clean}{The degree of cleaning (file removal) to do after
 Nonmem execution. If `method.execute=="psn"`, this is passed
