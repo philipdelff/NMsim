@@ -380,21 +380,21 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   path.nonmem=NULL,
                   nmquiet,
                   progress,
-                 as.fun,
-                 suffix.sim,
-                 text.table,
-                 system.type=NULL,
-                 dir.res,
-                 file.res,
-                 wait,
-                 auto.dv=TRUE,
-                 clean,
-                 quiet=FALSE,
-                 check.mod = TRUE,
-                 seed,
-                 list.sections,
-                 format.data.complete="rds",
-                 ...
+                  as.fun,
+                  suffix.sim,
+                  text.table,
+                  system.type=NULL,
+                  dir.res,
+                  file.res,
+                  wait,
+                  auto.dv=TRUE,
+                  clean,
+                  quiet=FALSE,
+                  check.mod = TRUE,
+                  seed,
+                  list.sections,
+                  format.data.complete="rds",
+                  ...
                   ){
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
     
@@ -980,9 +980,9 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
         nmtext <- NMwriteData(data.this,file=path.data,
                               args.NMgenText=list(dir.data=".")
                              ,formats.write=c("csv",format.data.complete)
-                              ,csv.trunc.as.nm=TRUE
-                              ,script=script
-                              ,quiet=TRUE)
+                             ,csv.trunc.as.nm=TRUE
+                             ,script=script
+                             ,quiet=TRUE)
         
         ## input
         if(exists("section.input")){
@@ -1193,7 +1193,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
 
 
 
-    #### Section start: Additional control stream modifications specified by user - modify.model ####
+#### Section start: Additional control stream modifications specified by user - modify.model ####
     if( !is.null(modify.model) ){
 ### This requires NMdata >=0.1.0.905
         dt.models[,{

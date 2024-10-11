@@ -10,7 +10,7 @@
 ##' @param CMT Compartment number. Default is to dose into CMT=1.
 ##' @param EVID The event ID to use for doses. Default is to use
 ##'     EVID=1, but EVID might also be wanted.
-##' @param addl Optinal. A list of ADDL and II that will be applied to
+##' @param addl Optional. A list of ADDL and II that will be applied to
 ##'     last dose
 ##' @param as.fun The default is to return data as a data.frame. Pass
 ##'     a function (say `tibble::as_tibble`) in as.fun to convert to

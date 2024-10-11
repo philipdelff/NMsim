@@ -29,7 +29,7 @@ NMcreateDoses(
 \item{EVID}{The event ID to use for doses. Default is to use
 EVID=1, but EVID might also be wanted.}
 
-\item{addl}{Optinal. A list of ADDL and II that will be applied to
+\item{addl}{Optional. A list of ADDL and II that will be applied to
 last dose}
 
 \item{as.fun}{The default is to return data as a data.frame. Pass

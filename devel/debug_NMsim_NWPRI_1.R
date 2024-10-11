@@ -20,7 +20,12 @@ NMdataConf(path.nonmem="/opt/NONMEM/nm75/run/nmfe75",
 
 
 printSection <- function(section) {
-    res <- lapply(section,function(x)cat(paste(paste(x,collapse="\n"),"\n\n")))
+    if(!is.list(section)) section <- list(section)
+    res <- lapply(section,function(x){
+        x <- x[!grepl("^ *$",section)]
+        cat(paste(paste(x,collapse="\n"),"\n\n"))
+
+    })
 }
 
 ##### Choose a model
@@ -59,9 +64,13 @@ simres <- NMsim(
    ,subproblems=250                 ## sampling multiple models
    ,sge=FALSE                      ## run simulations in parallel please
    ,nmquiet=T
+   ,reuse.results=TRUE
 )
 
 
+## $PRIOR and $SIMULATION seem OK
+NMreadSection(sim.lst,section="prior")
+NMreadSection(sim.lst,section=c("simulation")) |> printSection()
 
 #### Notice dist of OMEGA(2,2). It doesn't match the estimate. The
 #### estimate is 0.17. But mean of sim is ~0. I can't tell from the
@@ -72,7 +81,8 @@ sim.lst <- attributes( simres)$NMsimModTab$path.sim.lst
 
 pars[,parlab2:=paste(parlab,"Est =",signif(est,3),"SE =",signif(se,3))]
 pars[FIX==1,parlab2:=paste(parlab,"Est =",signif(est,3), "(Fixed)")]
-pars[par.type=="OMEGA"&FIX!=1]
+## parameters as read by NMdata::NMreadExt()
+pars[par.type=="OMEGA"&FIX!=1,.(parameter,value)]
 
 ## $OMEGA and $OMEGAP aligns with pars$value
 NMreadSection(sim.lst,section=c("omega")) |> printSection()
@@ -83,14 +93,20 @@ NMreadSection(sim.lst,section=c("omegapd")) |> printSection()
 
 NMreadSection(sim.lst,section=c("sigmapd")) |> printSection()
 
+
+
+
+
 vars <- intersect(colnames(simres),pars$parlab)
 
-findCovs(simres,by="NMREP")[,c("NMREP",vars),with=F] |>
+hists1 <- findCovs(simres,by="NMREP")[,c("NMREP",vars),with=F] |>
     melt(measure.vars=vars) |>
-    mergeCheck(unique(pars[,.(parlab,parlab2)]),by.x="variable",by.y="parlab") |>
+    mergeCheck(unique(pars[,.(parlab,est=value,parlab2)]),by.x="variable",by.y="parlab")|>
         ggplot(aes(x = value)) + 
     geom_histogram(bins=25)+
     facet_wrap(~ parlab2, scales = "free") +
+    geom_vline(aes(xintercept=est),colour=2)+
+    labs(subtitle="Simulated parameter distributions. Red line is param estimate from .ext file in estimated model")+
     theme_bw()
 
 ## table with estimates, se and sd. not sure this is needed
