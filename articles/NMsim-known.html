@@ -77,7 +77,7 @@
 
     
     
-<p>Built 2024-10-09 using NMsim 0.1.3.906.</p>
+<p>Built 2024-10-11 using NMsim 0.1.3.906.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -106,15 +106,15 @@ data to demonstrate how to use additional methods and features of
 <p>We sometimes want to simulate the already observed subjects. This
 means we want to reuse the estimated random effects (ETA’s) given the
 subject ID’s. <code>NMsim</code> has a method for this called
-<code>NMsim_known</code>. The restriction is that all subjects (values
-of <code>ID</code>) in the simulation input data must have been used in
-the estimation input data.</p>
+<code>NMsim_EBE</code>. The restriction is that all subjects (values of
+<code>ID</code>) in the simulation input data must have been used in the
+estimation input data.</p>
 <p>Let’s think about that one more time before we go on. For
-<code>NMsim_known</code> to work, <code>ID</code> values in the
-simulation data set must be identical to <code>ID</code> values used in
-the estimation. This is how <code>NMsim_known</code> will find the EBE’s
+<code>NMsim_EBE</code> to work, <code>ID</code> values in the simulation
+data set must be identical to <code>ID</code> values used in the
+estimation. This is how <code>NMsim_EBE</code> will find the EBE’s
 (ETAs) that define the subject. For models estimated with FOCEI,
-<code>NMsim_known</code> will take the ETAs from the <code>.phi</code>
+<code>NMsim_EBE</code> will take the ETAs from the <code>.phi</code>
 file produced by Nonmem. For SAEM/IMP-based estimation this file cannot
 be used, and the user must have stored the ETAs in output table files
 for the method to work. It does not matter where in the table files they
@@ -124,7 +124,7 @@ is done in the example model provided with <code>NMsim</code> called
 <pre><code>$TABLE ETAS(1:LAST) NOAPPEND NOPRINT FILE=xgxr032_etas.txt</code></pre>
 <p>So a “subject” essentially means a set of ETAs. Covariates must still
 be provided in the input data set and can be modified if wanted. Notice,
-<code>NMsim_known</code> does nothing to restore covariates - you must
+<code>NMsim_EBE</code> does nothing to restore covariates - you must
 define covariates in input data as needed.</p>
 </div>
 <div class="section level2">
@@ -150,8 +150,8 @@ trusted.</p></li>
 simulated subjects in multiple simulations for reproducibility and to
 have all difference between say simulation results of different regimens
 be driven by differences in the regimen, and not in the populations.
-This use of <code>NMsim_known</code> is on the todo list tog get it’s
-own vignette <a href="https://philipdelff.github.io/NMsim/articles/NMsim-ReuseSimSubjects.html">here</a>.</p></li>
+This use of <code>NMsim_EBE</code> is on the todo list tog get it’s own
+vignette <a href="https://philipdelff.github.io/NMsim/articles/NMsim-ReuseSimSubjects.html">here</a>.</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -194,7 +194,7 @@ of Simulation Data Sets</a>.</p>
 <span></span>
 <span><span class="va">simres.known</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span>file.mod<span class="op">=</span><span class="va">file.mod</span>,</span>
 <span>                      data<span class="op">=</span><span class="va">dat.sim.known</span>,</span>
-<span>                      method.sim<span class="op">=</span><span class="va">NMsim_known</span>,</span>
+<span>                      method.sim<span class="op">=</span><span class="va">NMsim_EBE</span>,</span>
 <span>                      table.vars<span class="op">=</span><span class="st">"PRED IPRED CL V2 KA"</span>,</span>
 <span>                      name.sim<span class="op">=</span><span class="st">"known1"</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
@@ -263,7 +263,7 @@ predictions and PD predictions.</p>
 <code class="sourceCode R"><span><span class="va">simres.pksim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NMsim.html">NMsim</a></span><span class="op">(</span><span class="va">file.mod</span>,</span>
 <span>                      data<span class="op">=</span><span class="va">pdsim</span>,</span>
 <span>                      name.sim<span class="op">=</span><span class="st">"pkpd"</span>,</span>
-<span>                      method.sim<span class="op">=</span><span class="va">NMsim_known</span>,</span>
+<span>                      method.sim<span class="op">=</span><span class="va">NMsim_EBE</span>,</span>
 <span>                      table.vars<span class="op">=</span><span class="st">"PKIPRED=IPRED PKPRED=PRED"</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
