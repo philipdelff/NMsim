@@ -43,7 +43,7 @@ simPopEtas <- function(file,N,seed,pars,file.phi,as.fun,file.mod,...){
 
     ## name.sim
     if(!missing(file.mod)){
-        if(!missing(file)){
+        if(!is.null(file)){
             stop("file and file.mod supplied. Use file and not the deprecated file.mod. ")
         }
         message("file.mod is deprecated. Use file.")

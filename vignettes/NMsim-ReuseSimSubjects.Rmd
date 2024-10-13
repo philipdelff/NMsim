@@ -76,7 +76,7 @@ file.mod <- file.project("nonmem/xgxr032.mod")
 
 Let's simulate 10,000 ETA combinations and store them in a file called `xgxr032_simEtas.phi`.
 ```{r}
-NMsim:::simPopEtas(file.mod=file.mod,
+NMsim:::simPopEtas(file=file.mod,
                    N=1e4,
                    seed=238861,
                    file.phi="xgxr032_simEtas.phi"
