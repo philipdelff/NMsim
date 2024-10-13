@@ -4,10 +4,14 @@
 \alias{simPopEtas}
 \title{Generate a population based on a Nonmem model}
 \usage{
-simPopEtas(file.mod, N, seed, file.phi, as.fun)
+simPopEtas(file, N, seed, pars, file.phi, as.fun, file.mod, ...)
 }
 \arguments{
-\item{file.mod}{Path to input control stream}
+\item{file}{Passed to `NMdata::NMreadExt()`. Path to ext file. By
+default, `NMreadExt()` uses a`auto.ext=TRUE` which means that
+the file name extension is replaced by `.ext`. If your ext
+file name extension is not `.ext`, add `auto.ext=FALSE` (see
+...).}
 
 \item{N}{Number of subjects to generate}
 
@@ -15,13 +19,25 @@ simPopEtas(file.mod, N, seed, file.phi, as.fun)
 thing as running `set.seed` just before calling
 `simPopEtas()`.}
 
-\item{file.phi}{An optional phi file to write the generated subjects to.}
+\item{pars}{A long-format parameter table containing par.type and
+i columns. If this is supplied, the parameter values will not
+be read from an ext file, and file has no effect. If an ext
+file is available, it is most likely better to use the file
+argument.}
+
+\item{file.phi}{An optional phi file to write the generated
+subjects to.}
 
 \item{as.fun}{The default is to return data as a data.frame. Pass
 a function (say `tibble::as_tibble`) in as.fun to convert to
 something else. If data.tables are wanted, use
 as.fun="data.table". The default can be configured using
 NMdataConf.}
+
+\item{file.mod}{Deprecated. Use file instead.}
+
+\item{...}{Additional arguments passed to NMdata::NMreadExt(). Use
+`auto.ext=FALSE` if}
 }
 \description{
 Generate a population based on a Nonmem model
