@@ -952,7 +952,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                 data.this[,(col.row):=.I]
                 setcolorder(data.this,col.row)
                 message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
-                section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE,as.fun="data.table")
+                section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE)
                 section.input <- paste("$INPUT",col.row,section.input)
             } else {
                 section.input <- FALSE

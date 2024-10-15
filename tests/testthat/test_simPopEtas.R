@@ -1,7 +1,16 @@
 context("simPopEtas")
+
+unloadNamespace("NMsim")
+unloadNamespace("NMdata")
+load_all("~/wdirs/NMdata")
+load_all()
+
+## library(NMdata)
+
+
 library(data.table)
 data.table::setDTthreads(1) 
-library(NMdata)
+
 
 NMdataConf(reset=T)
 test_that("Basic",{
