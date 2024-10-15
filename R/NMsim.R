@@ -464,6 +464,19 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     ## Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
+        paste.begin <- function(x,add,...){
+        res <- paste(add,x[1],...)
+        if(length(x)>1){
+            res <- c(res,x[2:(length(x))])
+        }
+    }
+
+paste.end <- function(x,add,...){
+        c(x[0:(length(x)-1)],
+          paste(x[length(x)],add,...)
+          )
+    }
+
     returnSimres <- function(simres){
         simres <- as.fun(simres)
         addClass(simres,"NMsimRes")
@@ -1148,18 +1161,6 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     
 ### seed and subproblems
-    paste.begin <- function(x,add,...){
-        res <- paste(add,x[1],...)
-        if(length(x)>1){
-            res <- c(res,x[2:(length(x))])
-        }
-    }
-
-paste.end <- function(x,add,...){
-        c(x[0:(length(x)-1)],
-          paste(x[length(x)],add,...)
-          )
-    }
     
     if(do.seed || subproblems>0){
         dt.models[,{
