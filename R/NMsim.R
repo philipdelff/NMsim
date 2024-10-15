@@ -464,11 +464,12 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
     
     ## Section end: Dummy variables, only not to get NOTE's in pacakge checks
 
-        paste.begin <- function(x,add,...){
+    paste.begin <- function(x,add,...){
         res <- paste(add,x[1],...)
         if(length(x)>1){
             res <- c(res,x[2:(length(x))])
         }
+        res
     }
 
 paste.end <- function(x,add,...){
@@ -966,7 +967,8 @@ paste.end <- function(x,add,...){
                 setcolorder(data.this,col.row)
                 message(paste0("Row counter was added in column ",col.row,". Use this to merge output and input data."))
                 section.input <- NMreadSection(file.mod,section="input",keep.name=FALSE)
-                section.input <- paste.begin(paste("$INPUT",col.row),section.input,collapse=" ")
+                
+                section.input <- paste.begin(x=section.input,paste("$INPUT",col.row),collapse=" ")
             } else {
                 section.input <- FALSE
             }
