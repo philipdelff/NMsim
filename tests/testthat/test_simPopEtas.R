@@ -1,9 +1,9 @@
 context("simPopEtas")
 
-unloadNamespace("NMsim")
-unloadNamespace("NMdata")
-load_all("~/wdirs/NMdata")
-load_all()
+## unloadNamespace("NMsim")
+## unloadNamespace("NMdata")
+## load_all("~/wdirs/NMdata")
+## load_all()
 
 ## library(NMdata)
 
