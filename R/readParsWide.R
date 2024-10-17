@@ -79,6 +79,7 @@ readParsWide <- function(data,col.model=NULL,strings.par.type=c(THETA="^T.*",OME
     if(!is.data.frame(data)){
         data <- fread(data)
     }
+    setDT(data)
 
     ## if col.model is null, create one
     if(is.null(col.model)){
