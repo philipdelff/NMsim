@@ -16,6 +16,9 @@ to `simpar`.}
 
 \item{format}{"ext" (default) or "wide".}
 }
+\value{
+A table with sampled model parameters
+}
 \description{
 Sample model parameters using the `simpar` package
 }

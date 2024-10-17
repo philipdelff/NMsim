@@ -6,6 +6,7 @@
 ##'     to `simpar`.
 ##' @param format "ext" (default) or "wide".
 ##' @import NMdata
+##' @return A table with sampled model parameters
 ##' @export
 
 sampleParsSimpar <- function(file.mod,nsim,format="ext"){
