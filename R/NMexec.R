@@ -166,8 +166,11 @@ NMexec <- function(files,file.pattern,dir,sge=TRUE,input.archive,
 
     if(missing(nc)) nc <- NULL
     nc <- NMdata:::NMdataDecideOption("nc",nc,allow.unknown = TRUE)
+    ## not needed with NMdata 0.1.6 or 0.1.7
     if(is.null(nc)) nc <- 64
-    
+
+    if(NMsimConf$metod.execute=="nmsim" && nc>1){message("\nNotice: nc>1 still does not work with method.execute=\"nmsim\". Expect single-core performance. Notice there are other and most often more efficient methods to speed up simulations. See discussions on the NMsim website.")}
+
     
     ## args.psn.execute
     if(missing(args.psn.execute)) args.psn.execute <- NULL

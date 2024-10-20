@@ -45,6 +45,8 @@ LINK.LNK
 ^inst/examples/nonmem/xgxr01.+
 ^inst/examples/nonmem/xgxr1.+
 ^inst/examples/nonmem/xgxr022.+
+^inst/examples/nonmem/xgxr043.+
+^inst/examples/nonmem/xgxr045.+
 ^inst/examples/nonmem/bs.+
 ^inst/examples/nonmem/NMsim
 ^inst/examples/nonmem/.*\.dir.+

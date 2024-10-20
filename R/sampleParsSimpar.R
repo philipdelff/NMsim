@@ -7,9 +7,15 @@
 ##' @param format "ext" (default) or "wide".
 ##' @import NMdata
 ##' @return A table with sampled model parameters
+##' @author Sanaya Shroff, Philip Delff
 ##' @export
 
 sampleParsSimpar <- function(file.mod,nsim,format="ext"){
+
+    if(packageVersion("NMdata")<"0.1.7.905"){
+        stop("NMsim_NWPRI requires NMdata 0.1.7 or later.")
+    }
+
 
     DF2 <- NULL 
     iblock  <- NULL

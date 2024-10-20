@@ -50,10 +50,10 @@ Now that method.execute="nmsim" works for general execution, it should
 be default method on all systems, and there is no reason why NMsim
 handles this differently than NMexec.
 *** DONE if using path.nonmem, test that it exists
-*** TODO [#B] Check for existence of input data
+*** DONE Check for existence of input data
 Currently, we get an error from NMscanInput. It would be clearer if
 this was checked by NMexec as a prerequisite.
-*** TODO [#A] Move existing results files to backup before running nonmem
+*** DONE Move existing results files to backup before running nonmem
 *** TODO Rename sge to parallel/cluster?
 It means if we send to the cluster. There is a slight difference of
 the implication in NMexec and NMsim. In NMexec, if we send to cluster
@@ -111,7 +111,7 @@ have to supply what dists are needed.
 *** DONE Make sure NMsim uses seed and args.seed meaningfully mean
 
 ** NMsim
-*** TODO [#A] When adding seed and SUBPROBLEMS, only add once
+*** DONE When adding seed and SUBPROBLEMS, only add once
 If $SIMULATION spans more than one line, this is currently pasted repeatedly
 *** DONE Drop NMsim from file names
 In NMsim(), it happens here:
@@ -157,7 +157,7 @@ At least be able to identify and throw error
 *** DONE BUG in handling no data
 It must add col.row to output table. And NMscanData arguments
 collected dont seem to be used when running NMscanData.
-*** TODO [#B] option to clean temp dirs
+*** DONE option to clean temp dirs
 *** DONE Support list of data sets
 *** DONE Function to read and save results
 And clean up?

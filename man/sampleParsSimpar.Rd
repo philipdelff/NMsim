@@ -22,3 +22,6 @@ A table with sampled model parameters
 \description{
 Sample model parameters using the `simpar` package
 }
+\author{
+Sanaya Shroff, Philip Delff
+}

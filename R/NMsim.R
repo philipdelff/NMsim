@@ -396,6 +396,7 @@ NMsim <- function(file.mod,data,dir.sims, name.sim,
                   format.data.complete="rds",
                   ...
                   ){
+
 #### Section start: Dummy variables, only not to get NOTE's in pacakge checks ####
     
     . <- NULL
@@ -521,7 +522,8 @@ paste.end <- function(x,add,...){
     if(wait.exec) wait <- FALSE
 
 
-    if(nc>1){message("nc>1 may not work depending on your system configuration. It has only been tested on linux. Please notice there are other and most often more efficient methods to speed up simulations. See discussions on the NMsim website.")}
+### Moved to NMexec()
+##  if(NMsimConf$metod.execute=="nmsim" && nc>1){message("\nNotice: nc>1 still does not work with method.execute=\"nmsim\". Expect single-core performance. Notice there are other and most often more efficient methods to speed up simulations. See discussions on the NMsim website.")}
     
 
     ## args.psn.execute
@@ -1190,7 +1192,6 @@ paste.end <- function(x,add,...){
                                         #}
                 if(subproblems>0){
                     section.sim <- gsub("SUBPROBLEMS *= *[0-9]*"," ",section.sim)
-                    ## section.sim <- paste(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
                     section.sim <- paste.end(section.sim,sprintf("SUBPROBLEMS=%s",subproblems))
                 }
                 ## section.sim <- paste(section.sim,text.sim)

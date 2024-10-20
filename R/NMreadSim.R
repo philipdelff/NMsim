@@ -59,6 +59,7 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,progres
     is.ModTab <- NULL
     is.ROWEL <- NULL
     ROWEL <- NULL
+    nmout <- NULL
 
 ### Section end: Dummy variables, only not to get NOTE's in pacakge checks
     
@@ -130,8 +131,11 @@ NMreadSim <- function(x,check.time=FALSE,dir.sims,wait=FALSE,quiet=FALSE,progres
             res.all <- rbind(res.all,res.modTab)
         }
     }
+
+    if("nmout"%in%colnames(res.all) && is.logical(res.all$nmout)){
+        res.all[,nmout:=NULL]
+    }
     
-    ##    res.all <- rbind(res.simRes,res.modTab,fill=TRUE)
     
     res.all <- as.fun(res.all)
     addClass(res.all,"NMsimRes")
