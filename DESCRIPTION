@@ -29,7 +29,9 @@ Suggests:
   simpar
 Encoding: UTF-8
 LazyData: true
+Additional_repositories: 
+  https://mpn.metworx.com/snapshots/stable/2024-09-23
 BugReports: https://github.com/philipdelff/NMsim/issues
 Language: en-US
 URL: https://philipdelff.github.io/NMsim/
-Remotes: activpalProcessing@1.0.2
+
