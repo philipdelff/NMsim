@@ -38,7 +38,7 @@ jobs:
       - name: Build site
         run: |
           install.packages("simpar",repos="https://mpn.metworx.com/snapshots/stable/2024-09-23");
-	  pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+          pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀
