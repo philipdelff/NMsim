@@ -50,7 +50,7 @@ jobs:
       - name: Show testthat output
         if: always()
         run: |
-          writeLines('options(repos = c(MPN = "https://mpn.metworx.com/snapshots/stable/2024-09-23", getOption("repos")))', file("~/.Rprofile", "ab"))
+	##writeLines('options(repos = c(MPN = "https://mpn.metworx.com/snapshots/stable/2024-09-23", getOption("repos")))', file("~/.Rprofile", "ab"))
           ## --------------------------------------------------------------------
           find '${{ runner.temp }}/NMsim' -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
