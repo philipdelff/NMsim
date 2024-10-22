@@ -33,6 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages("simpar",repos="https://mpn.metworx.com/snapshots/stable/2024-09-23")
+        shell: Rscript {0}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
