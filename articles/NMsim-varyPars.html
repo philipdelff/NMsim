@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">NMsim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.910</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3.921</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,7 +77,7 @@
 
     
     
-<p>Built 2024-10-15 using NMsim 0.1.3.910.</p>
+<p>Built 2024-10-22 using NMsim 0.1.3.921.</p>
 <div class="section level2">
 <h2 id="objectives">Objectives<a class="anchor" aria-label="anchor" href="#objectives"></a>
 </h2>
@@ -119,7 +119,7 @@ section “Edit control stream using customized functions”.</p>
 <span>                       ,name.sim<span class="op">=</span><span class="st">"slower_abs"</span></span>
 <span>                       ,seed.R<span class="op">=</span><span class="fl">12345</span></span>
 <span>                       <span class="co">##,modfiy.model=list(PK=function(x)c(x,"TVKA=TVKA/4","KA=KA/4"))</span></span>
-<span>                       ,modify.model<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu">add</span><span class="op">(</span><span class="st">"TVKA=TVKA/4"</span>,<span class="st">"KA=KA/4"</span><span class="op">)</span><span class="op">)</span></span>
+<span>                       ,modify.model<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu"><a href="../reference/add.html">add</a></span><span class="op">(</span><span class="st">"TVKA=TVKA/4"</span>,<span class="st">"KA=KA/4"</span><span class="op">)</span><span class="op">)</span></span>
 <span>                        <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simres</span>,<span class="va">simres.slowabs</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -150,7 +150,7 @@ number of fold changes to <code>KA</code>.</p>
 <span>                     ,name.sim<span class="op">=</span><span class="st">"varka"</span></span>
 <span>                     ,seed<span class="op">=</span><span class="fl">12345</span></span>
 <span>                     <span class="co">## ,modify.model=list(PK=function(x)c(x,"TVKA=TVKA/KASCALE","KA=KA/KASCALE"))</span></span>
-<span>                     ,modify.model<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu">add</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>                     ,modify.model<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu"><a href="../reference/add.html">add</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span>                      <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">simres.varka</span><span class="op">[</span><span class="va">simres.varka</span><span class="op">$</span><span class="va">EVID</span><span class="op">==</span><span class="fl">2</span>,<span class="op">]</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">TIME</span>,<span class="va">PRED</span>,colour<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">KASCALE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
@@ -165,7 +165,7 @@ number of fold changes to <code>KA</code>.</p>
 customized functions to control stream sections. In the example above,
 we used</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">modify.model</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu">add</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">modify.model</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PK<span class="op">=</span><span class="fu"><a href="../reference/add.html">add</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TVKA=TVKA/KASCALE"</span>,<span class="st">"KA=KA/KASCALE"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>This is exactly the same as creating a custom function that adds
 those two lines (text strings to a vector of text strings each
 representing a line in the control stream)</p>
