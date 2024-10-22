@@ -5,15 +5,23 @@
 ##' @param nsim Number of sets of parameter values to generate. Passed
 ##'     to `simpar`.
 ##' @param format "ext" (default) or "wide".
+##' @param as.fun The default is to return data as a data.frame. Pass
+##'     a function (say `tibble::as_tibble`) in as.fun to convert to
+##'     something else. If data.tables are wanted, use
+##'     as.fun="data.table". The default can be configured using
+##'     NMdataConf.
 ##' @import NMdata
 ##' @return A table with sampled model parameters
 ##' @author Sanaya Shroff, Philip Delff
 ##' @export
 
-sampleParsSimpar <- function(file.mod,nsim,format="ext"){
+sampleParsSimpar <- function(file.mod,nsim,format="ext",as.fun){
 
+    if(missing(as.fun)) as.fun <- NULL
+    as.fun <- NMdata:::NMdataDecideOption("as.fun",as.fun)
+    
     if(packageVersion("NMdata")<"0.1.7.905"){
-        stop("NMsim_NWPRI requires NMdata 0.1.7 or later.")
+        stop("sampleParsSimpar requires NMdata 0.1.8 or later.")
     }
 
 
@@ -70,5 +78,5 @@ sampleParsSimpar <- function(file.mod,nsim,format="ext"){
             data=pars,as.fun="data.table"
         )
     }
-    pars
+    as.fun(pars)
 }
