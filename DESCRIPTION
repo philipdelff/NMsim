@@ -25,8 +25,7 @@ Suggests:
   ggplot2,
   patchwork,
   tracee,
-  tidyvpc,
-  simpar
+  tidyvpc
 Encoding: UTF-8
 LazyData: true
 Additional_repositories: https://mpn.metworx.com/snapshots/stable/2024-09-23
