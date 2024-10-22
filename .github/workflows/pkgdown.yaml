@@ -30,16 +30,9 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Install dependencies
-        run: |
-	  install.packages("remotes")
-	  install_deps(dependencies=TRUE,type="binary",upgrade="never")
-	## install.packages("simpar",repos="https://mpn.metworx.com/snapshots/stable/2024-09-23")
-        shell: Rscript {0}
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: remotes, any::pkgdown, local::.
+          extra-packages: any::pkgdown, local::.
           needs: website
 
       - name: Build site
