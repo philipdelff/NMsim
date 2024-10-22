@@ -251,6 +251,7 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
     ## Sys.sleep(5)
     res.list <- lapply(1:nsplits,function(count){
         dat <- tab.split[[count]]
+        bycols <- intersect(c("ROWMODEL2","model"),colnames(dat))
         res <- dat[,{
             
             ## the rds table must keep NMscanData arguments
@@ -287,7 +288,8 @@ NMreadSimModTabOne <- function(modtab,check.time=FALSE,dir.sims,wait=FALSE,quiet
 
 
             this.res
-        },by=.(ROWMODEL2)]
+        },by=bycols]
+        setcolorder(simres,setdiff(colnames(simres),"model"))
 
         if(do.pb){
             setTxtProgressBar(pb, count)

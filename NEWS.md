@@ -4,6 +4,9 @@
 
 * `NMsim()`
 
+  - Results are now equipped with three columns distinguishing
+    simulated models.
+
   - No longer requires a `.ext` file if updating parameter values using
   PSN's `update_inits`. It is still recommended to keep the `.ext`
   file since it provides higher accuracy than the `.lst` file. 

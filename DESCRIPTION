@@ -1,7 +1,7 @@
 Package: NMsim
 Type: Package
 Title: Seamless 'Nonmem' Simulation Platform
-Version: 0.1.3.921
+Version: 0.1.3.922
 Authors@R: c(person("Philip", "Delff", email = "philip@delff.dk",role = c("aut","cre")),
   person("Brian", "Reilly", email = "reilly.brian.m@gmail.com",role = c("ctb")),
   person("Sanaya","Shroff",email="sanaya.n.shroff@gmail.com",role = c("ctb")))

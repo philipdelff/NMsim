@@ -502,7 +502,7 @@ paste.end <- function(x,add,...){
         if(!is.list(args.NMscanData)) stop("args.NMscanData must be a list.")
         if(any(names(args.NMscanData)=="")) stop("All elements in args.NMscanData must be named.")
     }
-    args.NMscanData.default <- list(merge.by.row=FALSE)
+    args.NMscanData.default <- list(merge.by.row=FALSE,col.model="model.sim")
     
     if(missing(progress)) progress <- NULL
     
@@ -590,10 +590,7 @@ paste.end <- function(x,add,...){
     name.sim <- simpleCharArg("name.sim",name.sim,"noname",accepted=NULL,lower=FALSE,clean=FALSE)
     name.sim.paths <- cleanStrings(name.sim)
 
-    ## modelname
-    ## if(missing(modelname)){
     modelname <- NULL
-    ## }
     
     if(missing(col.row)) col.row <- NULL
     col.row <- NMdata:::NMdataDecideOption("col.row",col.row)
@@ -641,7 +638,7 @@ paste.end <- function(x,add,...){
 
     if(missing(nmquiet)) nmquiet <- NULL
 
-    if(missing(modelname)) modelname <- NULL
+    ##if(missing(modelname)) modelname <- NULL
     ## modelname <- NMdataDecideOption("modelname",modelname)
     if(is.null(modelname)) modelname <- function(fn) fnExtension(basename(fn),"")
 
@@ -732,7 +729,23 @@ paste.end <- function(x,add,...){
     }
     dt.models[,ROWMODEL:=.I]
 
+    ## fn.sim is the file name of the simulation control stream created by NMsim
+    ## fn.sim <- sub("^run","NMsim",basename(file.mod))
+    dt.models[,fn.mod:=basename(file.mod)]
+### prepending NMsim to model names
+    ## dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
+### dropping NMsim in front of all model names
+    dt.models[,fn.sim:=fnExtension(name.mod,".mod")]
 
+    ## fn.sim should be unique
+    dt.models[,n.fn.sim:=.N,by=fn.sim]
+    dt.models[n.fn.sim>1,fn.sim:=fnAppend(fn.sim,pad0=floor(log10(n.fn.sim))+1)]
+    dt.models[,n.fn.sim:=NULL]
+
+    dt.models[,model:=modelname(fn.sim)]
+    
+
+    
 ### file.ext
     if(is.null(file.ext)) {
         dt.models[,file.ext:=fnExtension(file.mod,"ext"),by=.(ROWMODEL)]
@@ -765,8 +778,8 @@ paste.end <- function(x,add,...){
             stop("Empty data set provided. If `data` is a list of data sets, make sure all of them are non-empty.")
         }
 
-        col.sim <- tmpcol(names=sapply(data,names),base="sim")
-        if(col.sim != "sim") message(sprintf("column sim exists, name.sim written to column %s instead.",col.sim))
+        col.sim <- tmpcol(names=sapply(data,names),base="name.sim")
+        if(col.sim != "name.sim") message(sprintf("column name.sim exists, name.sim written to column %s instead.",col.sim))
         data <- lapply(data,function(x) x[,(col.sim):=..name.sim])
         
         dt.data <- data.table(DATAROW=1:length(data),data.name=names.data)
@@ -802,16 +815,10 @@ paste.end <- function(x,add,...){
 ### file.mod=c(ref="run01.mod"). name.sim is the name that was
 ### given for the who sim.
     
-    ## fn.sim is the file name of the simulation control stream created by NMsim
-    ## fn.sim <- sub("^run","NMsim",basename(file.mod))
-    dt.models[,fn.mod:=basename(file.mod)]
-### prepending NMsim to model names
-    ## dt.models[,fn.sim:=fnExtension(paste0("NMsim_",name.mod),".mod")]
-### dropping NMsim in front of all model names
-    dt.models[,fn.sim:=fnExtension(name.mod,".mod")]
 
     dt.models[,fn.sim.predata:=fnAppend(fn.sim,name.sim.paths)]
     dt.models[,fn.sim:=fnAppend(fn.sim.predata,as.character(data.name)),by=.(ROWMODEL)]
+    
     ## spaces not allowed in model names
     dt.models[,fn.sim:=gsub(" ","_",fn.sim)]
     dt.models[,run.sim:=modelname(fn.sim)]
@@ -980,8 +987,8 @@ paste.end <- function(x,add,...){
             rewrite.data.section <- FALSE
             order.columns <- FALSE
 
-            col.sim <- tmpcol(data.this,base="sim")
-            if(col.sim != "sim") warning(sprintf("column sim exists, name.sim written to column %s instead.",col.sim))
+            col.sim <- tmpcol(data.this,base="name.sim")
+            if(col.sim != "name.sim") warning(sprintf("column name.sim exists, name.sim written to column %s instead.",col.sim))
             data.this[,(col.sim):=..name.sim]
         } else {
             data.this <- data[[DATAROW]]
