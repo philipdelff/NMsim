@@ -289,8 +289,10 @@ dt.dos.13[,ID:=NULL]
 #+end_src
 *** TODO No CMT by default?
 Not all models use CMT so it shouldnt be required
+*** TODO [#A] II and ADDL should be separate args
+Check that they are of equal length
 *** TODO II/ADDL should only be applied to last event.
-addl.lastonly argument?
+addl.lastonly argument
 *** TODO [#B] TIME must be full length
 ## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2))
 ## NMcreateDoses(TIME=c(0,1,4),AMT=c(2,1,4,2),CMT=1)
