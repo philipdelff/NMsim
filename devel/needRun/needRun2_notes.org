@@ -18,8 +18,8 @@ That means we also must suppport it built into a function that is
 intended to use it, and then inside myfun it is directly
 implemented.
 
-But maybe that is easily supported by the ideal design. On could do
-omething like this following. However, it's hard because needrun will
+But maybe that is easily supported by the ideal design. One could do
+something like this following. However, it's hard because needrun will
 not know how to read results on file.
 
 

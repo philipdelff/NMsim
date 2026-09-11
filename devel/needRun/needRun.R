@@ -94,6 +94,7 @@ callArgs <- function(which=-1){
 ##' @param funs Named list of functions to be applied to elements (matched on names) in `obj`. Optional.
 ##' @return A data.table with hashes/checksums.
 ##' @importFrom digest digest
+##' @import NMdata
 ##' @keywords internal
 ## Made for needRun. Don't export.
 digestElements <- function(obj,funs){
