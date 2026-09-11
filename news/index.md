@@ -2,6 +2,8 @@
 
 ## NMsim 0.2.8
 
+CRAN release: 2026-09-08
+
 ### New Features
 
 - The `carry.out` argument is better implemented in NMsim and
